@@ -6,66 +6,151 @@ const theme = createTheme({
       main: "#8A00FC",
     },
     primary100: {
+      main: "#F4E6FF",
+    },
+    primary200: {
+      main: "#E8CCFE",
+    },
+    primary300: {
+      main: "#DCB3FF",
+    },
+    primary400: {
+      main: "#D099FE",
+    },
+    primary500: {
+      main: "#C580FE",
+    },
+    primary600: {
+      main: "#B966FD",
+    },
+    primary700: {
+      main: "#AE4DFD",
+    },
+    primary800: {
+      main: "#A133FD",
+    },
+    primary900: {
+      main: "#961AFD",
+    },
+    dark1: {
+      main: "#4D0A6E",
+    },
+    dark2: {
+      main: "#1F012D",
+    },
+    opacity10: {
+      main: "rgba(138, 0, 252, 0.1)",
+    },
+    opacity20: {
+      main: "rgba(138, 0, 252, 0.2)",
+    },
+    opacity30: {
+      main: "rgba(138, 0, 252, 0.3)",
+    },
+    opacity40: {
+      main: "rgba(138, 0, 252, 0.4)",
+    },
+    opacity50: {
       main: "rgba(138, 0, 252, 0.5)",
-      900: "#961AFD",
-      800: "#A133FD",
-      700: "#AE4DFD",
-      600: "#B966FD",
-      500: "#C580FE",
-      400: "#D099FE",
-      300: "#DCB3FF",
-      200: "#E8CCFE",
-      100: "#F4E6FF",
-      dark1: "#4D0A6E",
-      dark2: "#1F012D",
-      opacity: {
-        10: "rgba(138, 0, 252, 0.1)",
-        20: "rgba(138, 0, 252, 0.2)",
-        30: "rgba(138, 0, 252, 0.3)",
-        40: "rgba(138, 0, 252, 0.4)",
-        50: "rgba(138, 0, 252, 0.5)",
-        60: "rgba(138, 0, 252, 0.6)",
-        70: "rgba(138, 0, 252, 0.7)",
-        80: "rgba(138, 0, 252, 0.8)",
-        90: "rgba(138, 0, 252, 0.9)",
-      },
     },
-    blacks: {
+    opacity60: {
+      main: "rgba(138, 0, 252, 0.6)",
+    },
+    opacity70: {
+      main: "rgba(138, 0, 252, 0.7)",
+    },
+    opacity80: {
+      main: "rgba(138, 0, 252, 0.8)",
+    },
+    opacity90: {
+      main: "rgba(138, 0, 252, 0.9)",
+    },
+    black: {
       main: "#1C1919",
-      900: "#333030",
-      800: "#494747",
-      700: "#615E5E",
-      600: "#777575",
-      500: "#8E8C8C",
-      400: "#A4A3A3",
-      300: "#BBBABA",
-      200: "#D2D1D1",
-      100: "#E9E8E8",
-      opacity: {
-        10: "rgba(28, 25, 25, 0.1)",
-        20: "rgba(28, 25, 25, 0.2)",
-        30: "rgba(28, 25, 25, 0.3)",
-        40: "rgba(28, 25, 25, 0.4)",
-        50: "rgba(28, 25, 25, 0.5)",
-        60: "rgba(28, 25, 25, 0.6)",
-        70: "rgba(28, 25, 25, 0.7)",
-        80: "rgba(28, 25, 25, 0.8)",
-        90: "rgba(28, 25, 25, 0.9)",
-      },
     },
-    whites: {
+    black900: {
+      main: "#333030",
+    },
+    black800: {
+      main: "#494747",
+    },
+    black700: {
+      main: "#615E5E",
+    },
+    black600: {
+      main: "#777575",
+    },
+    black500: {
+      main: "#8E8C8C",
+    },
+    black400: {
+      main: "#A4A3A3",
+    },
+    black300: {
+      main: "#BBBABA",
+    },
+    black200: {
+      main: "#D2D1D1",
+    },
+    black100: {
+      main: "#E9E8E8",
+    },
+    blackopacity10: {
+      main: "rgba(28, 25, 25, 0.1)",
+    },
+    blackopacity20: {
+      main: "rgba(28, 25, 25, 0.2)",
+    },
+    blackopacity30: {
+      main: "rgba(28, 25, 25, 0.3)",
+    },
+    blackopacity40: {
+      main: "rgba(28, 25, 25, 0.4)",
+    },
+    blackopacity50: {
+      main: "rgba(28, 25, 25, 0.5)",
+    },
+    blackopacity60: {
+      main: "rgba(28, 25, 25, 0.6)",
+    },
+    blackopacity70: {
+      main: "rgba(28, 25, 25, 0.7)",
+    },
+    blackopacity80: {
+      main: "rgba(28, 25, 25, 0.8)",
+    },
+    blackopacity90: {
+      main: "rgba(28, 25, 25, 0.9)",
+    },
+    white: {
       main: "#FFFFFF",
-      opacity: {
-        10: "rgba(255, 255, 255, 0.1)",
-        20: "rgba(255, 255, 255, 0.2)",
-        30: "rgba(255, 255, 255, 0.3)",
-        40: "rgba(255, 255, 255, 0.4)",
-        50: "rgba(255, 255, 255, 0.5)",
-        60: "rgba(255, 255, 255, 0.6)",
-        70: "rgba(255, 255, 255, 0.7)",
-        80: "rgba(255, 255, 255, 0.8)",
-        90: "rgba(255, 255, 255, 0.9)",
-      },
+    },
+    white10: {
+      main: "rgba(255, 255, 255, 0.1)",
+    },
+    white20: {
+      main: "rgba(255, 255, 255, 0.2)",
+    },
+    white30: {
+      main: "rgba(255, 255, 255, 0.3)",
+    },
+    white40: {
+      main: "rgba(255, 255, 255, 0.4)",
+    },
+    white50: {
+      main: "rgba(255, 255, 255, 0.5)",
+    },
+    white60: {
+      main: "rgba(255, 255, 255, 0.6)",
+    },
+    white70: {
+      main: "rgba(255, 255, 255, 0.7)",
+    },
+    white80: {
+      main: "rgba(255, 255, 255, 0.8)",
+    },
+    white90: {
+      main: "rgba(255, 255, 255, 0.9)",
     },
     error: {
       main: "#D91E18",
@@ -84,16 +169,16 @@ const theme = createTheme({
     MuiButton: {
       variants: [
         {
-          props: { variant: 'customOutline' },
+          props: { variant: "customOutline" },
           style: {
-            textTransform: 'none',
+            textTransform: "none",
             border: `2px solid #961AFD`,
-            color: '#961AFD',
-            backgroundColor: '#FFFFFF',
-            borderRadius: '8px',
-            borderWidth: '3px',
-            '&:hover': {
-              backgroundColor: '#F8F4FF',
+            color: "#961AFD",
+            backgroundColor: "#FFFFFF",
+            borderRadius: "8px",
+            borderWidth: "3px",
+            "&:hover": {
+              backgroundColor: "#F8F4FF",
             },
           },
         },
