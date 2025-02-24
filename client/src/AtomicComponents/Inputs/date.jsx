@@ -1,37 +1,24 @@
-import { useState } from "react";
-import { TextField } from "@mui/material";
+import * as React from 'react';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-export default function DatePickerAtom({
-  label = "",
-  defaultValue,
-  onChange,
-}) {
-  const [value, setValue] = useState(defaultValue || "");
 
-  const handleChange = (event) => {
-    const newDate = event.target.value;
-    setValue(newDate);
-    if (onChange) {
-      onChange(newDate);
-    }
-  };
-
+export default function SetDate({ width, label }) {
   return (
-    <div className="mt-4 mr-330">
-      <TextField
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DatePicker
         label={label}
-        type="date"
-        InputLabelProps={{ shrink: true }}
-        value={value}
-        onChange={handleChange}
+        sx={{
+          minWidth: { width },
+          "& .MuiInputBase-root": {
+            "& fieldset": {
+              borderWidth: 2, // Default border color
+              borderRadius: 2,
+            },
+          }
+        }}
       />
-    </div>
+    </LocalizationProvider>
   );
 }
-
-// how to useeee:
-// <DatePickerAtom
-//   label="Birthdate"
-//   defaultValue="2024-01-01"
-//   onChange={(date) => console.log("Selected Date:", date)}
-// />

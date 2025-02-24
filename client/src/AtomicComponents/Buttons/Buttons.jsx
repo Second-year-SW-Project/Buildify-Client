@@ -135,24 +135,22 @@ export function OutlinedButton({
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    variant="outlined"
-                    color={color}
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading…"
-                    sx={{
-                        bgcolor: 'white',
-                        fontWeight: isBold ? 700 : 400,
-                        borderRadius: borderRadius,
-                        fontSize: fontSize,
-                        padding: sizeConfig.padding,
-                        width: isFixed ? sizeConfig.fixedWidth : 'auto',
-                    }}>
-                    {name}
-                </BaseButton>
-            </ThemeProvider>
+            <BaseButton
+                variant="outlined"
+                color={color}
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                sx={{
+                    bgcolor: 'white',
+                    fontWeight: isBold ? 700 : 400,
+                    borderRadius: borderRadius,
+                    fontSize: fontSize,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                }}>
+                {name}
+            </BaseButton>
         </div >
 
     );

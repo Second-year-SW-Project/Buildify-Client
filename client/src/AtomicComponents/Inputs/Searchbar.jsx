@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
-const SearchBar = ({ placeholder = "Search..." }) => {
+export function SearchBar({ placeholder, width, fontSize }) {
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchChange = (event) => {
@@ -13,9 +14,20 @@ const SearchBar = ({ placeholder = "Search..." }) => {
   return (
     <TextField
       variant="outlined"
-      placeholder={placeholder} // Use the placeholder prop
+      placeholder={placeholder}
       value={searchQuery}
       onChange={handleSearchChange}
+
+      sx={{
+        "& .MuiInputBase-root": {
+          "& fieldset": {
+            borderWidth: 2,
+            borderRadius: 2,
+          },
+          width: width,
+          fontSize: fontSize,
+        }
+      }}
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
@@ -23,9 +35,7 @@ const SearchBar = ({ placeholder = "Search..." }) => {
           </InputAdornment>
         ),
       }}
-      //   fullWidth
+    //   fullWidth
     />
   );
 };
-
-export default SearchBar;

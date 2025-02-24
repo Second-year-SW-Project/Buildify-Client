@@ -12,7 +12,6 @@ import {
   FormHelperText,
 } from "@mui/material";
 import React from "react";
-import DatePickerAtom from "./date"; // Adjust the import path as necessary
 import theme from "../theme";
 
 // const InputSizeConfig = {
@@ -31,7 +30,7 @@ import theme from "../theme";
 // };
 //const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
 
-export function InputFiled({
+export function InputField({
   label,
   type,
   width = "180px",
@@ -41,7 +40,7 @@ export function InputFiled({
   helperText,
   error
 }) {
-  if (type === "select") {
+  if (type === "text") {
     return (
       <TextField
         inputType={type}
@@ -60,9 +59,10 @@ export function InputFiled({
           '& .MuiInputLabel-root': {
             fontSize: (fontSize || '16px'), // Making label slightly smaller than input text
           },
-          "& .& .MuiFilledInput-root": {
+          "& .MuiInputBase-root": {
             "& fieldset": {
-              borderWidth: 2, // Default border color
+              borderWidth: 2,
+              borderRadius: 2,
             },
           }
         }} />
