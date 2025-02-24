@@ -5,72 +5,53 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Add from '@mui/icons-material/Add';
 
+// import theme from '../theme';
 
-//Initilalizing theme pallete
-let theme = createTheme({
-});
-theme = createTheme({
-    palette: {
-        primary: {
-            main: '#961AFD',
-            contrastText: '#FFFFFF',
-        },
-        primaryLight: {
-            main: '#AE47E2',
-            contrastText: '#FFFFFF',
-        },
-        primaryDark: {
-            main: '#7B16AE',
-            contrastText: '#FFFFFF',
-        },
-        secondary: {
-            main: '#FFFFFF',
-            contrastText: '#1C1919',
-        },
-        secondaryLight: {
-            main: '#FFFFFF',
-            contrastText: '#615E5E',
-        },
-        secondaryDark: {
-            main: '#FFFFFF',
-            contrastText: '#961AFD'
-        },
-        ternary: {
-            main: '#1C1919',
-            contrastText: '#FFFFFF',
-        },
-        white: {
-            main: '#FFFFFF'
-        },
-        Red: {
-            main: '#DF1E1E'
-        },
-        purple: {
-            main: '#961AFD'
-        }
+// let theme = createTheme({
+// });
+// theme = createTheme({
+//     palette: {
+//         primarypurple: {
+//             main: '#961AFD',
+//             contrastText: '#FFFFFF',
+//         },
+//         primaryLight: {
+//             main: '#AE47E2',
+//             contrastText: '#FFFFFF',
+//         },
+//         primaryDark: {
+//             main: '#7B16AE',
+//             contrastText: '#FFFFFF',
+//         },
+//         secondary: {
+//             main: '#FFFFFF',
+//             contrastText: '#1C1919',
+//         },
+//         secondaryLight: {
+//             main: '#FFFFFF',
+//             contrastText: '#615E5E',
+//         },
+//         secondaryDark: {
+//             main: '#FFFFFF',
+//             contrastText: '#961AFD'
+//         },
+//         ternary: {
+//             main: '#1C1919',
+//             contrastText: '#FFFFFF',
+//         },
+//         white: {
+//             main: '#FFFFFF'
+//         },
+//         Red: {
+//             main: '#DF1E1E'
+//         },
+//         purple: {
+//             main: '#961AFD'
+//         }
 
-    },
-    components: {
-        MuiButton: {
-            variants: [
-                {
-                    props: { variant: 'customOutline' },
-                    style: {
-                        textTransform: 'none',
-                        border: `2px solid #961AFD`,
-                        color: '#961AFD',
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: '8px',
-                        borderWidth: '3px',
-                        '&:hover': {
-                            backgroundColor: '#F8F4FF',
-                        },
-                    },
-                },
-            ],
-        },
-    },
-});
+//     },
+
+// });
 
 //Button Size initilization
 const Button_Config = {
@@ -118,23 +99,21 @@ export function PrimaryButton({
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    variant="contained"
-                    color={color}
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading…"
-                    sx={{
-                        fontWeight: isBold ? 700 : 400,
-                        borderRadius: borderRadius,
-                        fontSize: fontSize,
-                        padding: sizeConfig.padding,
-                        width: isFixed ? sizeConfig.fixedWidth : 'auto'
-                    }}>
-                    {name}
-                </BaseButton>
-            </ThemeProvider>
+            <BaseButton
+                variant="contained"
+                color={color}
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                sx={{
+                    fontWeight: isBold ? 700 : 400,
+                    borderRadius: borderRadius,
+                    fontSize: fontSize,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto'
+                }}>
+                {name}
+            </BaseButton>
         </div >
 
     );
@@ -280,31 +259,29 @@ export function ImageUploadButton({
     const sizeConfig = Button_Config[buttonSize] || Button_Config.long; //set Button Size
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    color="primary"
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingPosition="start"
-                    startIcon={<CloudUploadIcon />}
-                    style={{ borderRadius: 8, fontWeight: 'bold' }}
-                    sx={{
-                        fontSize: fontSize,
-                        padding: sizeConfig.padding
-                    }}
-                >
-                    Upload
-                    <VisuallyHiddenInput
-                        type="file"
-                        onChange={handleFileChange}
-                        accept=".jpg,.jpeg,.png"
-                    />
-                </BaseButton>
-            </ThemeProvider>
+            <BaseButton
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                color="primary"
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingPosition="start"
+                startIcon={<CloudUploadIcon />}
+                style={{ borderRadius: 8, fontWeight: 'bold' }}
+                sx={{
+                    fontSize: fontSize,
+                    padding: sizeConfig.padding
+                }}
+            >
+                Upload
+                <VisuallyHiddenInput
+                    type="file"
+                    onChange={handleFileChange}
+                    accept=".jpg,.jpeg,.png"
+                />
+            </BaseButton>
         </div>
 
     );

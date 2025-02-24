@@ -1,9 +1,13 @@
-import { createTheme } from "@mui/material";
+import { createTheme, colors, } from "@mui/material";
+
 
 const theme = createTheme({
   palette: {
     primary: {
       main: "#8A00FC",
+    },
+    primary100: {
+      main: "rgba(138, 0, 252, 0.5)",
       900: "#961AFD",
       800: "#A133FD",
       700: "#AE4DFD",
@@ -75,6 +79,26 @@ const theme = createTheme({
     },
     info: {
       main: "#2C87C3",
+    },
+  },
+  components: {
+    MuiButton: {
+      variants: [
+        {
+          props: { variant: 'customOutline' },
+          style: {
+            textTransform: 'none',
+            border: `2px solid #961AFD`,
+            color: '#961AFD',
+            backgroundColor: '#FFFFFF',
+            borderRadius: '8px',
+            borderWidth: '3px',
+            '&:hover': {
+              backgroundColor: '#F8F4FF',
+            },
+          },
+        },
+      ],
     },
   },
 });
