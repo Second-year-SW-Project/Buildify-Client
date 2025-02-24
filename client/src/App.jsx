@@ -3,9 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-
-//temperory
-import Test from "./AtomicComponents/test";
+import UserTable from "./AtomicComponents/Table";
 
 function App() {
   const [count, setCount] = useState(0);

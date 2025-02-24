@@ -1,4 +1,3 @@
-// UserTable.jsx
 import React from "react";
 import {
   Table,
@@ -14,45 +13,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const users = [
-  {
-    name: "Gethmi Rathnayaka",
-    phone: "+46 8 123 456",
-    registrationDate: "2024-11-07",
-    status: "Banned",
-    email: "gethmi@gmail.com",
-  },
-  {
-    name: "Sahan Tharaka",
-    phone: "+54 11 1234-5678",
-    registrationDate: "2024-11-08",
-    status: "Inactive",
-    email: "avery43@hotmail.com",
-  },
-  {
-    name: "Thamoj DinuJAVA",
-    phone: "+34 91 123 4567",
-    registrationDate: "2024-11-09",
-    status: "Banned",
-    email: "mireya13@hotmail.com",
-  },
-  {
-    name: "Rasmiya A",
-    phone: "+52 55 1234 5678",
-    registrationDate: "2024-11-10",
-    status: "Active",
-    email: "tyrel.greenholt@gmail.com",
-  },
-  {
-    name: "Jannathul Mirza",
-    phone: "+86 10 1234 5678",
-    registrationDate: "2024-11-11",
-    status: "Banned",
-    email: "joana.simonis84@gmail.com",
-  },
-];
-
-const UserTable = () => {
+const UserTable = ({ columns, data }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -71,35 +32,20 @@ const UserTable = () => {
         <Table>
           <TableHead>
             <TableRow style={{ backgroundColor: "#f4f4f4" }}>
-              <TableCell>Name</TableCell>
-              <TableCell>Phone Number</TableCell>
-              <TableCell>Registration Date</TableCell>
-              <TableCell>Status</TableCell>
+              {columns.map((column) => (
+                <TableCell key={column.id}>{column.label}</TableCell>
+              ))}
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users
+            {data
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((user, index) => (
+              .map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.phone}</TableCell>
-                  <TableCell>{user.registrationDate}</TableCell>
-                  <TableCell>
-                    <span
-                      style={{
-                        color:
-                          user.status === "Active"
-                            ? "green"
-                            : user.status === "Inactive"
-                            ? "orange"
-                            : "red",
-                      }}
-                    >
-                      {user.status}
-                    </span>
-                  </TableCell>
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>{row[column.id]}</TableCell>
+                  ))}
                   <TableCell>
                     <IconButton aria-label="edit">
                       <EditIcon />
@@ -116,7 +62,7 @@ const UserTable = () => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={users.length}
+        count={data.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -127,3 +73,31 @@ const UserTable = () => {
 };
 
 export default UserTable;
+
+// Usage
+
+// const userColumns = [
+//     { id: "name", label: "Name" },
+//     { id: "phone", label: "Phone Number" },
+//     { id: "registrationDate", label: "Registration Date" },
+//     { id: "status", label: "Status" },
+//   ];
+
+//   const userData = [
+//     {
+//       name: "Gethmi Rathnayaka",
+//       phone: "+46 8 123 456",
+//       registrationDate: "2024-11-07",
+//       status: "Banned",
+//     },
+//     {
+//       name: "Sahan Tharaka",
+//       phone: "+54 11 1234-5678",
+//       registrationDate: "2024-11-08",
+//       status: "Inactive",
+//     },
+//   ];
+
+//   return (
+//     <UserTable columns={userColumns} data={userData} />
+//   )
