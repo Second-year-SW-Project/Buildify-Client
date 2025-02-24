@@ -2,7 +2,7 @@ import { useState } from "react";
 import { TextField } from "@mui/material";
 
 export default function DatePickerAtom({
-  label = "Select Date",
+  label = "",
   defaultValue,
   onChange,
 }) {
