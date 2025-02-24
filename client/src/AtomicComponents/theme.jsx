@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { colors, createTheme } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -80,3 +80,34 @@ const theme = createTheme({
 });
 
 export default theme;
+
+// how to use colors
+// InputProps={{
+//   style: {
+//     color: theme.palette.error.main, // Text color
+//   },
+// }}
+// sx={{
+//   mb: 2,
+//   "& .MuiOutlinedInput-root": {
+//     "& fieldset": {
+//       borderColor: theme.palette.blacks.main, // Default border color
+//     },
+//     "&:hover fieldset": {
+//       borderColor: theme.palette.primary.main, // Border color on hover
+//     },
+//     "&.Mui-focused fieldset": {
+//       borderColor: theme.palette.primary[600], // Border color when focused (change to desired color)
+//     },
+//   },
+//   "& .MuiInputLabel-root": {
+//     color: theme.palette.blacks.main, // Default label color
+//   },
+//   "& .MuiInputLabel-root.Mui-focused": {
+//     color: theme.palette.success.main, // Label color when focused (change to desired color)
+//   },
+// }}
+
+// or
+
+//  color="error"
