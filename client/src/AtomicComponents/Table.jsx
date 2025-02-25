@@ -13,7 +13,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const UserTable = ({ columns, data }) => {
+const UserTable = ({ columns, data, color, backgroundColor, width }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -27,15 +27,17 @@ const UserTable = ({ columns, data }) => {
   };
 
   return (
-    <Paper>
+    <Paper style={{ width: width || "100%" }}>
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: "#f4f4f4" }}>
+            <TableRow style={{ backgroundColor: backgroundColor || "#f4f4f4" }}>
               {columns.map((column) => (
-                <TableCell key={column.id}>{column.label}</TableCell>
+                <TableCell key={column.id} style={{ color: color || "black" }}>
+                  {column.label}
+                </TableCell>
               ))}
-              <TableCell>Actions</TableCell>
+              <TableCell style={{ color: color || "black" }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -44,7 +46,12 @@ const UserTable = ({ columns, data }) => {
               .map((row, index) => (
                 <TableRow key={index}>
                   {columns.map((column) => (
-                    <TableCell key={column.id}>{row[column.id]}</TableCell>
+                    <TableCell
+                      key={column.id}
+                      style={{ color: color || "black" }}
+                    >
+                      {row[column.id]}
+                    </TableCell>
                   ))}
                   <TableCell>
                     <IconButton aria-label="edit">
@@ -74,7 +81,7 @@ const UserTable = ({ columns, data }) => {
 
 export default UserTable;
 
-// Usage
+// Usage Example
 
 // const userColumns = [
 //     { id: "name", label: "Name" },
@@ -99,5 +106,11 @@ export default UserTable;
 //   ];
 
 //   return (
-//     <UserTable columns={userColumns} data={userData} />
+//     <User Table
+//       columns={userColumns}
+//       data={userData}
+//       color="blue"
+//       backgroundColor="#e0e0e0"
+//       width="80%"
+//     />
 //   )
