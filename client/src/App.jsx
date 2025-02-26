@@ -1,71 +1,35 @@
-import React from "react";
-import { useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import { InputField } from "./AtomicComponents/Inputs/Input";
-import UserTable from "./AtomicComponents/Table";
-import {
-  ImageUploadButton,
-  PrimaryButton,
-  OutlinedButton,
-  CustomOutlinedButton,
-  ApplyButton,
-  AddButton,
-} from "./AtomicComponents/Buttons/Buttons";
-import { WidthFull } from "@mui/icons-material";
-import SearchBar from "./AtomicComponents/Inputs/Searchbar";
-import { TextField } from "@mui/material";
-import theme from "./AtomicComponents/theme";
-import SetDate from "./AtomicComponents/Inputs/date";
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
 function App() {
-  // const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0)
+
   return (
-    <Router>
-      <>
-        {/* Test of inputs */}
-        {/* <div className="p-7">
-          <InputField label="Name" variant="outlined" color="error" />
-          <InputField
-            type="select"
-            label="choose"
-            variant="outlined"
-            options={[
-              { value: "1", label: "Lasitha" },
-              { value: "2", label: "Is" },
-              { value: "3", label: "Crazy" },
-            ]}
-          />
-          <InputField
-            label="Search Input"
-            type="autocomplete"
-            options={[
-              { label: "Apple" },
-              { label: "Banana" },
-              { label: "Cherry" },
-            ]}
-            sx={{ mb: 2 }}
-          />
-          <InputField label="Accept" type="checkbox" color="error" />
-          <InputField
-            row
-            labelPlacement="bottom"
-            color="primary100"
-            label="Choose a Fruit"
-            type="radio"
-            options={[
-              { label: "Apple", value: "apple" },
-              { label: "Banana", value: "banana" },
-              { label: "Cherry", value: "cherry" },
-            ]}
-          />
-        </div> */}
-        <Routes>
-          {/* <Route path="/" exact component={Home} /> */}
-          {/* <Route path="/test" element={<Test />} /> */}
-        </Routes>
-      </>
-    </Router>
-  );
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
 }
 
 export default App;
