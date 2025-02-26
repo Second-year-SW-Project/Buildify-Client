@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Add from '@mui/icons-material/Add';
 
@@ -169,23 +168,21 @@ export function CustomOutlinedButton({
     const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    variant="customOutline"
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading…"
-                    sx={{
-                        fontWeight: isBold ? 700 : 400,
-                        fontSize: fontSize,
-                        padding: sizeConfig.padding,
-                        width: isFixed ? sizeConfig.fixedWidth : 'auto',
-                        border: `3px solid ${isDisabled ? '#bdbdbd' : '#961AFD'}`,
+            <BaseButton
+                variant="customOutline"
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                sx={{
+                    fontWeight: isBold ? 700 : 400,
+                    fontSize: fontSize,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                    border: `3px solid ${isDisabled ? '#bdbdbd' : '#961AFD'}`,
 
-                    }}>
-                    {name}
-                </BaseButton>
-            </ThemeProvider>
+                }}>
+                {name}
+            </BaseButton>
         </div>
     );
 }
@@ -197,23 +194,21 @@ export function ApplyButton({
 }) {
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    variant="contained"
-                    color="primaryDark"
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading…"
-                    sx={{
-                        fontWeight: 700,
-                        borderRadius: '30px',
-                        fontSize: '20px',
-                        padding: '8px 18px',
-                        width: '350px',
-                    }}>
-                    Apply
-                </BaseButton>
-            </ThemeProvider>
+            <BaseButton
+                variant="contained"
+                color="primaryDark"
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                sx={{
+                    fontWeight: 700,
+                    borderRadius: '30px',
+                    fontSize: '20px',
+                    padding: '8px 18px',
+                    width: '350px',
+                }}>
+                Apply
+            </BaseButton>
         </div>
     );
 }
@@ -301,32 +296,30 @@ export function AddButton({
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    color={color}
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading..."
-                    startIcon={<Add />
-                    }
-                    style={{ borderRadius: borderRadius }}
-                    sx={{
-                        fontSize: fontSize,
-                        fontWeight: isBold ? 700 : 400,
-                        padding: sizeConfig.padding,
-                        width: isFixed ? sizeConfig.fixedWidth : 'auto',
-                        '& .MuiButton-startIcon': {
-                            marginRight: '8px',
-                        },
-                    }}
-                >
-                    {name}
-                </BaseButton>
-            </ThemeProvider>
+            <BaseButton
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                color={color}
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading..."
+                startIcon={<Add />
+                }
+                style={{ borderRadius: borderRadius }}
+                sx={{
+                    fontSize: fontSize,
+                    fontWeight: isBold ? 700 : 400,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                    '& .MuiButton-startIcon': {
+                        marginRight: '8px',
+                    },
+                }}
+            >
+                {name}
+            </BaseButton>
         </div>
 
     );
