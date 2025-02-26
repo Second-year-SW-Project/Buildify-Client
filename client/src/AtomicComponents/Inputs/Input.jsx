@@ -32,18 +32,22 @@ import theme from "../theme";
 
 export function InputField({
   label,
-  type,
+  type = "text",
   width = "180px",
   color,
   variant,
   fontSize = "16px",
   helperText,
-  error
+  error,
+  row,
+  size,
+  options = [],
+  labelPlacement,
 }) {
   if (type === "text") {
     return (
       <TextField
-        inputType={type}
+        type={type}
         label={label}
         fontSize={fontSize}
         color={color}
@@ -53,23 +57,95 @@ export function InputField({
         error={!!error}
         sx={{
           width: width,
-          '& .MuiInputBase-input': {
-            fontSize: fontSize || '16px', // Use provided fontSize, or size-based fontSize, or default
+          "& .MuiInputBase-input": {
+            fontSize: fontSize || "16px", // Use provided fontSize, or size-based fontSize, or default
           },
-          '& .MuiInputLabel-root': {
-            fontSize: (fontSize || '16px'), // Making label slightly smaller than input text
+          "& .MuiInputLabel-root": {
+            fontSize: fontSize || "16px", // Making label slightly smaller than input text
           },
           "& .MuiInputBase-root": {
             "& fieldset": {
               borderWidth: 2,
               borderRadius: 2,
             },
-          }
-        }} />
+          },
+        }}
+      />
+    );
+  }
+
+  if (type === "select") {
+    return (
+      <TextField
+        select
+        label={label}
+        fontSize={fontSize}
+        color={color}
+        variant={variant} // 'standard', 'outlined', 'filled'
+        error={!!error}
+        helperText={helperText}
+        sx={{ width: width }}
+      >
+        {options.map((option, index) => (
+          <MenuItem key={index} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </TextField>
+    );
+  }
+
+  if (type === "autocomplete") {
+    return (
+      <Autocomplete
+        options={options}
+        getOptionLabel={(option) => option.label}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            error={!!error}
+            helperText={helperText}
+            sx={{ width: width }}
+          />
+        )}
+      />
+    );
+  }
+
+  if (type === "checkbox") {
+    //size small large
+    return (
+      <FormGroup>
+        <FormControlLabel
+          control={<Checkbox size={size} color={color} />} // Set the id for the checkbox
+          label={label} // This should display the label next to the checkbox
+        />
+        {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      </FormGroup>
+    );
+  }
+
+  if (type === "radio") {
+    //size small large
+    return (
+      <FormControl error={!!error}>
+        <FormLabel>{label}</FormLabel>
+        <RadioGroup row={row}>
+          {options.map((option, index) => (
+            <FormControlLabel
+              labelPlacement={labelPlacement} //end or bottom
+              key={index}
+              control={<Radio size={size} value={option.value} color={color} />}
+              label={option.label}
+            />
+          ))}
+        </RadioGroup>
+        {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      </FormControl>
     );
   }
 }
-
 
 // const Input = ({
 //   type = "text",
@@ -180,4 +256,3 @@ export function InputField({
 //     />
 //   );
 // };
-

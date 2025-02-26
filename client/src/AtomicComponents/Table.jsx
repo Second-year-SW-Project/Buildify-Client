@@ -29,13 +29,15 @@ export function UserTable({ columns, data }) {
   }
 
   return (
-    <Paper>
+    <Paper style={{ width: width || "100%" }}>
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow style={{ backgroundColor: theme.palette.primary.main }}>
               {columns.map((column) => (
-                <TableCell key={column.id}>{column.label}</TableCell>
+                <TableCell key={column.id} style={{ color: color || "black" }}>
+                  {column.label}
+                </TableCell>
               ))}
               <TableCell></TableCell>
             </TableRow>
@@ -46,7 +48,12 @@ export function UserTable({ columns, data }) {
               .map((row, index) => (
                 <TableRow key={index}>
                   {columns.map((column) => (
-                    <TableCell key={column.id}>{row[column.id]}</TableCell>
+                    <TableCell
+                      key={column.id}
+                      style={{ color: color || "black" }}
+                    >
+                      {row[column.id]}
+                    </TableCell>
                   ))}
                   <TableCell>
                     <Iconset type="edit" />
