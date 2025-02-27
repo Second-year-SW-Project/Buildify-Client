@@ -12,10 +12,19 @@ import {
   AddButton,
 } from "./AtomicComponents/Buttons/Buttons";
 import { WidthFull } from "@mui/icons-material";
-import SearchBar from "./AtomicComponents/Inputs/Searchbar";
+import { SearchBar } from "./AtomicComponents/Inputs/Searchbar";
 import { TextField } from "@mui/material";
 import theme from "./AtomicComponents/theme";
 import SetDate from "./AtomicComponents/Inputs/date";
+import UserDashboard from "./UserdashboardFeature/userDashboard";
+
+//Route imports
+import MyOrders from "./UserdashboardFeature/pages/MyOrders";
+import RMAsupport from "./UserdashboardFeature/pages/RMAsupport";
+import OrderHistory from "./UserdashboardFeature/pages/OrderHistory";
+import UserProfile from "./UserdashboardFeature/pages/UserProfile";
+import SavedBuilds from "./UserdashboardFeature/pages/SavedBuilds";
+import Settings from "./UserdashboardFeature/pages/Settings";
 
 function App() {
   // const [count, setCount] = useState(0);
@@ -60,6 +69,13 @@ function App() {
           />
         </div> */}
         <Routes>
+          <Route path="/userDashboard" element={<UserDashboard />} />
+          <Route path="/myOrders" element={<MyOrders />} />
+          <Route path="/rmaSupport" element={<RMAsupport />} />
+          <Route path="/orderHistory" element={<OrderHistory />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/savedBuilds" element={<SavedBuilds />} />
+          <Route path="/settings" element={<Settings />} />
           {/* <Route path="/" exact component={Home} /> */}
           {/* <Route path="/test" element={<Test />} /> */}
         </Routes>
