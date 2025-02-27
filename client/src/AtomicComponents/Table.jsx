@@ -8,13 +8,14 @@ import {
   TableRow,
   TablePagination,
   Paper,
+  IconButton,
 } from "@mui/material";
 import theme from "./theme.jsx";
 import Iconset from "./Icons/Iconset.jsx";
 
 
 
-export function UserTable({ columns, data }) {
+export function UserTable({ columns, data, iconTypes = [], width, color }) {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -33,7 +34,7 @@ export function UserTable({ columns, data }) {
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: theme.palette.primary.main }}>
+            <TableRow style={{ backgroundColor: theme.palette.primary100.main }}>
               {columns.map((column) => (
                 <TableCell key={column.id} style={{ color: color || "black" }}>
                   {column.label}
@@ -56,8 +57,11 @@ export function UserTable({ columns, data }) {
                     </TableCell>
                   ))}
                   <TableCell>
-                    <Iconset type="edit" />
-                    <Iconset type="more" />
+                    {iconTypes.map((type, idx) => (
+                      <IconButton key={idx}>
+                        <Iconset type={type} />
+                      </IconButton>
+                    ))}
                   </TableCell>
                 </TableRow>
               ))}
@@ -81,33 +85,36 @@ export default UserTable;
 
 // How to Use
 
-//   const userColumns = [
-//     { id: "useCard", label: "User"  },
-//     { id: "phone", label: "Phone Number" },
-//     { id: "registrationDate", label: "Registration Date" },
-//     { id: "status", label: "Status" },
-//   ];
+  // const userColumns = [
+  //   { id: "userCard", label: "User" },
+  //   { id: "phone", label: "Phone Number" },
+  //   { id: "registrationDate", label: "Registration Date" },
+  //   { id: "status", label: "Status" },
+  // ];
 
-//   const userData = [
-//     {
-//       name: <Usercard name='Gethmi Rathnyaka' email='gethmirathnayaka@gmai.com' src='yourprofile image' ></Usercard>,
-//       phone: "+46 8 123 456",
-//       registrationDate: "2024-11-07",
-//       status: "Banned",
-//     },
-//     {
-//       name: <Usercard name='Sahan Tharaka' email='sahantharaka@gmai.com' src='yourprofile image' ></Usercard>,
-//       phone: "+54 11 1234-5678",
-//       registrationDate: "2024-11-08",
-//       status: "Inactive",
-//     },
-//   ];
+  // const userData = [
+  //   {
+  //     userCard: <Usercard name='Gethmi Rathnyaka' email='gethmirathnayaka@gmai.com' src='yourprofile image' ></Usercard>,
+  //     phone: "+46 8 123 456",
+  //     registrationDate: "2024-11-07",
+  //     status: "Banned",
+  //   },
+  //   {
+  //     userCard: <Usercard name='Sahan Tharaka' email='sahantharaka@gmai.com' src='yourprofile image' ></Usercard>,
+  //     phone: "+54 11 1234-5678",
+  //     registrationDate: "2024-11-08",
+  //     status: "Inactive",
+  //   },
+  // ];
 
+  // const iconTypes = ["edit", "more"];
+  
 //   return (
-//    <Box sx={{ width: '100%', maxWidth: 1000, borderRadius: "20px" }}>
-//   <UserTable
-//     columns={userColumns}
-//     data={userData}
-//   />
-// </Box>
+  //  <Box sx={{ width: '100%', maxWidth: 1000, borderRadius: "20px" }}>
+  //     <UserTable
+  //       columns={userColumns}
+  //       data={userData}
+  //       iconTypes={iconTypes}
+  //     />
+  //   </Box>
 //   );
