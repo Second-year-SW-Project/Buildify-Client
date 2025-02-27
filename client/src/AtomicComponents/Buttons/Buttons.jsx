@@ -4,53 +4,6 @@ import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Add from '@mui/icons-material/Add';
 
-// import theme from '../theme';
-
-// let theme = createTheme({
-// });
-// theme = createTheme({
-//     palette: {
-//         primarypurple: {
-//             main: '#961AFD',
-//             contrastText: '#FFFFFF',
-//         },
-//         primaryLight: {
-//             main: '#AE47E2',
-//             contrastText: '#FFFFFF',
-//         },
-//         primaryDark: {
-//             main: '#7B16AE',
-//             contrastText: '#FFFFFF',
-//         },
-//         secondary: {
-//             main: '#FFFFFF',
-//             contrastText: '#1C1919',
-//         },
-//         secondaryLight: {
-//             main: '#FFFFFF',
-//             contrastText: '#615E5E',
-//         },
-//         secondaryDark: {
-//             main: '#FFFFFF',
-//             contrastText: '#961AFD'
-//         },
-//         ternary: {
-//             main: '#1C1919',
-//             contrastText: '#FFFFFF',
-//         },
-//         white: {
-//             main: '#FFFFFF'
-//         },
-//         Red: {
-//             main: '#DF1E1E'
-//         },
-//         purple: {
-//             main: '#961AFD'
-//         }
-
-//     },
-
-// });
 
 //Button Size initilization
 const Button_Config = {
@@ -324,3 +277,45 @@ export function AddButton({
 
     );
 }
+
+//How to Use
+
+//<CustomOutlinedButton  {PrimaryButton, OutlinedButton,CustomOutlinedButton}
+//   name="Lasitha" *Required
+//   color="primary" {primaryprimary,primaryLight,primaryDark,secondary,secondaryLight,secondaryDark,ternary,white,error,}
+//   isBold={true}
+//   isFixed={true}
+//   buttonSize="medium" {small,medium,large,long}
+//   fontSize="20px"
+//   isRounded={true}
+//   loading={false}
+//   isDisabled={false}
+// >
+// </CustomOutlinedButton>
+
+//<ImageUploadButton
+//   buttonSize="long" {small,medium,large,long}
+//   fontSize="20px"
+//   loading={false}
+//   isDisabled={false}
+// >
+// </ImageUploadButton>
+
+//<AddButton
+//   name="Add"
+//   color="primary" {primaryprimary,primaryLight,primaryDark,secondary,secondaryLight,secondaryDark,ternary,white,error,}
+//   buttonSize="medium" {small,medium,large,long}
+//   fontSize="20px"
+//   loading={false}
+//   isFixed={true}
+//   isRounded={true}
+//   isDisabled={false}
+//>
+//</AddButton>
+
+//<AppyButton
+//   loading={false}
+//   isDisabled={false}
+//>
+//</AppyButton>
+

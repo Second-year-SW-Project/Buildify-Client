@@ -22,3 +22,6 @@ export default function SetDate({ width, label }) {
     </LocalizationProvider>
   );
 }
+
+//How to use
+//<SetDate width={300} label="Select Date" />
