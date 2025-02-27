@@ -3,19 +3,13 @@ import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { InputField } from "./AtomicComponents/Inputs/Input";
 import UserTable from "./AtomicComponents/Table";
-import {
-  ImageUploadButton,
-  PrimaryButton,
-  OutlinedButton,
-  CustomOutlinedButton,
-  ApplyButton,
-  AddButton,
-} from "./AtomicComponents/Buttons/Buttons";
+import { ImageUploadButton, PrimaryButton, OutlinedButton, CustomOutlinedButton, ApplyButton, AddButton } from "./AtomicComponents/Buttons/Buttons";
 import { WidthFull } from "@mui/icons-material";
-import { SearchBar } from "./AtomicComponents/Inputs/Searchbar";
-import { TextField } from "@mui/material";
-import theme from "./AtomicComponents/theme";
+import { { SearchBar } } from "./AtomicComponents/Inputs/Searchbar";
 import SetDate from "./AtomicComponents/Inputs/date";
+import { Box } from "@mui/material";
+import Usercard from "./AtomicComponents/Cards/Usercard";
+
 import UserDashboard from "./UserdashboardFeature/userDashboard";
 
 //Route imports
@@ -28,6 +22,7 @@ import Settings from "./UserdashboardFeature/pages/Settings";
 
 function App() {
   // const [count, setCount] = useState(0);
+
   return (
     <Router>
       <>
@@ -80,8 +75,11 @@ function App() {
           {/* <Route path="/test" element={<Test />} /> */}
         </Routes>
       </>
+    
     </Router>
   );
+
+
 }
 
 export default App;

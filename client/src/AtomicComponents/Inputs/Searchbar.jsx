@@ -39,3 +39,7 @@ export function SearchBar({ placeholder, width, fontSize }) {
     />
   );
 };
+
+// How to use
+
+// <SearchBar placeholder="Search" width={300} fontSize="16px" />

@@ -1,57 +1,9 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Add from '@mui/icons-material/Add';
 
-// import theme from '../theme';
-
-// let theme = createTheme({
-// });
-// theme = createTheme({
-//     palette: {
-//         primarypurple: {
-//             main: '#961AFD',
-//             contrastText: '#FFFFFF',
-//         },
-//         primaryLight: {
-//             main: '#AE47E2',
-//             contrastText: '#FFFFFF',
-//         },
-//         primaryDark: {
-//             main: '#7B16AE',
-//             contrastText: '#FFFFFF',
-//         },
-//         secondary: {
-//             main: '#FFFFFF',
-//             contrastText: '#1C1919',
-//         },
-//         secondaryLight: {
-//             main: '#FFFFFF',
-//             contrastText: '#615E5E',
-//         },
-//         secondaryDark: {
-//             main: '#FFFFFF',
-//             contrastText: '#961AFD'
-//         },
-//         ternary: {
-//             main: '#1C1919',
-//             contrastText: '#FFFFFF',
-//         },
-//         white: {
-//             main: '#FFFFFF'
-//         },
-//         Red: {
-//             main: '#DF1E1E'
-//         },
-//         purple: {
-//             main: '#961AFD'
-//         }
-
-//     },
-
-// });
 
 //Button Size initilization
 const Button_Config = {
@@ -169,23 +121,21 @@ export function CustomOutlinedButton({
     const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    variant="customOutline"
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading…"
-                    sx={{
-                        fontWeight: isBold ? 700 : 400,
-                        fontSize: fontSize,
-                        padding: sizeConfig.padding,
-                        width: isFixed ? sizeConfig.fixedWidth : 'auto',
-                        border: `3px solid ${isDisabled ? '#bdbdbd' : '#961AFD'}`,
+            <BaseButton
+                variant="customOutline"
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                sx={{
+                    fontWeight: isBold ? 700 : 400,
+                    fontSize: fontSize,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                    border: `3px solid ${isDisabled ? '#bdbdbd' : '#961AFD'}`,
 
-                    }}>
-                    {name}
-                </BaseButton>
-            </ThemeProvider>
+                }}>
+                {name}
+            </BaseButton>
         </div>
     );
 }
@@ -197,23 +147,21 @@ export function ApplyButton({
 }) {
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    variant="contained"
-                    color="primaryDark"
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading…"
-                    sx={{
-                        fontWeight: 700,
-                        borderRadius: '30px',
-                        fontSize: '20px',
-                        padding: '8px 18px',
-                        width: '350px',
-                    }}>
-                    Apply
-                </BaseButton>
-            </ThemeProvider>
+            <BaseButton
+                variant="contained"
+                color="primaryDark"
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                sx={{
+                    fontWeight: 700,
+                    borderRadius: '30px',
+                    fontSize: '20px',
+                    padding: '8px 18px',
+                    width: '350px',
+                }}>
+                Apply
+            </BaseButton>
         </div>
     );
 }
@@ -301,33 +249,73 @@ export function AddButton({
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
     return (
         <div>
-            <ThemeProvider theme={theme}>
-                <BaseButton
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    color={color}
-                    disabled={isDisabled || loading}
-                    loading={loading}
-                    loadingIndicator="Loading..."
-                    startIcon={<Add />
-                    }
-                    style={{ borderRadius: borderRadius }}
-                    sx={{
-                        fontSize: fontSize,
-                        fontWeight: isBold ? 700 : 400,
-                        padding: sizeConfig.padding,
-                        width: isFixed ? sizeConfig.fixedWidth : 'auto',
-                        '& .MuiButton-startIcon': {
-                            marginRight: '8px',
-                        },
-                    }}
-                >
-                    {name}
-                </BaseButton>
-            </ThemeProvider>
+            <BaseButton
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                color={color}
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading..."
+                startIcon={<Add />
+                }
+                style={{ borderRadius: borderRadius }}
+                sx={{
+                    fontSize: fontSize,
+                    fontWeight: isBold ? 700 : 400,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                    '& .MuiButton-startIcon': {
+                        marginRight: '8px',
+                    },
+                }}
+            >
+                {name}
+            </BaseButton>
         </div>
 
     );
 }
+
+//How to Use
+
+//<CustomOutlinedButton  {PrimaryButton, OutlinedButton,CustomOutlinedButton}
+//   name="Lasitha" *Required
+//   color="primary" {primaryprimary,primaryLight,primaryDark,secondary,secondaryLight,secondaryDark,ternary,white,error,}
+//   isBold={true}
+//   isFixed={true}
+//   buttonSize="medium" {small,medium,large,long}
+//   fontSize="20px"
+//   isRounded={true}
+//   loading={false}
+//   isDisabled={false}
+// >
+// </CustomOutlinedButton>
+
+//<ImageUploadButton
+//   buttonSize="long" {small,medium,large,long}
+//   fontSize="20px"
+//   loading={false}
+//   isDisabled={false}
+// >
+// </ImageUploadButton>
+
+//<AddButton
+//   name="Add"
+//   color="primary" {primaryprimary,primaryLight,primaryDark,secondary,secondaryLight,secondaryDark,ternary,white,error,}
+//   buttonSize="medium" {small,medium,large,long}
+//   fontSize="20px"
+//   loading={false}
+//   isFixed={true}
+//   isRounded={true}
+//   isDisabled={false}
+//>
+//</AddButton>
+
+//<AppyButton
+//   loading={false}
+//   isDisabled={false}
+//>
+//</AppyButton>
+

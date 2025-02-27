@@ -7,13 +7,16 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  IconButton,
   Paper,
+  IconButton,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import theme from "./theme.jsx";
+import Iconset from "./Icons/Iconset.jsx";
 
-const UserTable = ({ columns, data }) => {
+
+
+export function UserTable({ columns, data, iconTypes = [], width, color }) {
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -24,18 +27,20 @@ const UserTable = ({ columns, data }) => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
+  }
 
   return (
-    <Paper>
+    <Paper style={{ width: width || "100%" }}>
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: "#f4f4f4" }}>
+            <TableRow style={{ backgroundColor: theme.palette.primary100.main }}>
               {columns.map((column) => (
-                <TableCell key={column.id}>{column.label}</TableCell>
+                <TableCell key={column.id} style={{ color: color || "black" }}>
+                  {column.label}
+                </TableCell>
               ))}
-              <TableCell>Actions</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -44,15 +49,19 @@ const UserTable = ({ columns, data }) => {
               .map((row, index) => (
                 <TableRow key={index}>
                   {columns.map((column) => (
-                    <TableCell key={column.id}>{row[column.id]}</TableCell>
+                    <TableCell
+                      key={column.id}
+                      style={{ color: color || "black" }}
+                    >
+                      {row[column.id]}
+                    </TableCell>
                   ))}
                   <TableCell>
-                    <IconButton aria-label="edit">
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton aria-label="more">
-                      <MoreVertIcon />
-                    </IconButton>
+                    {iconTypes.map((type, idx) => (
+                      <IconButton key={idx}>
+                        <Iconset type={type} />
+                      </IconButton>
+                    ))}
                   </TableCell>
                 </TableRow>
               ))}
@@ -68,36 +77,44 @@ const UserTable = ({ columns, data }) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-    </Paper>
+    </Paper >
   );
 };
 
 export default UserTable;
 
-// Usage
+// How to Use
 
-// const userColumns = [
-//     { id: "name", label: "Name" },
-//     { id: "phone", label: "Phone Number" },
-//     { id: "registrationDate", label: "Registration Date" },
-//     { id: "status", label: "Status" },
-//   ];
+  // const userColumns = [
+  //   { id: "userCard", label: "User" },
+  //   { id: "phone", label: "Phone Number" },
+  //   { id: "registrationDate", label: "Registration Date" },
+  //   { id: "status", label: "Status" },
+  // ];
 
-//   const userData = [
-//     {
-//       name: "Gethmi Rathnayaka",
-//       phone: "+46 8 123 456",
-//       registrationDate: "2024-11-07",
-//       status: "Banned",
-//     },
-//     {
-//       name: "Sahan Tharaka",
-//       phone: "+54 11 1234-5678",
-//       registrationDate: "2024-11-08",
-//       status: "Inactive",
-//     },
-//   ];
+  // const userData = [
+  //   {
+  //     userCard: <Usercard name='Gethmi Rathnyaka' email='gethmirathnayaka@gmai.com' src='yourprofile image' ></Usercard>,
+  //     phone: "+46 8 123 456",
+  //     registrationDate: "2024-11-07",
+  //     status: "Banned",
+  //   },
+  //   {
+  //     userCard: <Usercard name='Sahan Tharaka' email='sahantharaka@gmai.com' src='yourprofile image' ></Usercard>,
+  //     phone: "+54 11 1234-5678",
+  //     registrationDate: "2024-11-08",
+  //     status: "Inactive",
+  //   },
+  // ];
 
+  // const iconTypes = ["edit", "more"];
+  
 //   return (
-//     <UserTable columns={userColumns} data={userData} />
-//   )
+  //  <Box sx={{ width: '100%', maxWidth: 1000, borderRadius: "20px" }}>
+  //     <UserTable
+  //       columns={userColumns}
+  //       data={userData}
+  //       iconTypes={iconTypes}
+  //     />
+  //   </Box>
+//   );
