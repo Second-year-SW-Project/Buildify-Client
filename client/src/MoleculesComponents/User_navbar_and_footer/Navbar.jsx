@@ -21,7 +21,7 @@ export default function Navbar() {
       <div className="w-full max-w-8xl flex justify-between items-center pb-2">
         {/* Logo */}
         <div className="flex-shrink-0 mt-[16px] ml-[-10px] mr-[75px]">
-          <a href="#"><img src="./logo.png" alt="Logo" /></a>
+          <a href="#"><img src="./src/assets/images/Logos/logo-gray.png" alt="Logo" /></a>
         </div>
         {/* Search Bar */}
         <div className="w-full sm:mr-[130px] mt-[12px]  flex items-center ml-[50px]">

@@ -13,7 +13,7 @@ export default function Footer() {
 
 
         <div className="w-full md:w-1/4 mb-6 md:mb-0">
-          <a href="#"><img src="./logo.png"></img></a>
+          <a href="#"><img src="./src/assets/images/Logos/logo-gray.png"></img></a>
           <p className="mt-2 text-justify text-sm">
             Explore the ultimate PC customization experience! Our platform offers top-quality 
             components, real-time compatibility checks, secure payments, and personalized support 
