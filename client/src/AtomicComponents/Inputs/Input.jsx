@@ -10,25 +10,10 @@ import {
   RadioGroup,
   FormLabel,
   FormHelperText,
+  textFieldClasses,
 } from "@mui/material";
 import React from "react";
 import theme from "../theme";
-
-// const InputSizeConfig = {
-//   small: {
-//     fixedWidth: "370px",
-//   },
-//   medium: {
-//     width: "180px",
-//   },
-//   long: {
-//     width: "250px",
-//   },
-//   large: {
-//     width: "300px",
-//   },
-// };
-//const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
 
 export function InputField({
   label,
@@ -147,112 +132,59 @@ export function InputField({
   }
 }
 
-// const Input = ({
-//   type = "text",
-//   label,
-//   options = [],
-//   inputType = "textField", // 'textField', 'select', 'autocomplete', 'checkbox', 'radio', 'datePicker'
-//   error,
-//   helperText,
-//   variant = "standard", // 'standard', 'outlined', 'filled'
-//   size = "medium", // New prop for size
-//   ...props //multiline, rows, maxrows etc
-// }) => {
-//   const inputStyles = InputSizeConfig[size] || InputSizeConfig.medium; // Default to medium if size is not found
+// Usage:
 
-//   if (inputType === "select") {
-//     return (
-//       <TextField
-//         select
-//         label={label}
-//         error={!!error}
-//         helperText={helperText}
-//         sx={{ padding: inputStyles.padding, width: inputStyles.width }} // Apply styles
-//         {...props}
-//       >
-//         {options.map((option, index) => (
-//           <MenuItem key={index} value={option.value}>
-//             {option.label}
-//           </MenuItem>
-//         ))}
-//       </TextField>
-//     );
-//   }
+// for textField
+// <InputField label="First Name" type="text" />
+// fontsize 14px or 16px
+// variant - Standard, Outlined, Filled
+// error
+// width
+// helperText
 
-//   if (inputType === "autocomplete") {
-//     return (
-//       <Autocomplete
-//         options={options}
-//         getOptionLabel={(option) => option.label}
-//         renderInput={(params) => (
-//           <TextField
-//             {...params}
-//             label={label}
-//             error={!!error}
-//             helperText={helperText}
-//             sx={{ padding: inputStyles.padding, width: inputStyles.width }} // Apply styles
-//           />
-//         )}
-//         {...props}
-//       />
-//     );
-//   }
+// for select
+// <InputField
+//   label="Country"
+//   type="select"
+//   options={[
+//     { value: "usa", label: "USA" },
+//     { value: "canada", label: "Canada" },
+//   ]}
+// />
+// variant - Standard, Outlined, Filled
+// error
+// width
+// helperText
 
-//   if (inputType === "checkbox") {
-//     const checkboxId = `checkbox-${label.replace(/\s+/g, "-").toLowerCase()}`;
+// for autocomplete
+// <InputField
+//   label="Country"
+//   type="autocomplete"
+//   options={[
+//     { value: "usa", label: "USA" },
+//     { value: "canada", label: "Canada" },
+//   ]}
+// />
+// width
+// helperText
 
-//     return (
-//       <FormGroup>
-//         <FormControlLabel
-//           control={<Checkbox id={checkboxId} {...props} />} // Set the id for the checkbox
-//           label={label} // This should display the label next to the checkbox
-//         />
-//         {helperText && <FormHelperText>{helperText}</FormHelperText>}
-//       </FormGroup>
-//     );
-//   }
+// for checkbox
+// <InputField label="I agree" type="checkbox" />
+// width
+// helperText
+// size - small or large
+// color
 
-//   if (inputType === "radio") {
-//     return (
-//       <FormControl error={!!error}>
-//         <FormLabel>{label}</FormLabel>
-//         <RadioGroup {...props}>
-//           {options.map((option, index) => (
-//             <FormControlLabel
-//               key={index}
-//               control={<Radio value={option.value} />}
-//               label={option.label}
-//             />
-//           ))}
-//         </RadioGroup>
-//         {helperText && <FormHelperText>{helperText}</FormHelperText>}
-//       </FormControl>
-//     );
-//   }
-
-//   if (inputType === "datePicker") {
-//     return (
-//       <DatePickerAtom
-//         label={label}
-//         defaultValue={props.value} // Pass the value prop to DatePickerAtom
-//         onChange={(date) => {
-//           if (props.onChange) {
-//             props.onChange(date);
-//           }
-//         }}
-//       />
-//     );
-//   }
-
-//   return (
-//     <TextField
-//       type={type}
-//       label={label}
-//       error={!!error}
-//       helperText={helperText}
-//       variant={variant}
-//       sx={{ padding: inputStyles.padding, width: inputStyles.width }} // Apply styles
-//       {...props}
-//     />
-//   );
-// };
+// for radio
+// <InputField
+// label="Choose fruit" type="radio"
+// options={[
+//   { value: "apple", label: "Apple" },
+//   { value: "banana", label: "Banana" },
+// ]}
+// />
+// helperText
+// color
+// row
+// labelPlacement - end or bottom
+// size - small or large
