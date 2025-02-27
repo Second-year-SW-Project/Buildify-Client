@@ -10,8 +10,8 @@ import {
   Paper,
   IconButton,
 } from "@mui/material";
-import theme from "./theme.jsx";
-import Iconset from "./Icons/Iconset.jsx";
+import theme from "../AtomicComponents/theme.jsx";
+import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
 
 
 
