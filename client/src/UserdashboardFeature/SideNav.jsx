@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
+  AppBar,
   CssBaseline,
   Divider,
   Drawer,
@@ -13,7 +14,7 @@ import {
   ListItemText,
   Toolbar,
 } from "@mui/material";
-
+import DensityMediumSharpIcon from "@mui/icons-material/DensityMediumSharp";
 import {
   MoveToInbox as InboxIcon,
   Mail as MailIcon,
@@ -95,28 +96,17 @@ function SideNav(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      {/* <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Responsive drawer
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
+
+      <Box component="span" sx={{ padding: "8px" }}>
+        <DensityMediumSharpIcon
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{ mr: 2, display: { sm: "none" } }}
+        ></DensityMediumSharpIcon>
+      </Box>
+
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
