@@ -25,9 +25,14 @@ export function InputField({
   helperText,
   error,
   row,
+  rows,
   size,
   options = [],
   labelPlacement,
+  defaultValue,
+  padding,
+  fullWidth,
+  margin,
 }) {
   if (type === "text") {
     return (
@@ -35,15 +40,28 @@ export function InputField({
         type={type}
         label={label}
         fontSize={fontSize}
+        padding={padding}
+        margin={margin}
         color={color}
         variant={variant}
         width={width}
         helperText={helperText}
         error={!!error}
+        defaultValue={defaultValue}
+        fullWidth={fullWidth}
+        rows={rows}
+        style={{
+          margin: margin,
+        }}
+        InputLabelProps={variant === "standard" ? { shrink: true } : {}}
         sx={{
-          width: width,
+          width: fullWidth ? "100%" : width,
+          "@media (max-width:600px)": {
+            width: "80%",
+          },
           "& .MuiInputBase-input": {
-            fontSize: fontSize || "16px", // Use provided fontSize, or size-based fontSize, or default
+            fontSize: fontSize || "16px",
+            padding: padding, // Use provided fontSize, or size-based fontSize, or default
           },
           "& .MuiInputLabel-root": {
             fontSize: fontSize || "16px", // Making label slightly smaller than input text
@@ -185,6 +203,6 @@ export function InputField({
 // />
 // helperText
 // color
-// row
+// row - horizontal
 // labelPlacement - end or bottom
 // size - small or large

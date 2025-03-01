@@ -3,14 +3,19 @@ import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { InputField } from "./AtomicComponents/Inputs/Input";
 import UserTable from "./AtomicComponents/Table";
-import { ImageUploadButton, PrimaryButton, OutlinedButton, CustomOutlinedButton, ApplyButton, AddButton } from "./AtomicComponents/Buttons/Buttons";
+import {
+  ImageUploadButton,
+  PrimaryButton,
+  OutlinedButton,
+  CustomOutlinedButton,
+  ApplyButton,
+  AddButton,
+} from "./AtomicComponents/Buttons/Buttons";
 import { WidthFull } from "@mui/icons-material";
-import { { SearchBar } } from "./AtomicComponents/Inputs/Searchbar";
+import { SearchBar } from "./AtomicComponents/Inputs/Searchbar";
 import SetDate from "./AtomicComponents/Inputs/date";
 import { Box } from "@mui/material";
 import Usercard from "./AtomicComponents/Cards/Usercard";
-
-import UserDashboard from "./UserdashboardFeature/userDashboard";
 
 //Route imports
 import MyOrders from "./UserdashboardFeature/pages/MyOrders";
@@ -64,7 +69,6 @@ function App() {
           />
         </div> */}
         <Routes>
-          <Route path="/userDashboard" element={<UserDashboard />} />
           <Route path="/myOrders" element={<MyOrders />} />
           <Route path="/rmaSupport" element={<RMAsupport />} />
           <Route path="/orderHistory" element={<OrderHistory />} />
@@ -75,11 +79,8 @@ function App() {
           {/* <Route path="/test" element={<Test />} /> */}
         </Routes>
       </>
-    
     </Router>
   );
-
-
 }
 
 export default App;
