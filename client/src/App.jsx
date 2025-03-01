@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { InputField } from "./AtomicComponents/Inputs/Input";
-import UserTable from "./AtomicComponents/Table";
+import UserTable from "./MoleculesComponents/Table";
 import {
   ImageUploadButton,
   PrimaryButton,
