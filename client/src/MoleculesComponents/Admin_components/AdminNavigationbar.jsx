@@ -10,7 +10,7 @@ import theme from '../../AtomicComponents/theme';
 import Iconset from '../../AtomicComponents/Icons/Iconset';
 
 
-
+//This is the Admin navbar items to add or edit menu item 
 const NAVIGATION = [
     {
         kind: 'header',

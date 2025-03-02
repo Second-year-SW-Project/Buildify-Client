@@ -215,7 +215,7 @@ const theme = createTheme({
         },
       ],
     },
-
+    //This is the overrided styles for Admin Navbar menu items
     MuiListItemButton: {
       styleOverrides: {
         root: {
