@@ -153,7 +153,7 @@ const theme = createTheme({
       main: "rgba(255, 255, 255, 0.9)",
     },
     white: {
-      main: '#FFFFFF'
+      main: "#FFFFFF",
     },
     error: {
       main: "#D91E18",
@@ -168,32 +168,32 @@ const theme = createTheme({
       main: "#2C87C3",
     },
     primaryprimary: {
-      main: '#961AFD',
-      contrastText: '#FFFFFF',
+      main: "#961AFD",
+      contrastText: "#FFFFFF",
     },
     primaryLight: {
-      main: '#B966FD',
-      contrastText: '#FFFFFF',
+      main: "#B966FD",
+      contrastText: "#FFFFFF",
     },
     primaryDark: {
-      main: '#7B16AE',
-      contrastText: '#FFFFFF',
+      main: "#7B16AE",
+      contrastText: "#FFFFFF",
     },
     secondary: {
-      main: '#FFFFFF',
-      contrastText: '#1C1919',
+      main: "#FFFFFF",
+      contrastText: "#1C1919",
     },
     secondaryLight: {
-      main: '#FFFFFF',
-      contrastText: '#615E5E',
+      main: "#FFFFFF",
+      contrastText: "#615E5E",
     },
     secondaryDark: {
-      main: '#FFFFFF',
-      contrastText: '#961AFD'
+      main: "#FFFFFF",
+      contrastText: "#961AFD",
     },
     ternary: {
-      main: '#1C1919',
-      contrastText: '#FFFFFF',
+      main: "#1C1919",
+      contrastText: "#FFFFFF",
     },
   },
   components: {
