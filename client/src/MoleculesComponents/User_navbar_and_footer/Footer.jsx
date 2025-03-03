@@ -2,7 +2,7 @@ import { Facebook, Instagram, YouTube, Google, Twitter } from "@mui/icons-materi
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 ml-[-165px] py-4 pl-[52px]">
+    <footer className="bg-gray-900 text-gray-300 ml-[-165px] py-8 pl-[52px]">
       <div className="container mx-auto flex flex-wrap justify-between px-8">
 
 
