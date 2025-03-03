@@ -12,7 +12,7 @@ function App() {
     
       <div>
 
-        <Itempage></Itempage>
+        <Home></Home>
       
             
         
