@@ -33,6 +33,7 @@ export function InputField({
   padding,
   fullWidth,
   margin,
+  outlinedActive,
 }) {
   if (type === "text") {
     return (
@@ -53,7 +54,9 @@ export function InputField({
         style={{
           margin: margin,
         }}
-        InputLabelProps={variant === "standard" ? { shrink: true } : {}}
+        InputLabelProps={
+          variant === "standard" || outlinedActive ? { shrink: true } : {}
+        }
         sx={{
           width: fullWidth ? "100%" : width,
           "@media (max-width:600px)": {
@@ -87,7 +90,15 @@ export function InputField({
         variant={variant} // 'standard', 'outlined', 'filled'
         error={!!error}
         helperText={helperText}
-        sx={{ width: width }}
+        sx={{
+          width: width,
+          "& .MuiInputBase-root": {
+            "& fieldset": {
+              borderWidth: 2,
+              borderRadius: 2,
+            },
+          },
+        }}
       >
         {options.map((option, index) => (
           <MenuItem key={index} value={option.value}>

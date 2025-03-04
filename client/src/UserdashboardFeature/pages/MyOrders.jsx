@@ -1,8 +1,18 @@
 import React, { useState } from "react";
 import SideNav from "../SideNav";
-import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
+import Navbar from "../../MoleculesComponents/User_component/Navbar";
+import { Box } from "@mui/material";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 
 export default function MyOrders() {
+  const [value, setValue] = React.useState("1");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
   return (
     <div>
       <div className="flex flex-col min-h-screen">
@@ -14,7 +24,35 @@ export default function MyOrders() {
           <SideNav />
 
           <main className="flex-1 mt-36 p-6 pl-64">
-            <h1>orders orderersbbfvobowbn</h1>
+            <Box>
+              <Box sx={{ flexGrow: 1, position: "relative" }}>
+                <Box
+                  component={"main"}
+                  sx={{
+                    p: 3,
+                    pl: 7,
+                    width: "90%",
+                    boxShadow: 1,
+                    borderRadius: 2,
+                  }}
+                >
+                  <h1 className="text-3xl font-bold mt-5 mb-6">Your Orders</h1>
+
+                  <TabContext value={value}>
+                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                      <TabList onChange={handleChange} aria-label="Order tabs">
+                        <Tab label="All" value="1" />
+                        <Tab label="Builds" value="2" />
+                        <Tab label="Components" value="3" />
+                      </TabList>
+                    </Box>
+                    <TabPanel value="1">One</TabPanel>
+                    <TabPanel value="2">Twooo</TabPanel>
+                    <TabPanel value="3">three</TabPanel>
+                  </TabContext>
+                </Box>
+              </Box>
+            </Box>
           </main>
         </div>
       </div>

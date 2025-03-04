@@ -5,7 +5,7 @@ import { Divider, Paper } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { InputField } from "../../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../../AtomicComponents/Buttons/Buttons";
-import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
+import Navbar from "../../MoleculesComponents/User_component/Navbar";
 
 export default function UserProfile() {
   const [isEnabled, SetIsEnabled] = useState(false);
@@ -25,10 +25,18 @@ export default function UserProfile() {
           <SideNav />
 
           <main className="flex-1 mt-36 p-6 pl-64">
-            {/* <UserProfile /> */}
             <Box>
               <Box sx={{ flexGrow: 1, position: "relative" }}>
-                <Box component={"main"} sx={{ p: 3, pl: 6, width: "90%" }}>
+                <Box
+                  component={"main"}
+                  sx={{
+                    p: 3,
+                    pl: 7,
+                    width: "90%",
+                    boxShadow: 1,
+                    borderRadius: 2,
+                  }}
+                >
                   <h1 className="text-3xl font-bold mt-5 mb-6">Profile</h1>
                   <Divider></Divider>
                   <Box sx={{ pt: 3 }}>
@@ -83,13 +91,13 @@ export default function UserProfile() {
                           variant="standard"
                           label="Address"
                           defaultValue="Value"
-                          width="87%"
+                          width="86%"
                           rows={3}
                         />
                       </div>
                     </div>
                     <div>
-                      <Paper elevation={3} sx={{ padding: 3 }}>
+                      <Paper elevation={3} sx={{ padding: 3, width: "86%" }}>
                         <h2 className="text-2xl font-semibold text-gray-600">
                           Two Factor Authentication(2FA)
                         </h2>

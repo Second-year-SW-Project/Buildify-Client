@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SideNav from "../SideNav";
-import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
+import Navbar from "../../MoleculesComponents/User_component/Navbar";
+import { Box } from "@mui/material";
 
 export default function Settings() {
   return (
@@ -14,7 +15,22 @@ export default function Settings() {
           <SideNav />
 
           <main className="flex-1 mt-36 p-6 pl-64">
-            <h1>orders orderersbbfvobowbn</h1>
+            <Box>
+              <Box sx={{ flexGrow: 1, position: "relative" }}>
+                <Box
+                  component={"main"}
+                  sx={{
+                    p: 3,
+                    pl: 7,
+                    width: "90%",
+                    boxShadow: 1,
+                    borderRadius: 2,
+                  }}
+                >
+                  <h1>zTeshijfbj</h1>
+                </Box>
+              </Box>
+            </Box>
           </main>
         </div>
       </div>

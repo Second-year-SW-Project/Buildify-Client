@@ -14,43 +14,69 @@ export default function SideNav() {
     <aside className="fixed top-[175px] w-64 h-[calc(100vh-4rem)] bg-white border-r shadow-md p-4">
       <List>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/profile">
-            <ListItemIcon>
+          <ListItemButton component={Link} to="/profile" className="group">
+            <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
-            <ListItemText primary="Profile" />
+            <ListItemText
+              primary="Profile"
+              className="group-hover:text-purple-500"
+            />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/savedBuilds">
-            <ListItemIcon>
+          <ListItemButton component={Link} to="/savedBuilds" className="group">
+            <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
-            <ListItemText primary="Saved Builds" />
+            <ListItemText
+              primary="Saved Builds"
+              className="group-hover:text-purple-500"
+            />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/myOrders">
-            <ListItemIcon>
+          <ListItemButton component={Link} to="/myOrders" className="group">
+            <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
-            <ListItemText primary="My Orders" />
+            <ListItemText
+              primary="My Orders"
+              className="group-hover:text-purple-500"
+            />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/orderHistory">
-            <ListItemIcon>
+          <ListItemButton component={Link} to="/rmaSupport" className="group">
+            <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
-            <ListItemText primary="Order History" />
+            <ListItemText
+              primary="RMA Support"
+              className="group-hover:text-purple-500"
+            />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/settings">
-            <ListItemIcon>
+          <ListItemButton component={Link} to="/orderHistory" className="group">
+            <ListItemIcon className="group-hover:text-purple-500">
+              <MailIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Order History"
+              className="group-hover:text-purple-500"
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/settings" className="group">
+            <ListItemIcon className="group-hover:text-purple-500">
               <InboxIcon />
             </ListItemIcon>
-            <ListItemText primary="Settings" />
+            <ListItemText
+              primary="Settings"
+              className="group-hover:text-purple-500"
+            />
           </ListItemButton>
         </ListItem>
       </List>
