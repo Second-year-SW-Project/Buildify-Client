@@ -32,7 +32,7 @@ export default function Itempage() {
 
         
       
-        <div className='mt-'>
+        <div className=''>
           
           
           <Itemimage images={[
@@ -45,7 +45,7 @@ export default function Itempage() {
 
         </div>
 
-        <div className="mt-[-560px] ml-[570px]">
+        <div className="mt-[-560px] ml-[550px]">
           <Itemspecs></Itemspecs>
 
         </div>

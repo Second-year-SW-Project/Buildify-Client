@@ -71,7 +71,7 @@ export default function Navbar() {
           />
 
 
-          <button className=" mt-10 mr-[270px] -ml-[96px]   transform -translate-y-1/2 bg-purple-600 px-6 py-2 rounded-[30px] text-white hover:bg-blue-500">
+          <button className=" mt-10 mr-[270px] -ml-[100px]   transform -translate-y-1/2 bg-purple-600 px-6 py-2 rounded-[30px] text-white hover:bg-blue-500">
             Search
           </button>
 

@@ -3,12 +3,12 @@ import React from 'react';
 export default function Itemspecs() {
   return (
     <div className="flex justify-end w-full ">
-      <div className="w-full md:mr-[50px] lg:w-1/2 xl:w-4/5  md:p-6 lg:p-8 bg-white shadow-lg rounded-lg text-gray-900">
-        <h2 className="pb-3 text-base md:text-lg lg:text-2xl font-semibold">
+      <div className="w-full md:mr-[50px] lg:w-1/2 xl:w-4/5  md:p-6 lg:p-8  text-gray-900">
+        <h2 className="pb-3 text-base md:text-lg lg:text-3xl font-semibold">
           Intel® Core Ultra 9 Processor 285K
         </h2>
 
-        <div className="mt-2 space-y-2 text-xs md:text-sm lg:text-base">
+        <div className="mt-2 space-y-4 text-xs md:text-sm lg:text-base">
           <p><span className="font-bold">Brand:</span> INTEL</p>
           <p><span className="font-bold">Cores:</span> 24</p>
           <p><span className="font-bold">Threads:</span> 24</p>
@@ -17,11 +17,11 @@ export default function Itemspecs() {
           <p><span className="font-bold">Warranty:</span> 03 Years</p>
         </div>
 
-        <div className="mt-4 text-lg md:text-xl lg:text-2xl font-bold">
+        <div className="mt-8 text-lg md:text-xl lg:text-2xl font-bold">
           156,000 LKR
         </div>
 
-        <div className="mt-3">
+        <div className="mt-5">
           <span className="inline-block bg-blue-600 text-white text-xs md:text-sm font-semibold px-3 py-1 rounded-full">
             In stock
           </span>
