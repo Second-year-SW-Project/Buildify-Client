@@ -87,7 +87,7 @@ const Verify = () => {
     };
 
     return (
-        <Box display="flex" height="100vh" alignItems="center" justifyContent="center" sx={{ backgroundColor: '#4A2D73', marginLeft: '150px' }} width="125%">
+        <Box display="flex" height="100vh" alignItems="center" justifyContent="center" sx={{ backgroundColor: '#4A2D73', marginLeft: '150px' }} width="80%">
             <Box display="flex" width="80%">
                 {/* Left Side Image */}
                 <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center" p={4}>
