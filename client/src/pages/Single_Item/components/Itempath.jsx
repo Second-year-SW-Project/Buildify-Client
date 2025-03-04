@@ -18,3 +18,14 @@ export default function Breadcrumbs({ paths }) {
     </nav>
   );
 }
+
+
+
+
+//      <Itempath 
+//            paths={[
+ //             { label: "Home", href: "/" },
+ //             { label: "Components", href: "/components" },
+ //             { label: "Processors", href: "/components/processors" },
+ //             { label: "Intel Core Ultra 9 Processor 285K" }
+ //           ]}    />

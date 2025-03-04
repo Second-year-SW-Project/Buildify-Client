@@ -57,5 +57,7 @@ export default function Itemcardforpc({ src="/graph1.png" , stock="In Stock" , i
   
   
   //how to useee--
-  
+  //given prop details are defaults...if you want to change.here is the way -->
+
+
   //<Test src=yourpath stock=in or out stock itemname=.....  price=....></Test>

@@ -1,6 +1,5 @@
 
 import React from 'react'
-//import '../../../../pages/About'
 import { Link } from 'react-router'
 
 
@@ -52,5 +51,9 @@ export default function Itemcard({ src="/graph1.png" , stock="In Stock" , itemna
   
   
   //how to useee--
-  
-  //<Test src=yourpath stock=in or out stock itemname=.....  price=....></Test>
+    //given prop details are defaults...if you want to change.here is the way -->
+
+
+
+
+  //<Test src=yourpath   stock=in or out stock   itemname=.....    price=....></Test>

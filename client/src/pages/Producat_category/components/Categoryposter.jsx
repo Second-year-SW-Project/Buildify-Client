@@ -13,3 +13,11 @@ const Categoryposter = ({ categoryName = 'GRAPHIC CARDS', imageSrc='./categorybg
 };
 
 export default Categoryposter;
+
+
+//how to use
+//default text is graphic card and default image is categorybg.jpg in public folder//default means there are no props called in your component..
+
+
+//if you want to pass props-->
+//  <Categoryposter categoryName = 'processors'  imagesrc = './processor.jpg' />

@@ -5,13 +5,14 @@ import Footer from './MoleculesComponents/User_navbar_and_footer/Footer';
 import Test from './pages/Test';
 import Itempage from './pages/Single_Item/Itempage';
 import Home from './pages/Home/Home';
+import Productcategorypage from './pages/Producat_category/Productcategorypage';
 
 
 function App() {
   return (
     
       <div>
-        <Home></Home>
+        <Productcategorypage></Productcategorypage>
 
         
 
