@@ -43,12 +43,13 @@ export function PrimaryButton({
     buttonSize,
     fontSize,
     isRounded,
+    onClick,
     loading = false,
     isDisabled = false,
-    onClick,
 }) {
     const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
+
     return (
         <div>
             <BaseButton
