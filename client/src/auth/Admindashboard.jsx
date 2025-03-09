@@ -11,6 +11,9 @@ const Admindashboard = () => {
   const handleuser = () =>{
     navigate('/auth/usermanage');
   }
+  const handleback = () =>{
+    navigate('/');
+  }
 
   return (
     <div>
@@ -25,6 +28,9 @@ const Admindashboard = () => {
           </li>
           <li>
             <Button onClick={handlec}>Handle Complaints</Button> {/* Corrected the event handler */}
+          </li>
+          <li>
+            <Button onClick={handleback}>Back</Button>
           </li>
         </ul>
       </nav>

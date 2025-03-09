@@ -5,19 +5,27 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const UserComplaints = () => {
   const [complaints, setComplaints] = useState([]);
-  const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem('userId') || null;
+  const token = localStorage.getItem('token'); // Retrieve token for auth
 
   useEffect(() => {
     const fetchComplaints = async () => {
+      if (!userId) return; // Prevent API call if no userId exists
+
       try {
-        const response = await axios.get(`http://localhost:8000/api/complaints/user/${userId}`);
+        const response = await axios.get(`http://localhost:8000/api/complaints/user/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach token for authentication
+          },
+        });
         setComplaints(response.data);
       } catch (err) {
         alert('Failed to fetch complaints');
       }
     };
-    if (userId) fetchComplaints();
-  }, [userId]);
+
+    fetchComplaints();
+  }, [userId, token]);
 
   // Create a custom theme with the purple color #641A90
   const theme = createTheme({
@@ -74,11 +82,11 @@ const UserComplaints = () => {
                   {complaint.description}
                 </Typography>
                 <Typography variant="body2" sx={{ marginTop: '1rem' }}>
-                  Status: {complaint.status}
+                  <strong>Status:</strong> {complaint.status}
                 </Typography>
                 {complaint.response && (
                   <Typography variant="body2" sx={{ marginTop: '1rem', color: '#641A90' }}>
-                    Admin Response: {complaint.response}
+                    <strong>Admin Response:</strong> {complaint.response}
                   </Typography>
                 )}
               </Paper>

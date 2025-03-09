@@ -15,7 +15,7 @@ import Verify from "./auth/Verify.jsx";
 import Login from "./auth/Login.jsx";
 import Forgetpassword from "./auth/Forgetpassword.jsx";
 import ResetPassword from "./auth/ResetPassword.jsx";
-import GoogleCallbackPage from "./auth/GoogleCallBack.jsx";
+import OAuthCallback from "./auth/OAuthCallback.jsx";
 import Dashboard from "./auth/Dashboard.jsx";
 import Admindashboard from "./auth/admindashboard.jsx";
 import UserComplaints from "./auth/userComplaints.jsx";
@@ -41,6 +41,8 @@ function App() {
         <Route path="/auth/admincomplaint" element={<AdminComplaints/>} />
         <Route path="/auth/complaintsubmit" element={<ComplaintSubmit/>} />
         <Route path="/auth/usermanage" element={<Usermanage/>} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
+
         
       </Routes>
     </Router>

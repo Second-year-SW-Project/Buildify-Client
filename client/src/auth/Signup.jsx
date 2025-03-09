@@ -54,6 +54,8 @@ const Signup = () => {
     const handleGoogleLogin = async () => {
         // Redirect to backend Google OAuth
         window.location.href = "http://localhost:8000/auth/google";
+       
+
         
     };
     
