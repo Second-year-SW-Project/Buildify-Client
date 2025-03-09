@@ -23,8 +23,7 @@ export default function Itempage() {
           <Itempath 
             paths={[
               { label: "Home", href: "/" },
-              { label: "Components", href: "/components" },
-              { label: "Processors", href: "/components/processors" },
+              { label: "Processors", href: "/productcategorypage" },
               { label: "Intel Core Ultra 9 Processor 285K" }
             ]}    />
         </div>
@@ -36,8 +35,8 @@ export default function Itempage() {
           
           
           <Itemimage images={[
-            "./proc.png",
-            "./sub1.png"
+            "../../../public/proc.png",
+            "../../../public/sub1.png"
 
           ]}/>
 

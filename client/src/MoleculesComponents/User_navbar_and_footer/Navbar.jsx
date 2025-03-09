@@ -54,7 +54,7 @@ export default function Navbar() {
 
         <div className="flex-shrink-0 mt-[16px] ml-[-10px] mr-[75px]">
 
-          <Link to="/home"><img src="./src/assets/images/Logos/logo-gray.png" alt="Logo" /></Link>
+          <Link to="/home"><img src="../src/assets/images/Logos/logo-gray.png" alt="Logo" /></Link>
 
         </div>
 
