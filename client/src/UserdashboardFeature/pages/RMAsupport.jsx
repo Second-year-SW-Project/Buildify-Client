@@ -79,6 +79,14 @@ export default function RMAsupport() {
                             value: "incorrectspecifications",
                             label: "Incorrect Specifications",
                           },
+                          {
+                            value: "support",
+                            label: "Support Request",
+                          },
+                          {
+                            value: "other",
+                            label: "Other",
+                          },
                         ]}
                       ></InputField>
                     </div>
