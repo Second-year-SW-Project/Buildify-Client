@@ -215,47 +215,6 @@ const theme = createTheme({
         },
       ],
     },
-    //This is the overrided styles for Admin Navbar menu items
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          transition: "all 0.3s ease-in-out",
-          "&:hover": {
-            backgroundColor: "#F4E6FF", // Hover background color
-            borderRadius: "0px",
-          },
-          "&.Mui-selected": {
-            backgroundColor: "#E9E8E8", // Selected menu background
-            borderLeft: "5px solid #961AFD",
-            borderRadius: "0px",
-            color: "#961AFD", // Title color when selected
-
-            "& .MuiListItemIcon-root": {
-              color: "#961AFD", // Icon color when selected
-            },
-            "& .MuiTypography-root": {
-              color: "#961AFD", // Title color when selected
-            },
-            "&:hover": {
-              backgroundColor: "#F4E6FF", // Hover color on selected item
-            },
-          },
-        },
-      },
-    },
-  },
-  cssVariables: {
-    colorSchemeSelector: 'class',
-  },
-  // colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
   },
 });
 
