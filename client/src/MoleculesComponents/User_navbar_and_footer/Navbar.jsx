@@ -57,6 +57,7 @@ export default function Navbar() {
           <Link to="/home"><img src="../src/assets/images/Logos/logo-gray.png" alt="Logo" /></Link>
 
         </div>
+        
 
 
 
