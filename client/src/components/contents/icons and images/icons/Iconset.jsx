@@ -26,7 +26,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 
-export default function Iconset({ type = 'notification', fontSize = '30px', color = "primary" }) {
+export default function Iconset({ type='notification', fontSize='30px', color = "primary" }) {
     const renderIcon = () => {
         switch (type) {
             case 'edit': return <EditIcon color={color} sx={{ fontSize }} />;
@@ -62,8 +62,6 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
     return <span>{renderIcon()}</span>;
 }
 
-//How to Use
 
-//import Iconset from "./AtomicComponents/Icons/Iconset";
-//<Iconset type="edit" fontSize="30px" color="primary" /> //font size should be in pixels
 
+//font size should be in pixels

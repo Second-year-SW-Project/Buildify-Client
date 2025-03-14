@@ -1,0 +1,89 @@
+
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+
+
+
+#itempath{
+
+    
+    padding-left: 2cm;
+    padding-right:cm ;
+    padding-top:1cm ;
+    padding-bottom: ;
+    margin-top: ;
+    margin-bottom: ;
+    margin-left: ;
+    margin-right: 21cm;
+    background-color: rgb(226, 188, 188);
+    
+
+}
+
+#pathonly{
+    word-spacing: 1px;
+    color: rgb(96, 97, 99);
+}
+#realitem{
+    font-size: 17px;
+    color: black;
+    padding-left: cm;
+    padding-right:cm ;
+    padding-top:cm ;
+    padding-bottom: ;
+    margin-top:-0.56cm ;
+    margin-bottom: ;
+    margin-left: 7.2cm;
+    margin-right: -1cm;
+    font-weight: 500;
+
+}
+
+.mainimagecontent{
+    
+    background-color: rgb(255, 255, 255);
+    padding-left: cm;
+    padding-right:cm ;
+    padding-top:cm ;
+    padding-bottom: ;
+    margin-top:1cm ;
+    margin-bottom: 12px;
+    margin-left: 6cm;
+    margin-right: 22cm;
+}
+
+.mainimage{
+    width: 500px;
+    height: 460px;
+    border: rgba(0, 0, 0, 11%) solid;
+    border-radius: 6px;
+    border-width: 3px;
+
+}
+
+.sub1{
+    height: 87px;
+    width: 91px;
+    margin-top: ;
+    margin-left:345px ;
+    border: 3px solid;
+    border-radius: 12px;
+    border-color: rgba(0, 0, 0, 61%);
+    
+    
+
+}
+.sub2{
+    height: 87px;
+    width: 91px;
+    margin-top: -86px;
+    margin-left: 450px;
+    border: 3px solid;
+    border-radius: 12px;
+    border-color: rgba(226, 210, 210, 100%);
+    
+
+}
+
+
+

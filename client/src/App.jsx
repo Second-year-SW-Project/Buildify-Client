@@ -1,28 +1,41 @@
-import React from "react";
-import { useState } from "react";
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import { InputField } from "./AtomicComponents/Inputs/Input";
-import UserTable from "./MoleculesComponents/Table";
-import { ImageUploadButton, PrimaryButton, OutlinedButton, CustomOutlinedButton, ApplyButton, AddButton } from "./AtomicComponents/Buttons/Buttons";
-import { WidthFull } from "@mui/icons-material";
-import { SearchBar } from "./AtomicComponents/Inputs/Searchbar";
-import SetDate from "./AtomicComponents/Inputs/date";
-import { Box } from "@mui/material";
-import Usercard from "./AtomicComponents/Cards/Usercard";
+import './App.css';
+import { useState } from 'react';
+import Navbar from './MoleculesComponents/User_navbar_and_footer/Navbar';
+import Footer from './MoleculesComponents/User_navbar_and_footer/Footer';
+import Test from './pages/Test';
+import Home from './pages/Home/Home';
+import Productcategorypage from './pages/Producat_category/Productcategorypage';
+import Itempage from './pages/Single_Item/Itempage';
 
 
 function App() {
-  // const [count, setCount] = useState(0);
-
   return (
-    <Router>
-      <Routes>
+    
+      <div>
+        <Home></Home>
 
-      </Routes>
-    </Router>
+        
+
+      
+            
+        
+        
+      
+        
+
+
+      
+      </div>
+    
+    
+    
+    
+    
+    
   );
-
-
 }
 
-export default App;
+
+
+
+export default App
