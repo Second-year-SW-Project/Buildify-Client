@@ -126,7 +126,7 @@ const Usermanage = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
+      <div style={{padding: "30px"}}>
         <h2 style={{paddingLeft: "20px"}}>User Management</h2>
         <div style={{ padding: "10px", height: "25%", display: "flex", flexDirection: "row", alignItems: "center", gap: "20px" }}>
   <TextField
