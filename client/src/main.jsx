@@ -12,6 +12,7 @@ import Layout from "./Admin/Layout.jsx";
 import ManageProducts from "./Admin/ManageProducts.jsx";
 import CreateProducts from "./Admin/CreateProducts.jsx";
 import Usermanage from "./Admin/Usermanage.jsx";
+import Complaints from "./Admin/Complaints.jsx";
 
 
 const router = createBrowserRouter([
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
           {
             path: "/usermanage",
             Component: Usermanage,
+          },
+          {
+            path: "/feedbackmanage/complaints",
+            Component: Complaints,
           },
           
         ],
