@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Box, Paper, Divider, Typography, TextField, Button, Grid } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useSelector, useDispatch } from "react-redux";
-import { setAuthUser } from "../Store/authSlice";
+import { setAuthUser } from "../Store/authSlice";  // Import the action to set user in Redux
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";  // Import sonner for notifications
+import { useNavigate } from "react-router-dom";  // Import the navigate hook for routing
 
 export default function AdminProfile() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user); // Get user data from Redux
 
   const [editable, setEditable] = useState(false); // Controls whether the fields are editable
@@ -55,9 +56,20 @@ export default function AdminProfile() {
     setError(null);
 
     try {
-      const updatedUser = await axios.put("http://localhost:8000/api/v1/users/update-profile", formData,{ withCredentials: true }); // Send updated data to backend
-      dispatch(setAuthUser(updatedUser.data)); // Update user in Redux store
-      alert("Profile updated successfully!");
+      // Send updated user data to the backend API
+      const response = await axios.post("http://localhost:8000/api/v1/users/update-profile", formData, { withCredentials: true });
+      
+      // Get the updated user data from the response
+      const updatedUser = response.data.data.user;
+
+      // Dispatch the updated user data to Redux store
+      dispatch(setAuthUser(updatedUser));
+
+      // Show success notification
+      toast.success("Profile updated successfully");
+
+      // Optionally, navigate to another page after successful update (e.g., a dashboard)
+      navigate("/admin/profile");
     } catch (error) {
       console.error("Error updating profile", error);
       setError("An error occurred while updating the profile.");
@@ -147,7 +159,8 @@ export default function AdminProfile() {
           <Box sx={{ mt: 5 }}>
             <Button
               variant="contained"
-              sx={{ mt: 2, backgroundColor: "#6a1b9a", color: "white", "&:hover": { backgroundColor: "#4a148c" } }}
+              sx={{ mt: 2, backgroundColor: "#6a1b9a",padding: "6px 12px",
+                margin: "6px 12px", color: "white", "&:hover": { backgroundColor: "#4a148c" } }}
               onClick={toggleEditable}
             >
               {editable ? "Cancel" : "Edit Profile"}
@@ -158,17 +171,18 @@ export default function AdminProfile() {
                 variant="contained"
                 type="submit"
                 sx={{
-                  mt: 3,
+                  mt: 2,
                   backgroundColor: "#6a1b9a",
                   color: "white",
                   "&:hover": { backgroundColor: "#4a148c" },
                   width: "10%",
                   padding: "6px 12px",
+                  margin: "6px 12px",
                   fontSize: "14px",
                   maxWidth: "100%",
                 }}
               >
-                Save Changes
+                Save
               </Button>
             )}
           </Box>
@@ -179,4 +193,4 @@ export default function AdminProfile() {
       </Paper>
     </Box>
   );
-}
+} 

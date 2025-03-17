@@ -6,6 +6,9 @@ import { createSlice } from "@reduxjs/toolkit";
  * @property {string} name - The user's username
  * @property {string} email - The user's email
  * @property {boolean} isVerified - Whether the user is verified
+ * @property {string} firstName - The user's first name
+ * @property {string} lastName - The user's last name
+ * @property {string} address - The user's address
  */
 
 /**
@@ -13,22 +16,30 @@ import { createSlice } from "@reduxjs/toolkit";
  * @property {User|null} user - The current user or null if not authenticated
  */
 
-// Define the initial state with a user object set to null initially
+// Initial state
 const initialState = {
     user: null,
 };
 
+// Create the auth slice
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        // Action to set the user data
         setAuthUser: (state, action) => {
-            state.user = action.payload; // Set the user data to the state
+            state.user = action.payload;
+        },
+        updateProfilePic: (state, action) => {
+            if (state.user) {
+                state.user.profilePic = action.payload; // Update profile picture
+            }
+        },
+        logout: (state) => {
+            state.user = null;
         },
     },
 });
 
-// Export the action and reducer
-export const { setAuthUser } = authSlice.actions;
+// Export actions and reducer
+export const { setAuthUser, updateProfilePic, logout } = authSlice.actions;
 export default authSlice.reducer;
