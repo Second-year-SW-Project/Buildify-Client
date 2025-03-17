@@ -24,28 +24,28 @@ import ForgetPassword from "./Login/Forgetpassword.jsx";
 // Define the router configuration
 const router = createBrowserRouter([
   {
-    path: "/",
+  
     Component: App,
     children: [
       {
         path: "/auth/signup",
-        Component: Signup, // Add Signup route here
+        Component: Signup, 
       },
       {
         path: "/auth/login",
-        Component: Login, // Add Signup route here
+        Component: Login, 
       },
       {
         path: "/auth/verify",
-        Component: Verify, // Add Signup route here
+        Component: Verify, 
       },
       {
         path: "/auth/resetpassword",
-        Component: ResetPassword, // Add Signup route here
+        Component: ResetPassword, 
       },
       {
         path: "/auth/forgetpassword",
-        Component: ForgetPassword, // Add Signup route here
+        Component: ForgetPassword, 
       },
       {
         path: "/",

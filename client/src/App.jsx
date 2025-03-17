@@ -9,6 +9,7 @@ const NAVIGATION = [
     title: 'Main',
   },
   {
+    segment: 'dashboard',
     title: 'Dashboard',
     icon: <Iconset type="dashboard" />,
   },
