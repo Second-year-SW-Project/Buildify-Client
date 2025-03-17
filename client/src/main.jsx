@@ -1,8 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";  // Import Provider
+import store from "./Store/store";  // Import your Redux store
 import "./index.css";
 import App from "./App.jsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./AtomicComponents/theme.jsx";
 import Dashboard from "./Admin/Dashboard.jsx";
@@ -13,18 +15,19 @@ import ManageProducts from "./Admin/ManageProducts.jsx";
 import CreateProducts from "./Admin/CreateProducts.jsx";
 import Usermanage from "./Admin/Usermanage.jsx";
 import Complaints from "./Admin/Complaints.jsx";
-
+import Login from "./Login/Login.jsx";
 
 const router = createBrowserRouter([
   {
     Component: App,
     children: [
+      
       {
-        path: '/',
+        path: "/",
         Component: Layout,
         children: [
           {
-            path: "/",
+            path: "/dashboard",
             Component: Dashboard,
           },
           {
@@ -59,18 +62,18 @@ const router = createBrowserRouter([
             path: "/feedbackmanage/complaints",
             Component: Complaints,
           },
-          
         ],
       },
     ],
   },
-],
-);
+]);
 
 createRoot(document.getElementById("root")).render(
-  <ThemeProvider theme={theme}>
-    <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>
-  </ThemeProvider>
+  <Provider store={store}> {/* Wrap everything with Provider */}
+    <ThemeProvider theme={theme}>
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>
+    </ThemeProvider>
+  </Provider>
 );

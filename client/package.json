@@ -16,11 +16,16 @@
     "@mui/lab": "^6.0.0-beta.28",
     "@mui/material": "^6.4.4",
     "@mui/x-date-pickers": "^7.27.0",
+    "@reduxjs/toolkit": "^2.6.1",
     "@toolpad/core": "^0.8.1",
+    "axios": "^1.8.3",
     "dayjs": "^1.11.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.2.0"
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^7.2.0",
+    "redux-persist": "^6.0.0",
+    "sonner": "^2.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
