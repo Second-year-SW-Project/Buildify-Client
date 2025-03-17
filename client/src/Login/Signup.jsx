@@ -61,7 +61,7 @@ const Signup = () => {
     return (
         <Box display="flex" height="100vh" alignItems="center" justifyContent="center" sx={{ backgroundColor: "#4A2D73" ,
             marginLeft: "150px"
-        }} width="125%">
+        }} width="80%">
             <Box display="flex" width="80%" maxWidth={1200}>
                 {/* Left Side Image */}
                 <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center" p={4}>
@@ -76,7 +76,7 @@ const Signup = () => {
                 </Box>
                 
                 {/* Right Side Signup Card */}
-                <Card sx={{ padding: 4, width: 300, borderRadius: 3, backgroundColor: "#23103C", color: "white" }}>
+                <Card sx={{ padding: 4, width: 400, borderRadius: 3, backgroundColor: "#23103C", color: "white" }}>
                 <img
         src={logo}  // Use the imported logo
         alt="Logo"
