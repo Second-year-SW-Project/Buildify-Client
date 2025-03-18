@@ -1,133 +1,164 @@
-import { Button, TextField, CircularProgress, Box, Card, Typography } from "@mui/material";
+import { Button, TextField, CircularProgress, Box, Card, Typography, Divider } from "@mui/material";
 import React, { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
 import { setAuthUser } from "../store/authSlice";
-import sideImage from "../assets/PC.webp"; // Ensure you have an appropriate image file
+import sideImage from "../assets/PC.webp";
 import logo from '../assets/logo.png';
+
 const ResetPassword = () => {
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
 
   const handleSubmit = async () => {
-    if (!otp || !email || !password || !passwordConfirm) return;
-    setLoading(true);
+    if (!otp || !email || !password || !passwordConfirm) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    
+    if (password !== passwordConfirm) {
+      toast.error("Passwords do not match");
+      return;
+    }
 
+    setLoading(true);
     try {
       const data = { email, otp, password, passwordConfirm };
-      const response = await axios.post("http://localhost:8000/api/v1/users/reset-password", data, {
-        withCredentials: true
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/users/reset-password", 
+        data, 
+        { withCredentials: true }
+      );
 
       dispatch(setAuthUser(response.data.data.user));
       toast.success("Password reset successfully");
       navigate('/auth/login');
-
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
-
+      toast.error(error.response?.data?.message || "Password reset failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box display="flex" height="100vh" alignItems="center" justifyContent="center" sx={{ backgroundColor: '#4A2D73', marginLeft: '150px' }} width="80%">
-      <Box display="flex" width="80%" maxWidth={1200}>
-        {/* Left Side Image */}
-        <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center" p={4}>
-          <img src={sideImage} alt="PC Builder" style={{ width: '100%', maxWidth: 400, marginTop: 20 }} />
+    <Box className="flex h-screen bg-[#4A2D73] items-center justify-center p-4">
+      <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
+        {/* Left Section */}
+        <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
+          <Typography variant="h3" className="!text-white !font-bold !mb-4 !text-4xl">
+            PC BUILDER
+          </Typography>
+          <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
+            Get compatible recommendations
+            <br /> Pick your ideal components
+          </Typography>
+          <img 
+            src={sideImage} 
+            alt="PC" 
+            className="w-full max-w-[420px] !mt-4" 
+          />
         </Box>
 
-        {/* Right Side Reset Password Card */}
-        <Card sx={{ padding: 4, width: 400, borderRadius: 3, backgroundColor: '#23103C', color: 'white', textAlign: 'center', boxShadow: 3 }}>
-          <img
-                                      src={logo}  // Use the imported logo
-                                      alt="Logo"
-                                      style={{
-                                        width: '120px',  // Adjust logo width
-                                        height: '60px',  // Maintain aspect ratio
-                                        marginRight: '16px',  // Add space between logo and text
-                                      }}
-                                    />
-          <Typography variant="h5" fontWeight={600} marginBottom={2}>
-            Reset Password
-          </Typography>
-          <TextField 
-    type="text"  // Changed from 'number' to 'text' to remove arrows
-    label="Enter OTP"
-    variant="outlined"
-    fullWidth
-    value={otp}
-    onChange={(e) => setOtp(e.target.value)}
-    sx={{ 
-        marginBottom: 2, 
-        backgroundColor: '#f0f0f0',  // Light grey background
-        borderRadius: '5px'
-    }}
-    inputProps={{ 
-        inputMode: 'numeric', // Allows numeric input without number arrows
-        pattern: '[0-9]*' 
-    }}
-/>
+        {/* Vertical Divider */}
+        <Divider 
+          orientation="vertical" 
+          flexItem 
+          className="!bg-white/30 !mx-6 !hidden md:!block" 
+        />
 
-<TextField 
-    type="password"
-    label="Enter New Password"
-    variant="outlined"
-    fullWidth
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    sx={{ 
-        marginBottom: 2, 
-        backgroundColor: '#f0f0f0', // Light grey background
-        borderRadius: '5px'
-    }}
-/>
-
-<TextField 
-    type="password"
-    label="Confirm New Password"
-    variant="outlined"
-    fullWidth
-    value={passwordConfirm}
-    onChange={(e) => setPasswordConfirm(e.target.value)}
-    sx={{ 
-        marginBottom: 2, 
-        backgroundColor: '#f0f0f0', // Light grey background
-        borderRadius: '5px'
-    }}
-/>
-
-          <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ width: '100%' }}>
-            {!loading ? (
-              <Box display="flex" justifyContent="space-between" sx={{ width: '100%', maxWidth: '300px', marginBottom: 2 }}>
-                <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ width: '100%' }}>
-                  Change Password
-                </Button>
-              </Box>
-            ) : (
-              <Button variant="contained" disabled sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                <CircularProgress size={24} sx={{ marginRight: 1 }} /> Loading...
-              </Button>
-            )}
-
-            <Button variant="text" color="secondary" component={Link} to="/auth/forgetpassword" sx={{ marginTop: 1 }}>
-              Go Back
-            </Button>
+        {/* Right Section */}
+        <Box className="flex-1 !min-w-[300px] !max-w-md">
+          <Box className="flex flex-col items-center mb-6">
+            <img 
+              src={logo} 
+              alt="Logo" 
+              className="w-24 mb-4" 
+            />
+            <Typography variant="h4" className="!text-white !font-bold !text-xl">
+              Reset Password
+            </Typography>
           </Box>
-        </Card>
-      </Box>
+
+          <form className="space-y-4">
+            {/* OTP Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">Verification Code</label>
+              <TextField
+                fullWidth
+                variant="outlined"
+                size="small"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="!bg-white !rounded"
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  className: "!text-xs"
+                }}
+              />
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">New Password</label>
+              <TextField
+                fullWidth
+                type="password"
+                variant="outlined"
+                size="small"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="!bg-white !rounded"
+                InputProps={{ className: "!text-xs" }}
+              />
+            </div>
+
+            {/* Confirm Password Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">Confirm Password</label>
+              <TextField
+                fullWidth
+                type="password"
+                variant="outlined"
+                size="small"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                className="!bg-white !rounded"
+                InputProps={{ className: "!text-xs" }}
+              />
+            </div>
+
+            {/* Submit Button */}
+            <Button
+              fullWidth
+              onClick={handleSubmit}
+              className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
+                      hover:!bg-[#3B82F6] !text-sm !normal-case"
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={20} /> : "Reset Password"}
+            </Button>
+
+            {/* Back Link */}
+            <Typography className="!text-white !text-center !mt-4 !text-xs">
+              <Link 
+                to="/auth/forgetpassword" 
+                className="!text-[#60A5FA] hover:!underline"
+              >
+                Back to Forgot Password
+              </Link>
+            </Typography>
+          </form>
+        </Box>
+      </Card>
     </Box>
   );
 };

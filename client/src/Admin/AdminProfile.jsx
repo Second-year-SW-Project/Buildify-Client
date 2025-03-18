@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Paper, Divider, Typography, TextField, Button, Grid } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useSelector, useDispatch } from "react-redux";
-import { setAuthUser } from "../Store/authSlice";  // Import the action to set user in Redux
+import { setAuthUser } from "../store/authSlice.js";  // Import the action to set user in Redux
 import axios from "axios";
 import { toast } from "sonner";  // Import sonner for notifications
 import { useNavigate } from "react-router-dom";  // Import the navigate hook for routing

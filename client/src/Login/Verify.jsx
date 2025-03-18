@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Grid, Typography, Box, TextField, CircularProgress, Card } from '@mui/material';
+import { 
+  Button, Grid, Typography, Box, 
+  TextField, CircularProgress, Card, Divider 
+} from '@mui/material';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '../store/authSlice';
 import { useNavigate } from 'react-router-dom';
-import sideImage from "../assets/PC.webp"; // Ensure you have an appropriate image file
+import sideImage from "../assets/PC.webp";
 import logo from '../assets/logo.png';
 
 const Verify = () => {
@@ -14,24 +17,35 @@ const Verify = () => {
     const [loading, setLoading] = useState(false);
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const inputRefs = useRef([]);
+    const hiddenInputRef = useRef(null);
     const user = useSelector((state) => state.auth.user);
 
     useEffect(() => {
         if (!user) {
-            // If no user is found, redirect to the signup page
             navigate('/auth/signup', { replace: true });
         }
     }, [user, navigate]);
 
+    const handlePaste = (e) => {
+        const pasteData = e.clipboardData.getData('text').slice(0, 6);
+        if (/^\d+$/.test(pasteData)) {
+            const newOtp = pasteData.split('').concat(Array(6 - pasteData.length).fill(''));
+            setOtp(newOtp);
+            
+            // Focus on last entered digit
+            const focusIndex = Math.min(pasteData.length - 1, 5);
+            inputRefs.current[focusIndex]?.focus();
+        }
+    };
+
     const handleChange = (index, event) => {
         const { value } = event.target;
-
         if (/^\d{0,1}$/.test(value)) {
             const newOtp = [...otp];
             newOtp[index] = value;
             setOtp(newOtp);
 
-            if (value.length === 1 && inputRefs.current[index + 1]) {
+            if (value.length === 1 && index < 5) {
                 inputRefs.current[index + 1]?.focus();
             }
         }
@@ -39,21 +53,8 @@ const Verify = () => {
 
     const handleKeyDown = (index, event) => {
         const { key } = event;
-
-        if (key === 'ArrowRight' && inputRefs.current[index + 1]) {
-            inputRefs.current[index + 1]?.focus();
-        }
-
-        if (key === 'ArrowLeft' && inputRefs.current[index - 1]) {
+        if (key === 'Backspace' && !otp[index] && index > 0) {
             inputRefs.current[index - 1]?.focus();
-        }
-
-        if (key === 'Backspace' && !otp[index] && inputRefs.current[index - 1]) {
-            inputRefs.current[index - 1]?.focus();
-        }
-
-        if (key === 'Delete' && !otp[index] && inputRefs.current[index + 1]) {
-            inputRefs.current[index + 1]?.focus();
         }
     };
 
@@ -61,14 +62,17 @@ const Verify = () => {
         setLoading(true);
         try {
             const otpValue = otp.join('');
-            const response = await axios.post('http://localhost:8000/api/v1/users/verify', { otp: otpValue }, { withCredentials: true });
-
-            const verifiedUser = response.data.data.user;
-            dispatch(setAuthUser(verifiedUser));
+            const response = await axios.post(
+                'http://localhost:8000/api/v1/users/verify', 
+                { otp: otpValue }, 
+                { withCredentials: true }
+            );
+            
+            dispatch(setAuthUser(response.data.data.user));
             toast.success('Verification successful');
-            navigate('/');
+            navigate('/auth/login');
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Verification failed');
         } finally {
             setLoading(false);
         }
@@ -78,94 +82,113 @@ const Verify = () => {
         setLoading(true);
         try {
             await axios.post('http://localhost:8000/api/v1/users/resend-otp', null, { withCredentials: true });
-            toast.success('New OTP is sent to your email');
+            toast.success('New OTP sent to your email');
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'Resend failed');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Box display="flex" height="100vh" alignItems="center" justifyContent="center" sx={{ backgroundColor: '#4A2D73', marginLeft: '150px' }} width="80%">
-            <Box display="flex" width="80%" maxWidth={1200}>
-                {/* Left Side Image */}
-                <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center" p={4}>
-                    <img src={sideImage} alt="PC Builder" style={{ width: '100%', maxWidth: 400, marginTop: 20 }} />
+        <Box className="flex h-screen bg-[#4A2D73] items-center justify-center p-4">
+            <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
+                {/* Left Section */}
+                <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
+                    <Typography variant="h3" className="!text-white !font-bold !mb-4 !text-4xl">
+                        PC BUILDER
+                    </Typography>
+                    <img 
+                        src={sideImage} 
+                        alt="PC" 
+                        className="w-full max-w-[420px] !mt-4" 
+                    />
                 </Box>
 
-                {/* Right Side Verify OTP Card */}
-                <Card sx={{ padding: 4, width: 400, borderRadius: 3, backgroundColor: '#23103C', color: 'white', textAlign: 'center', boxShadow: 3 }}>
-                    <img
-                                                src={logo}  // Use the imported logo
-                                                alt="Logo"
-                                                style={{
-                                                  width: '120px',  // Adjust logo width
-                                                  height: '60px',  // Maintain aspect ratio
-                                                  marginRight: '16px',  // Add space between logo and text
-                                                }}
-                                              />
-                    <Typography variant="h5" fontWeight={600} marginBottom={2}>
-                        Enter Your Email Verification Code
-                    </Typography>
-                    <Grid 
-    container 
-    spacing={2} 
-    justifyContent="center" 
-    sx={{ 
-        marginBottom: '1rem', 
+                {/* Vertical Divider */}
+                <Divider 
+                    orientation="vertical" 
+                    flexItem 
+                    className="!bg-white/30 !mx-6 !hidden md:!block" 
+                />
 
-        // Light grey grid color
-        padding: '5px', 
-        borderRadius: '8px' // Optional for rounded corners
-    }}
->
-    {otp.map((_, index) => (
-        <Grid item key={index}>
-            <TextField
-                value={otp[index]}
-                onChange={(e) => handleChange(index, e)}
-                inputRef={(el) => (inputRefs.current[index] = el)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                type="text"
-                inputProps={{
-                    maxLength: 1,
-                    style: { 
-                        textAlign: 'center', 
-                        fontSize: '1.5rem' 
-                    },
-                }}
-                variant="outlined"
-                size="small"
-                sx={{ 
-                    width: '50px', 
-                    height: '50px',
-                    backgroundColor: 'white', // Ensures text fields have a white background
-                    borderRadius: '5px',
-                }}
-            />
-        </Grid>
-    ))}
-</Grid>
-
-                    <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" sx={{ width: '100%' }}>
-                        {!loading ? (
-                            <Box display="flex" justifyContent="space-between" sx={{ width: '100%', maxWidth: '300px' }}>
-                                <Button variant="contained" color="primary" onClick={handleSubmit}>
-                                    Submit
-                                </Button>
-                                <Button variant="text" color="secondary" onClick={handleResendOtp}>
-                                    Resend OTP
-                                </Button>
-                            </Box>
-                        ) : (
-                            <Button variant="contained" disabled sx={{ display: 'flex', alignItems: 'center' }}>
-                                <CircularProgress size={24} sx={{ marginRight: 1 }} /> Loading...
-                            </Button>
-                        )}
+                {/* Right Section */}
+                <Box className="flex-1 !min-w-[300px] !max-w-md">
+                    <Box className="flex flex-col items-center mb-6">
+                        <img 
+                            src={logo} 
+                            alt="Logo" 
+                            className="w-24 mb-4" 
+                        />
+                        <Typography variant="h4" className="!text-white !font-bold !text-xl">
+                            Verify Your Email
+                        </Typography>
                     </Box>
-                </Card>
-            </Box>
+
+                    {/* Hidden input for paste functionality */}
+                    <TextField
+                        inputRef={hiddenInputRef}
+                        style={{ 
+                            opacity: 0, 
+                            position: 'absolute', 
+                            pointerEvents: 'none' 
+                        }}
+                        onPaste={handlePaste}
+                    />
+
+                    <Typography className="!text-white !text-center !mb-4 !text-sm">
+                        Enter the 6-digit code sent to your email
+                    </Typography>
+
+                    <Grid container spacing={2} justifyContent="center" className="!mb-6">
+                        {otp.map((digit, index) => (
+                            <Grid item key={index}>
+                                <TextField
+                                    value={digit}
+                                    onChange={(e) => handleChange(index, e)}
+                                    onKeyDown={(e) => handleKeyDown(index, e)}
+                                    inputRef={(el) => (inputRefs.current[index] = el)}
+                                    onFocus={() => hiddenInputRef.current?.focus()}
+                                    type="text"
+                                    inputProps={{
+                                        maxLength: 1,
+                                        className: "!text-center !text-xl",
+                                    }}
+                                    className="!bg-white !rounded"
+                                    sx={{
+                                        width: '50px',
+                                        '& .MuiInputBase-root': {
+                                            height: '50px'
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
+
+                    <Box className="flex flex-col space-y-4">
+                        <Button
+                            fullWidth
+                            onClick={handleSubmit}
+                            className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
+                                    hover:!bg-[#3B82F6] !text-sm !normal-case"
+                            disabled={loading}
+                        >
+                            {loading ? <CircularProgress size={24} /> : "Verify Code"}
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            onClick={handleResendOtp}
+                            className="!text-[#60A5FA] !font-medium !py-1.5 !rounded-lg
+                                    hover:!bg-[#3B82F610] !text-xs !normal-case"
+                            disabled={loading}
+                        >
+                            Resend Code
+                        </Button>
+                    </Box>
+                </Box>
+            </Card>
         </Box>
     );
 };

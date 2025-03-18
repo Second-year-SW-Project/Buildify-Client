@@ -1,225 +1,206 @@
 import React, { useState } from "react";
-import { TextField, Button, CircularProgress, Box, Typography, Card, Divider } from "@mui/material";
+import { 
+  TextField, Button, CircularProgress, 
+  Box, Typography, Card, Divider 
+} from "@mui/material";
 import { Google as GoogleIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
-import pcImage from "../assets/PC.webp"; // Ensure this image exists
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import logo from '../assets/logo.png';
+import pcImage from "../assets/PC.webp";
 
 const Login = () => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({ email: "", password: "" });
-    const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ 
+    email: "", 
+    password: "" 
+  });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-    const submitHandler = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/users/login", 
+        formData, 
+        { withCredentials: true }
+      );
+      
+      const user = response.data.data.user;
+      localStorage.setItem('userId', user._id);
+      toast.success("Login successful!");
+      dispatch(setAuthUser(user));
+      
+      navigate(user.Role === "admin" ? '/dashboard' : '/user');
+      
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        toast.error("Network error: Please check your connection");
+      } else {
+        toast.error("An error occurred during login");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        try {
-            const response = await axios.post("http://localhost:8000/api/v1/users/login", formData, { withCredentials: true });
-            const user = response.data.data.user;
-            // Save userId to localStorage for future use
-            localStorage.setItem('userId', user._id);  // Assuming the user object has _id
-            toast.success("Login successfully");
-            dispatch(setAuthUser(user));
-            if (user.Role === "admin") {
-                navigate('/'); // Redirect to admin page
-            } else {
-                navigate('/user'); // Redirect to user page
-            }
-        } catch (error) {
-            if (error.response) {
-                toast.error(error.response.data.message);  // Corrected this line
-            } else if (error.request) {
-                toast.error("Network error: Please check your connection.");
-            } else {
-                toast.error("An error occurred during signup.");
-            }
-            setError("An error occurred during signup.");
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleGoogleLogin = () => {
+    window.open("http://localhost:8000/auth/google", "_self");
+  };
 
-    const handleGoogleLogin = () => {
-        window.open("http://localhost:8000/auth/google", "_self");
-        
-            
-    };
-
-    return (
-        <Box display="flex" height="100vh" alignItems="center" justifyContent="center" sx={{ backgroundColor: "#4A2D73", marginLeft: "150px" }} width="80%">
-            <Box display="flex" width="80%" maxWidth={1200}>
-                {/* Left Side Image Section */}
-                <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center" p={4}>
-                    <Typography variant="h4" fontWeight={600} color="white" gutterBottom sx={{ fontSize: "50px" }}>
-                        PC BUILDER
-                    </Typography>
-                    <Typography variant="body1" color="white" textAlign="center">
-                        Get compatible recommendations <br /> Pick your ideal components
-                    </Typography>
-                    <img src={pcImage} alt="PC Builder" style={{ width: "100%", maxWidth: 400, marginTop: 20 }} />
-                </Box>
-
-                {/* Right Side Login Card */}
-                <Card sx={{ padding: 4, width: 400, borderRadius: 3, backgroundColor: "#23103C", color: "white" ,marginTop: "50px", height: "500px"}}>
-                <img
-                            src={logo}  // Use the imported logo
-                            alt="Logo"
-                            style={{
-                              width: '120px',  // Adjust logo width
-                              height: '60px',  // Maintain aspect ratio
-                              marginRight: '16px',  // Add space between logo and text
-                            }}
-                          />
-                    <Typography variant="h5" textAlign="center" fontWeight={600} marginBottom={2}>Login</Typography>
-                    
-                    <form onSubmit={submitHandler}>
-
-                    <div style={{ marginBottom: "2px", fontSize: "14px", color: "#FFFFFF", fontWeight: "500" }}>
-  Email
-</div>
-
-
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            margin="normal"
-                            variant="filled"
-                            InputProps={{
-                                style: { 
-                                    backgroundColor: "white", 
-                                    height: "30px",  // Adjust field height
-                                    fontSize: "14px",
-                                    padding: "0 10px", // Padding for input text
-                                    alignItems: "center" // Ensure text is centered
-                                },
-                            }}
-                            sx={{
-                                "& .MuiInputBase-root": {
-                                    height: "30px",  // Reduce field height
-                                    display: "flex",
-                                    alignItems: "center", // Center text vertically
-                                },
-                                "& .MuiInputLabel-root": {
-                                    fontSize: "12px", // Reduce label font size
-                                    top: "50%",  // Start label in center
-                                    transform: "translateY(-50%)",
-                                    left: "10px",  // Add left padding
-                                    paddingLeft: "5px", // Optional extra padding
-                                },
-                                "& .MuiInputLabel-shrink": {
-                                    top: "0", // Adjust when label shrinks
-                                    transform: "translateY(0)",
-                                    left: "5px", // Keep padding when label moves up
-                                },
-                            }}
-                        />
-
-<div style={{ marginBottom: "2px", fontSize: "14px", color: "#FFFFFF", fontWeight: "500" }}>
-  Password
-</div>
-
-                        <TextField
-                            fullWidth
-                            type="password"
-                            label="Password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            margin="normal"
-                            variant="filled"
-                            InputProps={{
-                                style: { 
-                                    backgroundColor: "white", 
-                                    height: "30px",  // Adjust field height
-                                    fontSize: "14px",
-                                    padding: "0 10px", // Padding for input text
-                                    alignItems: "center" // Ensure text is centered
-                                },
-                            }}
-                            sx={{
-                                "& .MuiInputBase-root": {
-                                    height: "30px",  // Reduce field height
-                                    display: "flex",
-                                    alignItems: "center", // Center text vertically
-                                },
-                                "& .MuiInputLabel-root": {
-                                    fontSize: "12px", // Reduce label font size
-                                    top: "50%",  // Start label in center
-                                    transform: "translateY(-50%)",
-                                    left: "10px",  // Add left padding
-                                    paddingLeft: "5px", // Optional extra padding
-                                },
-                                "& .MuiInputLabel-shrink": {
-                                    top: "0", // Adjust when label shrinks
-                                    transform: "translateY(0)",
-                                    left: "5px", // Keep padding when label moves up
-                                },
-                            }}
-                        />
-
-                        {/* Forgot Password */}
-                        <Typography textAlign="right">
-                            <Link to="/auth/forgetpassword" style={{ color: "#ffcc00", textDecoration: "none", fontSize: "14px" }}>
-                                Forgot Password?
-                            </Link>
-                        </Typography>
-
-                        <Button fullWidth type="submit" variant="contained" color="primary" sx={{
-        marginTop: 2,
-        height: 35, // Reduce button height
-        padding: "6px 16px", // Adjust padding for better proportions
-    }}>
-                            {loading ? <CircularProgress size={24} /> : "Login"}
-                        </Button>
-                    </form>
-
-                    <Divider sx={{ backgroundColor: "#ffffff30", marginY: 2 }} />
-
-                    {/* Google Login */}
-                    <Button
-                        fullWidth
-                        startIcon={<GoogleIcon />}
-                        variant="contained"
-                        sx={{
-                            backgroundColor: "#D3D3D3",  // Light blue color
-                            color: "#000000",            // Black text color
-                            fontSize: "12px",            // Reduced font size
-                            height: "35px",              // Reduced button height
-                            padding: "6px 16px",         // Adjust padding for smaller button
-                            "&:hover": {
-                                backgroundColor: "#87CEEB",  // Slightly darker blue on hover
-                            },
-                        }}
-                        onClick={handleGoogleLogin}
-                    >
-                        Sign up with Google
-                    </Button>
-
-                    <Typography textAlign="center" marginTop={2}>
-                        Don't have an account? <Link to="/auth/signup" style={{ color: "#ffcc00" }}>Sign Up</Link>
-                    </Typography>
-                </Card>
-            </Box>
+  return (
+    <Box className="flex h-screen bg-[#4A2D73] items-center justify-center p-4">
+      <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
+        {/* Left Section */}
+        <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
+          <Typography variant="h3" className="!text-white !font-bold !mb-4 !text-4xl">
+            PC BUILDER
+          </Typography>
+          <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
+            Get compatible recommendations
+            <br /> Pick your ideal components
+          </Typography>
+          <img 
+            src={pcImage} 
+            alt="PC" 
+            className="w-full max-w-[420px] !mt-4" 
+          />
         </Box>
-    );
+
+        {/* Vertical Divider */}
+        <Divider 
+          orientation="vertical" 
+          flexItem 
+          className="!bg-white/30 !mx-6 !hidden md:!block" 
+        />
+
+        {/* Right Section */}
+        <Box className="flex-1 !min-w-[300px] !max-w-md">
+          <Box className="flex flex-col items-center mb-6">
+            <img 
+              src={logo} 
+              alt="Logo" 
+              className="w-24 mb-4" 
+            />
+            <Typography variant="h4" className="!text-white !font-bold !text-xl">
+              Login
+            </Typography>
+          </Box>
+
+          <form onSubmit={submitHandler} className="space-y-3">
+            {/* Email Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">Email</label>
+              <TextField
+                fullWidth
+                variant="outlined"
+                size="small"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="!bg-white !rounded"
+                InputProps={{ 
+                  className: "!h-8 !text-xs",
+                  style: { borderRadius: '8px' } 
+                }}
+              />
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">Password</label>
+              <TextField
+                fullWidth
+                type="password"
+                variant="outlined"
+                size="small"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="!bg-white !rounded"
+                InputProps={{ 
+                  className: "!h-8 !text-xs",
+                  style: { borderRadius: '8px' } 
+                }}
+              />
+            </div>
+
+            {/* Forgot Password Link */}
+            <Typography className="!text-right !mb-2">
+              <Link 
+                to="/auth/forgetpassword" 
+                className="!text-[#60A5FA] hover:!underline !text-xs"
+              >
+                Forgot Password?
+              </Link>
+            </Typography>
+
+            {/* Login Button */}
+            <Button
+              fullWidth
+              type="submit"
+              className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
+                        hover:!bg-[#3B82F6] !text-sm !mt-2 !normal-case"
+              disabled={loading}
+              sx={{ height: '36px' }}
+            >
+              {loading ? <CircularProgress size={20} /> : "Login"}
+            </Button>
+
+            {/* Divider */}
+            <Divider 
+              sx={{ 
+                my: 4,
+                color: 'white',
+                '&.MuiDivider-root::before, &.MuiDivider-root::after': {
+                  borderColor: 'rgba(255,255,255,0.5)'
+                }
+              }}
+            >
+              <span className="text-xs">or</span>
+            </Divider>
+
+            {/* Google Button */}
+            <Button
+              fullWidth
+              variant="contained"
+              size="small"
+              startIcon={<GoogleIcon fontSize="small" />}
+              className="!bg-white !text-black !font-medium !py-1.5 !rounded-lg
+                        hover:!bg-gray-100 !text-xs !normal-case"
+              onClick={handleGoogleLogin}
+              sx={{ height: '36px' }}
+            >
+              Continue with Google
+            </Button>
+
+            {/* Signup Link */}
+            <Typography className="!text-white !text-center !mt-4 !text-xs">
+              Don't have an account?{" "}
+              <Link to="/auth/signup" className="!text-[#60A5FA] hover:!underline">
+                Sign Up
+              </Link>
+            </Typography>
+          </form>
+        </Box>
+      </Card>
+    </Box>
+  );
 };
 
 export default Login;

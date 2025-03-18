@@ -1,130 +1,119 @@
-import { Button, CircularProgress, TextField, Box, Typography, Card } from "@mui/material";
+import { Button, CircularProgress, TextField, Box, Typography, Card, Divider } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import axios from "axios";
-import sideImage from "../assets/PC.webp"; // Ensure you have an appropriate image file
+import { Link } from "react-router-dom";
+import sideImage from "../assets/PC.webp";
 import logo from '../assets/logo.png';
-
-// Add this in your main component (App.jsx)
-
 
 const ForgetPassword = () => {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    
 
     const handleSubmit = async () => {
-
         setLoading(true);
         try {
-            await axios.post("http://localhost:8000/api/v1/users/forget-password", { email }, { withCredentials: true });
-
+            await axios.post("http://localhost:8000/api/v1/users/forget-password", 
+                { email }, 
+                { withCredentials: true }
+            );
             toast.success("Reset OTP sent to email");
             navigate(`/auth/resetpassword?email=${encodeURIComponent(email)}`);
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Failed to send reset email");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <Box display="flex" height="100vh" alignItems="center" justifyContent="center" sx={{ backgroundColor: "#4A2D73" ,
-                    marginLeft: "150px"
-                }} width="80%">
-                    <Box display="flex" width="80%" maxWidth={1200}>
-                        {/* Left Side Image */}
-                        <Box flex={1} display="flex" flexDirection="column" justifyContent="center" alignItems="center" p={4}>
-                            <Typography variant="h4" fontWeight={600} color="white" gutterBottom sx={{ fontSize: "50px" }}>
-                                PC BUILDER
-                            </Typography><br></br>
-                            <Typography variant="body1" color="white" textAlign="center">
-                                Get compatible recommendations
-                                <br /> Pick your ideal components
-                            </Typography><br></br>
-                            <img src={sideImage} alt="PC Builder" style={{ width: "100%", maxWidth: 400, marginTop: 20 }} />
-                        </Box>
-
-                {/* Right Side Forget Password Card */}
-                <Card sx={{ padding: 4, width: 400, borderRadius: 3, backgroundColor: "#23103C", color: "white" ,marginTop: "150px", height: "400px"}}>
-                    <img
-                                                src={logo}  // Use the imported logo
-                                                alt="Logo"
-                                                style={{
-                                                  width: '120px',  // Adjust logo width
-                                                  height: '60px',  // Maintain aspect ratio
-                                                  marginRight: '16px',  // Add space between logo and text
-                                                }}
-                                              />
-                    <Typography variant="h5" fontWeight={600} marginBottom={2}>
-                        Forgot Password
+        <Box className="flex h-screen bg-[#4A2D73] items-center justify-center p-4">
+            <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
+                {/* Left Section */}
+                <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
+                    <Typography variant="h3" className="!text-white !font-bold !mb-4 !text-4xl">
+                        PC BUILDER
                     </Typography>
-                    <Typography variant="body2" marginBottom={3} color="white">
-                        Enter your email to receive a reset password link.
+                    <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
+                        Get compatible recommendations
+                        <br /> Pick your ideal components
                     </Typography>
-
-                    <div style={{ marginBottom: "2px", fontSize: "14px", color: "#FFFFFF", fontWeight: "500" }}>
-  Email
-</div>
-
-                    <TextField
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                        name="email"
-                        label="Email Address"
-                        variant="filled"
-                        fullWidth
-                        required
-                        InputProps={{
-                            style: { 
-                                backgroundColor: "white", 
-                                height: "30px",  // Adjust field height
-                                fontSize: "14px",
-                                padding: "0 10px", // Padding for input text
-                                alignItems: "center" // Ensure text is centered
-                            },
-                        }}
-                        sx={{
-                            "& .MuiInputBase-root": {
-                                height: "30px",  // Reduce field height
-                                display: "flex",
-                                alignItems: "center", // Center text vertically
-                            },
-                            "& .MuiInputLabel-root": {
-                                fontSize: "12px", // Reduce label font size
-                                top: "50%",  // Start label in center
-                                transform: "translateY(-50%)",
-                                left: "10px",  // Add left padding
-                                paddingLeft: "5px", // Optional extra padding
-                            },
-                            "& .MuiInputLabel-shrink": {
-                                top: "0", // Adjust when label shrinks
-                                transform: "translateY(0)",
-                                left: "5px", // Keep padding when label moves up
-                            },
-                        }}
+                    <img 
+                        src={sideImage} 
+                        alt="PC" 
+                        className="w-full max-w-[420px] !mt-4" 
                     />
-                    <br></br>
+                </Box>
 
-                    <Button onClick={handleSubmit} variant="contained" color="primary" fullWidth disabled={loading} marginTop="20px"  sx={{
-        marginTop: 2,
-        height: 35, // Reduce button height
-        padding: "6px 16px", // Adjust padding for better proportions
-    }}>
-                        {loading ? <CircularProgress size={24} color="inherit" /> : "Send Reset Password"}
-                    </Button>
+                {/* Vertical Divider */}
+                <Divider 
+                    orientation="vertical" 
+                    flexItem 
+                    className="!bg-white/30 !mx-6 !hidden md:!block" 
+                />
 
-                    <Typography marginTop={2}>
-                        <span style={{ color: "#ffcc00", cursor: "pointer" }} onClick={() => navigate("/auth/login")}>
-                            Back to Login
-                        </span>
+                {/* Right Section */}
+                <Box className="flex-1 !min-w-[300px] !max-w-md">
+                    <Box className="flex flex-col items-center mb-6">
+                        <img 
+                            src={logo} 
+                            alt="Logo" 
+                            className="w-24 mb-4" 
+                        />
+                        <Typography variant="h4" className="!text-white !font-bold !text-xl">
+                            Forgot Password
+                        </Typography>
+                    </Box>
+
+                    <Typography className="!text-white !text-center !mb-6 !text-sm">
+                        Enter your email to receive a password reset OTP
                     </Typography>
-                </Card>
-            </Box>
+
+                    <form className="space-y-4">
+                        {/* Email Field */}
+                        <div className="space-y-1">
+                            <label className="text-white text-xs font-medium">Email</label>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="!bg-white !rounded"
+                                InputProps={{ 
+                                    className: "!h-8 !text-xs",
+                                    style: { borderRadius: '8px' } 
+                                }}
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <Button
+                            fullWidth
+                            onClick={handleSubmit}
+                            className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
+                                    hover:!bg-[#3B82F6] !text-sm !normal-case"
+                            disabled={loading}
+                        >
+                            {loading ? <CircularProgress size={20} /> : "Send Reset Code"}
+                        </Button>
+
+                        {/* Login Link */}
+                        <Typography className="!text-white !text-center !mt-4 !text-xs">
+                            Remember your password?{" "}
+                            <Link 
+                                to="/auth/login" 
+                                className="!text-[#60A5FA] hover:!underline"
+                            >
+                                Login here
+                            </Link>
+                        </Typography>
+                    </form>
+                </Box>
+            </Card>
         </Box>
     );
 };
