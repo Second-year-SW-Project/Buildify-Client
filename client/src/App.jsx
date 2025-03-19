@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Iconset from "./AtomicComponents/Icons/Iconset";
 import theme from "./AtomicComponents/theme";
 import Home from "./pages/Home";
+import FloatingChat from "./MoleculesComponents/ChatButton";
 
 // const NAVIGATION = [
 //   {
@@ -167,6 +168,7 @@ function App() {
     // </AppProvider>
     <>
       <Home></Home>
+      <FloatingChat />
     </>
   );
 }
