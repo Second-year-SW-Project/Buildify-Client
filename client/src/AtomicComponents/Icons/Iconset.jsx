@@ -38,14 +38,18 @@ import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import PermMediaSharpIcon from '@mui/icons-material/PermMediaSharp';
+import AddPhotoAlternateSharpIcon from '@mui/icons-material/AddPhotoAlternateSharp';
 
 export default function Iconset({ type = 'notification', fontSize = '30px', color }) {
     const renderIcon = () => {
 
         switch (type) {
+            case 'photo': return <AddPhotoAlternateSharpIcon color={color} sx={{ fontSize }} />;
+            case 'image': return <PermMediaSharpIcon color={color} sx={{ fontSize }} />;
             case 'edit': return <EditIcon color={color} sx={{ fontSize }} />;
             case 'more': return <MoreVertIcon color={color} sx={{ fontSize }} />;
-            case 'delete': return <DeleteIcon color={color} sx={{ fontSize }} />;
+            case 'delete': return <DeleteIcon color="delete" sx={{ fontSize }} />;
             case 'add': return <AddIcon color={color} sx={{ fontSize }} />;
             case 'search': return <SearchIcon color={color} sx={{ fontSize }} />;
             case 'view': return <VisibilityIcon color={color} sx={{ fontSize }} />;

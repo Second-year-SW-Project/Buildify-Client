@@ -10,24 +10,32 @@ import {
   RadioGroup,
   FormLabel,
   FormHelperText,
-  textFieldClasses,
+
 } from "@mui/material";
 import React from "react";
-import theme from "../theme";
+import InputAdornment from '@mui/material/InputAdornment';
+import { inputBaseClasses } from '@mui/material/InputBase';
+
 
 export function InputField({
   label,
   type = "text",
   width = "180px",
-  color,
-  variant,
+  rows,
+  color = "primary",
+  variant = "outlined",
   fontSize = "16px",
   helperText,
+  Placeholder,
   error,
-  row,
-  size,
+  value,
+  Auto,
+  onChange = null,
+  row = false,
+  size = "medium",
   options = [],
-  labelPlacement,
+  labelPlacement = "end",
+  disabled = false,
 }) {
   if (type === "text") {
     return (
@@ -35,23 +43,110 @@ export function InputField({
         type={type}
         label={label}
         fontSize={fontSize}
-        color={color}
         variant={variant}
+        color={color}
         width={width}
+        disabled={disabled}
+        helperText={helperText}
+        error={!!error}
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment
+                position="end"
+                sx={{
+                  opacity: 0,
+
+                  [`[data-shrink=true] ~ .${inputBaseClasses.root} > &`]: {
+                    opacity: 1,
+                  },
+                }}
+              >
+                {Placeholder}
+              </InputAdornment>
+            ),
+          },
+        }}
+        sx={{
+          width: width,
+          marginBottom: "10px",
+          "& .MuiInputBase-input": {
+            fontSize: fontSize || "16px",
+          },
+          "& .MuiInputLabel-root": {
+            fontSize: fontSize || "16px",
+          },
+          "& .MuiInputBase-root": {
+            "& fieldset": {
+              borderWidth: 1,
+              borderRadius: 1,
+            },
+          },
+        }}
+      />
+    );
+  }
+
+  if (type === "textarea") {
+    return (
+      <TextField
+        type={type}
+        multiline
+        label={label}
+        fontSize={fontSize}
+        color={color}
+        rows={rows}
+        disabled={disabled}
         helperText={helperText}
         error={!!error}
         sx={{
           width: width,
+          marginBottom: "10px",
           "& .MuiInputBase-input": {
-            fontSize: fontSize || "16px", // Use provided fontSize, or size-based fontSize, or default
+            fontSize: fontSize || "16px",
           },
           "& .MuiInputLabel-root": {
-            fontSize: fontSize || "16px", // Making label slightly smaller than input text
+            fontSize: fontSize || "16px",
           },
           "& .MuiInputBase-root": {
             "& fieldset": {
-              borderWidth: 2,
+              borderWidth: 1,
               borderRadius: 2,
+            },
+          },
+        }}
+      />
+    );
+  }
+
+  if (type === "number") {
+    return (
+      <TextField
+        type={type}
+        label={label}
+        fontSize={fontSize}
+        variant={variant}
+        color={color}
+        width={width}
+        slotProps={{
+          inputLabel: {
+            shrink: { Auto },
+          },
+        }}
+        disabled={disabled}
+        helperText={helperText}
+        sx={{
+          width: width,
+          "& .MuiInputBase-input": {
+            fontSize: fontSize || "16px",
+          },
+          "& .MuiInputLabel-root": {
+            fontSize: fontSize || "16px",
+          },
+          "& .MuiInputBase-root": {
+            "& fieldset": {
+              borderWidth: 1,
+              borderRadius: 1,
             },
           },
         }}
@@ -65,11 +160,17 @@ export function InputField({
         select
         label={label}
         fontSize={fontSize}
+        value={value}
+        onChange={(e) => {
+          if (onChange)
+            onChange(e.target.value);
+        }}
+        variant={variant}
         color={color}
-        variant={variant} // 'standard', 'outlined', 'filled'
+        disabled={disabled}
         error={!!error}
         helperText={helperText}
-        sx={{ width: width }}
+        sx={{ width }}
       >
         {options.map((option, index) => (
           <MenuItem key={index} value={option.value}>
@@ -85,6 +186,12 @@ export function InputField({
       <Autocomplete
         options={options}
         getOptionLabel={(option) => option.label}
+        value={options.find((opt) => opt.value === value) || null}
+        onChange={(_, newValue) => {
+          onChange(newValue ? newValue.value : "");
+        }}
+
+        disabled={disabled}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -98,13 +205,54 @@ export function InputField({
     );
   }
 
+  if (type === "searchinput") {
+    return (
+      <Autocomplete
+        freeSolo
+        options={options}
+        getOptionLabel={(option) => option.label}
+        value={options.find((opt) => opt.value === value) || null}
+        onChange={(_, newValue) => {
+          onChange(newValue ? newValue.value : "");
+        }}
+
+        disabled={disabled}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label={label}
+            slotProps={{
+              input: {
+                ...params.InputProps,
+                type: 'search',
+              },
+            }}
+            error={!!error}
+            helperText={helperText}
+            sx={{ width: width }}
+          />
+        )}
+      />
+    );
+  }
+
   if (type === "checkbox") {
-    //size small large
     return (
       <FormGroup>
         <FormControlLabel
-          control={<Checkbox size={size} color={color} />} // Set the id for the checkbox
-          label={label} // This should display the label next to the checkbox
+          control={
+            <Checkbox
+              checked={value}
+              onChange={(e) => {
+                if (onChange)
+                  onChange(e.target.checked);
+              }}
+              size={size}
+              color={color}
+              disabled={disabled}
+            />
+          }
+          label={label}
         />
         {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormGroup>
@@ -112,17 +260,16 @@ export function InputField({
   }
 
   if (type === "radio") {
-    //size small large
     return (
-      <FormControl error={!!error}>
+      <FormControl error={!!error} disabled={disabled}>
         <FormLabel>{label}</FormLabel>
-        <RadioGroup row={row}>
+        <RadioGroup row={row} value={value} onChange={(e) => onChange(e.target.value)}>
           {options.map((option, index) => (
             <FormControlLabel
-              labelPlacement={labelPlacement} //end or bottom
               key={index}
               control={<Radio size={size} value={option.value} color={color} />}
               label={option.label}
+              labelPlacement={labelPlacement}
             />
           ))}
         </RadioGroup>
@@ -177,14 +324,4 @@ export function InputField({
 
 // for radio
 // <InputField
-// label="Choose fruit" type="radio"
-// options={[
-//   { value: "apple", label: "Apple" },
-//   { value: "banana", label: "Banana" },
-// ]}
-// />
-// helperText
-// color
-// row
-// labelPlacement - end or bottom
 // size - small or large

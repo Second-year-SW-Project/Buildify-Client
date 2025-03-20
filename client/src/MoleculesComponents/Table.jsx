@@ -28,6 +28,11 @@ export function UserTable({ columns, data, iconTypes = [], width, color }) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   }
+  const autoSizeCellStyle = {
+    padding: "8px 16px", // Ensure consistent padding
+    whiteSpace: "nowrap",
+    Maxwidth: "50%",
+  };
 
   return (
     <Paper style={{ width: width || "100%" }}>
@@ -36,7 +41,7 @@ export function UserTable({ columns, data, iconTypes = [], width, color }) {
           <TableHead>
             <TableRow style={{ backgroundColor: theme.palette.primary100.main }}>
               {columns.map((column) => (
-                <TableCell key={column.id} style={{ color: color || "black" }}>
+                <TableCell key={column.id} style={{...autoSizeCellStyle, color: color || "gray", fontWeight: "bold" }}>
                   {column.label}
                 </TableCell>
               ))}
@@ -51,15 +56,25 @@ export function UserTable({ columns, data, iconTypes = [], width, color }) {
                   {columns.map((column) => (
                     <TableCell
                       key={column.id}
-                      style={{ color: color || "black" }}
+                      style={{ ...autoSizeCellStyle, color: color || "black" , fontWeight: "bold"}}
                     >
                       {row[column.id]}
                     </TableCell>
                   ))}
-                  <TableCell>
+                  <TableCell style={autoSizeCellStyle}>
                     {iconTypes.map((type, idx) => (
-                      <IconButton key={idx}>
-                        <Iconset type={type} />
+                      <IconButton
+                        key={idx}
+                        disableRipple
+                        translate="3s"
+                        sx={{
+                          "&:hover": {
+                            color: theme.palette.primary.main, // Change icon color on hover
+                            opacity: 0.9, // Change icon opacity on hover
+                          },
+                        }}
+                      >
+                        <Iconset type={type}/>
                       </IconButton>
                     ))}
                   </TableCell>
@@ -81,7 +96,6 @@ export function UserTable({ columns, data, iconTypes = [], width, color }) {
   );
 };
 
-export default UserTable;
 
 // How to Use
 
