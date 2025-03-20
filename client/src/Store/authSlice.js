@@ -9,6 +9,7 @@ import { createSlice } from "@reduxjs/toolkit";
  * @property {string} firstName - The user's first name
  * @property {string} lastName - The user's last name
  * @property {string} address - The user's address
+ * @property {string} profilePicture - URL for the user's profile picture
  */
 
 /**
@@ -26,10 +27,19 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
+        /**
+         * Sets the authenticated user in the state
+         * @param {AuthState} state - Current auth state
+         * @param {PayloadAction<User>} action - User data payload
+         */
         setAuthUser: (state, action) => {
             state.user = action.payload;
         },
         
+        /**
+         * Clears the user data from the state
+         * @param {AuthState} state - Current auth state
+         */
         logout: (state) => {
             state.user = null;
         },
