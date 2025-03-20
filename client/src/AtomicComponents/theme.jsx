@@ -1,4 +1,4 @@
-import { colors, createTheme } from "@mui/material";
+import { createTheme } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -167,6 +167,9 @@ const theme = createTheme({
     info: {
       main: "#2C87C3",
     },
+    delete: {
+      main: '#ff5630',
+    },
     primaryprimary: {
       main: '#961AFD',
       contrastText: '#FFFFFF',
@@ -221,24 +224,11 @@ const theme = createTheme({
         root: {
           transition: "all 0.3s ease-in-out",
           "&:hover": {
-            backgroundColor: "#F4E6FF", // Hover background color
             borderRadius: "0px",
           },
           "&.Mui-selected": {
-            backgroundColor: "#E9E8E8", // Selected menu background
             borderLeft: "5px solid #961AFD",
             borderRadius: "0px",
-            color: "#961AFD", // Title color when selected
-
-            "& .MuiListItemIcon-root": {
-              color: "#961AFD", // Icon color when selected
-            },
-            "& .MuiTypography-root": {
-              color: "#961AFD", // Title color when selected
-            },
-            "&:hover": {
-              backgroundColor: "#F4E6FF", // Hover color on selected item
-            },
           },
         },
       },
