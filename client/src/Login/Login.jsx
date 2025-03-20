@@ -7,7 +7,7 @@ import { Google as GoogleIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setAuthUser } from "../store/authSlice";
+import { setAuthUser } from "../Store/authSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 import logo from '../assets/logo.png';
