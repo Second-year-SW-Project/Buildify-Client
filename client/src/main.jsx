@@ -20,6 +20,7 @@ import Login from "./Login/Login.jsx";
 import Verify from "./Login/Verify.jsx";
 import ResetPassword from "./Login/Resetpassword.jsx";
 import ForgetPassword from "./Login/Forgetpassword.jsx";
+import RMA from "./Admin/RMA.jsx";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -86,6 +87,10 @@ const router = createBrowserRouter([
           {
             path: "/feedbackmanage/complaints",
             Component: Complaints,
+          },
+          {
+            path: "/feedbackmanage/rma",
+            Component: RMA,
           },
         ],
       },
