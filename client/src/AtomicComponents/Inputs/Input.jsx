@@ -34,11 +34,17 @@ export function InputField({
   fullWidth,
   margin,
   outlinedActive,
+  name,
+  value,
+  onChange,
 }) {
   if (type === "text") {
     return (
       <TextField
         type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
         label={label}
         fontSize={fontSize}
         padding={padding}
@@ -90,6 +96,9 @@ export function InputField({
         variant={variant} // 'standard', 'outlined', 'filled'
         error={!!error}
         helperText={helperText}
+        name={name}
+        value={value}
+        onChange={onChange}
         sx={{
           width: width,
           "& .MuiInputBase-root": {
