@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
-import { QRCodeSVG } from "qrcode.react";
 
 export default function AdminSettings() {
   const user = useSelector((state) => state.auth.user);
@@ -71,12 +70,6 @@ export default function AdminSettings() {
   
     setLoading({ ...loading, password: true });
     try {
-      const accessToken = localStorage.getItem("token");
-console.log("Access Token:", accessToken);
-
-    console.log("Current Password:", passwordForm.currentPassword);
-    console.log("New Password:", passwordForm.newPassword);
-    console.log("Confirm Password:", passwordForm.confirmPassword);
       await axios.post(
         `http://localhost:8000/api/v1/users/change-password`,
         {
@@ -91,16 +84,14 @@ console.log("Access Token:", accessToken);
       );
 
       // Show success toast
-    toast.success("Password changed successfully!");
+      toast.success("Password changed successfully!");
 
-    // Clear the form fields
-    setPasswordForm({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: ""
-    });
-
-
+      // Clear the form fields
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: ""
+      });
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Password change failed";
       const validationErrors = error.response?.data?.errors;
@@ -114,7 +105,6 @@ console.log("Access Token:", accessToken);
       // Reset the loading state
       setLoading({ ...loading, password: false });
     }
-    
   };
 
   // 2FA Handlers
@@ -122,18 +112,25 @@ console.log("Access Token:", accessToken);
     setLoading({ ...loading, twoFAEnable: true });
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/2fa/generate",
+        "http://localhost:8000/api/v1/users/2fa/generate",
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-          }
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      setQrCode(response.data.qr);
-      toast.success("2FA secret generated");
+
+      // Verify the response structure
+      console.log("2FA Generation Response:", response.data);
+
+      // Ensure you're getting the OTP URL properly
+      const otpUrl = response.data.otpauth_url || response.data.qr;
+      if (!otpUrl) {
+        throw new Error("Missing OTP URL in response");
+      }
+
+      setQrCode(otpUrl);
+      toast.success("Scan the QR code with your authenticator app");
     } catch (error) {
-      toast.error("Failed to generate 2FA secret");
+      console.error("2FA Generation Error:", error);
+      toast.error(error.response?.data?.message || "Failed to generate QR code");
     } finally {
       setLoading({ ...loading, twoFAEnable: false });
     }
@@ -147,14 +144,14 @@ console.log("Access Token:", accessToken);
   const handle2FAEnable = async (e) => {
     e.preventDefault();
     setLoading({ ...loading, twoFAEnable: true });
-    
+
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/2fa/enable",
+        "http://localhost:8000/api/v1/users/2fa/enable",
         { token: twoFAForm.token },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            Authorization: `Bearer ${localStorage.getItem("token")}`
           }
         }
       );
@@ -171,14 +168,14 @@ console.log("Access Token:", accessToken);
 
   const handle2FADisable = async () => {
     setLoading({ ...loading, twoFADisable: true });
-    
+
     try {
       await axios.post(
         "http://localhost:8000/api/v1/users/2fa/disable",
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            Authorization: `Bearer ${localStorage.getItem("token")}`
           }
         }
       );
@@ -292,9 +289,34 @@ console.log("Access Token:", accessToken);
               <form onSubmit={handle2FAEnable}>
                 <Grid container spacing={3} alignItems="center">
                   <Grid item xs={12} md={6}>
-                    <QRCodeSVG value={qrCode} size={200} level="H" includeMargin={true} />
-                    <Typography variant="body2" className="mt-2">
-                      Scan this QR code with your authenticator app
+                    <div className="qr-container" style={{ position: "relative" }}>
+                      <img
+                        src={qrCode}
+                        alt="QR Code"
+                        style={{ display: "block", margin: "0 auto", border: "1px solid #eee", padding: 8 }}
+                        width="256"
+                        height="256"
+                      />
+                      {loading.twoFAEnable && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: "rgba(255,255,255,0.8)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}
+                        >
+                          <CircularProgress />
+                        </div>
+                      )}
+                    </div>
+                    <Typography variant="body2" className="mt-2 text-center">
+                      Scan with authenticator app
                     </Typography>
                   </Grid>
 
