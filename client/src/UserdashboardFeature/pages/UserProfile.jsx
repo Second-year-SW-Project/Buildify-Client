@@ -44,11 +44,11 @@ export default function UserProfile() {
                       sx={{ fontSize: 50 }}
                       color="primary"
                     ></AccountCircleIcon>
-                    <div className="flex flex-col md:flex-row">
+                    <div className="flex flex-col md:flex-row mt-5">
                       <div className="flex-1 mb-5 mr-1">
                         <InputField
                           type="text"
-                          variant="standard"
+                          variant="outlined"
                           label="Username"
                           defaultValue="Gethmi02"
                           width="70%"
@@ -57,7 +57,7 @@ export default function UserProfile() {
                       <div className="flex-1 mb-5">
                         <InputField
                           type="text"
-                          variant="standard"
+                          variant="outlined"
                           label="First Name"
                           defaultValue="Gethmi"
                           width="70%"
@@ -68,7 +68,7 @@ export default function UserProfile() {
                       <div className="flex-1 mb-5 mr-1">
                         <InputField
                           type="text"
-                          variant="standard"
+                          variant="outlined"
                           label="Last Name"
                           defaultValue="Rathnayaka"
                           width="70%"
@@ -77,7 +77,7 @@ export default function UserProfile() {
                       <div className="flex-1 mb-5">
                         <InputField
                           type="text"
-                          variant="standard"
+                          variant="outlined"
                           label="Email Address"
                           defaultValue="gethmi@gmail.com"
                           width="70%"
@@ -88,7 +88,7 @@ export default function UserProfile() {
                       <div className="flex-1 mb-5 mr-1">
                         <InputField
                           type="text"
-                          variant="standard"
+                          variant="outlined"
                           label="Address"
                           defaultValue="Value"
                           width="86%"
