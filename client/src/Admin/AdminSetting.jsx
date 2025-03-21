@@ -1,261 +1,344 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Paper, 
-  Typography, 
-  TextField, 
-  Button, 
-  Grid, 
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import {
+  Box,
+  Paper,
   Divider,
-  Switch,
-  Dialog,
-  DialogContent,
-  DialogTitle
-} from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
-import { setAuthUser } from '../Store/authSlice';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { QRCodeCanvas } from "qrcode.react"; // ✅ Correct
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  CircularProgress
+} from "@mui/material";
+import axios from "axios";
+import { toast } from "sonner";
+import { QRCodeSVG } from "qrcode.react";
 
-const SecuritySettings = () => {
-  const dispatch = useDispatch();
+export default function AdminSettings() {
   const user = useSelector((state) => state.auth.user);
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(user?.twoFactorEnabled || false);
   const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
   });
-  const [twoFactorDialogOpen, setTwoFactorDialogOpen] = useState(false);
-  const [twoFactorData, setTwoFactorData] = useState({
-    secret: '',
-    qrCode: '',
-    verificationCode: ''
+  const [twoFAForm, setTwoFAForm] = useState({
+    token: ""
+  });
+  const [qrCode, setQrCode] = useState("");
+  const [loading, setLoading] = useState({
+    password: false,
+    twoFAEnable: false,
+    twoFADisable: false
+  });
+  const [errors, setErrors] = useState({
+    password: {},
+    twoFA: {}
   });
 
-  // Password Change Handler
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
+  // Password Change Handlers
+  const handlePasswordChange = (e) => {
+    setPasswordForm({
+      ...passwordForm,
+      [e.target.name]: e.target.value
+    });
+    setErrors({ ...errors, password: {} });
+  };
+
+  const validatePasswordForm = () => {
+    const newErrors = {};
+    
+    if (!passwordForm.currentPassword) {
+      newErrors.currentPassword = "Current password is required";
+    }
+    
+    if (!passwordForm.newPassword) {
+      newErrors.newPassword = "New password is required";
+    } else if (passwordForm.newPassword.length < 8) {
+      newErrors.newPassword = "Password must be at least 8 characters";
+    }
     
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
+    setErrors({ ...errors, password: newErrors });
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (!validatePasswordForm()) return;
+  
+    setLoading({ ...loading, password: true });
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/v1/users/change-password',
-        passwordForm,
+      const accessToken = localStorage.getItem("token");
+console.log("Access Token:", accessToken);
+
+    console.log("Current Password:", passwordForm.currentPassword);
+    console.log("New Password:", passwordForm.newPassword);
+    console.log("Confirm Password:", passwordForm.confirmPassword);
+      await axios.post(
+        `http://localhost:8000/api/v1/users/change-password`,
         {
-          headers: { 
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'Content-Type': 'application/json'
-          },
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+          confirmPassword: passwordForm.confirmPassword
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
           withCredentials: true
         }
       );
-      
-      toast.success('Password changed successfully');
-      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+
+      // Show success toast
+    toast.success("Password changed successfully!");
+
+    // Clear the form fields
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    });
+
+
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Password change failed');
-    }
-  };
-
-  // 2FA Setup Handler
-  const handleTwoFactorToggle = async () => {
-    if (!twoFactorEnabled) {
-      try {
-        const response = await axios.get(
-          'http://localhost:8000/api/v1/users/2fa/setup',
-          {
-            headers: { 
-              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-              withCredentials: true
-            }
-          }
-        );
-        
-        setTwoFactorData({
-          secret: response.data.secret,
-          qrCode: response.data.qrCode,
-          verificationCode: ''
-        });
-        setTwoFactorDialogOpen(true);
-      } catch (error) {
-        toast.error('Failed to setup 2FA');
-      }
-    } else {
-      try {
-        await axios.post(
-          'http://localhost:8000/api/v1/users/2fa/disable',
-          {},
-          {
-            headers: { 
-              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-              withCredentials: true
-            }
-          },
-        );
-        
-        setTwoFactorEnabled(false);
-        toast.success('2FA disabled successfully');
-      } catch (error) {
-        toast.error('Failed to disable 2FA');
+      const errorMessage = error.response?.data?.message || "Password change failed";
+      const validationErrors = error.response?.data?.errors;
+      if (validationErrors) {
+        setErrors({ password: validationErrors });
+      } else {
+        toast.error(errorMessage);
       }
     }
+    finally {
+      // Reset the loading state
+      setLoading({ ...loading, password: false });
+    }
+    
   };
 
-  // 2FA Verification Handler
-  const verifyTwoFactor = async () => {
+  // 2FA Handlers
+  const generate2FASecret = async () => {
+    setLoading({ ...loading, twoFAEnable: true });
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/v1/users/2fa/verify',
+        "http://localhost:8000/api/v1/2fa/generate",
+        {},
         {
-          code: twoFactorData.verificationCode,
-          secret: twoFactorData.secret
-        },
-        {
-          headers: { 
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'Content-Type': 'application/json'
-          },
-          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+          }
         }
       );
-
-      dispatch(setAuthUser(response.data.user));
-      setTwoFactorEnabled(true);
-      setTwoFactorDialogOpen(false);
-      toast.success('2FA enabled successfully');
+      setQrCode(response.data.qr);
+      toast.success("2FA secret generated");
     } catch (error) {
-      toast.error('Invalid verification code');
+      toast.error("Failed to generate 2FA secret");
+    } finally {
+      setLoading({ ...loading, twoFAEnable: false });
+    }
+  };
+
+  const handle2FAChange = (e) => {
+    setTwoFAForm({ ...twoFAForm, [e.target.name]: e.target.value });
+    setErrors({ ...errors, twoFA: {} });
+  };
+
+  const handle2FAEnable = async (e) => {
+    e.preventDefault();
+    setLoading({ ...loading, twoFAEnable: true });
+    
+    try {
+      await axios.post(
+        "http://localhost:8000/api/v1/2fa/enable",
+        { token: twoFAForm.token },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+          }
+        }
+      );
+      toast.success("2FA enabled successfully");
+      setTwoFAForm({ token: "" });
+      setQrCode("");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "2FA enable failed";
+      toast.error(errorMessage);
+    } finally {
+      setLoading({ ...loading, twoFAEnable: false });
+    }
+  };
+
+  const handle2FADisable = async () => {
+    setLoading({ ...loading, twoFADisable: true });
+    
+    try {
+      await axios.post(
+        "http://localhost:8000/api/v1/users/2fa/disable",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+          }
+        }
+      );
+      toast.success("2FA disabled successfully");
+      setQrCode("");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "2FA disable failed";
+      toast.error(errorMessage);
+    } finally {
+      setLoading({ ...loading, twoFADisable: false });
     }
   };
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
-        <Typography variant="h5" gutterBottom>Security Settings</Typography>
-        <Divider sx={{ mb: 4 }} />
-
-        {/* Password Change Section */}
-        <Box component="form" onSubmit={handlePasswordChange} sx={{ mb: 6 }}>
-          <Typography variant="h6" gutterBottom>Change Password</Typography>
-          
+    <Box className="max-w-3xl mx-auto mt-8">
+      {/* Password Change Section */}
+      <Paper elevation={3} className="p-8 mb-6 rounded-lg">
+        <Typography variant="h5" className="mb-4 font-bold">
+          Change Password
+        </Typography>
+        <Divider className="mb-6" />
+        <form onSubmit={handlePasswordSubmit}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Current Password"
+                name="currentPassword"
                 type="password"
                 value={passwordForm.currentPassword}
-                onChange={(e) => setPasswordForm(p => ({...p, currentPassword: e.target.value}))}
-                required
+                onChange={handlePasswordChange}
+                error={!!errors.password.currentPassword}
+                helperText={errors.password.currentPassword}
+                className="h-14"
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="New Password"
+                name="newPassword"
                 type="password"
                 value={passwordForm.newPassword}
-                onChange={(e) => setPasswordForm(p => ({...p, newPassword: e.target.value}))}
-                required
-                inputProps={{ minLength: 8 }}
+                onChange={handlePasswordChange}
+                error={!!errors.password.newPassword}
+                helperText={errors.password.newPassword}
+                className="h-14"
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Confirm New Password"
+                name="confirmPassword"
                 type="password"
                 value={passwordForm.confirmPassword}
-                onChange={(e) => setPasswordForm(p => ({...p, confirmPassword: e.target.value}))}
-                required
+                onChange={handlePasswordChange}
+                error={!!errors.password.confirmPassword}
+                helperText={errors.password.confirmPassword}
+                className="h-14"
               />
             </Grid>
+
             <Grid item xs={12}>
-              <Button 
-                type="submit" 
-                variant="contained" 
-                color="primary"
-                sx={{ mt: 2 }}
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={loading.password}
+                className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
               >
-                Change Password
+                {loading.password ? (
+                  <CircularProgress size={24} className="text-white" />
+                ) : (
+                  "Change Password"
+                )}
               </Button>
             </Grid>
           </Grid>
-        </Box>
+        </form>
+      </Paper>
 
-        {/* 2FA Section */}
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" component="div" gutterBottom>
-            Two-Factor Authentication
-            <Switch
-              checked={twoFactorEnabled}
-              onChange={handleTwoFactorToggle}
-              color="primary"
-              sx={{ ml: 2 }}
-            />
-          </Typography>
-
-          <Dialog 
-            open={twoFactorDialogOpen} 
-            onClose={() => setTwoFactorDialogOpen(false)}
-            maxWidth="sm"
-            fullWidth
-          >
-            <DialogTitle>Setup Two-Factor Authentication</DialogTitle>
-            <DialogContent>
-              <Box sx={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                alignItems: 'center', 
-                py: 4 
-              }}>
-                {twoFactorData.QRCodeCanvas && (
-                  <>
-                    <QRCode 
-                      value={twoFactorData.QRCodeCanvas}
-                      size={256}
-                      level="H"
-                      includeMargin
-                    />
-                    <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+      {/* 2FA Section */}
+      <Paper elevation={3} className="p-8 rounded-lg">
+        <Typography variant="h5" className="mb-4 font-bold">
+          Two-Factor Authentication
+        </Typography>
+        <Divider className="mb-6" />
+        {user?.is2FAEnabled ? (
+          <Box>
+            <Typography className="text-green-600 mb-4">
+              2FA is currently enabled for your account
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={handle2FADisable}
+              disabled={loading.twoFADisable}
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2"
+            >
+              {loading.twoFADisable ? (
+                <CircularProgress size={24} className="text-white" />
+              ) : (
+                "Disable 2FA"
+              )}
+            </Button>
+          </Box>
+        ) : (
+          <Box>
+            {qrCode ? (
+              <form onSubmit={handle2FAEnable}>
+                <Grid container spacing={3} alignItems="center">
+                  <Grid item xs={12} md={6}>
+                    <QRCodeSVG value={qrCode} size={200} level="H" includeMargin={true} />
+                    <Typography variant="body2" className="mt-2">
                       Scan this QR code with your authenticator app
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Or enter secret key: {twoFactorData.secret}
-                    </Typography>
-                  </>
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <TextField
+                      fullWidth
+                      label="Enter 6-digit Code"
+                      name="token"
+                      value={twoFAForm.token}
+                      onChange={handle2FAChange}
+                      className="h-14"
+                    />
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      disabled={loading.twoFAEnable}
+                      className="mt-4 bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+                    >
+                      {loading.twoFAEnable ? (
+                        <CircularProgress size={24} className="text-white" />
+                      ) : (
+                        "Verify and Enable"
+                      )}
+                    </Button>
+                  </Grid>
+                </Grid>
+              </form>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={generate2FASecret}
+                disabled={loading.twoFAEnable}
+                className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+              >
+                {loading.twoFAEnable ? (
+                  <CircularProgress size={24} className="text-white" />
+                ) : (
+                  "Set Up 2FA"
                 )}
-                
-                <TextField
-                  fullWidth
-                  label="Verification Code"
-                  value={twoFactorData.verificationCode}
-                  onChange={(e) => setTwoFactorData(d => ({...d, verificationCode: e.target.value}))}
-                  sx={{ mt: 3 }}
-                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]{6}' }}
-                />
-                
-                <Button 
-                  variant="contained" 
-                  onClick={verifyTwoFactor}
-                  sx={{ mt: 2, width: '100%' }}
-                  disabled={!twoFactorData.verificationCode}
-                >
-                  Verify and Enable 2FA
-                </Button>
-              </Box>
-            </DialogContent>
-          </Dialog>
-        </Box>
+              </Button>
+            )}
+          </Box>
+        )}
       </Paper>
     </Box>
   );
-};
-
-export default SecuritySettings;
+}

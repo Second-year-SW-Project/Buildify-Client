@@ -109,7 +109,6 @@ const handleSubmit = async (e) => {
       address: formData.address.trim(),
       profilePicture: formData.profilePicture || user.profilePicture
     };
-
     const response = await axios.post(
       `http://localhost:8000/api/v1/users/update-profile`,
       updateData,

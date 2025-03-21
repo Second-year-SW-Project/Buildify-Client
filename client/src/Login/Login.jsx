@@ -42,6 +42,7 @@ const Login = () => {
       localStorage.setItem('userId', user._id);
       toast.success("Login successful!");
       dispatch(setAuthUser(user));
+      localStorage.setItem('token', response.data.token);
       
       navigate(user.Role === "admin" ? '/dashboard' : '/user');
       

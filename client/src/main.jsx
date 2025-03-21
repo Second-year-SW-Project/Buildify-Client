@@ -21,6 +21,7 @@ import Verify from "./Login/Verify.jsx";
 import ResetPassword from "./Login/Resetpassword.jsx";
 import ForgetPassword from "./Login/Forgetpassword.jsx";
 import RMA from "./Admin/RMA.jsx";
+import { Toaster } from "sonner";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -101,6 +102,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <Provider store={store}> {/* Wrap everything with Provider */}
     <ThemeProvider theme={theme}>
+    <Toaster />
       <StrictMode>
         <RouterProvider router={router} /> {/* Only use RouterProvider here */}
       </StrictMode>
