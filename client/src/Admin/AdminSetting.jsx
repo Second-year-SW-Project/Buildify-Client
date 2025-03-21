@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
+import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 
 export default function AdminSettings() {
   const user = useSelector((state) => state.auth.user);
@@ -190,16 +192,24 @@ export default function AdminSettings() {
   };
 
   return (
-    <Box className="max-w-3xl mx-auto mt-8">
+    <Box className="ml-7 mt-8">
+       <div className='mt-3 mb-5'>
+                              <PageTitle value="Admin Setting"></PageTitle>
+                              <CustomBreadcrumbs
+                                  paths={[
+                                      { label: 'Admin', href: "/admin/setting" },
+                                      { label: 'Setting' },
+                                  ]} />
+                          </div>
       {/* Password Change Section */}
-      <Paper elevation={3} className="p-8 mb-6 rounded-lg">
-        <Typography variant="h5" className="mb-4 font-bold">
+      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+        <Typography variant="h5" className="mb-8 font-bold pb-5">
           Change Password
         </Typography>
-        <Divider className="mb-6" />
+        
         <form onSubmit={handlePasswordSubmit}>
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid item xs={10}>
               <TextField
                 fullWidth
                 label="Current Password"
@@ -213,7 +223,7 @@ export default function AdminSettings() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={10} sm={5}>
               <TextField
                 fullWidth
                 label="New Password"
@@ -227,7 +237,7 @@ export default function AdminSettings() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={10} sm={5}>
               <TextField
                 fullWidth
                 label="Confirm New Password"
@@ -241,7 +251,7 @@ export default function AdminSettings() {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={10}>
               <Button
                 type="submit"
                 variant="contained"
@@ -260,11 +270,11 @@ export default function AdminSettings() {
       </Paper>
 
       {/* 2FA Section */}
-      <Paper elevation={3} className="p-8 rounded-lg">
-        <Typography variant="h5" className="mb-4 font-bold">
+      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+        <Typography variant="h5" className="mb-8 font-bold pb-5">
           Two-Factor Authentication
         </Typography>
-        <Divider className="mb-6" />
+        
         {user?.is2FAEnabled ? (
           <Box>
             <Typography className="text-green-600 mb-4">
@@ -288,7 +298,7 @@ export default function AdminSettings() {
             {qrCode ? (
               <form onSubmit={handle2FAEnable}>
                 <Grid container spacing={3} alignItems="center">
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={10} md={5}>
                     <div className="qr-container" style={{ position: "relative" }}>
                       <img
                         src={qrCode}
@@ -320,7 +330,7 @@ export default function AdminSettings() {
                     </Typography>
                   </Grid>
 
-                  <Grid item xs={12} md={6}>
+                  <Grid item xs={10} md={5}>
                     <TextField
                       fullWidth
                       label="Enter 6-digit Code"

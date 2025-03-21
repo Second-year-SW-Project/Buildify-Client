@@ -6,6 +6,8 @@ import { setAuthUser } from "../Store/authSlice.js";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 
 export default function AdminProfile() {
   const dispatch = useDispatch();
@@ -143,22 +145,31 @@ const handleSubmit = async (e) => {
   return (
     <Box>
       <Paper elevation={3} sx={{ padding: 4, width: "100%", boxShadow: 3, borderRadius: 3, backgroundColor: "white" }}>
-        <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold" }}>Admin Profile</Typography>
-        <Divider />
+        <div className='mt-3 mb-5'>
+                        <PageTitle value="Admin Profile"></PageTitle>
+                        <CustomBreadcrumbs
+                            paths={[
+                                { label: 'Admin', href: "/admin/profile" },
+                                { label: 'Profile' },
+                            ]} />
+                    </div>
         
         <Box sx={{ pt: 3, textAlign: "center" }}>
           {formData.profilePicture ? (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
             <img 
-              src={formData.profilePicture}
-              alt="Profile"
+              src={formData.profilePicture} 
+              alt="Profile" 
               style={{ 
-                width: "100px",
-                height: "100px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: "2px solid #6a1b9a"
-              }}
+                width: "100px", 
+                height: "100px", 
+                borderRadius: "50%", 
+                objectFit: "cover", 
+                border: "1px solid #6a1b9a" 
+              }} 
             />
+          </div>
+          
           ) : (
             <AccountCircleIcon sx={{ fontSize: 60, color: "#6a1b9a" }} />
           )}
@@ -255,37 +266,27 @@ const handleSubmit = async (e) => {
           </Box>
 
           <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
-            <Button
-              variant="contained"
-              sx={{ 
-                backgroundColor: "#6a1b9a",
-                "&:hover": { backgroundColor: "#4a148c" },
-                px: 4,
-                py: 1
-              }}
-              onClick={toggleEditable}
-            >
-              {editable ? "Cancel" : "Edit Profile"}
-            </Button>
+          <Button
+  variant="contained"
+  disabled={loading.profile}  // Replace with the appropriate loading state if needed
+  onClick={toggleEditable}
+  className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+>
+  {editable ? "Cancel" : "Edit Profile"}
+</Button>
+
 
             {editable && (
               <Button
-                variant="contained"
-                type="submit"
-                sx={{
-                  backgroundColor: "#6a1b9a",
-                  "&:hover": { backgroundColor: "#4a148c" },
-                  px: 4,
-                  py: 1,
-                  "&:disabled": {
-                    backgroundColor: "#9c27b0",
-                    opacity: 0.7
-                  }
-                }}
-                disabled={loading || uploading}
-              >
-                {loading ? "Saving..." : "Save Changes"}
-              </Button>
+              variant="contained"
+              type="submit"
+              className={`px-6 py-2 text-white ${loading || uploading ? 'bg-gray-500 hover:bg-gray-600' : 'bg-purple-700 hover:bg-purple-800'}`}
+              disabled={loading || uploading}
+            >
+              {loading ? "Saving..." : "Save Changes"}
+            </Button>
+            
+            
             )}
           </Box>
         </form>
