@@ -26,7 +26,7 @@ import {
 } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
-import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 
 const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -142,6 +142,7 @@ const Complaints = () => {
                 <TableCell className="font-bold text-black py-3">User Details</TableCell>
                 <TableCell className="font-bold text-black py-3">Date</TableCell>
                 <TableCell className="font-bold text-black py-3">Complaint</TableCell>
+                <TableCell className="font-bold text-black py-3">Complaint Type</TableCell>
                 <TableCell className="font-bold text-black py-3">Status</TableCell>
                 <TableCell className="font-bold text-black py-3">Action</TableCell>
               </TableRow>
@@ -178,6 +179,10 @@ const Complaints = () => {
 
                     <TableCell className="py-4 text-gray-600">
                       {complaint.description}
+                    </TableCell>
+
+                    <TableCell className="py-4 text-gray-600">
+                      {complaint.complaintType}
                     </TableCell>
 
                     <TableCell className="py-4">

@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 
 const Usermanage = () => {
   const [users, setUsers] = useState([]);
@@ -120,9 +121,14 @@ const Usermanage = () => {
   return (
     <div>
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" sx={{ mb: 4, color: "#641A90" }}>
-        User Management
-      </Typography>
+
+       <div className='mt-3 mb-5'>
+                              <PageTitle value="User Manage"></PageTitle>
+                              <CustomBreadcrumbs
+                                  paths={[
+                                    { label: 'User Manage' },
+                                ]} />
+                          </div>
 
       {/* Search/Filters Section */}
       <Box sx={{ display: 'flex', gap: 2, mb: 4, alignItems: 'center' }}>
