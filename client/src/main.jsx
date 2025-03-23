@@ -5,10 +5,10 @@ import App from "./App.jsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./AtomicComponents/theme.jsx";
 import { Provider } from "react-redux";
-import Store
+import store from "./Store/store.js";
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={Store}>
+  <Provider store={store}>
     <ThemeProvider theme={theme}>
       <StrictMode>
         <App />
