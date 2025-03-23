@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Box, Container } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { setAuthUser } from "../Store/authSlice.js";
 
 const ComplaintSubmit = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const ComplaintSubmit = () => {
   const userId = localStorage.getItem('userId'); // Assuming user is logged in and userId is stored
 
   const history = () => {
-    navigate('/auth/usercomplaint');
+    navigate('/user/complaintHistory');
   };
 
   const handleSubmit = async (e) => {
@@ -30,7 +31,7 @@ const ComplaintSubmit = () => {
         title, description, userId 
       });
       toast.success('Complaint submitted successfully!');
-      navigate('/auth/usercomplaint');
+      navigate('/user/complaintHistory');
     
     } catch (err) {
       toast.error('Failed to submit complaint');

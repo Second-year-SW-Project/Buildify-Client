@@ -22,6 +22,8 @@ import ResetPassword from "./Login/Resetpassword.jsx";
 import ForgetPassword from "./Login/Forgetpassword.jsx";
 import RMA from "./Admin/RMA.jsx";
 import { Toaster } from "sonner";
+import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
+import UserComplaints from "./User/UserComplaints.jsx";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -48,6 +50,14 @@ const router = createBrowserRouter([
       {
         path: "/auth/forgetpassword",
         Component: ForgetPassword, 
+      },
+      {
+        path: "/user/complaint",
+        Component: ComplaintSubmit, 
+      },
+      {
+        path: "/user/complaintHistory",
+        Component: UserComplaints, 
       },
       {
         path: "/",
