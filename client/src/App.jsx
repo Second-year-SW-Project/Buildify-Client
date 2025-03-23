@@ -24,6 +24,7 @@ import OrderHistory from "./UserdashboardFeature/pages/OrderHistory";
 import UserProfile from "./UserdashboardFeature/pages/UserProfile";
 import SavedBuilds from "./UserdashboardFeature/pages/SavedBuilds";
 import Settings from "./UserdashboardFeature/pages/Settings";
+import Login from "./Login/Login";
 
 function App() {
   // const [count, setCount] = useState(0);
@@ -31,43 +32,6 @@ function App() {
   return (
     <Router>
       <>
-        {/* Test of inputs */}
-        {/* <div className="p-7">
-          <InputField label="Name" variant="outlined" color="error" />
-          <InputField
-            type="select"
-            label="choose"
-            variant="outlined"
-            options={[
-              { value: "1", label: "Lasitha" },
-              { value: "2", label: "Is" },
-              { value: "3", label: "Crazy" },
-            ]}
-          />
-          <InputField
-            label="Search Input"
-            type="autocomplete"
-            options={[
-              { label: "Apple" },
-              { label: "Banana" },
-              { label: "Cherry" },
-            ]}
-            sx={{ mb: 2 }}
-          />
-          <InputField label="Accept" type="checkbox" color="error" />
-          <InputField
-            row
-            labelPlacement="bottom"
-            color="primary100"
-            label="Choose a Fruit"
-            type="radio"
-            options={[
-              { label: "Apple", value: "apple" },
-              { label: "Banana", value: "banana" },
-              { label: "Cherry", value: "cherry" },
-            ]}
-          />
-        </div> */}
         <Routes>
           <Route path="/myOrders" element={<MyOrders />} />
           <Route path="/rmaSupport" element={<RMAsupport />} />
@@ -75,6 +39,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/savedBuilds" element={<SavedBuilds />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/login" element={<Login />} />
           {/* <Route path="/" exact component={Home} /> */}
           {/* <Route path="/test" element={<Test />} /> */}
         </Routes>

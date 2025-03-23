@@ -112,6 +112,7 @@ export default function UserProfile() {
                           <InputField
                             type="text"
                             variant="outlined"
+                            label="User Name"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
