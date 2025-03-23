@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@mui/system";
 import SideNav from "../SideNav";
 import { Divider, Paper } from "@mui/material";
@@ -6,13 +6,71 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { InputField } from "../../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../../AtomicComponents/Buttons/Buttons";
 import Navbar from "../../MoleculesComponents/User_component/Navbar";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function UserProfile() {
   const [isEnabled, SetIsEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    address: "",
+  });
 
-  const handleToggle = () => {
-    SetIsEnabled(!isEnabled);
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/users/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+        setUser(response.data);
+        setFormData(response.data);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        toast.error("Failed to load profile");
+      }
+    };
+    fetchUserProfile();
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await axios.post(
+        "http://localhost:8000/api/v1/users/update-profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.error("Update error:", error);
+      toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
+  };
+  // const handleToggle = () => {
+  //   SetIsEnabled(!isEnabled);
+  // };
 
   return (
     <div>
@@ -44,83 +102,90 @@ export default function UserProfile() {
                       sx={{ fontSize: 50 }}
                       color="primary"
                     ></AccountCircleIcon>
-                    <div className="flex flex-col md:flex-row mt-5">
-                      <div className="flex-1 mb-5 mr-1">
-                        <InputField
-                          type="text"
-                          variant="outlined"
-                          label="Username"
-                          defaultValue="Gethmi02"
-                          width="70%"
-                        />
+                    <form onSubmit={handleSubmit}>
+                      <div className="flex flex-col md:flex-row mt-5">
+                        <div className="flex-1 mb-5 mr-1">
+                          <InputField
+                            type="text"
+                            variant="outlined"
+                            label="Username"
+                            defaultValue="Gethmi02"
+                            width="70%"
+                          />
+                        </div>
+                        <div className="flex-1 mb-5">
+                          <InputField
+                            type="text"
+                            variant="outlined"
+                            label="First Name"
+                            defaultValue="Gethmi"
+                            width="70%"
+                          />
+                        </div>
                       </div>
-                      <div className="flex-1 mb-5">
-                        <InputField
-                          type="text"
-                          variant="outlined"
-                          label="First Name"
-                          defaultValue="Gethmi"
-                          width="70%"
-                        />
+                      <div className="flex flex-col md:flex-row">
+                        <div className="flex-1 mb-5 mr-1">
+                          <InputField
+                            type="text"
+                            variant="outlined"
+                            label="Last Name"
+                            defaultValue="Rathnayaka"
+                            width="70%"
+                          />
+                        </div>
+                        <div className="flex-1 mb-5">
+                          <InputField
+                            type="text"
+                            variant="outlined"
+                            label="Email Address"
+                            defaultValue="gethmi@gmail.com"
+                            width="70%"
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex flex-col md:flex-row">
-                      <div className="flex-1 mb-5 mr-1">
-                        <InputField
-                          type="text"
-                          variant="outlined"
-                          label="Last Name"
-                          defaultValue="Rathnayaka"
-                          width="70%"
-                        />
+                      <div>
+                        <div className="flex-1 mb-5 mr-1">
+                          <InputField
+                            type="text"
+                            variant="outlined"
+                            label="Address"
+                            defaultValue="Value"
+                            width="86%"
+                            rows={3}
+                          />
+                        </div>
                       </div>
-                      <div className="flex-1 mb-5">
-                        <InputField
-                          type="text"
-                          variant="outlined"
-                          label="Email Address"
-                          defaultValue="gethmi@gmail.com"
-                          width="70%"
-                        />
+                      <div>
+                        <Paper elevation={3} sx={{ padding: 3, width: "86%" }}>
+                          <h2 className="text-2xl font-semibold text-gray-600">
+                            Two Factor Authentication(2FA)
+                          </h2>
+                          <p className="text-gray-600 mt-2">
+                            Status: {isEnabled ? "Enabled" : "Disabled"}
+                          </p>
+                          <OutlinedButton
+                            name={isEnabled ? "Disable" : "Enable"}
+                            onClick={handleToggle}
+                          ></OutlinedButton>
+                        </Paper>
                       </div>
-                    </div>
-                    <div>
-                      <div className="flex-1 mb-5 mr-1">
-                        <InputField
-                          type="text"
-                          variant="outlined"
-                          label="Address"
-                          defaultValue="Value"
-                          width="86%"
-                          rows={3}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Paper elevation={3} sx={{ padding: 3, width: "86%" }}>
-                        <h2 className="text-2xl font-semibold text-gray-600">
-                          Two Factor Authentication(2FA)
-                        </h2>
-                        <p className="text-gray-600 mt-2">
-                          Status: {isEnabled ? "Enabled" : "Disabled"}
-                        </p>
-                        <OutlinedButton
-                          name={isEnabled ? "Disable" : "Enable"}
-                          onClick={handleToggle}
-                        ></OutlinedButton>
-                      </Paper>
-                    </div>
-                    <InputField
-                      type="checkbox"
-                      label="Sign up for emails to get updates"
-                    ></InputField>
-                    <p className="text-purple-600 font-medium">
-                      Change password
-                    </p>
-                    <OutlinedButton
-                      name="Save"
-                      color="black700"
-                    ></OutlinedButton>
+
+                      <InputField
+                        type="checkbox"
+                        label="Sign up for emails to get updates"
+                      ></InputField>
+                      <p className="text-purple-600 font-medium">
+                        Change password
+                      </p>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        disabled={loading}
+                      >
+                        {loading ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </form>
                   </Box>
                 </Box>
               </Box>
