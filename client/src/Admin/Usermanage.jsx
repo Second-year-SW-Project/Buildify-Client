@@ -175,7 +175,7 @@ const Usermanage = () => {
       {/* Users Table */}
       <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ bgcolor: '#f4e6ff' }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
