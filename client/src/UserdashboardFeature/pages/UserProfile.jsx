@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Box } from "@mui/system";
 import SideNav from "../SideNav";
-import { Divider, Paper } from "@mui/material";
+import { Divider, Paper, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { InputField } from "../../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../../AtomicComponents/Buttons/Buttons";
 import Navbar from "../../MoleculesComponents/User_component/Navbar";
 import axios from "axios";
 import { toast } from "sonner";
+import { setAuthUser } from "../../Store/authSlice";
 
 export default function UserProfile() {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
   const [isEnabled, SetIsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    address: "",
+    name: user?.name || "",
+    email: user?.email || "",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    address: user?.address || "",
   });
 
   useEffect(() => {
@@ -32,7 +35,7 @@ export default function UserProfile() {
             },
           }
         );
-        setUser(response.data);
+        dispatch(setAuthUser(response.data));
         setFormData(response.data);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -40,7 +43,7 @@ export default function UserProfile() {
       }
     };
     fetchUserProfile();
-  }, []);
+  }, [dispatch]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -60,6 +63,7 @@ export default function UserProfile() {
           },
         }
       );
+      dispatch(setAuthUser(response.data));
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Update error:", error);
@@ -68,9 +72,9 @@ export default function UserProfile() {
       setLoading(false);
     }
   };
-  // const handleToggle = () => {
-  //   SetIsEnabled(!isEnabled);
-  // };
+  const handleToggle = () => {
+    SetIsEnabled(!isEnabled);
+  };
 
   return (
     <div>
@@ -108,8 +112,9 @@ export default function UserProfile() {
                           <InputField
                             type="text"
                             variant="outlined"
-                            label="Username"
-                            defaultValue="Gethmi02"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
                             width="70%"
                           />
                         </div>
@@ -118,7 +123,9 @@ export default function UserProfile() {
                             type="text"
                             variant="outlined"
                             label="First Name"
-                            defaultValue="Gethmi"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={handleChange}
                             width="70%"
                           />
                         </div>
@@ -129,7 +136,9 @@ export default function UserProfile() {
                             type="text"
                             variant="outlined"
                             label="Last Name"
-                            defaultValue="Rathnayaka"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={handleChange}
                             width="70%"
                           />
                         </div>
@@ -138,7 +147,9 @@ export default function UserProfile() {
                             type="text"
                             variant="outlined"
                             label="Email Address"
-                            defaultValue="gethmi@gmail.com"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
                             width="70%"
                           />
                         </div>
@@ -149,7 +160,9 @@ export default function UserProfile() {
                             type="text"
                             variant="outlined"
                             label="Address"
-                            defaultValue="Value"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
                             width="86%"
                             rows={3}
                           />

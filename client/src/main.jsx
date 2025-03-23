@@ -4,11 +4,15 @@ import "./index.css";
 import App from "./App.jsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./AtomicComponents/theme.jsx";
+import { Provider } from "react-redux";
+import Store
 
 createRoot(document.getElementById("root")).render(
-  <ThemeProvider theme={theme}>
-    <StrictMode>
-      <App />
-    </StrictMode>
-  </ThemeProvider>
+  <Provider store={Store}>
+    <ThemeProvider theme={theme}>
+      <StrictMode>
+        <App />
+      </StrictMode>
+    </ThemeProvider>
+  </Provider>
 );
