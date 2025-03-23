@@ -125,11 +125,12 @@ export default function AdminSettings() {
       // Verify the response structure
       console.log("2FA Generation Response:", response.data);
 
-      // Ensure you're getting the OTP URL properly
-      const otpUrl = response.data.otpauth_url || response.data.qr;
-      if (!otpUrl) {
-        throw new Error("Missing OTP URL in response");
-      }
+      const otpUrl = response.data?.otpauth_url || response.data?.qr;
+if (!otpUrl) {
+    toast.error("QR code generation failed. Try again.");
+    return;
+}
+
 
       setQrCode(otpUrl);
       toast.success("Scan the QR code with your authenticator app");
@@ -288,7 +289,7 @@ export default function AdminSettings() {
         
         {user?.is2FAEnabled ? (
           <Box>
-            <Typography className="text-green-600 mb-4 mt-4">
+            <Typography className="text-purple-600 mb-4 mt-4">
               2FA is currently enabled for your account
             </Typography>
             <Button

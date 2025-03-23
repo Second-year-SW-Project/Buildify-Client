@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from 'sonner';
-import { setAuthUser } from "../store/authSlice";
+import { setAuthUser } from "../Store/authSlice";
 import logo from '../assets/logo.png';
 import pcImage from "../assets/PC.webp";
 
@@ -128,7 +128,7 @@ const Signup = () => {
                 className="!bg-white !rounded"
                 InputProps={{ 
                   className: "!h-8 !text-xs",
-                  style: { borderRadius: '8px' } 
+                  style: { borderRadius: '4px' } 
                 }}
               />
             </div>
@@ -147,7 +147,7 @@ const Signup = () => {
                 className="!bg-white !rounded"
                 InputProps={{ 
                   className: "!h-8 !text-xs",
-                  style: { borderRadius: '8px' } 
+                  style: { borderRadius: '4px' } 
                 }}
               />
             </div>
@@ -166,7 +166,7 @@ const Signup = () => {
                 className="!bg-white !rounded"
                 InputProps={{ 
                   className: "!h-8 !text-xs",
-                  style: { borderRadius: '8px' } 
+                  style: { borderRadius: '4px' } 
                 }}
               />
             </div>
@@ -185,7 +185,7 @@ const Signup = () => {
                 className="!bg-white !rounded"
                 InputProps={{ 
                   className: "!h-8 !text-xs",
-                  style: { borderRadius: '8px' } 
+                  style: { borderRadius: '4px' } 
                 }}
               />
             </div>
@@ -198,7 +198,7 @@ const Signup = () => {
                   size="small"
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
-                  sx={{ padding: '4px' }}
+                  sx={{ padding: '4px', paddingLeft: '10px' }}
                 />
               }
               label={
@@ -232,7 +232,7 @@ const Signup = () => {
                 }
               }}
             >
-              <span className="text-xs">or</span>
+              <span className="text-xs text-white">or</span>
             </Divider>
 
             {/* Google Button Only */}
