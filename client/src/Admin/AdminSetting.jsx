@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector ,useDispatch } from "react-redux";
 import {
   Box,
   Paper,
@@ -14,9 +14,12 @@ import axios from "axios";
 import { toast } from "sonner";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import { setAuthUser } from "../Store/authSlice.js";
 
 export default function AdminSettings() {
   const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -157,9 +160,15 @@ export default function AdminSettings() {
           }
         }
       );
+      
       toast.success("2FA enabled successfully");
+      dispatch(setAuthUser({ ...user, is2FAEnabled: true }));
+
       setTwoFAForm({ token: "" });
       setQrCode("");
+
+     
+
     } catch (error) {
       const errorMessage = error.response?.data?.message || "2FA enable failed";
       toast.error(errorMessage);
@@ -181,6 +190,8 @@ export default function AdminSettings() {
           }
         }
       );
+      dispatch(setAuthUser({ ...user, is2FAEnabled: false }));
+
       toast.success("2FA disabled successfully");
       setQrCode("");
     } catch (error) {
@@ -277,7 +288,7 @@ export default function AdminSettings() {
         
         {user?.is2FAEnabled ? (
           <Box>
-            <Typography className="text-green-600 mb-4">
+            <Typography className="text-green-600 mb-4 mt-4">
               2FA is currently enabled for your account
             </Typography>
             <Button
