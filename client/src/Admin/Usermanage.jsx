@@ -176,21 +176,11 @@ const Usermanage = () => {
             onClick={handleAddNewUser}
             variant="contained"
             color="primary"
-            sx={{
-              margin: "20px 0",
-              backgroundColor: "#641A90", // Dark purple background
-              color: "white", // White font color
-              border: "none",
-              marginLeft: "10px", // Remove border
-              "&:hover": {
-                backgroundColor: "#F4E6FF", // Light purple background on hover
-                color: "#641A90", // Dark purple font color on hover
-                border: "none", // Ensure no border on hover
-              },
-            }}
+             className="bg-purple-600 hover:bg-purple-700 text-white h-[56px]"
           >
             Add New User
           </Button>
+          <div className="mb-5"></div>
 
 
 
@@ -244,14 +234,15 @@ const Usermanage = () => {
                           <Edit style={{ fontSize: "18px" }} /> {/* Adjust icon size */}
                         </IconButton>
                         <IconButton
-                          onClick={() => deleteUser(user._id)}
-                          style={{
-                            color: "#641A90",
-                            padding: "8px",
-                          }}
-                        >
-                          <Delete style={{ fontSize: "18px" }} />
-                        </IconButton>
+  onClick={() => openDeleteConfirmationDialog(user)}
+  style={{
+    color: "#641A90",
+    padding: "8px",
+  }}
+>
+  <Delete style={{ fontSize: "18px" }} />
+</IconButton>
+
                       </TableCell>
                     </TableRow>
                   ))
