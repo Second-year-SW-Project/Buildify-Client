@@ -21,31 +21,33 @@ import Verify from "./Login/Verify.jsx";
 import ResetPassword from "./Login/Resetpassword.jsx";
 import ForgetPassword from "./Login/Forgetpassword.jsx";
 
+export const backendUrl = import.meta.env.VITE_BACKEND_URL
+
 // Define the router configuration
 const router = createBrowserRouter([
   {
-  
+
     Component: App,
     children: [
       {
         path: "/auth/signup",
-        Component: Signup, 
+        Component: Signup,
       },
       {
         path: "/auth/login",
-        Component: Login, 
+        Component: Login,
       },
       {
         path: "/auth/verify",
-        Component: Verify, 
+        Component: Verify,
       },
       {
         path: "/auth/resetpassword",
-        Component: ResetPassword, 
+        Component: ResetPassword,
       },
       {
         path: "/auth/forgetpassword",
-        Component: ForgetPassword, 
+        Component: ForgetPassword,
       },
       {
         path: "/",

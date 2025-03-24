@@ -13,8 +13,8 @@ export default function SetDate({ width, label }) {
           minWidth: { width },
           "& .MuiInputBase-root": {
             "& fieldset": {
-              borderWidth: 2, // Default border color
-              borderRadius: 2,
+              borderWidth: 1, // Default border color
+              borderRadius: 1,
             },
           }
         }}

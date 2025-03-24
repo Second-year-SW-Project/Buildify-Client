@@ -46,6 +46,7 @@ export function PrimaryButton({
     onClick,
     loading = false,
     isDisabled = false,
+    type
 }) {
     const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
@@ -58,6 +59,8 @@ export function PrimaryButton({
                 disabled={isDisabled || loading}
                 loading={loading}
                 loadingIndicator="Loading…"
+                onClick={onClick}
+                type={type}
                 sx={{
                     fontWeight: isBold ? 700 : 400,
                     borderRadius: borderRadius,
@@ -81,8 +84,10 @@ export function OutlinedButton({
     buttonSize,
     fontSize,
     isRounded,
+    onClick,
     loading = false,
     isDisabled = false,
+    type
 }) {
     const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
@@ -94,6 +99,8 @@ export function OutlinedButton({
                 disabled={isDisabled || loading}
                 loading={loading}
                 loadingIndicator="Loading…"
+                onClick={onClick}
+                type={type}
                 sx={{
                     bgcolor: 'white',
                     fontWeight: isBold ? 700 : 400,
@@ -116,8 +123,10 @@ export function CustomOutlinedButton({
     isFixed,
     buttonSize,
     fontSize,
+    onClick,
     loading = false,
     isDisabled = false,
+    type
 }) {
     const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
     return (
@@ -127,6 +136,8 @@ export function CustomOutlinedButton({
                 disabled={isDisabled || loading}
                 loading={loading}
                 loadingIndicator="Loading…"
+                onClick={onClick}
+                type={type}
                 sx={{
                     fontWeight: isBold ? 700 : 400,
                     fontSize: fontSize,
@@ -145,6 +156,8 @@ export function CustomOutlinedButton({
 export function ApplyButton({
     loading = false,
     isDisabled = false,
+    onClick,
+    type
 }) {
     return (
         <div>
@@ -154,6 +167,8 @@ export function ApplyButton({
                 disabled={isDisabled || loading}
                 loading={loading}
                 loadingIndicator="Loading…"
+                onClick={onClick}
+                type={type}
                 sx={{
                     fontWeight: 700,
                     borderRadius: '30px',
@@ -187,6 +202,8 @@ export function ImageUploadButton({
     fontSize,
     loading = false,
     isDisabled = false,
+    onClick,
+    type
 }) {
     //Create Upload file Function
     const handleFileChange = (event) => {
@@ -217,6 +234,8 @@ export function ImageUploadButton({
                 loadingPosition="start"
                 startIcon={<CloudUploadIcon />}
                 style={{ borderRadius: 8, fontWeight: 'bold' }}
+                onClick={onClick}
+                type={type}
                 sx={{
                     fontSize: fontSize,
                     padding: sizeConfig.padding
@@ -244,7 +263,9 @@ export function AddButton({
     isBold,
     fontSize,
     buttonSize,
-    isRounded
+    isRounded,
+    onClick,
+    type
 }) {
     const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
     const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
@@ -259,6 +280,8 @@ export function AddButton({
                 disabled={isDisabled || loading}
                 loading={loading}
                 loadingIndicator="Loading..."
+                onClick={onClick}
+                type={type}
                 startIcon={<Add />
                 }
                 style={{ borderRadius: borderRadius }}

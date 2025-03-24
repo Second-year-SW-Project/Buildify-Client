@@ -4,7 +4,7 @@ import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
-import { setAuthUser } from "../store/authSlice";
+import { setAuthUser } from "../Store/authSlice";
 import sideImage from "../assets/PC.webp";
 import logo from '../assets/logo.png';
 
@@ -23,7 +23,7 @@ const ResetPassword = () => {
       toast.error("Please fill all fields");
       return;
     }
-    
+
     if (password !== passwordConfirm) {
       toast.error("Passwords do not match");
       return;
@@ -33,8 +33,8 @@ const ResetPassword = () => {
     try {
       const data = { email, otp, password, passwordConfirm };
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/reset-password", 
-        data, 
+        "http://localhost:8000/api/v1/users/reset-password",
+        data,
         { withCredentials: true }
       );
 
@@ -60,27 +60,27 @@ const ResetPassword = () => {
             Get compatible recommendations
             <br /> Pick your ideal components
           </Typography>
-          <img 
-            src={sideImage} 
-            alt="PC" 
-            className="w-full max-w-[420px] !mt-4" 
+          <img
+            src={sideImage}
+            alt="PC"
+            className="w-full max-w-[420px] !mt-4"
           />
         </Box>
 
         {/* Vertical Divider */}
-        <Divider 
-          orientation="vertical" 
-          flexItem 
-          className="!bg-white/30 !mx-6 !hidden md:!block" 
+        <Divider
+          orientation="vertical"
+          flexItem
+          className="!bg-white/30 !mx-6 !hidden md:!block"
         />
 
         {/* Right Section */}
         <Box className="flex-1 !min-w-[300px] !max-w-md">
           <Box className="flex flex-col items-center mb-6">
-            <img 
-              src={logo} 
-              alt="Logo" 
-              className="w-24 mb-4" 
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-24 mb-4"
             />
             <Typography variant="h4" className="!text-white !font-bold !text-xl">
               Reset Password
@@ -149,8 +149,8 @@ const ResetPassword = () => {
 
             {/* Back Link */}
             <Typography className="!text-white !text-center !mt-4 !text-xs">
-              <Link 
-                to="/auth/forgetpassword" 
+              <Link
+                to="/auth/forgetpassword"
                 className="!text-[#60A5FA] hover:!underline"
               >
                 Back to Forgot Password

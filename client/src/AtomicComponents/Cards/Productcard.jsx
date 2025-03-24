@@ -5,7 +5,7 @@ import { Typography } from "@mui/material";
 export default function ProductCard({ name, type, src }) {
     return (
         <div className="flex items-center space-x-3">
-            <div className='w-16 h-16'>
+            <div className='max-w-20 max-h-20'>
                 <img className="w-full h-full" src={src} alt="image" />
             </div>
             <div>

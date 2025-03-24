@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import Iconset from '../../AtomicComponents/Icons/Iconset';
 import { Typography } from '@mui/material';
 
-function ImageSelector() {
+function ImageSelector({ onImagesSelect }) {
     const [images, setImages] = useState([])
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef()
@@ -20,12 +20,18 @@ function ImageSelector() {
             .map((file) => ({
                 name: file.name,
                 src: URL.createObjectURL(file),
+                file: file,
             }));
 
-        setImages((prevImages) => [...prevImages, ...newImages]);
+        const updatedImages = [...images, ...newImages].slice(0, 4);
+        setImages(updatedImages);
+
+        onImagesSelect(updatedImages.map((img) => img.file));
     }
     function deleteImage(index) {
-        setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+        const updatedImages = images.filter((_, i) => i !== index);
+        setImages(updatedImages);
+        onImagesSelect(updatedImages.map((img) => img.file));
     }
     function onDragOver(event) {
         event.preventDefault()

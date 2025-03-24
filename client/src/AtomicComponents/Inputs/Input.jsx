@@ -49,6 +49,10 @@ export function InputField({
         disabled={disabled}
         helperText={helperText}
         error={!!error}
+        onChange={(e) => {
+          if (onChange)
+            onChange(e.target.value);
+        }}
         slotProps={{
           input: {
             endAdornment: (
@@ -99,6 +103,10 @@ export function InputField({
         disabled={disabled}
         helperText={helperText}
         error={!!error}
+        onChange={(e) => {
+          if (onChange)
+            onChange(e.target.value);
+        }}
         sx={{
           width: width,
           marginBottom: "10px",
@@ -128,6 +136,10 @@ export function InputField({
         variant={variant}
         color={color}
         width={width}
+        onChange={(e) => {
+          if (onChange)
+            onChange(e.target.value);
+        }}
         slotProps={{
           inputLabel: {
             shrink: { Auto },

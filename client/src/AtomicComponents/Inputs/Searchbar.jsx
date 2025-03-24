@@ -21,12 +21,12 @@ export function SearchBar({ placeholder, width, fontSize }) {
       sx={{
         "& .MuiInputBase-root": {
           "& fieldset": {
-            borderWidth: 2,
-            borderRadius: 2,
+            borderWidth: 1,
+            borderRadius: 1,
           },
-          width: width,
           fontSize: fontSize,
-        }
+        },
+        width
       }}
       InputProps={{
         startAdornment: (
@@ -35,7 +35,6 @@ export function SearchBar({ placeholder, width, fontSize }) {
           </InputAdornment>
         ),
       }}
-    //   fullWidth
     />
   );
 };

@@ -126,186 +126,186 @@ const Usermanage = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <div style={{padding: "30px"}}>
-        <h2 style={{paddingLeft: "20px"}}>User Management</h2>
+      <div style={{ padding: "30px" }}>
+        <h2 style={{ paddingLeft: "20px" }}>User Management</h2>
         <div style={{ padding: "10px", height: "25%", display: "flex", flexDirection: "row", alignItems: "center", gap: "20px" }}>
-  <TextField
-    label="Search by Name"
-    name="name"
-    value={filters.name}
-    onChange={handleFilterChange}
-    style={{
-      flex: 1, // To make it stretch
-      height: "40px", // Match the height of the button
-    }}
-    InputProps={{
-      style: {
-        height: "40px", // Match the height of the button
-        padding: "0 14px", // Adjust padding to align text
-        textAlign: "center", // Center the text inside the input field
-      }
-    }}
-    InputLabelProps={{
-      style: {
-        fontSize: "12px", // Smaller font size for label
-      }
-    }}
-  />
-  <TextField
-    label="Search by Email"
-    name="email"
-    value={filters.email}
-    onChange={handleFilterChange}
-    style={{
-      flex: 1, // To make it stretch
-      height: "40px", // Match the height of the button
-    }}
-    InputProps={{
-      style: {
-        height: "40px", // Match the height of the button
-        padding: "0 14px", // Adjust padding to align text
-        textAlign: "center", // Center the text inside the input field
-      }
-    }}
-    InputLabelProps={{
-      style: {
-        fontSize: "12px", // Smaller font size for label
-      }
-    }}
-  />
-  <Select
-    name="Role"
-    value={filters.Role || ""} // Default to empty string to show "All Roles"
-    onChange={handleFilterChange}
-    style={{
-      flex: 1, // To make it stretch
-      height: "40px", // Match the height of the button
-    }}
-    MenuProps={{
-      PaperProps: {
-        style: {
-          maxHeight: 300,
-        },
-      },
-    }}
-  >
-    <MenuItem value="">All Roles</MenuItem> {/* Default option */}
-    <MenuItem value="admin">Admin</MenuItem>
-    <MenuItem value="user">User</MenuItem>
-  </Select>
-  <Button
-  onClick={handleSearch}
-  variant="contained"
-  sx={{
-    margin: "20px 0",
-    backgroundColor: "#641A90", // Dark purple background
-    color: "white", // White font color
-    border: "none", // Remove border
-    "&:hover": {
-      backgroundColor: "#F4E6FF", // Light purple background on hover
-      color: "#641A90", // Dark purple font color on hover
-      border: "none", // Ensure no border on hover
-    },
-  }}
->
-  Search
-</Button>
-</div>
+          <TextField
+            label="Search by Name"
+            name="name"
+            value={filters.name}
+            onChange={handleFilterChange}
+            style={{
+              flex: 1, // To make it stretch
+              height: "40px", // Match the height of the button
+            }}
+            InputProps={{
+              style: {
+                height: "40px", // Match the height of the button
+                padding: "0 14px", // Adjust padding to align text
+                textAlign: "center", // Center the text inside the input field
+              }
+            }}
+            InputLabelProps={{
+              style: {
+                fontSize: "12px", // Smaller font size for label
+              }
+            }}
+          />
+          <TextField
+            label="Search by Email"
+            name="email"
+            value={filters.email}
+            onChange={handleFilterChange}
+            style={{
+              flex: 1, // To make it stretch
+              height: "40px", // Match the height of the button
+            }}
+            InputProps={{
+              style: {
+                height: "40px", // Match the height of the button
+                padding: "0 14px", // Adjust padding to align text
+                textAlign: "center", // Center the text inside the input field
+              }
+            }}
+            InputLabelProps={{
+              style: {
+                fontSize: "12px", // Smaller font size for label
+              }
+            }}
+          />
+          <Select
+            name="Role"
+            value={filters.Role || ""} // Default to empty string to show "All Roles"
+            onChange={handleFilterChange}
+            style={{
+              flex: 1, // To make it stretch
+              height: "40px", // Match the height of the button
+            }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 300,
+                },
+              },
+            }}
+          >
+            <MenuItem value="">All Roles</MenuItem> {/* Default option */}
+            <MenuItem value="admin">Admin</MenuItem>
+            <MenuItem value="user">User</MenuItem>
+          </Select>
+          <Button
+            onClick={handleSearch}
+            variant="contained"
+            sx={{
+              margin: "20px 0",
+              backgroundColor: "#641A90", // Dark purple background
+              color: "white", // White font color
+              border: "none", // Remove border
+              "&:hover": {
+                backgroundColor: "#F4E6FF", // Light purple background on hover
+                color: "#641A90", // Dark purple font color on hover
+                border: "none", // Ensure no border on hover
+              },
+            }}
+          >
+            Search
+          </Button>
+        </div>
 
 
-<Button
-  onClick={handleAddNewUser}
-  variant="contained"
-  color="primary"
-  sx={{
-    margin: "20px 0",
-    backgroundColor: "#641A90", // Dark purple background
-    color: "white", // White font color
-    border: "none",
-    marginLeft: "10px", // Remove border
-    "&:hover": {
-      backgroundColor: "#F4E6FF", // Light purple background on hover
-      color: "#641A90", // Dark purple font color on hover
-      border: "none", // Ensure no border on hover
-    },
-  }}
->
-  Add New User
-</Button>
+        <Button
+          onClick={handleAddNewUser}
+          variant="contained"
+          color="primary"
+          sx={{
+            margin: "20px 0",
+            backgroundColor: "#641A90", // Dark purple background
+            color: "white", // White font color
+            border: "none",
+            marginLeft: "10px", // Remove border
+            "&:hover": {
+              backgroundColor: "#F4E6FF", // Light purple background on hover
+              color: "#641A90", // Dark purple font color on hover
+              border: "none", // Ensure no border on hover
+            },
+          }}
+        >
+          Add New User
+        </Button>
 
 
 
-<TableContainer component={Paper}>
-  <Table sx={{ marginLeft: "15px" }}>
-    <TableHead>
-      <TableRow style={{ backgroundColor: "#F4E6FF" }}>
-        <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Name</TableCell>
-        <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Email</TableCell>
-        <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Role</TableCell>
-        <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Actions</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {filteredUsers.length > 0 ? (
-        filteredUsers.map((user) => (
-          <TableRow key={user._id}>
-            <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>{user.name}</TableCell>
-            <TableCell style={{ padding: "8px",  verticalAlign: "middle" }}>{user.email}</TableCell>
-            <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD", // Very light green for admin, very light blue for user
-                  color: user.Role === "admin" ? "#1B5E20" : "#0D47A1", // Dark green for admin, dark blue for user
-                  fontWeight: "bold",
-                  fontSize: "12px", // Small font size
-                  padding: "2px 8px", // Compact button size
-                  minWidth: "auto", // Prevents unnecessary expansion
-                  borderRadius: "8px", // Smooth rounded corners
-                  textTransform: "none", // Keeps text normal (not uppercase)
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  "&:hover": {
-                    backgroundColor: user.Role === "admin" ? "#D0F8CE" : "#D6EAF8", // Slightly darker shade on hover
-                  },
-                }}
-              >
-                {user.Role}
-              </Button>
-            </TableCell>
-            <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
-              <IconButton
-                onClick={() => startEditing(user)}
-                style={{
-                  color: "#641A90", // Purple color
-                  padding: "8px", // Slightly reduced padding
-                }}
-              >
-                <Edit style={{ fontSize: "18px" }} /> {/* Adjust icon size */}
-              </IconButton>
-              <IconButton
-                onClick={() => deleteUser(user._id)}
-                style={{
-                  color: "#641A90",
-                  padding: "8px",
-                }}
-              >
-                <Delete style={{ fontSize: "18px" }} />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        ))
-      ) : (
-        <TableRow>
-          <TableCell colSpan="4" style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
-            No matching users found
-          </TableCell>
-        </TableRow>
-      )}
-    </TableBody>
-  </Table>
-</TableContainer>
+        <TableContainer component={Paper}>
+          <Table sx={{ marginLeft: "15px" }}>
+            <TableHead>
+              <TableRow style={{ backgroundColor: "#F4E6FF" }}>
+                <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Name</TableCell>
+                <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Email</TableCell>
+                <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Role</TableCell>
+                <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => (
+                  <TableRow key={user._id}>
+                    <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>{user.name}</TableCell>
+                    <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>{user.email}</TableCell>
+                    <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD", // Very light green for admin, very light blue for user
+                          color: user.Role === "admin" ? "#1B5E20" : "#0D47A1", // Dark green for admin, dark blue for user
+                          fontWeight: "bold",
+                          fontSize: "12px", // Small font size
+                          padding: "2px 8px", // Compact button size
+                          minWidth: "auto", // Prevents unnecessary expansion
+                          borderRadius: "8px", // Smooth rounded corners
+                          textTransform: "none", // Keeps text normal (not uppercase)
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          "&:hover": {
+                            backgroundColor: user.Role === "admin" ? "#D0F8CE" : "#D6EAF8", // Slightly darker shade on hover
+                          },
+                        }}
+                      >
+                        {user.Role}
+                      </Button>
+                    </TableCell>
+                    <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
+                      <IconButton
+                        onClick={() => startEditing(user)}
+                        style={{
+                          color: "#641A90", // Purple color
+                          padding: "8px", // Slightly reduced padding
+                        }}
+                      >
+                        <Edit style={{ fontSize: "18px" }} /> {/* Adjust icon size */}
+                      </IconButton>
+                      <IconButton
+                        onClick={() => deleteUser(user._id)}
+                        style={{
+                          color: "#641A90",
+                          padding: "8px",
+                        }}
+                      >
+                        <Delete style={{ fontSize: "18px" }} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan="4" style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
+                    No matching users found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
 
 
