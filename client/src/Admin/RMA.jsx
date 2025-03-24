@@ -109,15 +109,19 @@ const RMA = () => {
           value={filters.orderId}
           onChange={(e) => setFilters(prev => ({ ...prev, orderId: e.target.value }))}
           size="small"
-          sx={{ flex: 1 }}
+           className="h-12"
+           InputProps={{ style: { height: 48 } }} // Ensures consistent height
+           sx={{ flex: 1, width: 'auto', maxWidth: 400 }} // Set the max width for the field
         />
         <FormControl sx={{ minWidth: 120 }}>
           <InputLabel>Status</InputLabel>
           <Select
             value={filters.status}
+             className="h-12"
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
             label="Status"
             size="small"
+            sx={{ flex: 1, width: 'auto', maxWidth: 400 }} // Set the max width for the field
           >
             <MenuItem value="">All</MenuItem>
             <MenuItem value="Processing">Processing</MenuItem>
@@ -128,7 +132,7 @@ const RMA = () => {
         <Button
           variant="contained"
           onClick={fetchRequests}
-          sx={{ height: 40 }}
+          sx={{ height: 45 }}
         >
           Search
         </Button>

@@ -128,51 +128,61 @@ const Review = () => {
 
         {/* Filter Section */}
        {/* Filter Section */}
-<div className="flex flex-wrap gap-4 mt-6 mb-8 items-end">
+       <div className="flex flex-wrap gap-4 mt-6 mb-8 items-end">
   <FormControl className="w-64 flex">
     <TextField
-      label="Search comments"
+      label="Search"
       variant="outlined"
       size="small"
+      InputProps={{ style: { height: 48 } }} // Ensures consistent height
       onChange={(e) => setFilter({ ...filter, type: e.target.value })}
     />
   </FormControl>
 
-  
-<FormControl className="w-48 flex">
-  <TextField
-    label="Date"
-    type="date"
-    variant="outlined"
-    size="small"
-    InputLabelProps={{ shrink: true }}
-    onChange={(e) => setFilter({ ...filter, date: e.target.value })}
-  />
-</FormControl>
+  <FormControl className="w-48 flex">
+    <TextField
+      label="Date"
+      type="date"
+      variant="outlined"
+      size="small"
+      InputProps={{ style: { height: 48 } }} // Ensures consistent height
+      InputLabelProps={{ shrink: true }}
+      onChange={(e) => setFilter({ ...filter, date: e.target.value })}
+    />
+  </FormControl>
 
   <FormControl className="w-48 flex">
     <InputLabel>Rating Filter</InputLabel>
     <Select
       label="Rating Filter"
       size="small"
+      className="h-12"
+      MenuProps={{ PaperProps: { style: { maxHeight: 200 } } }}
       onChange={(e) => setFilter({ ...filter, minRating: e.target.value })}
     >
-      <MenuItem value=""><em>All Ratings</em></MenuItem>
+      <MenuItem value="">
+        <em>All Ratings</em>
+      </MenuItem>
       {[5, 4, 3, 2, 1].map((num) => (
         <MenuItem key={num} value={num}>
-          {Array(num).fill(<StarIcon className="text-yellow-400 w-4 h-4" />)}
+          {Array(num)
+            .fill(null)
+            .map((_, index) => (
+              <StarIcon key={index} className="text-yellow-400 w-4 h-4" />
+            ))}
         </MenuItem>
       ))}
     </Select>
   </FormControl>
 
   <button
-    className="p-3 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 w-20"
+    className="p-4 h-12 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 w-24 flex items-center justify-center"
     onClick={fetchReviews}
   >
     Filter
   </button>
 </div>
+
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
