@@ -25,6 +25,10 @@ import UserProfile from "./UserdashboardFeature/pages/UserProfile";
 import SavedBuilds from "./UserdashboardFeature/pages/SavedBuilds";
 import Settings from "./UserdashboardFeature/pages/Settings";
 import Login from "./Login/Login";
+import Signup from "./Login/Signup";
+import Verify from "./Login/Verify";
+import ResetPassword from "./Login/Resetpassword";
+import ForgetPassword from "./Login/Forgetpassword";
 
 function App() {
   // const [count, setCount] = useState(0);
@@ -39,7 +43,11 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/savedBuilds" element={<SavedBuilds />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/auth/signup" element={<Signup />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/verify" element={<Verify />} />
+          <Route path="/auth/resetpassword" element={<ResetPassword />} />
+          <Route path="/auth/forgetpassword" element={<ForgetPassword />} />
           {/* <Route path="/" exact component={Home} /> */}
           {/* <Route path="/test" element={<Test />} /> */}
         </Routes>

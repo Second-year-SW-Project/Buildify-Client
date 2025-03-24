@@ -17,24 +17,33 @@ export default function UserProfile() {
   const [isEnabled, SetIsEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    email: user?.email || "",
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    address: user?.address || "",
+    name: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    address: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        address: user.address || "",
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/users/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost:8000/api/v1/users", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
         dispatch(setAuthUser(response.data));
         setFormData(response.data);
       } catch (error) {
@@ -54,7 +63,7 @@ export default function UserProfile() {
     setLoading(true);
 
     try {
-      await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/api/v1/users/update-profile",
         formData,
         {
@@ -114,9 +123,10 @@ export default function UserProfile() {
                             variant="outlined"
                             label="User Name"
                             name="name"
-                            value={formData.name}
+                            value={formData.name || ""}
                             onChange={handleChange}
                             width="70%"
+                            outlinedActive
                           />
                         </div>
                         <div className="flex-1 mb-5">
@@ -125,9 +135,10 @@ export default function UserProfile() {
                             variant="outlined"
                             label="First Name"
                             name="firstName"
-                            value={formData.firstName}
+                            value={formData.firstName || ""}
                             onChange={handleChange}
                             width="70%"
+                            outlinedActive
                           />
                         </div>
                       </div>
@@ -138,9 +149,10 @@ export default function UserProfile() {
                             variant="outlined"
                             label="Last Name"
                             name="lastName"
-                            value={formData.lastName}
+                            value={formData.lastName || ""}
                             onChange={handleChange}
                             width="70%"
+                            outlinedActive
                           />
                         </div>
                         <div className="flex-1 mb-5">
@@ -149,9 +161,10 @@ export default function UserProfile() {
                             variant="outlined"
                             label="Email Address"
                             name="email"
-                            value={formData.email}
+                            value={formData.email || ""}
                             onChange={handleChange}
                             width="70%"
+                            outlinedActive
                           />
                         </div>
                       </div>
@@ -162,10 +175,11 @@ export default function UserProfile() {
                             variant="outlined"
                             label="Address"
                             name="address"
-                            value={formData.address}
+                            value={formData.address || ""}
                             onChange={handleChange}
                             width="86%"
                             rows={3}
+                            outlinedActive
                           />
                         </div>
                       </div>
