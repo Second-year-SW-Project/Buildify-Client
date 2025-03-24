@@ -20,6 +20,11 @@ import Login from "./Login/Login.jsx";
 import Verify from "./Login/Verify.jsx";
 import ResetPassword from "./Login/Resetpassword.jsx";
 import ForgetPassword from "./Login/Forgetpassword.jsx";
+import RMA from "./Admin/RMA.jsx";
+import { Toaster } from "sonner";
+import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
+import UserComplaints from "./User/UserComplaints.jsx";
+import Review from "./Admin/Review.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL
 
@@ -48,6 +53,14 @@ const router = createBrowserRouter([
       {
         path: "/auth/forgetpassword",
         Component: ForgetPassword,
+      },
+      {
+        path: "/user/complaint",
+        Component: ComplaintSubmit, 
+      },
+      {
+        path: "/user/complaintHistory",
+        Component: UserComplaints, 
       },
       {
         path: "/",
@@ -89,6 +102,14 @@ const router = createBrowserRouter([
             path: "/feedbackmanage/complaints",
             Component: Complaints,
           },
+          {
+            path: "/feedbackmanage/rma",
+            Component: RMA,
+          },
+          {
+            path: "/feedbackmanage/comments&reviews",
+            Component: Review,
+          },
         ],
       },
     ],
@@ -98,6 +119,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <Provider store={store}> {/* Wrap everything with Provider */}
     <ThemeProvider theme={theme}>
+    <Toaster />
       <StrictMode>
         <RouterProvider router={router} /> {/* Only use RouterProvider here */}
       </StrictMode>

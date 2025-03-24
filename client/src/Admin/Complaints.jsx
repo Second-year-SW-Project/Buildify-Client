@@ -26,6 +26,8 @@ import {
 } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
+import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 
 const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -64,6 +66,7 @@ const Complaints = () => {
       });
       toast.success('Response submitted!');
       setOpenDialog(false);
+      setResponseText('');
       fetchComplaints();
     } catch (err) {
       toast.error('Failed to submit response');
@@ -75,18 +78,18 @@ const Complaints = () => {
       {/* Header Section */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-6">
-          <Typography variant="h4" className="font-bold text-black">
-            Complaints Management
-          </Typography>
-          <div className="flex gap-4">
-            <Button variant="text" className="text-black">Reviews</Button>
-            <Button variant="text" className="text-black font-bold border-b-2 border-purple-600">
-              Complaints
-            </Button>
-          </div>
+          <div className='mt-3 mb-5'>
+                                  <PageTitle value="Complaint Management"></PageTitle>
+                                  <CustomBreadcrumbs
+                                      paths={[
+                                          { label: 'Feedback Manage', href: "/feedbackmanage/complaints" },
+                                          { label: 'Complaint Management' },
+                                      ]} />
+                              </div>
         </div>
         
-        <div className="flex gap-4 mb-6">
+        {/* Search and Filter Section */}
+        <div className="flex gap-4 mb-6 items-center">
           <TextField
             placeholder="Search complaints..."
             variant="outlined"
@@ -94,13 +97,30 @@ const Complaints = () => {
             className="w-96"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                height: 56,
+                borderRadius: '8px',
+                '&:hover fieldset': { borderColor: '#641A90' },
+                '&.Mui-focused fieldset': { borderColor: '#641A90' }
+              }
+            }}
           />
+          
           <FormControl className="w-48">
             <InputLabel>Status</InputLabel>
             <Select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               label="Status"
+              sx={{
+                height: 56,
+                borderRadius: '8px',
+                '& .MuiSelect-select': {
+                  paddingTop: '16px',
+                  paddingBottom: '16px'
+                }
+              }}
             >
               <MenuItem value="">All Status</MenuItem>
               <MenuItem value="Pending">Pending</MenuItem>
@@ -108,9 +128,10 @@ const Complaints = () => {
               <MenuItem value="In Progress">In Progress</MenuItem>
             </Select>
           </FormControl>
+
           <Button
             variant="contained"
-            className="bg-purple-600 hover:bg-purple-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white h-[56px]"
             onClick={fetchComplaints}
           >
             Search
@@ -122,11 +143,12 @@ const Complaints = () => {
       <Paper className="rounded-lg shadow">
         <TableContainer>
           <Table>
-            <TableHead className="bg-#F4E6FF-100">
-              <TableRow>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
                 <TableCell className="font-bold text-black py-3">User Details</TableCell>
                 <TableCell className="font-bold text-black py-3">Date</TableCell>
                 <TableCell className="font-bold text-black py-3">Complaint</TableCell>
+                <TableCell className="font-bold text-black py-3">Complaint Type</TableCell>
                 <TableCell className="font-bold text-black py-3">Status</TableCell>
                 <TableCell className="font-bold text-black py-3">Action</TableCell>
               </TableRow>
@@ -165,6 +187,10 @@ const Complaints = () => {
                       {complaint.description}
                     </TableCell>
 
+                    <TableCell className="py-4 text-gray-600">
+                      {complaint.complaintType}
+                    </TableCell>
+
                     <TableCell className="py-4">
                       <span className={`px-3 py-1 rounded-full text-sm ${
                         complaint.status === 'Resolved' ? 'bg-green-100 text-green-800' :
@@ -201,8 +227,11 @@ const Complaints = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <div>
+        
+      </div>
 
-      {/* Response Dialog (Keep existing dialog implementation) */}
+      {/* Response Dialog */}
       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
@@ -210,7 +239,82 @@ const Complaints = () => {
         fullWidth
         PaperProps={{ className: "rounded-lg" }}
       >
-        {/* Dialog content remains the same as previous implementation */}
+        <DialogTitle sx={{ backgroundColor: '#F4E6FF', color: 'black' }}>
+          <div className="flex justify-between items-center">
+            <Typography variant="h6">Respond to Complaint</Typography>
+            <Typography variant="caption">
+              {selectedComplaint && new Date(selectedComplaint.createdAt).toLocaleString()}
+            </Typography>
+          </div>
+        </DialogTitle>
+
+        <DialogContent className="p-6 space-y-6">
+          {selectedComplaint && (
+            <>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <Avatar src={selectedComplaint.user?.avatar} sx={{ width: 40, height: 40 }} />
+                  <div>
+                    <Typography className="font-semibold">{selectedComplaint.user?.name}</Typography>
+                    <Typography className="text-sm text-gray-500">
+                      {selectedComplaint.user?.email}
+                    </Typography>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-white border rounded-lg">
+                <Typography className="text-gray-600">
+                  {selectedComplaint.description}
+                </Typography>
+              </div>
+
+              <div className="space-y-4">
+                <Typography variant="subtitle1" className="font-bold">Admin Response</Typography>
+                <TextField
+                  multiline
+                  rows={4}
+                  fullWidth
+                  variant="outlined"
+                  label="Type your response"
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                  className="rounded-lg"
+                />
+
+                {selectedComplaint.response && (
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <Typography variant="subtitle2" className="font-bold mb-2">
+                      Previous Response
+                    </Typography>
+                    <Typography className="text-gray-600">
+                      {selectedComplaint.response}
+                    </Typography>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+
+        <DialogActions sx={{ backgroundColor: '#F4E6FF', padding: '16px' }}>
+          <Button
+            onClick={() => setOpenDialog(false)}
+            className="text-gray-700 hover:text-gray-900"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: '#641A90',
+              '&:hover': { backgroundColor: '#4A136B' }
+            }}
+            onClick={handleRespond}
+          >
+            Submit Response
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );

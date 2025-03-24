@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import sideImage from "../assets/PC.webp";
+import pcImage from "../assets/PC.webp";
 import logo from '../assets/logo.png';
 
 const ForgetPassword = () => {
@@ -29,23 +29,26 @@ const ForgetPassword = () => {
     };
 
     return (
-        <Box className="flex h-screen bg-[#4A2D73] items-center justify-center p-4">
+        <Box className="flex h-screen bg-gray-300 items-center justify-center p-4 shadow-2xl backdrop-blur-2xl bg-opacity-60">
+
             <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
                 {/* Left Section */}
                 <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
-                    <Typography variant="h3" className="!text-white !font-bold !mb-4 !text-4xl">
-                        PC BUILDER
-                    </Typography>
-                    <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
-                        Get compatible recommendations
-                        <br /> Pick your ideal components
-                    </Typography>
-                    <img 
-                        src={sideImage} 
-                        alt="PC" 
-                        className="w-full max-w-[420px] !mt-4" 
-                    />
-                </Box>
+                        <img 
+                              src={logo} 
+                              alt="Logo" 
+                              className="w-30 mb-4" 
+                            />
+                          <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
+                            Get compatible recommendations
+                            <br /> Pick your ideal components
+                          </Typography>
+                          <img 
+                            src={pcImage} 
+                            alt="PC" 
+                            className="w-full max-w-[300px] !mt-4" 
+                          />
+                        </Box>
 
                 {/* Vertical Divider */}
                 <Divider 
@@ -55,14 +58,11 @@ const ForgetPassword = () => {
                 />
 
                 {/* Right Section */}
-                <Box className="flex-1 !min-w-[300px] !max-w-md">
-                    <Box className="flex flex-col items-center mb-6">
-                        <img 
-                            src={logo} 
-                            alt="Logo" 
-                            className="w-24 mb-4" 
-                        />
-                        <Typography variant="h4" className="!text-white !font-bold !text-xl">
+                <Box className="flex-1 !min-w-[180px] !max-w-sm">
+
+                    <Box className="flex flex-col items-center mb-6 mt-20">
+                       
+                        <Typography variant="h4" className="!text-white !font-bold !text-2xl">
                             Forgot Password
                         </Typography>
                     </Box>
@@ -85,7 +85,7 @@ const ForgetPassword = () => {
                                 className="!bg-white !rounded"
                                 InputProps={{ 
                                     className: "!h-8 !text-xs",
-                                    style: { borderRadius: '8px' } 
+                                    style: { borderRadius: '4px' } 
                                 }}
                             />
                         </div>
@@ -95,7 +95,7 @@ const ForgetPassword = () => {
                             fullWidth
                             onClick={handleSubmit}
                             className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
-                                    hover:!bg-[#3B82F6] !text-sm !normal-case"
+                                    hover:!bg-[#3B82F6] !text-sm !normal-case mt-20"
                             disabled={loading}
                         >
                             {loading ? <CircularProgress size={20} /> : "Send Reset Code"}
