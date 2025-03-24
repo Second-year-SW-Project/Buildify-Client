@@ -24,6 +24,7 @@ import RMA from "./Admin/RMA.jsx";
 import { Toaster } from "sonner";
 import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
 import UserComplaints from "./User/UserComplaints.jsx";
+import Review from "./Admin/Review.jsx";
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
           {
             path: "/feedbackmanage/rma",
             Component: RMA,
+          },
+          {
+            path: "/feedbackmanage/comments&reviews",
+            Component: Review,
           },
         ],
       },

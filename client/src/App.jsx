@@ -100,7 +100,7 @@ const NAVIGATION = [
     children: [
       {
         segment: 'complaints',
-        title: 'Complains',
+        title: 'Complaints',
         icon: <Iconset type="complains" />,
       },
       {

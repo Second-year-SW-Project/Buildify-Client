@@ -27,6 +27,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 
 const RMA = () => {
   const [requests, setRequests] = useState([]);
@@ -92,9 +93,14 @@ const RMA = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-        RMA Management
-      </Typography>
+      <div className='mt-3 mb-5'>
+                              <PageTitle value="RMA & Support"></PageTitle>
+                              <CustomBreadcrumbs
+                                  paths={[
+                                      { label: 'Feedback Manage', href: "/feedbackmanage/rma" },
+                                      { label: 'RMA & Support' },
+                                  ]} />
+                          </div>
 
       {/* Search Filters */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>

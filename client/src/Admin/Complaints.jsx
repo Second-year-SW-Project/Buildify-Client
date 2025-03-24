@@ -26,7 +26,8 @@ import {
 } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
-import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
+import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 
 const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -77,9 +78,14 @@ const Complaints = () => {
       {/* Header Section */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-6">
-          <Typography variant="h4" className="font-bold text-black">
-            Complaints Management
-          </Typography>
+          <div className='mt-3 mb-5'>
+                                  <PageTitle value="Complaint Management"></PageTitle>
+                                  <CustomBreadcrumbs
+                                      paths={[
+                                          { label: 'Feedback Manage', href: "/feedbackmanage/complaints" },
+                                          { label: 'Complaint Management' },
+                                      ]} />
+                              </div>
         </div>
         
         {/* Search and Filter Section */}
@@ -221,6 +227,9 @@ const Complaints = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <div>
+        
+      </div>
 
       {/* Response Dialog */}
       <Dialog

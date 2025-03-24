@@ -1,79 +1,167 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Container, Typography, Paper } from '@mui/material';
+import { 
+  Container, 
+  Typography, 
+  Card, 
+  CardContent, 
+  Chip, 
+  Stack,
+  Skeleton,
+  useTheme
+} from '@mui/material';
+import { CheckCircle, Error, HourglassTop } from '@mui/icons-material';
 
 const UserComplaints = () => {
   const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem('userId') || null;
-  const token = localStorage.getItem('token'); // Retrieve token for auth
+  const token = localStorage.getItem('token');
+  const theme = useTheme();
+
+  const statusConfig = {
+    pending: { color: theme.palette.warning.main, icon: <HourglassTop /> },
+    resolved: { color: theme.palette.success.main, icon: <CheckCircle /> },
+    rejected: { color: theme.palette.error.main, icon: <Error /> }
+  };
 
   useEffect(() => {
     const fetchComplaints = async () => {
-      if (!userId) return; // Prevent API call if no userId exists
+      if (!userId) return;
 
       try {
         const response = await axios.get(`http://localhost:8000/api/complaints/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Attach token for authentication
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setComplaints(response.data);
       } catch (err) {
-        alert('Failed to fetch complaints');
+        console.error('Failed to fetch complaints:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchComplaints();
   }, [userId, token]);
 
-  return (
-    <Container maxWidth="xl" sx={{ marginTop: '2rem' }}>
-      <Box sx={{ backgroundColor: '#f5f5f5', padding: '2rem', borderRadius: '8px' }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#641A90' }}>
-          Your Complaints
-        </Typography>
+  const getStatusChip = (status) => (
+    <Chip
+      label={status}
+      variant="outlined"
+      sx={{ 
+        textTransform: 'capitalize',
+        borderColor: statusConfig[status]?.color || theme.palette.grey[400],
+        color: statusConfig[status]?.color || theme.palette.grey[600]
+      }}
+      icon={statusConfig[status]?.icon}
+    />
+  );
 
-        {complaints.length === 0 ? (
-          <Typography>No complaints found</Typography>
-        ) : (
-          complaints.map((complaint) => (
-            <Paper
-              key={complaint._id}
-              sx={{
-                padding: '1.5rem',
-                marginBottom: '1rem',
-                backgroundColor: '#fff',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Soft shadow
-                '&:hover': {
-                  boxShadow: '0px 6px 10px rgba(0, 0, 0, 0.2)', // Hover effect for cards
-                },
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#641A90' }}>
-                {complaint.title}
-              </Typography>
-              <Typography variant="body2" sx={{ marginTop: '0.5rem', fontStyle: 'italic' }}>
-                <strong>Complaint Type:</strong> {complaint.complaintType}
-              </Typography>
-              <Typography variant="body1" sx={{ marginTop: '0.5rem' }}>
+  if (loading) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        {[...Array(3)].map((_, index) => (
+          <Skeleton 
+            key={index} 
+            variant="rectangular" 
+            height={150} 
+            sx={{ mb: 2, borderRadius: 2 }} 
+          />
+        ))}
+      </Container>
+    );
+  }
+
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Typography 
+        variant="h4" 
+        component="h1"
+        sx={{ 
+          mb: 4,
+          fontWeight: 300,
+          color: 'primary.main',
+          [theme.breakpoints.down('sm')]: { fontSize: '1rem' }
+        }}
+      >
+       Complaint History
+      </Typography>
+
+      {complaints.length === 0 ? (
+        <Stack alignItems="center" spacing={2} sx={{ py: 8 }}>
+          <Error sx={{ fontSize: 60, color: 'text.secondary' }} />
+          <Typography variant="h6" color="text.secondary">
+            No complaints found
+          </Typography>
+        </Stack>
+      ) : (
+        complaints.map((complaint) => (
+          <Card
+            key={complaint._id}
+            sx={{
+              mb: 2,
+              borderRadius: 2,
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows[4]
+              }
+            }}
+          >
+            <CardContent>
+              <Stack 
+                direction={{ xs: 'column', sm: 'row' }} 
+                justifyContent="space-between"
+                alignItems={{ xs: 'flex-start', sm: 'center' }}
+                spacing={1}
+                sx={{ mb: 1.5 }}
+              >
+                <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+                  {complaint.title}
+                </Typography>
+                {getStatusChip(complaint.status)}
+              </Stack>
+
+              <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
+                <Chip
+                  label={complaint.complaintType}
+                  size="small"
+                  color="secondary"
+                  variant="outlined"
+                />
+                <Typography variant="body2" color="text.secondary">
+                  {new Date(complaint.createdAt).toLocaleDateString()}
+                </Typography>
+              </Stack>
+
+              <Typography variant="body1" color="text.primary" paragraph>
                 {complaint.description}
               </Typography>
-              <Typography variant="body2" sx={{ marginTop: '1rem' }}>
-                <strong>Status:</strong> {complaint.status}
-              </Typography>
+
               {complaint.response && (
-                <Typography variant="body2" sx={{ marginTop: '1rem', color: '#641A90' }}>
-                  <strong>Admin Response:</strong> {complaint.response}
-                </Typography>
+                <Stack
+                  spacing={1}
+                  sx={{ 
+                    mt: 2,
+                    p: 2,
+                    borderRadius: 1,
+                    backgroundColor: theme.palette.grey[100]
+                  }}
+                >
+                  <Typography variant="subtitle2" color="primary.main">
+                    Admin Response:
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {complaint.response}
+                  </Typography>
+                </Stack>
               )}
-            </Paper>
-          ))
-        )}
-      </Box>
+            </CardContent>
+          </Card>
+        ))
+      )}
     </Container>
   );
 };
 
 export default UserComplaints;
-
