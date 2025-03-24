@@ -54,131 +54,112 @@ const ResetPassword = () => {
       <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
         {/* Left Section */}
         <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
-          <Typography variant="h3" className="!text-white !font-bold !mb-4 !text-4xl">
-            PC BUILDER
-          </Typography>
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-30 mb-4"
+          />
           <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
             Get compatible recommendations
             <br /> Pick your ideal components
           </Typography>
           <img
-            src={sideImage}
+            src={pcImage}
             alt="PC"
-            className="w-full max-w-[420px] !mt-4"
+            className="w-full max-w-[300px] !mt-4"
           />
         </Box>
-        <img
-          src={logo}
-          alt="Logo"
-          className="w-30 mb-4"
+
+        {/* Vertical Divider */}
+        <Divider
+          orientation="vertical"
+          flexItem
+          className="!bg-white/30 !mx-6 !hidden md:!block"
         />
-        <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
-          Get compatible recommendations
-          <br /> Pick your ideal components
-        </Typography>
-        <img
-          src={pcImage}
-          alt="PC"
-          className="w-full max-w-[300px] !mt-4"
-        />
-    </Box>
 
-        {/* Vertical Divider */ }
-  <Divider
-    orientation="vertical"
-    flexItem
-    className="!bg-white/30 !mx-6 !hidden md:!block"
-  />
+        {/* Right Section */}
+        <Box className="flex-1 !min-w-[180px] !max-w-sm">
 
-  {/* Right Section */ }
-  <Box className="flex-1 !min-w-[180px] !max-w-sm">
+          <Box className="flex flex-col items-center mb-6">
 
-    <Box className="flex flex-col items-center mb-6">
-      <img
-        src={logo}
-        alt="Logo"
-        className="w-24 mb-4"
-      />
-      <Typography variant="h4" className="!text-white !font-bold !text-xl">
+            <Typography variant="h4" className="!text-white !font-bold !text-2xl">
+              Reset Password
+            </Typography>
+          </Box>
 
-        <Typography variant="h4" className="!text-white !font-bold !text-2xl">
-          Reset Password
-        </Typography>
-    </Box>
+          <form className="space-y-4">
+            {/* OTP Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">Verification Code</label>
+              <TextField
+                fullWidth
+                variant="outlined"
+                size="small"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="!bg-white !rounded"
+                inputProps={{
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*',
+                  className: "!text-xs"
+                }}
+              />
+            </div>
 
-    <form className="space-y-4">
-      {/* OTP Field */}
-      <div className="space-y-1">
-        <label className="text-white text-xs font-medium">Verification Code</label>
-        <TextField
-          fullWidth
-          variant="outlined"
-          size="small"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          className="!bg-white !rounded"
-          inputProps={{
-            inputMode: 'numeric',
-            pattern: '[0-9]*',
-            className: "!text-xs"
-          }}
-        />
-      </div>
+            {/* Password Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">New Password</label>
+              <TextField
+                fullWidth
+                type="password"
+                variant="outlined"
+                size="small"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="!bg-white !rounded"
+                InputProps={{ className: "!text-xs" }}
+              />
+            </div>
 
-      {/* Password Field */}
-      <div className="space-y-1">
-        <label className="text-white text-xs font-medium">New Password</label>
-        <TextField
-          fullWidth
-          type="password"
-          variant="outlined"
-          size="small"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="!bg-white !rounded"
-          InputProps={{ className: "!text-xs" }}
-        />
-      </div>
+            {/* Confirm Password Field */}
+            <div className="space-y-1">
+              <label className="text-white text-xs font-medium">Confirm Password</label>
+              <TextField
+                fullWidth
+                type="password"
+                variant="outlined"
+                size="small"
+                value={passwordConfirm}
+                onChange={(e) => setPasswordConfirm(e.target.value)}
+                className="!bg-white !rounded"
+                InputProps={{ className: "!text-xs" }}
+              />
+            </div>
 
-      {/* Confirm Password Field */}
-      <div className="space-y-1">
-        <label className="text-white text-xs font-medium">Confirm Password</label>
-        <TextField
-          fullWidth
-          type="password"
-          variant="outlined"
-          size="small"
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-          className="!bg-white !rounded"
-          InputProps={{ className: "!text-xs" }}
-        />
-      </div>
-
-      {/* Submit Button */}
-      <Button
-        fullWidth
-        onClick={handleSubmit}
-        className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
+            {/* Submit Button */}
+            <Button
+              fullWidth
+              onClick={handleSubmit}
+              className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
                       hover:!bg-[#3B82F6] !text-sm !normal-case"
-        disabled={loading}
-      >
-        {loading ? <CircularProgress size={20} /> : "Reset Password"}
-      </Button>
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={20} /> : "Reset Password"}
+            </Button>
 
-      {/* Back Link */}
-      <Typography className="!text-white !text-center !mt-4 !text-xs">
-        <Link
-          to="/auth/forgetpassword"
-          className="!text-[#60A5FA] hover:!underline"
-        >
-          Back to Forgot Password
-        </Link>
-      </Typography>
-    </form>
-  </Box>
-      </Card >
-    </Box >
+            {/* Back Link */}
+            <Typography className="!text-white !text-center !mt-4 !text-xs">
+              <Link
+                to="/auth/forgetpassword"
+                className="!text-[#60A5FA] hover:!underline"
+              >
+                Back to Forgot Password
+              </Link>
+            </Typography>
+          </form>
+        </Box>
+      </Card>
+    </Box>
   );
 };
 
