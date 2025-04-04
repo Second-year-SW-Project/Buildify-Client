@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import { Typography } from '@mui/material'
@@ -9,18 +9,20 @@ import {
     main, coolerAttributes, cpuCores, cpuThreads, gpuAttributes,
     ramAttributes, motherboardAttributes, storageAttributes, casingAttributes,
     mouseAttributes, keyboardAttributes, monitorAttributes, laptopAttributes, desktopAttributes
-} from '../AtomicComponents/ForAdminForms/Category';
+} from '../AtomicComponents/ForProductForm/Category';
 import { useSelector, useDispatch } from "react-redux";
-import { setSelectedMainCategory, setSelectedSubCategory, setSelectedManufacture } from "../Store/formSlice";
+import { setSelectedMainCategory, setSelectedSubCategory, setSelectedManufacture, resetForm } from "../Store/formSlice";
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 import axios from 'axios';
 import { backendUrl } from '../main';
 import { toast } from 'sonner';
+import { Description } from '@mui/icons-material';
 
 
 const CreateProducts = () => {
 
     const dispatch = useDispatch();
+    const imageSelectorRef = useRef();
 
     // Get state from Redux store
     const {
@@ -34,17 +36,23 @@ const CreateProducts = () => {
 
     // Handle change in Main Category
     const handleMainCategoryChange = (selectedValue) => {
-        dispatch(setSelectedMainCategory(selectedValue)); // Dispatch Redux action
+        dispatch(setSelectedMainCategory(selectedValue));
+        dispatch(setSelectedSubCategory("")); // Reset Sub Category when Main Category changes
+        dispatch(setSelectedManufacture("")); // Reset manufacture when Main Category changes
+        product.type = "";
+
     };
 
     // Handle change in Sub Category
     const handleSubCategoryChange = (selectedValue) => {
-        dispatch(setSelectedSubCategory(selectedValue)); // Dispatch Redux action
+        dispatch(setSelectedSubCategory(selectedValue));
+        dispatch(setSelectedManufacture("")); // Reset manufacture when Sub Category changes
 
     };
     // Handle change in Manufacture
     const handleManufactureChange = (selectedValue) => {
-        dispatch(setSelectedManufacture(selectedValue)); // Dispatch Redux action
+        dispatch(setSelectedManufacture(selectedValue));
+        product.socketType = ""; // Reset socket type when manufacture changes
     };
 
     // coolerAttributes
@@ -93,79 +101,115 @@ const CreateProducts = () => {
     const laptopRamOptions = laptopAttributes.ram;
     const laptopStorageOptions = laptopAttributes.storage;
     const laptopTypeOptions = laptopAttributes.laptopType;
-    const laptopGraphicsCardOptions = laptopAttributes.graphicsCard;
+    const laptopGraphicCardOptions = laptopAttributes.graphicCard;
     //desktopAttributes
     const desktopCpuOptions = desktopAttributes.cpu;
-    const desktopGpuOptions = desktopAttributes.gpu;
+    const desktopGpuOptions = desktopAttributes.graphicCard;
     const desktopRamOptions = desktopAttributes.ram;
     const desktopStorageOptions = desktopAttributes.storage;
     const desktopTypeOptions = desktopAttributes.desktopType;
 
-    const [product, setProduct] = useState({
+    const initialProductState = {
         type: "",
-        title: "",
-        content: "",
-        manufacture: "",
+        name: "",
+        description: "",
+        imgUrls: [],
+        manufacturer: "",
         socketType: "",
-        tdp: 0,
-        cores: 0,
-        threads: 0,
-        baseClock: 0,
-        boostClock: 0,
-        integratedGraphics: false,
-        includesCooler: false,
+        tdp: "",
+        coreCount: "",
+        threadCount: "",
+        baseClock: "",
+        boostClock: "",
+        integratedGraphics: "",
+        includesCooler: "",
         memoryType: "",
-        memoryCapacity: 0,
-        memorySpeed: 0,
-        quantity: 0,
-        price: 0,
+        memoryCapacity: "",
+        memorySpeed: "",
+        chipset: "",
+        formFactor: "",
+        ramSlots: "",
+        maxRam: "",
+        displaySize: "",
+        resolution: "",
+        laptopType: "",
+        cpu: "",
+        ram: "",
+        storage: "",
+        graphicCard: "",
+        desktopType: "",
+        quantity: "",
+        price: "",
+    };
 
-    });
+    const [product, setProduct] = useState(initialProductState);
 
-    const [image1, setImage1] = useState(false)
-    const [image2, setImage2] = useState(false)
-    const [image3, setImage3] = useState(false)
-    const [image4, setImage4] = useState(false)
+    // State to hold selected images
+    const [selectedImages, setSelectedImages] = useState([]);
 
-    // Update subCategory in product state when selectedSubCategory changes
+
+    // Update subCategory and manufacture in product state when selectedSubCategory changes
     useEffect(() => {
         setProduct((prevProduct) => ({
             ...prevProduct,
             type: selectedSubCategory,
+            manufacturer: selectedManufacture,
         }));
-    }, [selectedSubCategory]);
-
-    // Update manufacture in product state when selectedManufacture changes
-    useEffect(() => {
-        setProduct((prevProduct) => ({
-            ...prevProduct,
-            manufacture: selectedManufacture,
-        }));
-    }, [selectedManufacture]);
+    }, [selectedSubCategory, selectedManufacture]);
 
     const handleInputChange = (field, value) => {
+        console.log("===================Value", value)
         setProduct((prevProduct) => ({
             ...prevProduct,
-            [field]: value,
+            [field]: typeof prevProduct[field] === 'boolean' ? Boolean(value) : value,
         }));
     };
+
+    useEffect(() => {
+        console.log("================================Product state after reset:", product);
+    }, [product]);
+
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
         try {
             const formData = new FormData()
 
+            // Append images (max 4 as expected by backend)
+            selectedImages.forEach((image, index) => {
+                formData.append(`image${index + 1}`, image);
+
+            });
+
+            if (product.type === "processor") {
+                if (!product.includesCooler)
+                    product.includesCooler = false;
+                if (!product.integratedGraphics)
+                    product.integratedGraphics = false;
+            }
+
+            //validation function for reqired fields
+            validateRequiredFields(product);
+
             formData.append("product", JSON.stringify(product))
 
-            image1 && formData.append("image1", image1)
-            image2 && formData.append("image1", image2)
-            image3 && formData.append("image1", image3)
-            image4 && formData.append("image1", image4)
+            const response = await axios.post(`http://localhost:8000/api/product/add`, formData);
 
-            const response = await axios.post(backendUrl + "api/product/add", formData)
-
-            if (response.data.success) {
+            if (response.data.Success) {
                 toast.success("Product created successfully")
+
+                //reset states
+                setProduct({
+                    ...initialProductState,
+                });
+
+                //Reset Redux States
+                dispatch(resetForm());
+
+                // Clear images 
+                if (imageSelectorRef.current) {
+                    imageSelectorRef.current.deleteAllImages();
+                }
             } else {
                 toast.error("Error creating product. Please try again.")
             }
@@ -175,6 +219,25 @@ const CreateProducts = () => {
         }
 
 
+    }
+
+    const validateRequiredFields = (product) => {
+        const allRequiredFields = {
+            processor: ["name", "price", "description", "imgUrls", "type", "manufacturer", "socketType", "tdp", "coreCount", "threadCount", "baseClock", "boostClock", "integratedGraphics", "includesCooler"],
+            ram: ["name", "price", "description", "imgUrls", "type", "manufacturer", "memoryType", "memoryCapacity", "memorySpeed"],
+            motherboard: ["name", "price", "description", "imgUrls", "type", "manufacturer", "socketType", "chipset", "formFactor", "ramSlots", "maxRam", "memoryType"],
+            laptop: ["name", "price", "description", "imgUrls", "type", "manufacturer", "displaySize", "resolution", "cpu", "ram", "storage", "graphicCard"],
+        };
+        const requiredFields = allRequiredFields[product.type] || [];
+        const missingFields = requiredFields.filter(field => {
+            if (field === "imgUrls") {
+                return product.imgUrls.length === 0;
+            }
+            return product[field] === null || product[field] === "";
+        });
+        if (missingFields.length > 0) {
+            throw new Error(`Please fill in all required fields: ${missingFields.join(", ")}`);
+        }
     }
 
     return (
@@ -190,7 +253,7 @@ const CreateProducts = () => {
             <div>
                 <form onSubmit={onSubmitHandler}>
                     <div className='grid-flow-* gap-20 pl-3 pr-3 grid gap-y-4 mb-4' >
-                        <div className='Details border-2 border-gray-100 rounded-lg drop-shadow-2xl pt-4 pb-4'>
+                        <div className='Details border-2 border-gray-100 rounded-lg pt-4 pb-4'>
                             <div className='DetailsHeader ml-3 mr-3 h-fit mb-4'>
                                 <Typography variant='h5' fontWeight="bold">Details</Typography>
                                 <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>Title, Content, Image</Typography>
@@ -200,9 +263,9 @@ const CreateProducts = () => {
                                 <div className='formTitle1 mt-2 mb-4'>
                                     <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Title</Typography>
                                     <InputField
-                                        onChange={(value) => handleInputChange('title', value)}
-                                        value={product.title}
-                                        type='searchinput'
+                                        onChange={(value) => handleInputChange('name', value)}
+                                        value={product.name}
+                                        type='text'
                                         label="Product Name"
                                         width='100%'
                                     />
@@ -211,18 +274,29 @@ const CreateProducts = () => {
                                     <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Content</Typography>
                                     <div>
                                         <InputField
-                                            onChange={(value) => handleInputChange('content', value)}
-                                            value={product.content}
-                                            type='textarea'
+                                            onChange={(value) => handleInputChange('description', value)}
+                                            value={product.description}
+                                            type='text'
                                             label="Description"
                                             width='100%'
                                             rows={12}
                                         />
                                     </div>
                                 </div>
-                                <div className='formTitle3 mt-4 mb-4'>
+                                <div className='formTitle3 mt-4 mb-4 '>
                                     <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Images</Typography>
-                                    <div className=''><ImageSelector /></div>
+                                    <div className=''>
+                                        <ImageSelector
+                                            ref={imageSelectorRef}
+                                            onImagesSelect={(images) => {
+                                                setSelectedImages(images);
+                                                setProduct((prevProduct) => ({
+                                                    ...prevProduct,
+                                                    imgUrls: images.map((image) => URL.createObjectURL(image)), // Storing image URLs
+                                                }));
+                                            }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -287,7 +361,7 @@ const CreateProducts = () => {
                                         />
                                     </div>
                                 </div>
-                                {selectedSubCategory === "processors" && (
+                                {selectedSubCategory === "processor" && (
                                     <div className='cpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row '>
                                             <div>
@@ -296,7 +370,7 @@ const CreateProducts = () => {
                                                     label="Socket Type"
                                                     width="100%"
                                                     options={socketTypeOptions}
-                                                    disabled={!selectedManufacture}
+                                                    disabled={!product.manufacturer}
                                                     value={product.socketType}
                                                     onChange={(value) => handleInputChange('socketType', value)}
                                                 />
@@ -308,7 +382,7 @@ const CreateProducts = () => {
                                                     label="TDP"
                                                     width='100%'
                                                     value={product.tdp}
-                                                    onChange={(value) => handleInputChange('tdp', parseInt(value) || 0)}
+                                                    onChange={(value) => handleInputChange('tdp', value)}
                                                 />
                                             </div>
                                             <div>
@@ -317,8 +391,8 @@ const CreateProducts = () => {
                                                     label="Cores"
                                                     options={cpuCores}
                                                     width='100%'
-                                                    value={product.cores}
-                                                    onChange={(value) => handleInputChange('cores', parseInt(value) || 0)}
+                                                    value={product.coreCount}
+                                                    onChange={(value) => handleInputChange('coreCount', value)}
                                                 />
                                             </div>
                                             <div>
@@ -327,8 +401,8 @@ const CreateProducts = () => {
                                                     label="Threads"
                                                     options={cpuThreads}
                                                     width='100%'
-                                                    value={product.threads}
-                                                    onChange={(value) => handleInputChange('threads', parseInt(value) || 0)}
+                                                    value={product.threadCount}
+                                                    onChange={(value) => handleInputChange('threadCount', value)}
                                                 />
                                             </div>
                                             <div>
@@ -338,7 +412,7 @@ const CreateProducts = () => {
                                                     label="Base Clock"
                                                     width='100%'
                                                     value={product.baseClock}
-                                                    onChange={(value) => handleInputChange('cores', parseInt(value) || 0)}
+                                                    onChange={(value) => handleInputChange('baseClock', value)}
                                                 />
                                             </div>
                                             <div>
@@ -348,7 +422,7 @@ const CreateProducts = () => {
                                                     label="Boost Clock"
                                                     width='100%'
                                                     value={product.boostClock}
-                                                    onChange={(value) => handleInputChange('baseClock', parseFloat(value) || 0)}
+                                                    onChange={(value) => handleInputChange('boostClock', value)}
                                                 />
                                             </div>
                                         </div>
@@ -358,7 +432,8 @@ const CreateProducts = () => {
                                                     type='checkbox'
                                                     label="Integrated Graphics"
                                                     width='100%'
-                                                    checked={product.integratedGraphics}
+                                                    // checked={product.integratedGraphics}
+                                                    value={product.integratedGraphics}
                                                     onChange={(value) => handleInputChange('integratedGraphics', value)}
                                                 />
                                             </div>
@@ -367,7 +442,8 @@ const CreateProducts = () => {
                                                     type='checkbox'
                                                     label="Includes Cooler"
                                                     width='100%'
-                                                    checked={product.includesCooler}
+                                                    // checked={product.includesCooler}
+                                                    value={product.includesCooler}
                                                     onChange={(value) => handleInputChange('includesCooler', value)}
                                                 />
                                             </div>
@@ -378,16 +454,72 @@ const CreateProducts = () => {
                                 {selectedSubCategory === "motherboard" && (
                                     <div className='motherboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subMotherboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Chipset" options={motherboardChipsets} width='100%'></InputField></div>
-                                            <div><InputField type='select' label="Form Factor" options={motherboardFormFactors} width='100%'></InputField></div>
-                                            <div><InputField type='select' label="Socket Type" options={motherboardSocket} width='100%'></InputField></div>
-                                            <div><InputField type='select' label="RAM Slots" options={motherboardRamSlots} width='100%'></InputField></div>
-                                            <div><InputField type='select' label="Max RAM" options={motherboardMaxRam} width='100%'></InputField></div>
-                                            <div><InputField type='select' label="Memory Type" options={motherboardMemoryTypes} width='100%'></InputField></div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Chipset"
+                                                    options={motherboardChipsets}
+                                                    value={product.chipset}
+                                                    onChange={(value) => handleInputChange('chipset', value)}
+                                                    width='100%'
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Form Factor"
+                                                    options={motherboardFormFactors}
+                                                    value={product.formFactor}
+                                                    onChange={(value) => handleInputChange('formFactor', value)}
+                                                    width='100%'
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Socket Type"
+                                                    options={motherboardSocket}
+                                                    value={product.socketType}
+                                                    onChange={(value) => handleInputChange('socketType', value)}
+                                                    width='100%'
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="RAM Slots"
+                                                    options={motherboardRamSlots}
+                                                    value={product.ramSlots}
+                                                    onChange={(value) => handleInputChange('ramSlots', parseInt(value) || 0)}
+                                                    width='100%'
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Max RAM"
+                                                    options={motherboardMaxRam}
+                                                    value={product.maxRam}
+                                                    onChange={(value) => handleInputChange('maxRam', parseInt(value) || 0)}
+                                                    width='100%'
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Memory Type"
+                                                    options={motherboardMemoryTypes}
+                                                    value={product.memoryType}
+                                                    onChange={(value) => handleInputChange('memoryType', value)}
+                                                    width='100%'
+                                                />
+                                            </div>
                                             {/* There are more options for motherboards, you can add them here */}
                                         </div>
                                     </div>
-                                )}{selectedSubCategory === "ram" && (
+                                )}
+
+                                {selectedSubCategory === "ram" && (
                                     <div className='ramProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subRamProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div>
@@ -397,7 +529,7 @@ const CreateProducts = () => {
                                                     options={ramTypeOptions}
                                                     width='100%'
                                                     value={product.memoryType}
-                                                    onChange={(e) => setProduct({ ...product, memoryType: e.target.value })}
+                                                    onChange={value => handleInputChange('memoryType', value)}
                                                 />
                                             </div>
                                             <div>
@@ -407,7 +539,7 @@ const CreateProducts = () => {
                                                     options={ramSizeOptions}
                                                     width='100%'
                                                     value={product.memoryCapacity}
-                                                    onChange={(e) => setProduct({ ...product, memoryCapacity: parseInt(e.target.value) })}
+                                                    onChange={(value) => handleInputChange('memoryCapacity', parseInt(value) || 0)}
                                                 />
                                             </div>
                                             <div>
@@ -417,12 +549,13 @@ const CreateProducts = () => {
                                                     options={ramSpeedOptions}
                                                     width='100%'
                                                     value={product.memorySpeed}
-                                                    onChange={(e) => setProduct({ ...product, memorySpeed: parseInt(e.target.value) })}
+                                                    onChange={(value) => handleInputChange('memorySpeed', parseInt(value) || 0)}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
+
                                 {/* {selectedSubCategory === "gpu" && (
                                     <div className='gpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subGpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
@@ -488,21 +621,85 @@ const CreateProducts = () => {
                                             <div><InputField type='select' label="Monitor Type" options={monitorTypeOptions} width='100%' /></div>
                                         </div>
                                     </div>
-                                )}
+                                )*/}
                                 {selectedSubCategory === "laptop" && (
                                     <div className='laptopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subLaptopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Display Size" options={laptopDisplaySizeOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Resolution" options={laptopResolutionOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="CPU" options={laptopCpuOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="RAM" options={laptopRamOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Storage" options={laptopStorageOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Laptop Type" options={laptopTypeOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Graphics Card" options={laptopGraphicsCardOptions} width='100%' /></div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Display Size"
+                                                    options={laptopDisplaySizeOptions}
+                                                    width='100%'
+                                                    value={product.displaySize}
+                                                    onChange={(value) => handleInputChange('displaySize', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Resolution"
+                                                    options={laptopResolutionOptions}
+                                                    width='100%'
+                                                    value={product.resolution}
+                                                    onChange={(value) => handleInputChange('resolution', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="CPU"
+                                                    options={laptopCpuOptions}
+                                                    width='100%'
+                                                    value={product.cpu}
+                                                    onChange={(value) => handleInputChange('cpu', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="RAM"
+                                                    options={laptopRamOptions}
+                                                    width='100%'
+                                                    value={product.ram}
+                                                    onChange={(value) => handleInputChange('ram', value)}
+                                                />
+
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Storage"
+                                                    options={laptopStorageOptions}
+                                                    width='100%'
+                                                    value={product.storage}
+                                                    onChange={(value) => handleInputChange('storage', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Laptop Type"
+                                                    options={laptopTypeOptions}
+                                                    width='100%'
+                                                    value={product.laptopType}
+                                                    onChange={(value) => handleInputChange('laptopType', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Graphics Card"
+                                                    options={laptopGraphicCardOptions}
+                                                    width='100%'
+                                                    value={product.graphicCard}
+                                                    onChange={(value) => handleInputChange('graphicCard', value)}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === "prebuilds" && (
+                                {selectedSubCategory === "prebuild" && (
                                     <div className='desktopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subDesktopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div><InputField type='select' label="CPU" options={desktopCpuOptions} width='100%' /></div>
@@ -512,7 +709,7 @@ const CreateProducts = () => {
                                             <div><InputField type='select' label="Desktop Type" options={desktopTypeOptions} width='100%' /></div>
                                         </div>
                                     </div>
-                                )}*/}
+                                )}
 
                             </div>
                         </div>

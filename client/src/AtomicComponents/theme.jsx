@@ -216,6 +216,17 @@ const theme = createTheme({
             },
           },
         },
+        {
+          props: { variant: "text" },
+          style: {
+            textTransform: "none",
+            color: "#961AFD",
+            backgroundColor: "#FFFFFF",
+            "&:hover": {
+              backgroundColor: "#e8dbff",
+            },
+          },
+        },
       ],
     },
 

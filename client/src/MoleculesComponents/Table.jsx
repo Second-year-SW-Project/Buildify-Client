@@ -13,9 +13,7 @@ import {
 import theme from "../AtomicComponents/theme.jsx";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
 
-
-
-export function UserTable({ columns, data, iconTypes = [], width, color }) {
+export function UserTable({ columns, data, iconTypes = [], iconActions = {}, width, color }) {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -61,11 +59,13 @@ export function UserTable({ columns, data, iconTypes = [], width, color }) {
                       {row[column.id]}
                     </TableCell>
                   ))}
+                  {iconTypes.length > 0 && (
                   <TableCell style={autoSizeCellStyle}>
                     {iconTypes.map((type, idx) => (
                       <IconButton
                         key={idx}
                         disableRipple
+                        onClick={() => iconActions[type] && iconActions[type](row.id)}
                         translate="3s"
                         sx={{
                           "&:hover": {
@@ -78,6 +78,7 @@ export function UserTable({ columns, data, iconTypes = [], width, color }) {
                       </IconButton>
                     ))}
                   </TableCell>
+                  )}
                 </TableRow>
               ))}
           </TableBody>

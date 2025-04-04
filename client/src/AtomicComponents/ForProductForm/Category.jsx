@@ -4,18 +4,19 @@ const main = [
     { value: "Common", label: "Individual Category" }
 ]
 const StockType = [
-    { value: "InStock", label: "In Stock" },
-    { value: "OutStock", label: "Out of Stock" },
-    { value: "lowStock", label: "Low Stock" }
-]
+    { value: "", label: "All" },
+    { value: "In Stock", label: "In Stock" },
+    { value: "Low Stock", label: "Low Stock" },
+    { value: "Out of Stock", label: "Out of Stock" }
+];
 
 const subCategories = {
     Necessary: [
         { value: "ram", label: "Ram" },
-        { value: "gpu", label: "Graphic Cards" },
-        { value: "processors", label: "Processors" },
+        { value: "gpu", label: "Graphic Card" },
+        { value: "processor", label: "Processor" },
         { value: "motherboard", label: "Motherboard" },
-        { value: "storage", label: "Storages" },
+        { value: "storage", label: "Storage" },
         { value: "casing", label: "Casing" },
         { value: "power", label: "Power Supply" }
     ],
@@ -30,7 +31,7 @@ const subCategories = {
     ],
     Common: [
         { value: "laptop", label: "Laptop" },
-        { value: "prebuilds", label: "Prebuilds" },
+        { value: "prebuild", label: "Prebuild" },
         { value: "accessories", label: "Steaming Accessories" },
         { value: "externals", label: "External Storage" },
         { value: "cables_connectors", label: "Cables & Connectors" },
@@ -41,7 +42,7 @@ const subCategories = {
 
 
 const manufacture = {
-    processors: [
+    processor: [
         { value: "intel", label: "Intel" },
         { value: "amd", label: "AMD" }
     ],
@@ -128,7 +129,12 @@ const manufacture = {
         { value: "gigabyte", label: "Gigabyte" }
     ],
     prebuilds: [
-
+        { value: "dell", label: "Dell" },
+        { value: "hp", label: "HP" },
+        { value: "acer", label: "Acer" },
+        { value: "lenovo", label: "Lenovo" },
+        { value: "msi", label: "MSI" },
+        { value: "asus", label: "ASUS" },
     ],
 }
 
@@ -149,29 +155,29 @@ const socketTypes = {
 }
 
 const cpuCores = [
-    { value: "4", label: "4 Cores" },
-    { value: "6", label: "6 Cores" },
-    { value: "8", label: "8 Cores" },
-    { value: "10", label: "10 Cores" },
-    { value: "12", label: "12 Cores" },
-    { value: "14", label: "14 Cores" },
-    { value: "16", label: "16 Cores" },
-    { value: "20", label: "20 Cores" },
-    { value: "24", label: "24 Cores" }
+    { value: 4, label: "4 Cores" },
+    { value: 6, label: "6 Cores" },
+    { value: 8, label: "8 Cores" },
+    { value: 10, label: "10 Cores" },
+    { value: 12, label: "12 Cores" },
+    { value: 14, label: "14 Cores" },
+    { value: 16, label: "16 Cores" },
+    { value: 20, label: "20 Cores" },
+    { value: 24, label: "24 Cores" }
 ];
 
 const cpuThreads = [
-    { value: "4", label: "4 Threads" },
-    { value: "6", label: "6 Threads" },
-    { value: "8", label: "8 Threads" },
-    { value: "12", label: "12 Threads" },
-    { value: "14", label: "14 Threads" },
-    { value: "16", label: "16 Threads" },
-    { value: "20", label: "20 Threads" },
-    { value: "24", label: "24 Threads" },
-    { value: "28", label: "28 Threads" },
-    { value: "32", label: "32 Threads" },
-    { value: "64", label: "64 Threads" },
+    { value: 4, label: "4 Threads" },
+    { value: 6, label: "6 Threads" },
+    { value: 8, label: "8 Threads" },
+    { value: 12, label: "12 Threads" },
+    { value: 14, label: "14 Threads" },
+    { value: 16, label: "16 Threads" },
+    { value: 20, label: "20 Threads" },
+    { value: 24, label: "24 Threads" },
+    { value: 28, label: "28 Threads" },
+    { value: 32, label: "32 Threads" },
+    { value: 64, label: "64 Threads" },
 ];
 
 const ramAttributes = {
@@ -237,15 +243,15 @@ const motherboardAttributes = {
         { value: "e_atx", label: "E-ATX" },
     ],
     ramSlots: [
-        { value: "2", label: "2 Slots" },
-        { value: "4", label: "4 Slots" },
-        { value: "8", label: "8 Slots" },
+        { value: 2, label: "2 Slots" },
+        { value: 4, label: "4 Slots" },
+        { value: 8, label: "8 Slots" },
     ],
     maxRam: [
-        { value: "32", label: "32GB" },
-        { value: "64", label: "64GB" },
-        { value: "128", label: "128GB" },
-        { value: "256", label: "256GB" },
+        { value: 32, label: "32GB" },
+        { value: 64, label: "64GB" },
+        { value: 128, label: "128GB" },
+        { value: 256, label: "256GB" },
     ],
     pcieSlotType: [
 
@@ -276,12 +282,12 @@ const storageAttributes = {
         { value: "pata_hdd", label: "PATA HDD" },
     ],
     storageCapacities: [
-        { value: "256", label: "256GB" },
-        { value: "512", label: "512GB" },
-        { value: "1000", label: "1TB" },
-        { value: "2000", label: "2TB" },
-        { value: "4000", label: "4TB" },
-        { value: "8000", label: "8TB" },
+        { value: 256, label: "256GB" },
+        { value: 512, label: "512GB" },
+        { value: 1000, label: "1TB" },
+        { value: 2000, label: "2TB" },
+        { value: 4000, label: "4TB" },
+        { value: 8000, label: "8TB" },
     ],
 };
 
@@ -413,7 +419,7 @@ const laptopAttributes = {
     displaySize: [
         { value: 13, label: "13 inches" },
         { value: 14, label: "14 inches" },
-        { value: 15, label: "15.6 inches" },
+        { value: 15.6, label: "15.6 inches" },
         { value: 16, label: "16 inches" },
         { value: 17, label: "17 inches" }
     ],
@@ -449,7 +455,7 @@ const laptopAttributes = {
         { value: "professional", label: "Professional" },
         { value: "personal", label: "Personal" }
     ],
-    graphicsCard: [
+    graphicCard: [
         { value: "intel_integrated", label: "Intel Integrated GPU" },
         { value: "amd_integrated", label: "AMD Integrated GPU" },
         { value: "nvidia_rtx_4060", label: "NVIDIA RTX 4060" },
@@ -467,7 +473,7 @@ const desktopAttributes = {
         { value: "amd_ryzen_7_7800x3d", label: "AMD Ryzen 7 7800X3D" },
         { value: "amd_ryzen_9_7950x", label: "AMD Ryzen 9 7950X" }
     ],
-    gpu: [
+    graphicCard: [
         { value: "nvidia_geforce_rtx_3080", label: "NVIDIA GeForce RTX 3080" },
         { value: "nvidia_geforce_rtx_4070", label: "NVIDIA GeForce RTX 4070" },
         { value: "nvidia_geforce_rtx_4090", label: "NVIDIA GeForce RTX 4090" },

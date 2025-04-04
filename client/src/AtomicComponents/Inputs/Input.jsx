@@ -18,7 +18,7 @@ import { inputBaseClasses } from '@mui/material/InputBase';
 
 
 export function InputField({
-  label,
+  label = null,
   type = "text",
   width = "180px",
   rows,
@@ -41,10 +41,13 @@ export function InputField({
     return (
       <TextField
         type={type}
+        multiline
         label={label}
         fontSize={fontSize}
         variant={variant}
+        value={value}
         color={color}
+        rows={rows}
         width={width}
         disabled={disabled}
         helperText={helperText}
@@ -91,48 +94,13 @@ export function InputField({
     );
   }
 
-  if (type === "textarea") {
-    return (
-      <TextField
-        type={type}
-        multiline
-        label={label}
-        fontSize={fontSize}
-        color={color}
-        rows={rows}
-        disabled={disabled}
-        helperText={helperText}
-        error={!!error}
-        onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
-        }}
-        sx={{
-          width: width,
-          marginBottom: "10px",
-          "& .MuiInputBase-input": {
-            fontSize: fontSize || "16px",
-          },
-          "& .MuiInputLabel-root": {
-            fontSize: fontSize || "16px",
-          },
-          "& .MuiInputBase-root": {
-            "& fieldset": {
-              borderWidth: 1,
-              borderRadius: 2,
-            },
-          },
-        }}
-      />
-    );
-  }
-
   if (type === "number") {
     return (
       <TextField
         type={type}
         label={label}
         fontSize={fontSize}
+        value={value}
         variant={variant}
         color={color}
         width={width}
@@ -172,16 +140,16 @@ export function InputField({
         select
         label={label}
         fontSize={fontSize}
+        variant={variant}
+        color={color}
         value={value}
+        disabled={disabled}
+        error={!!error}
+        helperText={helperText}
         onChange={(e) => {
           if (onChange)
             onChange(e.target.value);
         }}
-        variant={variant}
-        color={color}
-        disabled={disabled}
-        error={!!error}
-        helperText={helperText}
         sx={{ width }}
       >
         {options.map((option, index) => (
@@ -265,6 +233,7 @@ export function InputField({
             />
           }
           label={label}
+          value={value}
         />
         {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormGroup>

@@ -26,7 +26,7 @@ import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
 import UserComplaints from "./User/UserComplaints.jsx";
 import Review from "./Admin/Review.jsx";
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL
+export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -56,11 +56,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/user/complaint",
-        Component: ComplaintSubmit, 
+        Component: ComplaintSubmit,
       },
       {
         path: "/user/complaintHistory",
-        Component: UserComplaints, 
+        Component: UserComplaints,
       },
       {
         path: "/",
@@ -119,7 +119,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <Provider store={store}> {/* Wrap everything with Provider */}
     <ThemeProvider theme={theme}>
-    <Toaster />
+      <Toaster />
       <StrictMode>
         <RouterProvider router={router} /> {/* Only use RouterProvider here */}
       </StrictMode>

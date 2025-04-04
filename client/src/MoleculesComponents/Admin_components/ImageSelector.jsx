@@ -1,11 +1,17 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import Iconset from '../../AtomicComponents/Icons/Iconset';
 import { Typography } from '@mui/material';
 
-function ImageSelector({ onImagesSelect }) {
+// Use forwardRef to allow the parent to access internal methods
+const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
     const [images, setImages] = useState([])
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef()
+
+    // Expose the deleteAllImages method to the parent
+    useImperativeHandle(ref, () => ({
+        deleteAllImages
+    }));
 
     function selectFiles() {
         fileInputRef.current.click();
@@ -33,6 +39,10 @@ function ImageSelector({ onImagesSelect }) {
         setImages(updatedImages);
         onImagesSelect(updatedImages.map((img) => img.file));
     }
+    function deleteAllImages() {
+        setImages([]);
+        onImagesSelect([]);
+    }
     function onDragOver(event) {
         event.preventDefault()
         setIsDragging(true)
@@ -53,7 +63,7 @@ function ImageSelector({ onImagesSelect }) {
                 onDragOver={onDragOver}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
-                className='drag-area rounded-md bg-gray-50 flex-auto justify-center text-center h-60 select-none text-md'>
+                className='drag-area rounded-md bg-gray-100 flex-auto justify-center text-center h-60 select-none text-md'>
                 {isDragging ? (
                     <div className='select justify-center items-center text-center text-violet-900 pt-14 pb-14 cursor-pointer duration-500 hover:opacity-60 border-2 border-purple-600 rounded-md'>
                         <Iconset type='photo' fontSize='100px' color="primary800" />
@@ -89,6 +99,6 @@ function ImageSelector({ onImagesSelect }) {
                 ))}
             </div>
         </div>
-    )
-}
+    );
+});
 export default ImageSelector;

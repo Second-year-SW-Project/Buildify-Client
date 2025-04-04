@@ -116,6 +116,47 @@ export function OutlinedButton({
     );
 }
 
+//TextButton
+export function TextButton({
+    name,
+    color,
+    isBold,
+    isFixed,
+    buttonSize,
+    fontSize,
+    isRounded,
+    onClick,
+    loading = false,
+    isDisabled = false,
+    type
+}) {
+    const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
+    const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
+
+    return (
+        <div>
+            <BaseButton
+                variant="text"
+                color={color}
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                onClick={onClick}
+                type={type}
+                sx={{
+                    fontWeight: isBold ? 700 : 400,
+                    borderRadius: borderRadius,
+                    fontSize: fontSize,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto'
+                }}>
+                {name}
+            </BaseButton>
+        </div >
+
+    );
+}
+
 //CustomOutlinedButton
 export function CustomOutlinedButton({
     name,
