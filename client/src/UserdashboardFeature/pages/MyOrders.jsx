@@ -6,6 +6,7 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import OrderCard from "../../AtomicComponents/Cards/OrderDetailsCard";
 
 export default function MyOrders() {
   const [value, setValue] = React.useState("1");
@@ -13,6 +14,48 @@ export default function MyOrders() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  // Dummy data for orders
+  const orders = [
+    {
+      id: 1,
+      status: "Awaiting delivery",
+      itemName: "Build name 1",
+      totalAmount: "LKR 250,000.00",
+      orderDate: "Nov 12, 2024",
+      orderId: "1109M8B2Y7A0Z3_O6W",
+      type: "build",
+      imageUrl: "https://via.placeholder.com/100",
+    },
+    {
+      id: 2,
+      status: "Delivered",
+      itemName: "Item name 2",
+      totalAmount: "LKR 150,000.00",
+      orderDate: "Nov 10, 2024",
+      orderId: "1109M8B2Y7A0Z3_O6X",
+      type: "component",
+      imageUrl: "https://via.placeholder.com/100",
+    },
+    {
+      id: 3,
+      status: "Awaiting delivery",
+      itemName: "Build name 3",
+      totalAmount: "LKR 350,000.00",
+      orderDate: "Nov 15, 2024",
+      orderId: "1109M8B2Y7A0Z3_O6Y",
+      type: "build",
+      imageUrl: "https://via.placeholder.com/100",
+    },
+  ];
+
+  const filteredOrders = orders.filter((order) => {
+    if (value === "1") return true;
+    if (value === "2") return order.type === "build";
+    if (value === "3") return order.type === "component";
+    return false;
+  });
+
   return (
     <div>
       <div className="flex flex-col min-h-screen">
@@ -46,9 +89,45 @@ export default function MyOrders() {
                         <Tab label="Components" value="3" />
                       </TabList>
                     </Box>
-                    <TabPanel value="1">One</TabPanel>
-                    <TabPanel value="2">Twooo</TabPanel>
-                    <TabPanel value="3">three</TabPanel>
+                    <TabPanel value="1">
+                      {filteredOrders.map((order) => (
+                        <OrderCard
+                          key={order.id}
+                          status={order.status}
+                          itemName={order.itemName}
+                          totalAmount={order.totalAmount}
+                          orderDate={order.orderDate}
+                          orderId={order.orderId}
+                          imageUrl={order.imageUrl}
+                        />
+                      ))}
+                    </TabPanel>
+                    <TabPanel value="2">
+                      {filteredOrders.map((order) => (
+                        <OrderCard
+                          key={order.id}
+                          status={order.status}
+                          itemName={order.itemName}
+                          totalAmount={order.totalAmount}
+                          orderDate={order.orderDate}
+                          orderId={order.orderId}
+                          imageUrl={order.imageUrl}
+                        />
+                      ))}
+                    </TabPanel>
+                    <TabPanel value="3">
+                      {filteredOrders.map((order) => (
+                        <OrderCard
+                          key={order.id}
+                          status={order.status}
+                          itemName={order.itemName}
+                          totalAmount={order.totalAmount}
+                          orderDate={order.orderDate}
+                          orderId={order.orderId}
+                          imageUrl={order.imageUrl}
+                        />
+                      ))}
+                    </TabPanel>
                   </TabContext>
                 </Box>
               </Box>
