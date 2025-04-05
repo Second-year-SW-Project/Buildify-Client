@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";  // Import Provider
-import store from "./Store/store";  // Import your Redux store
+import { Provider } from "react-redux"; // Import Provider
+import store from "./Store/store"; // Import your Redux store
 import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -25,13 +25,14 @@ import { Toaster } from "sonner";
 import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
 import UserComplaints from "./User/UserComplaints.jsx";
 import Review from "./Admin/Review.jsx";
+import InvoiceList from "./Admin/InvoiceList.jsx";
+import InvoiceCreate from "./Admin/InvoiceCreate.jsx";
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL
+export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 // Define the router configuration
 const router = createBrowserRouter([
   {
-
     Component: App,
     children: [
       {
@@ -56,11 +57,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/user/complaint",
-        Component: ComplaintSubmit, 
+        Component: ComplaintSubmit,
       },
       {
         path: "/user/complaintHistory",
-        Component: UserComplaints, 
+        Component: UserComplaints,
       },
       {
         path: "/",
@@ -110,6 +111,14 @@ const router = createBrowserRouter([
             path: "/feedbackmanage/comments&reviews",
             Component: Review,
           },
+          {
+            path: "/invoice/invoicelist",
+            Component: InvoiceList,
+          },
+          {
+            path: "/invoice/invoicecreate",
+            Component: InvoiceCreate,
+          },
         ],
       },
     ],
@@ -117,9 +126,11 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}> {/* Wrap everything with Provider */}
+  <Provider store={store}>
+    {" "}
+    {/* Wrap everything with Provider */}
     <ThemeProvider theme={theme}>
-    <Toaster />
+      <Toaster />
       <StrictMode>
         <RouterProvider router={router} /> {/* Only use RouterProvider here */}
       </StrictMode>
