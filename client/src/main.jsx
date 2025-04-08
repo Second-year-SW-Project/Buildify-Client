@@ -92,7 +92,16 @@ const router = createBrowserRouter([
           },
           {
             path: "/products/createproduct",
-            Component: CreateProducts,
+            children: [
+              {
+                index: true, // Default route when no ID is provided
+                Component: CreateProducts,
+              },
+              {
+                path: ":id", // Dynamic route for editing a product
+                Component: CreateProducts,
+              },
+            ],
           },
           {
             path: "/usermanage",

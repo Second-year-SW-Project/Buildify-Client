@@ -6,7 +6,7 @@ import theme from '../AtomicComponents/theme'
 import { InputField } from '../AtomicComponents/Inputs/Input'
 import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector';
 import {
-    main, coolerAttributes, cpuCores, cpuThreads, gpuAttributes,
+    main, subCategories, coolerAttributes, cpuCores, cpuThreads, gpuAttributes,
     ramAttributes, motherboardAttributes, storageAttributes, casingAttributes,
     mouseAttributes, keyboardAttributes, monitorAttributes, laptopAttributes, desktopAttributes
 } from '../AtomicComponents/ForProductForm/Category';
@@ -14,14 +14,20 @@ import { useSelector, useDispatch } from "react-redux";
 import { setSelectedMainCategory, setSelectedSubCategory, setSelectedManufacture, resetForm } from "../Store/formSlice";
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 import axios from 'axios';
-import { backendUrl } from '../main';
 import { toast } from 'sonner';
-import { Description } from '@mui/icons-material';
+import { useParams, useNavigate } from "react-router-dom";
+
+
 
 
 const CreateProducts = () => {
 
+    // Get the product ID from the URL parameters
+    const { id } = useParams();
+    const isEditMode = !!id;
+
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const imageSelectorRef = useRef();
 
     // Get state from Redux store
@@ -77,6 +83,7 @@ const CreateProducts = () => {
     const gpuInterfaceTypes = gpuAttributes.interfaceType;
     const gpuPowerConnectors = gpuAttributes.powerConnectors;
     const gpuVramOptions = gpuAttributes.gpuVram;
+    const gpuSeriesOptions = gpuAttributes.gpuSeries;
     //storageAttributes
     const storageTypes = storageAttributes.storageTypes;
     const storageCapacities = storageAttributes.storageCapacities;
@@ -115,6 +122,7 @@ const CreateProducts = () => {
         description: "",
         imgUrls: [],
         manufacturer: "",
+        //cpu
         socketType: "",
         tdp: "",
         coreCount: "",
@@ -123,13 +131,16 @@ const CreateProducts = () => {
         boostClock: "",
         integratedGraphics: "",
         includesCooler: "",
+        //memory
         memoryType: "",
         memoryCapacity: "",
         memorySpeed: "",
+        //motherboard
         chipset: "",
         formFactor: "",
         ramSlots: "",
         maxRam: "",
+        //laptop & prebuilt
         displaySize: "",
         resolution: "",
         laptopType: "",
@@ -138,6 +149,14 @@ const CreateProducts = () => {
         storage: "",
         graphicCard: "",
         desktopType: "",
+        //gpu
+        interfaceType: "",
+        length: "",
+        powerConnectors: "",
+        vram: "",
+        series: "",
+        cudaCores: "",
+
         quantity: "",
         price: "",
     };
@@ -146,6 +165,51 @@ const CreateProducts = () => {
 
     // State to hold selected images
     const [selectedImages, setSelectedImages] = useState([]);
+
+    // Fetch product data if in edit mode
+    useEffect(() => {
+        if (isEditMode) {
+            const fetchProduct = async () => {
+                try {
+                    const res = await axios.get(`http://localhost:8000/api/product/${id}`,);
+                    if (res.data.Success) {
+                        const fetchedProduct = res.data.data;
+                        console.log("Fetched Product====================================", fetchedProduct);
+                        setProduct(fetchedProduct);
+
+                        //Set main category
+                        let foundMainCategory = null;
+
+                        for (const [key, categoryList] of Object.entries(subCategories)) {
+                            if (categoryList.some(item => item.value === fetchedProduct.type)) {
+                                foundMainCategory = key; // "Necessary", "Optional", or "Common"
+                                break;
+                            }
+                        }
+
+                        // Map category
+                        const mainCategoryLabelMap = {
+                            Necessary: "Necessary",
+                            Optional: "Optional",
+                            Common: "Common"
+                        };
+                        const mainCategoryLabel = mainCategoryLabelMap[foundMainCategory];
+
+                        if (mainCategoryLabel) {
+                            dispatch(setSelectedMainCategory(mainCategoryLabel));
+                        }
+                        dispatch(setSelectedSubCategory(fetchedProduct.type));
+                        dispatch(setSelectedManufacture(fetchedProduct.manufacturer));
+                    }
+                } catch (error) {
+                    console.error("Error fetching product:", error);
+                }
+            };
+
+            fetchProduct();
+        }
+    }, [id]);
+
 
 
     // Update subCategory and manufacture in product state when selectedSubCategory changes
@@ -165,9 +229,20 @@ const CreateProducts = () => {
         }));
     };
 
-    useEffect(() => {
-        console.log("================================Product state after reset:", product);
-    }, [product]);
+    const getChangedFields = (original, updated) => {
+        const changed = {};
+        for (const key in updated) {
+            if (Array.isArray(updated[key])) {
+                if (JSON.stringify(updated[key]) !== JSON.stringify(original[key])) {
+                    changed[key] = updated[key];
+                }
+            } else if (updated[key] !== original[key]) {
+                changed[key] = updated[key];
+            }
+        }
+        return changed;
+    };
+
 
 
     const onSubmitHandler = async (e) => {
@@ -189,29 +264,35 @@ const CreateProducts = () => {
             }
 
             //validation function for reqired fields
-            validateRequiredFields(product);
+            validateRequiredFields(product, isEditMode);
 
             formData.append("product", JSON.stringify(product))
 
-            const response = await axios.post(`http://localhost:8000/api/product/add`, formData);
+            const endpoint = isEditMode
+                ? `http://localhost:8000/api/product/${id}`
+                : `http://localhost:8000/api/product/add`;
+
+
+            const response = isEditMode
+                ? await axios.put(endpoint, formData)
+                : await axios.post(endpoint, formData);
 
             if (response.data.Success) {
-                toast.success("Product created successfully")
+                toast.success(isEditMode ? "Product updated successfully" : "Product created successfully");
 
-                //reset states
-                setProduct({
-                    ...initialProductState,
-                });
+                if (!isEditMode) {
 
-                //Reset Redux States
-                dispatch(resetForm());
+                    //reset states
+                    setProduct({ ...initialProductState });
 
-                // Clear images 
-                if (imageSelectorRef.current) {
-                    imageSelectorRef.current.deleteAllImages();
+                    //Reset Redux States
+                    dispatch(resetForm());
+                    if (imageSelectorRef.current) {
+                        imageSelectorRef.current.deleteAllImages();
+                    }
                 }
             } else {
-                toast.error("Error creating product. Please try again.")
+                toast.error(isEditMode ? "Error in Updating" : "Error creating product. Please try again.")
             }
         } catch (error) {
             console.log(error);
@@ -221,15 +302,18 @@ const CreateProducts = () => {
 
     }
 
-    const validateRequiredFields = (product) => {
+    const validateRequiredFields = (product, isEditMode = false) => {
         const allRequiredFields = {
-            processor: ["name", "price", "description", "imgUrls", "type", "manufacturer", "socketType", "tdp", "coreCount", "threadCount", "baseClock", "boostClock", "integratedGraphics", "includesCooler"],
-            ram: ["name", "price", "description", "imgUrls", "type", "manufacturer", "memoryType", "memoryCapacity", "memorySpeed"],
+            processor: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity", "socketType", "tdp", "coreCount", "threadCount", "baseClock", "boostClock", "integratedGraphics", "includesCooler"],
+            gpu: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity", "interfaceType", "tdp", "series", "length", "powerConnectors", "vram", "boostClock", "cudaCores"],
+            ram: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity", "memoryType", "memoryCapacity", "memorySpeed"],
             motherboard: ["name", "price", "description", "imgUrls", "type", "manufacturer", "socketType", "chipset", "formFactor", "ramSlots", "maxRam", "memoryType"],
-            laptop: ["name", "price", "description", "imgUrls", "type", "manufacturer", "displaySize", "resolution", "cpu", "ram", "storage", "graphicCard"],
+            laptop: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity", "displaySize", "resolution", "cpu", "ram", "storage", "graphicCard"],
+            default: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity"],
         };
-        const requiredFields = allRequiredFields[product.type] || [];
+        const requiredFields = allRequiredFields[product.type] || allRequiredFields["default"];
         const missingFields = requiredFields.filter(field => {
+            if (field === "imgUrls" && isEditMode) return false;
             if (field === "imgUrls") {
                 return product.imgUrls.length === 0;
             }
@@ -243,11 +327,11 @@ const CreateProducts = () => {
     return (
         <div className=''>
             <div className='mt-3 mb-5 ml-6 mr-6'>
-                <div><PageTitle value="Create New Products"></PageTitle></div>
+                <div><PageTitle value={isEditMode ? 'Edit Products' : 'Create New Products'}></PageTitle></div>
                 <CustomBreadcrumbs
                     paths={[
                         { label: 'Products', href: "/products" },
-                        { label: 'New Product' },
+                        { label: isEditMode ? 'Edit Product' : 'New Product' },
                     ]} />
             </div>
             <div>
@@ -556,19 +640,102 @@ const CreateProducts = () => {
                                     </div>
                                 )}
 
-                                {/* {selectedSubCategory === "gpu" && (
+                                {selectedSubCategory === "gpu" && (
                                     <div className='gpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subGpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Interface Type" options={gpuInterfaceTypes} width='100%'></InputField></div>
-                                            <div><InputField type='text' Placeholder="mm" label="Length" width='100%'></InputField></div>
-                                            <div><InputField type='select' label="Power Connectors" options={gpuPowerConnectors} width='100%'></InputField></div>
-                                            <div><InputField type='text' Placeholder="Watts" label="TDP" width='100%'></InputField></div>
-                                            <div><InputField type='text' label="Chipset" width='100%'></InputField></div>
-                                            <div><InputField type='select' label="VRAM (GB)" options={gpuVramOptions} width='100%'></InputField></div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Interface Type"
+                                                    options={gpuInterfaceTypes}
+                                                    width='100%'
+                                                    value={product.interfaceType}
+                                                    onChange={(value) => handleInputChange('interfaceType', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    Placeholder="mm"
+                                                    label="Length"
+                                                    width='100%'
+                                                    value={product.length}
+                                                    onChange={(value) => handleInputChange('length', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Power Connectors"
+                                                    options={gpuPowerConnectors}
+                                                    width='100%'
+                                                    value={product.powerConnectors}
+                                                    onChange={(value) => handleInputChange('powerConnectors', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    label="CUDA Cores"
+                                                    width='100%'
+                                                    value={product.cudaCores}
+                                                    onChange={(value) => handleInputChange('cudaCores', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="GPU Series"
+                                                    options={gpuSeriesOptions}
+                                                    width='100%'
+                                                    value={product.series}
+                                                    onChange={(value) => handleInputChange('series', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="VRAM"
+                                                    options={gpuVramOptions}
+                                                    width='100%'
+                                                    value={product.vram}
+                                                    onChange={(value) => handleInputChange('vram', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    Placeholder="Watts"
+                                                    label="TDP"
+                                                    width='100%'
+                                                    value={product.tdp}
+                                                    onChange={(value) => handleInputChange('tdp', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    Placeholder="MHz"
+                                                    label="BoostClock"
+                                                    width='100%'
+                                                    value={product.boostClock}
+                                                    onChange={(value) => handleInputChange('boostClock', value)}
+                                                >
+                                                </InputField>
+                                            </div>
+
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === "storage" && (
+
+                                {/* {selectedSubCategory === "storage" && (
                                     <div className='storageProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subStorageProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div><InputField type='select' label="Storage Type" options={storageTypes} width='100%'></InputField></div>
@@ -702,11 +869,56 @@ const CreateProducts = () => {
                                 {selectedSubCategory === "prebuild" && (
                                     <div className='desktopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subDesktopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="CPU" options={desktopCpuOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="GPU" options={desktopGpuOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="RAM" options={desktopRamOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Storage" options={desktopStorageOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Desktop Type" options={desktopTypeOptions} width='100%' /></div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="CPU"
+                                                    options={desktopCpuOptions}
+                                                    width='100%'
+                                                    value={product.cpu}
+                                                    onChange={(value) => handleInputChange('cpu', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="GPU"
+                                                    options={desktopGpuOptions}
+                                                    width='100%'
+                                                    value={product.graphicCard}
+                                                    onChange={(value) => handleInputChange('graphicCard', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="RAM"
+                                                    options={desktopRamOptions}
+                                                    width='100%'
+                                                    value={product.ram}
+                                                    onChange={(value) => handleInputChange('ram', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Storage"
+                                                    options={desktopStorageOptions}
+                                                    width='100%'
+                                                    value={product.storage}
+                                                    onChange={(value) => handleInputChange('storage', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Desktop Type"
+                                                    options={desktopTypeOptions}
+                                                    width='100%'
+                                                    value={product.desktopType}
+                                                    onChange={(value) => handleInputChange('desktopType', value)}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -742,10 +954,22 @@ const CreateProducts = () => {
                             </div>
                         </div>
                         <div className='p-4'>
-                            <div className='float-right'>
+                            <div className='float-right flex flex-row gap-x-2'>
+                                {isEditMode && (
+                                    <PrimaryButton
+                                        fontSize="16px"
+                                        name="Cancel"
+                                        buttonSize="medium"
+                                        isBold={1}
+                                        color={"ternaryDark"}
+                                        padding="50px"
+                                        type="button"
+                                        onClick={() => navigate('/products/manageproduct')}
+                                    />
+                                )}
                                 <PrimaryButton
                                     fontSize="16px"
-                                    name="Create Product"
+                                    name={isEditMode ? 'Update Product' : 'Create Product'}
                                     buttonSize="medium"
                                     isBold={1}
                                     type="submit"

@@ -12,7 +12,7 @@ import {
   FormHelperText,
 
 } from "@mui/material";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import InputAdornment from '@mui/material/InputAdornment';
 import { inputBaseClasses } from '@mui/material/InputBase';
 
@@ -94,9 +94,29 @@ export function InputField({
     );
   }
 
+  // <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
+
+
   if (type === "number") {
+    const inputRef = useRef();
+
+    useEffect(() => {
+      const input = inputRef.current;
+      if (input) {
+        const stopPageScroll = (e) => {
+          e.stopPropagation(); // Allow input scroll, block page scroll
+        };
+
+        input.addEventListener("wheel", stopPageScroll);
+
+        return () => {
+          input.removeEventListener("wheel", stopPageScroll);
+        };
+      }
+    }, []);
     return (
       <TextField
+        inputRef={inputRef}
         type={type}
         label={label}
         fontSize={fontSize}
@@ -107,6 +127,9 @@ export function InputField({
         onChange={(e) => {
           if (onChange)
             onChange(e.target.value);
+        }}
+        inputProps={{
+          min: 0,
         }}
         slotProps={{
           inputLabel: {

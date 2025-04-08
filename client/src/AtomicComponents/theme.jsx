@@ -198,6 +198,10 @@ const theme = createTheme({
       main: '#1C1919',
       contrastText: '#FFFFFF',
     },
+    ternaryDark: {
+      main: '#797979',
+      contrastText: '#FFFFFF',
+    },
   },
   components: {
     MuiButton: {

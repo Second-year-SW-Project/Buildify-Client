@@ -47,7 +47,7 @@ const manufacture = {
         { value: "amd", label: "AMD" }
     ],
     ram: [
-        { value: "corsair", label: "Corsair" },
+        { value: "Corsair", label: "Corsair" },
         { value: "team", label: "Team" },
         { value: "gskill", label: "GSKILL" },
         { value: "hyperx", label: "HyperX" },
@@ -58,7 +58,7 @@ const manufacture = {
         { value: "gigabyte", label: "Gigabyte" },
         { value: "msi", label: "MSI" },
     ],
-    vga: [
+    gpu: [
         { value: "nvidia", label: "NVIDIA" },
         { value: "amd", label: "AMD" },
         { value: "msi", label: "MSI" },
@@ -68,7 +68,7 @@ const manufacture = {
 
     ],
     storage: [
-        { value: "samsung", label: "Samsung" },
+        { value: "Samsung", label: "Samsung" },
         { value: "seagate", label: "Seagate" },
         { value: "western_digital", label: "Western Digital" },
         { value: "toshiba", label: "Toshiba" },
@@ -128,7 +128,7 @@ const manufacture = {
         { value: "hp", label: "HP" },
         { value: "gigabyte", label: "Gigabyte" }
     ],
-    prebuilds: [
+    prebuild: [
         { value: "dell", label: "Dell" },
         { value: "hp", label: "HP" },
         { value: "acer", label: "Acer" },
@@ -143,7 +143,8 @@ const socketTypes = {
         { value: "lga1200", label: "LGA 1200" },
         { value: "lga1151", label: "LGA 1151" },
         { value: "lga2066", label: "LGA 2066" },
-        { value: "lga1700", label: "LGA 1700" }
+        { value: "lga1700", label: "LGA 1700" },
+        { value: "lga1851", label: "LGA 1851" },
     ],
     amd: [
         { value: "am4", label: "AM4" },
@@ -196,6 +197,7 @@ const ramAttributes = {
         { value: 3600, label: "3600 MHz" },
         { value: 4000, label: "4000 MHz" },
         { value: 4800, label: "4800 MHz" },
+        { value: 5200, label: "5200 MHz" },
         { value: 5600, label: "5600 MHz" },
         { value: 6400, label: "6400 MHz" }
     ],
@@ -208,7 +210,6 @@ const ramAttributes = {
         { value: 128, label: "128GB" }
     ]
 };
-
 
 const motherboardAttributes = {
     chipsets: [
@@ -254,13 +255,18 @@ const motherboardAttributes = {
         { value: 256, label: "256GB" },
     ],
     pcieSlotType: [
-
+        { value: "pcie_x16", label: "PCIe x16" },
+        { value: "pcie_x8", label: "PCIe x8" },
+        { value: "pcie_x4", label: "PCIe x4" },
+        { value: "pcie_x1", label: "PCIe x1" },
     ],
     pcieVersion: [
 
     ],
     storageType: [
-
+        { value: "SATA", label: "SATA" },
+        { value: "M.2", label: "M.2" },
+        { value: "SSD", label: "SSD" },
     ],
     expansionSlots: [
 
@@ -291,22 +297,21 @@ const storageAttributes = {
     ],
 };
 
-
 const gpuAttributes = {
     interfaceType: [
-        { value: "pcie_x16", label: "PCIe x16" },
-        { value: "pcie_x8", label: "PCIe x8" },
-        { value: "pcie_4_0", label: "PCIe 4.0" },
-        { value: "pcie_5_0", label: "PCIe 5.0" },
+        { value: "pcie_4_0 x8", label: "PCIe 4.0 x8" },
+        { value: "pcie_4_0 x16", label: "PCIe 4.0 x16" },
+        { value: "pcie_5_0 x8", label: "PCIe 5.0 x8" },
+        { value: "pcie_5_0 x16", label: "PCIe 5.0 x16" },
         { value: "agp", label: "AGP" },
         { value: "pci", label: "PCI" }
     ],
     powerConnectors: [
-        { value: "6-pin", label: "6-pin" },
-        { value: "8-pin", label: "8-pin" },
+        { value: "6-pin", label: "1x6-pin" },
+        { value: "8-pin", label: "1x8-pin" },
         { value: "6+8-pin", label: "6+8-pin" },
         { value: "2x8-pin", label: "2x8-pin" },
-        { value: "12-pin", label: "12-pin" },
+        { value: "12-pin", label: "2x6-pin" },
         { value: "16-pin", label: "16-pin (12VHPWR)" }
     ],
     gpuVram: [
@@ -316,6 +321,26 @@ const gpuAttributes = {
         { value: "16", label: "16GB" },
         { value: "24", label: "24GB" },
         { value: "48", label: "48GB" }
+    ],
+    gpuSeries: [
+        { value: "RTX 3060 Ti", label: "RTX 3060 Ti" },
+        { value: "RTX 3080", label: "RTX 3080" },
+        { value: "RTX 3080 Ti", label: "RTX 3080 Ti" },
+        { value: "RTX 3090", label: "RTX 3090" },
+        { value: "RTX 3090 Ti", label: "RTX 3090 Ti" },
+        { value: "RTX 4060 Ti", label: "RTX 4060 Ti" },
+        { value: "RTX 4070", label: "RTX 4070" },
+        { value: "RTX 4070 Ti", label: "RTX 4070 Ti" },
+        { value: "RTX 4080", label: "RTX 4080" },
+        { value: "RTX 4090", label: "RTX 4090" },
+        { value: "RTX 5070 Ti", label: "RTX 5070 Ti" },
+        { value: "RTX 5080", label: "RTX 5080" },
+        { value: "RX 6700 XT", label: "RX 6700 XT" },
+        { value: "RX 6800", label: "RX 6800" },
+        { value: "RX 6800 XT", label: "RX 6800 XT" },
+        { value: "RX 6900 XT", label: "RX 6900 XT" },
+        { value: "RX 7600", label: "RX 7600" },
+        { value: "RX 6950 XT", label: "RX 6950 XT" }
     ]
 };
 

@@ -120,7 +120,7 @@ function ManageProducts() {
     };
 
     const handleEdit = (id) => {
-        navigate(`/products/edit/${id}`);
+        navigate(`/products/createproduct/${id}`);
     };
 
     const handleDelete = async () => {

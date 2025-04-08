@@ -43,6 +43,7 @@ export function PrimaryButton({
     buttonSize,
     fontSize,
     isRounded,
+    padding,
     onClick,
     loading = false,
     isDisabled = false,
@@ -66,7 +67,9 @@ export function PrimaryButton({
                     borderRadius: borderRadius,
                     fontSize: fontSize,
                     padding: sizeConfig.padding,
-                    width: isFixed ? sizeConfig.fixedWidth : 'auto'
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                    paddingLeft: padding,
+                    paddingRight: padding,
                 }}>
                 {name}
             </BaseButton>
