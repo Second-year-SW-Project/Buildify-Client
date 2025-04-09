@@ -19,20 +19,22 @@ function InvoiceList() {
     { id: "startdate", label: "Created" },
     { id: "enddate", label: "Due" },
     { id: "amount", label: "Amount" },
+    { id: "status", label: "Status" },
   ];
 
   const invoiceData = [
     {
       customerCard: (
         <CustomerCard
-          name="ASUS ROG Strix SCAR 16 (2024) G634JZR"
-          type="Casing"
+          name="Gethmi Rathnayaka"
+          invId="INV1243"
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSi50-FcEbEamVMqvkhUo8jklEge0uZIG9pbg&s"
         />
       ),
       startdate: <TimeCard date="2024-02-14" time="1.30 pm" />,
       enddate: <TimeCard date="2024-02-14" time="1.30 pm" />,
       amount: "720,000 LKR",
+      status: "Inactive",
     },
   ];
 

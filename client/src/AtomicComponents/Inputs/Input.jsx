@@ -10,12 +10,10 @@ import {
   RadioGroup,
   FormLabel,
   FormHelperText,
-
 } from "@mui/material";
 import React from "react";
-import InputAdornment from '@mui/material/InputAdornment';
-import { inputBaseClasses } from '@mui/material/InputBase';
-
+import InputAdornment from "@mui/material/InputAdornment";
+import { inputBaseClasses } from "@mui/material/InputBase";
 
 export function InputField({
   label,
@@ -44,14 +42,14 @@ export function InputField({
         label={label}
         fontSize={fontSize}
         variant={variant}
+        value={value}
         color={color}
         width={width}
         disabled={disabled}
         helperText={helperText}
         error={!!error}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
         slotProps={{
           input: {
@@ -100,12 +98,14 @@ export function InputField({
         fontSize={fontSize}
         color={color}
         rows={rows}
+        value={value}
         disabled={disabled}
         helperText={helperText}
+        width={width}
+        variant={variant}
         error={!!error}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
         sx={{
           width: width,
@@ -137,8 +137,7 @@ export function InputField({
         color={color}
         width={width}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
         slotProps={{
           inputLabel: {
@@ -174,8 +173,7 @@ export function InputField({
         fontSize={fontSize}
         value={value}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
         variant={variant}
         color={color}
@@ -202,7 +200,6 @@ export function InputField({
         onChange={(_, newValue) => {
           onChange(newValue ? newValue.value : "");
         }}
-
         disabled={disabled}
         renderInput={(params) => (
           <TextField
@@ -227,7 +224,6 @@ export function InputField({
         onChange={(_, newValue) => {
           onChange(newValue ? newValue.value : "");
         }}
-
         disabled={disabled}
         renderInput={(params) => (
           <TextField
@@ -236,7 +232,7 @@ export function InputField({
             slotProps={{
               input: {
                 ...params.InputProps,
-                type: 'search',
+                type: "search",
               },
             }}
             error={!!error}
@@ -256,8 +252,7 @@ export function InputField({
             <Checkbox
               checked={value}
               onChange={(e) => {
-                if (onChange)
-                  onChange(e.target.checked);
+                if (onChange) onChange(e.target.checked);
               }}
               size={size}
               color={color}
@@ -275,7 +270,11 @@ export function InputField({
     return (
       <FormControl error={!!error} disabled={disabled}>
         <FormLabel>{label}</FormLabel>
-        <RadioGroup row={row} value={value} onChange={(e) => onChange(e.target.value)}>
+        <RadioGroup
+          row={row}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        >
           {options.map((option, index) => (
             <FormControlLabel
               key={index}
