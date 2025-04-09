@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";  // Import Provider
-import store from "./Store/store";  // Import your Redux store
+import { Provider } from "react-redux";
+import store from "./Store/store";
 import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -25,13 +25,14 @@ import { Toaster } from "sonner";
 import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
 import UserComplaints from "./User/UserComplaints.jsx";
 import Review from "./Admin/Review.jsx";
+import CreateGames from "./Admin/CreateGames.jsx"; // Import CreateGames
+import ManageGames from "./Admin/ManageGames.jsx"; // Placeholder for ManageGames
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 // Define the router configuration
 const router = createBrowserRouter([
   {
-
     Component: App,
     children: [
       {
@@ -94,12 +95,34 @@ const router = createBrowserRouter([
             path: "/products/createproduct",
             children: [
               {
-                index: true, // Default route when no ID is provided
+                index: true,
                 Component: CreateProducts,
               },
               {
-                path: ":id", // Dynamic route for editing a product
+                path: ":id",
                 Component: CreateProducts,
+              },
+            ],
+          },
+          // New Games Section
+          {
+            path: "/games",
+            Component: ManageGames, // Default route for games
+          },
+          {
+            path: "/games/managegames",
+            Component: ManageGames,
+          },
+          {
+            path: "/games/creategame",
+            children: [
+              {
+                index: true, // Default route for creating a new game
+                Component: CreateGames,
+              },
+              {
+                path: ":id", // Dynamic route for editing a game
+                Component: CreateGames,
               },
             ],
           },
@@ -126,11 +149,11 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}> {/* Wrap everything with Provider */}
+  <Provider store={store}>
     <ThemeProvider theme={theme}>
       <Toaster />
       <StrictMode>
-        <RouterProvider router={router} /> {/* Only use RouterProvider here */}
+        <RouterProvider router={router} />
       </StrictMode>
     </ThemeProvider>
   </Provider>

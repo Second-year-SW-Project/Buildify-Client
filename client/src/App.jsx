@@ -26,7 +26,6 @@ const NAVIGATION = [
       {
         segment: 'setting',
         title: 'Settings',
-
         icon: <Iconset type='settings' />,
       },
     ],
@@ -54,7 +53,6 @@ const NAVIGATION = [
         icon: <Iconset type="productCreate" />,
       },
     ],
-
   },
   {
     segment: 'orders',
@@ -73,6 +71,31 @@ const NAVIGATION = [
       },
     ],
   },
+  // New Games Section
+  {
+    kind: 'divider',
+  },
+  {
+    kind: 'header',
+    title: 'Games',
+  },
+  {
+    segment: 'games',
+    title: 'Games',
+    icon: <Iconset type="product" />, // Reuse an existing icon or create a new one
+    children: [
+      {
+        segment: 'managegames',
+        title: 'Manage Games',
+        icon: <Iconset type="productList" />, // Reuse or replace with a game-specific icon
+      },
+      {
+        segment: 'creategame',
+        title: 'Create Game',
+        icon: <Iconset type="productCreate" />, // Reuse or replace with a game-specific icon
+      },
+    ],
+  },
   {
     kind: 'divider',
   },
@@ -84,7 +107,6 @@ const NAVIGATION = [
     segment: 'usermanage',
     title: 'User Manage',
     icon: <Iconset type="user-manage" />,
-
   },
   {
     kind: 'divider',
@@ -112,7 +134,7 @@ const NAVIGATION = [
         segment: 'rma',
         title: 'RMA',
         icon: <Iconset type="RMA" />,
-      }
+      },
     ],
   },
   {
@@ -139,26 +161,25 @@ const NAVIGATION = [
       },
     ],
   },
-
 ];
 
 function App() {
-
   return (
     <AppProvider
       navigation={NAVIGATION}
       branding={{
-        logo: (<img
-          src='/src/assets/images/Logos/logo-white.png'
-          alt='Logo'
-          style={{
-            marginLeft: '8px',
-            marginTop: '4px',
-            maxWidth: '100%',
-            height: 'auto',
-            width: '140px'
-          }}
-        />
+        logo: (
+          <img
+            src='/src/assets/images/Logos/logo-white.png'
+            alt='Logo'
+            style={{
+              marginLeft: '8px',
+              marginTop: '4px',
+              maxWidth: '100%',
+              height: 'auto',
+              width: '140px',
+            }}
+          />
         ),
         title: '',
       }}
@@ -166,8 +187,7 @@ function App() {
     >
       <Outlet />
     </AppProvider>
-  )
-
+  );
 }
 
 export default App;

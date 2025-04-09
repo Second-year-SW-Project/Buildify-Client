@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
-import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
-import { Typography } from '@mui/material'
-import theme from '../AtomicComponents/theme'
-import { InputField } from '../AtomicComponents/Inputs/Input'
+import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
+import { Typography } from '@mui/material';
+import theme from '../AtomicComponents/theme';
+import { InputField } from '../AtomicComponents/Inputs/Input';
 import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector';
 import {
     main, subCategories, coolerAttributes, cpuCores, cpuThreads, gpuAttributes,
@@ -17,12 +17,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { useParams, useNavigate } from "react-router-dom";
 
-
-
-
 const CreateProducts = () => {
-
-    // Get the product ID from the URL parameters
     const { id } = useParams();
     const isEditMode = !!id;
 
@@ -30,7 +25,6 @@ const CreateProducts = () => {
     const navigate = useNavigate();
     const imageSelectorRef = useRef();
 
-    // Get state from Redux store
     const {
         selectedMainCategory,
         selectedSubCategory,
@@ -40,35 +34,29 @@ const CreateProducts = () => {
         socketTypeOptions,
     } = useSelector((state) => state.form);
 
-    // Handle change in Main Category
     const handleMainCategoryChange = (selectedValue) => {
         dispatch(setSelectedMainCategory(selectedValue));
-        dispatch(setSelectedSubCategory("")); // Reset Sub Category when Main Category changes
-        dispatch(setSelectedManufacture("")); // Reset manufacture when Main Category changes
-        product.type = "";
-
+        dispatch(setSelectedSubCategory(""));
+        dispatch(setSelectedManufacture(""));
+        setProduct(prev => ({ ...prev, type: "" }));
     };
 
-    // Handle change in Sub Category
     const handleSubCategoryChange = (selectedValue) => {
         dispatch(setSelectedSubCategory(selectedValue));
-        dispatch(setSelectedManufacture("")); // Reset manufacture when Sub Category changes
-
+        dispatch(setSelectedManufacture(""));
     };
-    // Handle change in Manufacture
+
     const handleManufactureChange = (selectedValue) => {
         dispatch(setSelectedManufacture(selectedValue));
-        product.socketType = ""; // Reset socket type when manufacture changes
+        setProduct(prev => ({ ...prev, socketType: "" }));
     };
 
-    // coolerAttributes
+    // Attribute options
     const coolerSupportedSockets = coolerAttributes.supportedSocket;
     const coolerTypes = coolerAttributes.coolerType;
-    //ramAttributes
     const ramTypeOptions = ramAttributes.type;
     const ramSpeedOptions = ramAttributes.speed;
     const ramSizeOptions = ramAttributes.size;
-    //motherboardAttributes
     const motherboardChipsets = motherboardAttributes.chipsets;
     const motherboardSocket = motherboardAttributes.motherboardSocket;
     const motherboardFormFactors = motherboardAttributes.formFactor;
@@ -79,29 +67,22 @@ const CreateProducts = () => {
     const motherboardPcieVersion = motherboardAttributes.pcieVersion;
     const motherboardStorageTypes = motherboardAttributes.storageType;
     const motherboardExpansionSlots = motherboardAttributes.expansionSlots;
-    //gpuAttributes
     const gpuInterfaceTypes = gpuAttributes.interfaceType;
     const gpuPowerConnectors = gpuAttributes.powerConnectors;
     const gpuVramOptions = gpuAttributes.gpuVram;
     const gpuSeriesOptions = gpuAttributes.gpuSeries;
-    //storageAttributes
     const storageTypes = storageAttributes.storageTypes;
     const storageCapacities = storageAttributes.storageCapacities;
-    //casingAttributes
     const casingFormFactors = casingAttributes.formFactor;
     const casingSupportedMotherboardSizes = casingAttributes.supportedMotherboardSizes;
-    //keyboardAttributes
     const keyboardManufacturerOptions = keyboardAttributes.manufacturer;
     const keyboardTypeOptions = keyboardAttributes.type;
-    //mouseAttributes
     const mouseTypeOptions = mouseAttributes.type;
-    //monitorAttributes
     const displaySizeOptions = monitorAttributes.displaySize;
     const resolutionOptions = monitorAttributes.resolution;
     const refreshRateOptions = monitorAttributes.refreshRate;
     const panelTypeOptions = monitorAttributes.panelType;
     const monitorTypeOptions = monitorAttributes.monitorType;
-    //laptopAttributes
     const laptopDisplaySizeOptions = laptopAttributes.displaySize;
     const laptopResolutionOptions = laptopAttributes.resolution;
     const laptopCpuOptions = laptopAttributes.cpu;
@@ -109,7 +90,6 @@ const CreateProducts = () => {
     const laptopStorageOptions = laptopAttributes.storage;
     const laptopTypeOptions = laptopAttributes.laptopType;
     const laptopGraphicCardOptions = laptopAttributes.graphicCard;
-    //desktopAttributes
     const desktopCpuOptions = desktopAttributes.cpu;
     const desktopGpuOptions = desktopAttributes.graphicCard;
     const desktopRamOptions = desktopAttributes.ram;
@@ -140,7 +120,7 @@ const CreateProducts = () => {
         formFactor: "",
         ramSlots: "",
         maxRam: "",
-        //laptop & prebuilt
+        //laptop & prebuild
         displaySize: "",
         resolution: "",
         laptopType: "",
@@ -156,38 +136,43 @@ const CreateProducts = () => {
         vram: "",
         series: "",
         cudaCores: "",
-
+        //prebuild additional fields
+        cpuCores: "",
+        cpuThreads: "",
+        cpuBaseClock: "",
+        cpuBoostClock: "",
+        gpuSeries: "",
+        gpuVramGB: "",
+        gpuBoostClockMHz: "",
+        gpuCores: "",
+        ramSizeGB: "",
+        ramSpeedMHz: "",
+        ramType: "",
         quantity: "",
         price: "",
     };
 
     const [product, setProduct] = useState(initialProductState);
-
-    // State to hold selected images
     const [selectedImages, setSelectedImages] = useState([]);
 
-    // Fetch product data if in edit mode
     useEffect(() => {
         if (isEditMode) {
             const fetchProduct = async () => {
                 try {
-                    const res = await axios.get(`http://localhost:8000/api/product/${id}`,);
+                    const res = await axios.get(`http://localhost:8000/api/product/${id}`);
                     if (res.data.Success) {
                         const fetchedProduct = res.data.data;
                         console.log("Fetched Product====================================", fetchedProduct);
                         setProduct(fetchedProduct);
 
-                        //Set main category
                         let foundMainCategory = null;
-
                         for (const [key, categoryList] of Object.entries(subCategories)) {
                             if (categoryList.some(item => item.value === fetchedProduct.type)) {
-                                foundMainCategory = key; // "Necessary", "Optional", or "Common"
+                                foundMainCategory = key;
                                 break;
                             }
                         }
 
-                        // Map category
                         const mainCategoryLabelMap = {
                             Necessary: "Necessary",
                             Optional: "Optional",
@@ -205,14 +190,10 @@ const CreateProducts = () => {
                     console.error("Error fetching product:", error);
                 }
             };
-
             fetchProduct();
         }
-    }, [id]);
+    }, [id, dispatch]);
 
-
-
-    // Update subCategory and manufacture in product state when selectedSubCategory changes
     useEffect(() => {
         setProduct((prevProduct) => ({
             ...prevProduct,
@@ -222,7 +203,7 @@ const CreateProducts = () => {
     }, [selectedSubCategory, selectedManufacture]);
 
     const handleInputChange = (field, value) => {
-        console.log("===================Value", value)
+        console.log("===================Value", value);
         setProduct((prevProduct) => ({
             ...prevProduct,
             [field]: typeof prevProduct[field] === 'boolean' ? Boolean(value) : value,
@@ -243,35 +224,25 @@ const CreateProducts = () => {
         return changed;
     };
 
-
-
     const onSubmitHandler = async (e) => {
         e.preventDefault();
         try {
-            const formData = new FormData()
-
-            // Append images (max 4 as expected by backend)
+            const formData = new FormData();
             selectedImages.forEach((image, index) => {
                 formData.append(`image${index + 1}`, image);
-
             });
 
             if (product.type === "processor") {
-                if (!product.includesCooler)
-                    product.includesCooler = false;
-                if (!product.integratedGraphics)
-                    product.integratedGraphics = false;
+                if (!product.includesCooler) product.includesCooler = false;
+                if (!product.integratedGraphics) product.integratedGraphics = false;
             }
 
-            //validation function for reqired fields
             validateRequiredFields(product, isEditMode);
-
-            formData.append("product", JSON.stringify(product))
+            formData.append("product", JSON.stringify(product));
 
             const endpoint = isEditMode
                 ? `http://localhost:8000/api/product/${id}`
                 : `http://localhost:8000/api/product/add`;
-
 
             const response = isEditMode
                 ? await axios.put(endpoint, formData)
@@ -279,28 +250,21 @@ const CreateProducts = () => {
 
             if (response.data.Success) {
                 toast.success(isEditMode ? "Product updated successfully" : "Product created successfully");
-
                 if (!isEditMode) {
-
-                    //reset states
                     setProduct({ ...initialProductState });
-
-                    //Reset Redux States
                     dispatch(resetForm());
                     if (imageSelectorRef.current) {
                         imageSelectorRef.current.deleteAllImages();
                     }
                 }
             } else {
-                toast.error(isEditMode ? "Error in Updating" : "Error creating product. Please try again.")
+                toast.error(isEditMode ? "Error in Updating" : "Error creating product. Please try again.");
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.message)
+            toast.error(error.message);
         }
-
-
-    }
+    };
 
     const validateRequiredFields = (product, isEditMode = false) => {
         const allRequiredFields = {
@@ -309,6 +273,13 @@ const CreateProducts = () => {
             ram: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity", "memoryType", "memoryCapacity", "memorySpeed"],
             motherboard: ["name", "price", "description", "imgUrls", "type", "manufacturer", "socketType", "chipset", "formFactor", "ramSlots", "maxRam", "memoryType"],
             laptop: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity", "displaySize", "resolution", "cpu", "ram", "storage", "graphicCard"],
+            prebuild: [
+                "name", "price", "description", "imgUrls", "type", "manufacturer", "quantity",
+                "cpu", "cpuCores", "cpuThreads", "cpuBaseClock", "cpuBoostClock",
+                "graphicCard", "gpuSeries", "gpuVramGB", "gpuBoostClockMHz", "gpuCores",
+                "ramSizeGB", "ramSpeedMHz", "ramType",
+                "storage", "desktopType"
+            ],
             default: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity"],
         };
         const requiredFields = allRequiredFields[product.type] || allRequiredFields["default"];
@@ -317,12 +288,29 @@ const CreateProducts = () => {
             if (field === "imgUrls") {
                 return product.imgUrls.length === 0;
             }
+            // Special validation for clock speeds in prebuild
+            if (field === "cpuBaseClock" || field === "cpuBoostClock") {
+                if (!product[field]) return true;
+                const value = product[field].toString().trim().toLowerCase();
+                if (!value.includes("ghz")) {
+                    setProduct(prev => ({ ...prev, [field]: `${value} GHz` }));
+                }
+                return false;
+            }
+            if (field === "gpuBoostClockMHz") {
+                if (!product[field]) return true;
+                const value = product[field].toString().trim().toLowerCase();
+                if (!value.includes("mhz")) {
+                    setProduct(prev => ({ ...prev, [field]: `${value} MHz` }));
+                }
+                return false;
+            }
             return product[field] === null || product[field] === "";
         });
         if (missingFields.length > 0) {
-            throw new Error(`Please fill in all required fields: ${missingFields.join(", ")}`);
+            throw new Error(`Please fill in all required fields correctly: ${missingFields.join(", ")}. CPU clocks must include GHz, GPU boost clock must include MHz.`);
         }
-    }
+    };
 
     return (
         <div className=''>
@@ -332,11 +320,12 @@ const CreateProducts = () => {
                     paths={[
                         { label: 'Products', href: "/products" },
                         { label: isEditMode ? 'Edit Product' : 'New Product' },
-                    ]} />
+                    ]}
+                />
             </div>
             <div>
                 <form onSubmit={onSubmitHandler}>
-                    <div className='grid-flow-* gap-20 pl-3 pr-3 grid gap-y-4 mb-4' >
+                    <div className='grid-flow-* gap-20 pl-3 pr-3 grid gap-y-4 mb-4'>
                         <div className='Details border-2 border-gray-100 rounded-lg pt-4 pb-4'>
                             <div className='DetailsHeader ml-3 mr-3 h-fit mb-4'>
                                 <Typography variant='h5' fontWeight="bold">Details</Typography>
@@ -356,31 +345,27 @@ const CreateProducts = () => {
                                 </div>
                                 <div className='formTitle2 mt-4 mb-4'>
                                     <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Content</Typography>
-                                    <div>
-                                        <InputField
-                                            onChange={(value) => handleInputChange('description', value)}
-                                            value={product.description}
-                                            type='text'
-                                            label="Description"
-                                            width='100%'
-                                            rows={12}
-                                        />
-                                    </div>
+                                    <InputField
+                                        onChange={(value) => handleInputChange('description', value)}
+                                        value={product.description}
+                                        type='text'
+                                        label="Description"
+                                        width='100%'
+                                        rows={12}
+                                    />
                                 </div>
-                                <div className='formTitle3 mt-4 mb-4 '>
+                                <div className='formTitle3 mt-4 mb-4'>
                                     <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Images</Typography>
-                                    <div className=''>
-                                        <ImageSelector
-                                            ref={imageSelectorRef}
-                                            onImagesSelect={(images) => {
-                                                setSelectedImages(images);
-                                                setProduct((prevProduct) => ({
-                                                    ...prevProduct,
-                                                    imgUrls: images.map((image) => URL.createObjectURL(image)), // Storing image URLs
-                                                }));
-                                            }}
-                                        />
-                                    </div>
+                                    <ImageSelector
+                                        ref={imageSelectorRef}
+                                        onImagesSelect={(images) => {
+                                            setSelectedImages(images);
+                                            setProduct((prevProduct) => ({
+                                                ...prevProduct,
+                                                imgUrls: images.map((image) => URL.createObjectURL(image)),
+                                            }));
+                                        }}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -420,7 +405,6 @@ const CreateProducts = () => {
                                             type='select'
                                             label="Product Code"
                                             width='100%'
-                                        //This Should be a generate of product codes
                                         />
                                     </div>
                                     <div>
@@ -432,7 +416,7 @@ const CreateProducts = () => {
                                             value={selectedManufacture}
                                             onChange={handleManufactureChange}
                                             disabled={!selectedSubCategory}
-                                        ></InputField>
+                                        />
                                     </div>
                                     <div>
                                         <InputField
@@ -447,7 +431,7 @@ const CreateProducts = () => {
                                 </div>
                                 {selectedSubCategory === "processor" && (
                                     <div className='cpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row '>
+                                        <div className='subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div>
                                                 <InputField
                                                     type="select"
@@ -516,7 +500,6 @@ const CreateProducts = () => {
                                                     type='checkbox'
                                                     label="Integrated Graphics"
                                                     width='100%'
-                                                    // checked={product.integratedGraphics}
                                                     value={product.integratedGraphics}
                                                     onChange={(value) => handleInputChange('integratedGraphics', value)}
                                                 />
@@ -526,7 +509,6 @@ const CreateProducts = () => {
                                                     type='checkbox'
                                                     label="Includes Cooler"
                                                     width='100%'
-                                                    // checked={product.includesCooler}
                                                     value={product.includesCooler}
                                                     onChange={(value) => handleInputChange('includesCooler', value)}
                                                 />
@@ -534,7 +516,6 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-
                                 {selectedSubCategory === "motherboard" && (
                                     <div className='motherboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subMotherboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
@@ -598,11 +579,9 @@ const CreateProducts = () => {
                                                     width='100%'
                                                 />
                                             </div>
-                                            {/* There are more options for motherboards, you can add them here */}
                                         </div>
                                     </div>
                                 )}
-
                                 {selectedSubCategory === "ram" && (
                                     <div className='ramProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subRamProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
@@ -639,7 +618,6 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-
                                 {selectedSubCategory === "gpu" && (
                                     <div className='gpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subGpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
@@ -651,8 +629,7 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.interfaceType}
                                                     onChange={(value) => handleInputChange('interfaceType', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
                                             <div>
                                                 <InputField
@@ -662,8 +639,7 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.length}
                                                     onChange={(value) => handleInputChange('length', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
                                             <div>
                                                 <InputField
@@ -673,8 +649,7 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.powerConnectors}
                                                     onChange={(value) => handleInputChange('powerConnectors', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
                                             <div>
                                                 <InputField
@@ -683,8 +658,7 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.cudaCores}
                                                     onChange={(value) => handleInputChange('cudaCores', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
                                             <div>
                                                 <InputField
@@ -694,8 +668,7 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.series}
                                                     onChange={(value) => handleInputChange('series', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
                                             <div>
                                                 <InputField
@@ -705,8 +678,7 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.vram}
                                                     onChange={(value) => handleInputChange('vram', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
                                             <div>
                                                 <InputField
@@ -716,8 +688,7 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.tdp}
                                                     onChange={(value) => handleInputChange('tdp', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
                                             <div>
                                                 <InputField
@@ -727,68 +698,11 @@ const CreateProducts = () => {
                                                     width='100%'
                                                     value={product.boostClock}
                                                     onChange={(value) => handleInputChange('boostClock', value)}
-                                                >
-                                                </InputField>
+                                                />
                                             </div>
-
                                         </div>
                                     </div>
                                 )}
-
-                                {/* {selectedSubCategory === "storage" && (
-                                    <div className='storageProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subStorageProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Storage Type" options={storageTypes} width='100%'></InputField></div>
-                                            <div><InputField type='select' label="Capacity" options={storageCapacities} width='100%'></InputField></div>
-                                        </div>
-                                    </div>
-                                )} 
-                                {selectedSubCategory === "casing" && (
-                                    <div className='casingProperties grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subCasingProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Form Factor" options={casingFormFactors} width='100%' /></div>
-                                            <div><InputField type='select' label="Motherboard Sizes" options={casingSupportedMotherboardSizes} width='100%' /></div>
-                                            <div><InputField type='text' label="Max GPU Length" Placeholder="mm" width='100%' /></div>
-                                            <div><InputField type='text' label="Max Cooler Height" Placeholder="mm" width='100%' /></div>
-                                        </div>
-                                    </div>
-                                )}
-                                {selectedSubCategory === "cooling" && (
-                                    <div className='cpuCoolerProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subcpuCoolerProperty1 grid gap-y-2 gap-x-4 grid-cols-4  flex flex-row '>
-                                            <div><InputField type='select' label="Supported Socket" options={coolerSupportedSockets} width='100%'></InputField></div>
-                                            <div><InputField type='select' label="Cooler Type" options={coolerTypes} width='100%'></InputField></div>
-                                            <div><InputField type='text' Placeholder="Watts" label="Max TDP" width='100%'></InputField></div>
-                                            <div><InputField type='text' Placeholder="mm" label="Height" width='100%'></InputField></div>
-                                        </div>
-                                    </div>
-                                )}
-                                {selectedSubCategory === "keyboard" && (
-                                    <div className='keyboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subKeyboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Manufacturer" options={keyboardManufacturerOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Keyboard Type" options={keyboardTypeOptions} width='100%' /></div>
-                                        </div>
-                                    </div>
-                                )}
-                                {selectedSubCategory === "mouse" && (
-                                    <div className='mouseProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subMouseProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Mouse Type" options={mouseTypeOptions} width='100%' /></div>
-                                        </div>
-                                    </div>
-                                )}
-                                {selectedSubCategory === "monitor" && (
-                                    <div className='monitorProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subMonitorProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            <div><InputField type='select' label="Display Size" options={displaySizeOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Resolution" options={resolutionOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Refresh Rate" options={refreshRateOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Panel Type" options={panelTypeOptions} width='100%' /></div>
-                                            <div><InputField type='select' label="Monitor Type" options={monitorTypeOptions} width='100%' /></div>
-                                        </div>
-                                    </div>
-                                )*/}
                                 {selectedSubCategory === "laptop" && (
                                     <div className='laptopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subLaptopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
@@ -831,7 +745,6 @@ const CreateProducts = () => {
                                                     value={product.ram}
                                                     onChange={(value) => handleInputChange('ram', value)}
                                                 />
-
                                             </div>
                                             <div>
                                                 <InputField
@@ -869,6 +782,7 @@ const CreateProducts = () => {
                                 {selectedSubCategory === "prebuild" && (
                                     <div className='desktopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subDesktopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
+                                            {/* CPU Fields */}
                                             <div>
                                                 <InputField
                                                     type='select'
@@ -882,6 +796,48 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type='select'
+                                                    label="CPU Cores"
+                                                    options={cpuCores}
+                                                    width='100%'
+                                                    value={product.cpuCores}
+                                                    onChange={(value) => handleInputChange('cpuCores', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="CPU Threads"
+                                                    options={cpuThreads}
+                                                    width='100%'
+                                                    value={product.cpuThreads}
+                                                    onChange={(value) => handleInputChange('cpuThreads', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    placeholder="e.g., 3.2 GHz"
+                                                    label="CPU Base Clock (GHz)"
+                                                    width='100%'
+                                                    value={product.cpuBaseClock}
+                                                    onChange={(value) => handleInputChange('cpuBaseClock', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    placeholder="e.g., 4.6 GHz"
+                                                    label="CPU Boost Clock (GHz)"
+                                                    width='100%'
+                                                    value={product.cpuBoostClock}
+                                                    onChange={(value) => handleInputChange('cpuBoostClock', value)}
+                                                />
+                                            </div>
+
+                                            {/* GPU Fields */}
+                                            <div>
+                                                <InputField
+                                                    type='select'
                                                     label="GPU"
                                                     options={desktopGpuOptions}
                                                     width='100%'
@@ -892,13 +848,83 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type='select'
-                                                    label="RAM"
-                                                    options={desktopRamOptions}
+                                                    label="GPU Series"
+                                                    options={[
+                                                        { value: 'GTX', label: 'GTX' },
+                                                        { value: 'RTX 2000', label: 'RTX 2000' },
+                                                        { value: 'RTX 3000', label: 'RTX 3000' },
+                                                        { value: 'RTX 4000', label: 'RTX 4000' },
+                                                        { value: 'RX 6000', label: 'RX 6000' },
+                                                        { value: 'RX 7000', label: 'RX 7000' },
+                                                    ]}
                                                     width='100%'
-                                                    value={product.ram}
-                                                    onChange={(value) => handleInputChange('ram', value)}
+                                                    value={product.gpuSeries}
+                                                    onChange={(value) => handleInputChange('gpuSeries', value)}
                                                 />
                                             </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="VRAM (GB)"
+                                                    options={gpuVramOptions}
+                                                    width='100%'
+                                                    value={product.gpuVramGB}
+                                                    onChange={(value) => handleInputChange('gpuVramGB', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    placeholder="e.g., 2520 MHz"
+                                                    label="GPU Boost Clock (MHz)"
+                                                    width='100%'
+                                                    value={product.gpuBoostClockMHz}
+                                                    onChange={(value) => handleInputChange('gpuBoostClockMHz', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    label="GPU Cores"
+                                                    width='100%'
+                                                    value={product.gpuCores}
+                                                    onChange={(value) => handleInputChange('gpuCores', value)}
+                                                />
+                                            </div>
+
+                                            {/* RAM Fields */}
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="RAM Size (GB)"
+                                                    options={desktopRamOptions}
+                                                    width='100%'
+                                                    value={product.ramSizeGB}
+                                                    onChange={(value) => handleInputChange('ramSizeGB', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="RAM Speed (MHz)"
+                                                    options={ramSpeedOptions}
+                                                    width='100%'
+                                                    value={product.ramSpeedMHz}
+                                                    onChange={(value) => handleInputChange('ramSpeedMHz', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="RAM Type"
+                                                    options={ramTypeOptions}
+                                                    width='100%'
+                                                    value={product.ramType}
+                                                    onChange={(value) => handleInputChange('ramType', value)}
+                                                />
+                                            </div>
+
+                                            {/* Existing Fields */}
                                             <div>
                                                 <InputField
                                                     type='select'
@@ -922,7 +948,6 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-
                             </div>
                         </div>
                         <div className='Pricing border-2 border-gray-100 rounded-lg drop-shadow-2xl pt-4 pb-4'>
@@ -938,7 +963,6 @@ const CreateProducts = () => {
                                         Placeholder="LKR"
                                         label="Stock Price"
                                         width='100%'
-                                    // Sholud add the stock price if neeeded 
                                     />
                                 </div>
                                 <div>
@@ -980,7 +1004,7 @@ const CreateProducts = () => {
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default CreateProducts
+export default CreateProducts;
