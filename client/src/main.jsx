@@ -96,6 +96,11 @@ createRoot(root).render(
             <Route path="/user/complaint" element={<ComplaintSubmit />} />
             <Route path="/user/complaintHistory" element={<UserComplaints />} />
             <Route path="/profile" element={<UserProfile />} />
+            <Route path="/myOrders" element={<MyOrders />} />
+            <Route path="/rmaSupport" element={<RMAsupport />} />
+            <Route path="/orderHistory" element={<OrderHistory />} />
+            <Route path="/savedBuilds" element={<SavedBuilds />} />
+            <Route path="/settings" element={<Settings />} />
 
             {/* Admin Routes */}
 
