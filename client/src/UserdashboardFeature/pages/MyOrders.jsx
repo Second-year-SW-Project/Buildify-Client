@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SideNav from "../SideNav";
-import Navbar from "../../MoleculesComponents/User_component/Navbar";
+import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";

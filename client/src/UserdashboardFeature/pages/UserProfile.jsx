@@ -6,7 +6,7 @@ import { Divider, Paper, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { InputField } from "../../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../../AtomicComponents/Buttons/Buttons";
-import Navbar from "../../MoleculesComponents/User_component/Navbar";
+import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
 import axios from "axios";
 import { toast } from "sonner";
 import { setAuthUser } from "../../Store/authSlice";
