@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 
 export default function AdminProfile() {
   const dispatch = useDispatch();
@@ -175,6 +176,8 @@ const handleSubmit = async (e) => {
           )}
           
           {editable && (
+            
+
             <Button
               variant="contained"
               component="label"
@@ -194,8 +197,11 @@ const handleSubmit = async (e) => {
                 onChange={handleImageUpload}
               />
             </Button>
+            
           )}
         </Box>
+        
+
         
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3} sx={{ mt: 3 }}>
