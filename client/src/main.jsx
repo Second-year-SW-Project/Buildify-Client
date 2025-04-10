@@ -48,6 +48,7 @@ import LaptopCategoryPage from "./pages/Laptop_category/Laptopcategorypage.jsx";
 import Testing from "./pages/Testing.jsx";
 import CreateGames from "./Admin/CreateGames.jsx"; // Import CreateGames
 import ManageGames from "./Admin/ManageGames.jsx"; // Placeholder for ManageGames
+import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx"
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const root = document.getElementById("root");
@@ -79,6 +80,7 @@ createRoot(root).render(
               <Route path="itempage/:id" element={<ItemPage />} />
               <Route path="search" element={<SearchResults />} />
               <Route path="laptop" element={<LaptopCategoryPage />} />
+              <Route path="custom-build" element={<SelectGameAndBudgetpage />} />
             
 
             {/* Authentication Routes */}
