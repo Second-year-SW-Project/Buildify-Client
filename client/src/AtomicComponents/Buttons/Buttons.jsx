@@ -43,6 +43,7 @@ export function PrimaryButton({
     buttonSize,
     fontSize,
     isRounded,
+    padding,
     onClick,
     loading = false,
     isDisabled = false,
@@ -66,7 +67,9 @@ export function PrimaryButton({
                     borderRadius: borderRadius,
                     fontSize: fontSize,
                     padding: sizeConfig.padding,
-                    width: isFixed ? sizeConfig.fixedWidth : 'auto'
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                    paddingLeft: padding,
+                    paddingRight: padding,
                 }}>
                 {name}
             </BaseButton>
@@ -108,6 +111,47 @@ export function OutlinedButton({
                     fontSize: fontSize,
                     padding: sizeConfig.padding,
                     width: isFixed ? sizeConfig.fixedWidth : 'auto',
+                }}>
+                {name}
+            </BaseButton>
+        </div >
+
+    );
+}
+
+//TextButton
+export function TextButton({
+    name,
+    color,
+    isBold,
+    isFixed,
+    buttonSize,
+    fontSize,
+    isRounded,
+    onClick,
+    loading = false,
+    isDisabled = false,
+    type
+}) {
+    const sizeConfig = Button_Config[buttonSize] || Button_Config.medium; //set Button Size
+    const borderRadius = isRounded ? '30px' : '8px'; //set rounded Border
+
+    return (
+        <div>
+            <BaseButton
+                variant="text"
+                color={color}
+                disabled={isDisabled || loading}
+                loading={loading}
+                loadingIndicator="Loading…"
+                onClick={onClick}
+                type={type}
+                sx={{
+                    fontWeight: isBold ? 700 : 400,
+                    borderRadius: borderRadius,
+                    fontSize: fontSize,
+                    padding: sizeConfig.padding,
+                    width: isFixed ? sizeConfig.fixedWidth : 'auto'
                 }}>
                 {name}
             </BaseButton>

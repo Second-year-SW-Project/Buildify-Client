@@ -10,6 +10,7 @@ import { InputField } from "../AtomicComponents/Inputs/Input";
 import { StockType, main } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
+import ToolpadFixer from "../MoleculesComponents/ToolpadFixer";
 
 function InvoiceList() {
   const navigate = useNavigate();
@@ -19,28 +20,29 @@ function InvoiceList() {
     { id: "startdate", label: "Created" },
     { id: "enddate", label: "Due" },
     { id: "amount", label: "Amount" },
-    { id: "status", label: "Status" },
   ];
 
   const invoiceData = [
     {
       customerCard: (
         <CustomerCard
-          name="Gethmi Rathnayaka"
-          invId="INV1243"
+          name="ASUS ROG Strix SCAR 16 (2024) G634JZR"
+          type="Casing"
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSi50-FcEbEamVMqvkhUo8jklEge0uZIG9pbg&s"
         />
       ),
       startdate: <TimeCard date="2024-02-14" time="1.30 pm" />,
       enddate: <TimeCard date="2024-02-14" time="1.30 pm" />,
       amount: "720,000 LKR",
-      status: "Inactive",
     },
   ];
 
   const iconTypes = ["view", "edit", "delete"];
 
   return (
+    <div>
+      <ToolpadFixer></ToolpadFixer>
+      <div className="ml-[330px] -mt-[600px]">
     <div className="pl-6 grid grid-rows">
       <div className="mt-3">
         <PageTitle value="Invoice List"></PageTitle>
@@ -94,6 +96,8 @@ function InvoiceList() {
           />
         </div>
       </div>
+    </div>
+    </div>
     </div>
   );
 }

@@ -119,10 +119,94 @@ const Usermanage = () => {
   };
 
   return (
-    <div>
-      <div style={{ padding: "30px" }}>
-        <div>
-          <Box sx={{ p: 4 }}>
+    <div style={{ padding: "30px" }}>
+      <h2 style={{ paddingLeft: "20px" }}>User Management</h2>
+      <div style={{ padding: "10px", height: "25%", display: "flex", flexDirection: "row", alignItems: "center", gap: "20px" }}>
+        <TextField
+          label="Search by Name"
+          name="name"
+          value={filters.name}
+          onChange={handleFilterChange}
+          style={{
+            flex: 1, // To make it stretch
+            height: "40px", // Match the height of the button
+          }}
+          InputProps={{
+            style: {
+              height: "40px", // Match the height of the button
+              padding: "0 14px", // Adjust padding to align text
+              textAlign: "center", // Center the text inside the input field
+            }
+          }}
+          InputLabelProps={{
+            style: {
+              fontSize: "12px", // Smaller font size for label
+            }
+          }}
+        />
+        <TextField
+          label="Search by Email"
+          name="email"
+          value={filters.email}
+          onChange={handleFilterChange}
+          style={{
+            flex: 1, // To make it stretch
+            height: "40px", // Match the height of the button
+          }}
+          InputProps={{
+            style: {
+              height: "40px", // Match the height of the button
+              padding: "0 14px", // Adjust padding to align text
+              textAlign: "center", // Center the text inside the input field
+            }
+          }}
+          InputLabelProps={{
+            style: {
+              fontSize: "12px", // Smaller font size for label
+            }
+          }}
+        />
+        <Select
+          name="Role"
+          value={filters.Role || ""} // Default to empty string to show "All Roles"
+          onChange={handleFilterChange}
+          style={{
+            flex: 1, // To make it stretch
+            height: "40px", // Match the height of the button
+          }}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 300,
+              },
+            },
+          }}
+        >
+          <MenuItem value="">All Roles</MenuItem> {/* Default option */}
+          <MenuItem value="admin">Admin</MenuItem>
+          <MenuItem value="user">User</MenuItem>
+        </Select>
+        <Button
+          onClick={handleSearch}
+          variant="contained"
+          sx={{
+            margin: "20px 0",
+            backgroundColor: "#641A90", // Dark purple background
+            color: "white", // White font color
+            border: "none", // Remove border
+            "&:hover": {
+              backgroundColor: "#F4E6FF", // Light purple background on hover
+              color: "#641A90", // Dark purple font color on hover
+              border: "none", // Ensure no border on hover
+            },
+          }}
+        >
+          Search
+        </Button>
+      </div>
+
+      <div>
+        <Box sx={{ p: 4 }}>
 
           <div className='mt-3 mb-5'>
             <PageTitle value="User Manage"></PageTitle>
@@ -176,11 +260,21 @@ const Usermanage = () => {
             onClick={handleAddNewUser}
             variant="contained"
             color="primary"
-             className="bg-purple-600 hover:bg-purple-700 text-white h-[56px]"
+            sx={{
+              margin: "20px 0",
+              backgroundColor: "#641A90", // Dark purple background
+              color: "white", // White font color
+              border: "none",
+              marginLeft: "10px", // Remove border
+              "&:hover": {
+                backgroundColor: "#F4E6FF", // Light purple background on hover
+                color: "#641A90", // Dark purple font color on hover
+                border: "none", // Ensure no border on hover
+              },
+            }}
           >
             Add New User
           </Button>
-          <div className="mb-5"></div>
 
 
 
@@ -234,15 +328,14 @@ const Usermanage = () => {
                           <Edit style={{ fontSize: "18px" }} /> {/* Adjust icon size */}
                         </IconButton>
                         <IconButton
-  onClick={() => openDeleteConfirmationDialog(user)}
-  style={{
-    color: "#641A90",
-    padding: "8px",
-  }}
->
-  <Delete style={{ fontSize: "18px" }} />
-</IconButton>
-
+                          onClick={() => deleteUser(user._id)}
+                          style={{
+                            color: "#641A90",
+                            padding: "8px",
+                          }}
+                        >
+                          <Delete style={{ fontSize: "18px" }} />
+                        </IconButton>
                       </TableCell>
                     </TableRow>
                   ))
@@ -312,18 +405,17 @@ const Usermanage = () => {
           </DialogActions>
         </Dialog>
 
-          {/* Delete Confirmation Dialog */}
-          <Dialog open={openDeleteDialog} onClose={closeDeleteConfirmationDialog}>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogContent>
-              <Typography>Are you sure you want to delete this user?</Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeDeleteConfirmationDialog}>Cancel</Button>
-              <Button onClick={deleteUser} color="error">Delete</Button>
-            </DialogActions>
-          </Dialog>
-        </div>
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={openDeleteDialog} onClose={closeDeleteConfirmationDialog}>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <Typography>Are you sure you want to delete this user?</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeDeleteConfirmationDialog}>Cancel</Button>
+            <Button onClick={deleteUser} color="error">Delete</Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );

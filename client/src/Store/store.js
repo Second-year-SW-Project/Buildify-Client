@@ -2,6 +2,9 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import authSlice from './authSlice';
 import formSlice from './formSlice';
 import productSlice from './productSlice';
+import cartSlice from '../redux/cartSlice';  
+
+
 import {
   persistReducer,
   FLUSH,
@@ -25,6 +28,7 @@ const rootReducer = combineReducers({
   auth: authSlice,
   form: formSlice,
   product: productSlice,
+  cart : cartSlice,
   // Add your slices here
   // Add other reducers here as needed
 });
