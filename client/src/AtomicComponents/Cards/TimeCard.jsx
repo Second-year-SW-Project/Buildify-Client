@@ -5,8 +5,8 @@ import { Typography } from "@mui/material";
 export default function TimeCard({ date, time }) {
     return (
         <div>
-            <Typography variant="body2" fontWeight="bold">{date}</Typography>
-            <Typography variant="body2" color="gray">{time}</Typography>
+            <Typography variant="body2">{date}</Typography>
+            <Typography variant="caption" color="gray">{time}</Typography>
         </div>
     );
 }

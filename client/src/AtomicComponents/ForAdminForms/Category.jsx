@@ -8,7 +8,16 @@ const StockType = [
   { value: "OutStock", label: "Out of Stock" },
   { value: "lowStock", label: "Low Stock" },
 ];
-
+const InvoiceStatus = [
+  { value: "draft", label: "Draft" },
+  { value: "sent", label: "Sent" },
+  { value: "paid", label: "Paid" },
+  { value: "pending", label: "Pending" },
+  { value: "partiallypaid", label: "Partially Paid" },
+  { value: "overdue", label: "Overdue" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "refunded", label: "Refunded" },
+];
 const subCategories = {
   Necessary: [
     { value: "ram", label: "Ram" },
@@ -502,4 +511,5 @@ export {
   monitorAttributes,
   laptopAttributes,
   desktopAttributes,
+  InvoiceStatus,
 };

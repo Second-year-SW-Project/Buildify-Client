@@ -198,6 +198,10 @@ const theme = createTheme({
       main: '#1C1919',
       contrastText: '#FFFFFF',
     },
+    ternaryDark: {
+      main: '#797979',
+      contrastText: '#FFFFFF',
+    },
   },
   components: {
     MuiButton: {
@@ -213,6 +217,17 @@ const theme = createTheme({
             borderWidth: "3px",
             "&:hover": {
               backgroundColor: "#F8F4FF",
+            },
+          },
+        },
+        {
+          props: { variant: "text" },
+          style: {
+            textTransform: "none",
+            color: "#961AFD",
+            backgroundColor: "#FFFFFF",
+            "&:hover": {
+              backgroundColor: "#e8dbff",
             },
           },
         },

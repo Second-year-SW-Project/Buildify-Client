@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { subCategories, manufacture, socketTypes } from "../AtomicComponents/ForAdminForms/Category";
+import { subCategories, manufacture, socketTypes } from "../AtomicComponents/ForProductForm/Category";
 
 const initialState = {
     selectedMainCategory: "",
@@ -30,6 +30,9 @@ const formSlice = createSlice({
             // Update socket type options based on the selected manufacture
             state.socketTypeOptions = socketTypes[action.payload] || [];
         },
+        resetForm: (state) => {
+            return initialState; // Reset state to initial values
+        }
     },
 });
 
@@ -37,6 +40,7 @@ export const {
     setSelectedMainCategory,
     setSelectedSubCategory,
     setSelectedManufacture,
+    resetForm,
 } = formSlice.actions;
 
 export default formSlice.reducer;
