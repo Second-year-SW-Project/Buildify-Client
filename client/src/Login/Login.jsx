@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import { 
-  TextField, Button, CircularProgress, 
-  Box, Typography, Card, Divider 
+import {
+  TextField,
+  Button,
+  CircularProgress,
+  Box,
+  Typography,
+  Card,
+  Divider,
 } from "@mui/material";
 import { Google as GoogleIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -9,17 +14,17 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "../Store/authSlice";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'sonner';
-import logo from '../assets/logo.png';
+import { toast } from "sonner";
+import logo from "../assets/logo.png";
 import pcImage from "../assets/PC.webp";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ 
-    email: "", 
-    password: "" 
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
   });
 
   const handleChange = (e) => {
@@ -33,19 +38,18 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/login", 
-        formData, 
+        "http://localhost:8000/api/v1/users/login",
+        formData,
         { withCredentials: true }
       );
-      
+
       const user = response.data.data.user;
-      localStorage.setItem('userId', user._id);
+      localStorage.setItem("userId", user._id);
       toast.success("Login successful!");
       dispatch(setAuthUser(user));
-      localStorage.setItem('token', response.data.token);
-      
-      navigate(user.Role === "admin" ? '/dashboard' : '/user/complaint');
-      
+      localStorage.setItem("token", response.data.token);
+
+      navigate(user.Role === "admin" ? "/dashboard" : "/profile");
     } catch (error) {
       if (error.response) {
         toast.error(error.response.data.message);
@@ -65,39 +69,34 @@ const Login = () => {
 
   return (
     <Box className="flex h-screen bg-gray-300 items-center justify-center p-4 shadow-2xl backdrop-blur-2xl bg-opacity-60">
-
       <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
         {/* Left Section */}
-       <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
-               <img 
-                     src={logo} 
-                     alt="Logo" 
-                     className="w-30 mb-4" 
-                   />
-                 <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
-                   Get compatible recommendations
-                   <br /> Pick your ideal components
-                 </Typography>
-                 <img 
-                   src={pcImage} 
-                   alt="PC" 
-                   className="w-full max-w-[300px] !mt-4" 
-                 />
-               </Box>
+        <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
+          <img src={logo} alt="Logo" className="w-30 mb-4" />
+          <Typography
+            variant="h6"
+            className="!text-white !text-center !mb-6 !text-lg"
+          >
+            Get compatible recommendations
+            <br /> Pick your ideal components
+          </Typography>
+          <img src={pcImage} alt="PC" className="w-full max-w-[300px] !mt-4" />
+        </Box>
 
         {/* Vertical Divider */}
-        <Divider 
-          orientation="vertical" 
-          flexItem 
-          className="!bg-white/30 !mx-6 !hidden md:!block" 
+        <Divider
+          orientation="vertical"
+          flexItem
+          className="!bg-white/30 !mx-6 !hidden md:!block"
         />
 
         {/* Right Section */}
         <Box className="flex-1 !min-w-[180px] !max-w-sm">
-
           <Box className="flex flex-col items-center mb-6 mt-12">
-           
-            <Typography variant="h4" className="!text-white !font-bold !text-2xl">
+            <Typography
+              variant="h4"
+              className="!text-white !font-bold !text-2xl"
+            >
               Login
             </Typography>
           </Box>
@@ -115,9 +114,9 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="!bg-white !rounded"
-                InputProps={{ 
+                InputProps={{
                   className: "!h-8 !text-xs",
-                  style: { borderRadius: '4px' } 
+                  style: { borderRadius: "4px" },
                 }}
               />
             </div>
@@ -134,17 +133,17 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="!bg-white !rounded"
-                InputProps={{ 
+                InputProps={{
                   className: "!h-8 !text-xs",
-                  style: { borderRadius: '4px' } 
+                  style: { borderRadius: "4px" },
                 }}
               />
             </div>
 
             {/* Forgot Password Link */}
             <Typography className="!text-right !mb-2">
-              <Link 
-                to="/auth/forgetpassword" 
+              <Link
+                to="/auth/forgetpassword"
                 className="!text-[#60A5FA] hover:!no-underline !text-xs"
               >
                 Forgot Password?
@@ -158,19 +157,19 @@ const Login = () => {
               className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
                         hover:!bg-[#3B82F6] !text-sm !mt-2 !normal-case"
               disabled={loading}
-              sx={{ height: '36px' }}
+              sx={{ height: "36px" }}
             >
               {loading ? <CircularProgress size={20} /> : "Login"}
             </Button>
 
             {/* Divider */}
-            <Divider 
-              sx={{ 
+            <Divider
+              sx={{
                 my: 4,
-                color: 'white',
-                '&.MuiDivider-root::before, &.MuiDivider-root::after': {
-                  borderColor: 'rgba(255,255,255,0.5)'
-                }
+                color: "white",
+                "&.MuiDivider-root::before, &.MuiDivider-root::after": {
+                  borderColor: "rgba(255,255,255,0.5)",
+                },
               }}
             >
               <span className="text-xs text-white">or</span>
@@ -185,7 +184,7 @@ const Login = () => {
               className="!bg-white !text-black !font-medium !py-1.5 !rounded-lg
                         hover:!bg-gray-100 !text-xs !normal-case"
               onClick={handleGoogleLogin}
-              sx={{ height: '36px' }}
+              sx={{ height: "36px" }}
             >
               Continue with Google
             </Button>
@@ -193,7 +192,10 @@ const Login = () => {
             {/* Signup Link */}
             <Typography className="!text-white !text-center mt-6 !text-xs">
               Don't have an account?{" "}
-              <Link to="/auth/signup" className="!text-[#60A5FA] hover:!no-underline">
+              <Link
+                to="/auth/signup"
+                className="!text-[#60A5FA] hover:!no-underline"
+              >
                 Sign Up
               </Link>
             </Typography>
