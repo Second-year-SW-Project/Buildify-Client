@@ -6,10 +6,11 @@ import theme from '../AtomicComponents/theme';
 import { InputField } from '../AtomicComponents/Inputs/Input';
 import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector';
 import {
-    main, subCategories, coolerAttributes, cpuCores, cpuThreads, gpuAttributes,
+    main, subCategories, manufacture, coolerAttributes, cpuCores, cpuThreads, gpuAttributes,
     ramAttributes, motherboardAttributes, storageAttributes, casingAttributes,
     mouseAttributes, keyboardAttributes, monitorAttributes, laptopAttributes, desktopAttributes
 } from '../AtomicComponents/ForProductForm/Category';
+import { expansionNetworkAttributes, manufactureExpansionNetwork } from '../AtomicComponents/ForAdminForms/Category2'; // New import
 import { useSelector, useDispatch } from "react-redux";
 import { setSelectedMainCategory, setSelectedSubCategory, setSelectedManufacture, resetForm } from "../Store/formSlice";
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
@@ -70,7 +71,7 @@ const CreateProducts = () => {
     const gpuInterfaceTypes = gpuAttributes.interfaceType;
     const gpuPowerConnectors = gpuAttributes.powerConnectors;
     const gpuVramOptions = gpuAttributes.gpuVram;
-    const gpuSeriesOptions = gpuAttributes.gpuSeries;
+    const gpuSeriesOptions = gpuAttributes.gpuSeries || []; // Handle undefined
     const storageTypes = storageAttributes.storageTypes;
     const storageCapacities = storageAttributes.storageCapacities;
     const casingFormFactors = casingAttributes.formFactor;
@@ -91,10 +92,16 @@ const CreateProducts = () => {
     const laptopTypeOptions = laptopAttributes.laptopType;
     const laptopGraphicCardOptions = laptopAttributes.graphicCard;
     const desktopCpuOptions = desktopAttributes.cpu;
-    const desktopGpuOptions = desktopAttributes.graphicCard;
+    const desktopGpuOptions = desktopAttributes.gpu;
     const desktopRamOptions = desktopAttributes.ram;
     const desktopStorageOptions = desktopAttributes.storage;
     const desktopTypeOptions = desktopAttributes.desktopType;
+    // New attribute options for expansion_network
+    const expansionComponentTypes = expansionNetworkAttributes.componentType;
+    const expansionInterfaceTypes = expansionNetworkAttributes.interfaceType;
+    const soundCardChannels = expansionNetworkAttributes.soundCardChannels;
+    const wiredNetworkSpeeds = expansionNetworkAttributes.wiredNetworkSpeed;
+    const wifiStandards = expansionNetworkAttributes.wifiStandard;
 
     const initialProductState = {
         type: "",
@@ -150,6 +157,11 @@ const CreateProducts = () => {
         ramType: "",
         quantity: "",
         price: "",
+        //expansion_network fields
+        componentType: "",
+        soundCardChannels: "",
+        networkSpeed: "",
+        wifiStandard: "",
     };
 
     const [product, setProduct] = useState(initialProductState);
@@ -280,15 +292,28 @@ const CreateProducts = () => {
                 "ramSizeGB", "ramSpeedMHz", "ramType",
                 "storage", "desktopType"
             ],
+            expansion_network: [
+                "name", "price", "description", "imgUrls", "type", "manufacturer", "quantity", "interfaceType", "tdp", "componentType"
+            ],
             default: ["name", "price", "description", "imgUrls", "type", "manufacturer", "quantity"],
         };
+
+        if (product.type === "expansion_network") {
+            if (product.componentType === "sound_card") {
+                allRequiredFields.expansion_network.push("soundCardChannels");
+            } else if (product.componentType === "wired_network_adapter") {
+                allRequiredFields.expansion_network.push("networkSpeed");
+            } else if (product.componentType === "wireless_network_adapter") {
+                allRequiredFields.expansion_network.push("wifiStandard");
+            }
+        }
+
         const requiredFields = allRequiredFields[product.type] || allRequiredFields["default"];
         const missingFields = requiredFields.filter(field => {
             if (field === "imgUrls" && isEditMode) return false;
             if (field === "imgUrls") {
                 return product.imgUrls.length === 0;
             }
-            // Special validation for clock speeds in prebuild
             if (field === "cpuBaseClock" || field === "cpuBoostClock") {
                 if (!product[field]) return true;
                 const value = product[field].toString().trim().toLowerCase();
@@ -307,9 +332,18 @@ const CreateProducts = () => {
             }
             return product[field] === null || product[field] === "";
         });
+
         if (missingFields.length > 0) {
             throw new Error(`Please fill in all required fields correctly: ${missingFields.join(", ")}. CPU clocks must include GHz, GPU boost clock must include MHz.`);
         }
+    };
+
+    // Override manufactureOptions for expansion_network
+    const getManufactureOptions = () => {
+        if (selectedSubCategory === "expansion_network") {
+            return manufactureExpansionNetwork;
+        }
+        return manufactureOptions;
     };
 
     return (
@@ -369,13 +403,13 @@ const CreateProducts = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='Propoties border-2 border-gray-100 rounded-lg drop-shadow-2xl pt-4 pb-4'>
-                            <div className='PropotiesHeader ml-3 mr-3 h-fit mb-4'>
-                                <Typography variant='h5' fontWeight="bold">Propoties</Typography>
+                        <div className='Properties border-2 border-gray-100 rounded-lg drop-shadow-2xl pt-4 pb-4'>
+                            <div className='PropertiesHeader ml-3 mr-3 h-fit mb-4'>
+                                <Typography variant='h5' fontWeight="bold">Properties</Typography>
                                 <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>Additional function and attributes</Typography>
                             </div>
                             <hr></hr>
-                            <div className='PropotiesBody ml-3 mr-3'>
+                            <div className='PropertiesBody ml-3 mr-3'>
                                 <div className='formProperty1 grid gap-4 grid-cols-2 flex flex-row mt-4 mb-4'>
                                     <div>
                                         <InputField
@@ -412,7 +446,7 @@ const CreateProducts = () => {
                                             type="select"
                                             label="Manufacture"
                                             width="100%"
-                                            options={manufactureOptions}
+                                            options={getManufactureOptions()} // Use dynamic function
                                             value={selectedManufacture}
                                             onChange={handleManufactureChange}
                                             disabled={!selectedSubCategory}
@@ -430,6 +464,7 @@ const CreateProducts = () => {
                                     </div>
                                 </div>
                                 {selectedSubCategory === "processor" && (
+                                    // ... (unchanged processor form section)
                                     <div className='cpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div>
@@ -517,6 +552,7 @@ const CreateProducts = () => {
                                     </div>
                                 )}
                                 {selectedSubCategory === "motherboard" && (
+                                    // ... (unchanged motherboard form section)
                                     <div className='motherboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subMotherboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div>
@@ -583,6 +619,7 @@ const CreateProducts = () => {
                                     </div>
                                 )}
                                 {selectedSubCategory === "ram" && (
+                                    // ... (unchanged ram form section)
                                     <div className='ramProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subRamProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div>
@@ -619,6 +656,7 @@ const CreateProducts = () => {
                                     </div>
                                 )}
                                 {selectedSubCategory === "gpu" && (
+                                    // ... (unchanged gpu form section)
                                     <div className='gpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subGpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div>
@@ -704,6 +742,7 @@ const CreateProducts = () => {
                                     </div>
                                 )}
                                 {selectedSubCategory === "laptop" && (
+                                    // ... (unchanged laptop form section)
                                     <div className='laptopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subLaptopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
                                             <div>
@@ -780,9 +819,9 @@ const CreateProducts = () => {
                                     </div>
                                 )}
                                 {selectedSubCategory === "prebuild" && (
+                                    // ... (unchanged prebuild form section)
                                     <div className='desktopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
                                         <div className='subDesktopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                            {/* CPU Fields */}
                                             <div>
                                                 <InputField
                                                     type='select'
@@ -833,8 +872,6 @@ const CreateProducts = () => {
                                                     onChange={(value) => handleInputChange('cpuBoostClock', value)}
                                                 />
                                             </div>
-
-                                            {/* GPU Fields */}
                                             <div>
                                                 <InputField
                                                     type='select'
@@ -891,8 +928,6 @@ const CreateProducts = () => {
                                                     onChange={(value) => handleInputChange('gpuCores', value)}
                                                 />
                                             </div>
-
-                                            {/* RAM Fields */}
                                             <div>
                                                 <InputField
                                                     type='select'
@@ -923,8 +958,6 @@ const CreateProducts = () => {
                                                     onChange={(value) => handleInputChange('ramType', value)}
                                                 />
                                             </div>
-
-                                            {/* Existing Fields */}
                                             <div>
                                                 <InputField
                                                     type='select'
@@ -945,6 +978,78 @@ const CreateProducts = () => {
                                                     onChange={(value) => handleInputChange('desktopType', value)}
                                                 />
                                             </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {selectedSubCategory === "expansion_network" && (
+                                    <div className='expansionNetworkProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
+                                        <div className='subExpansionNetworkProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Component Type"
+                                                    options={expansionComponentTypes}
+                                                    width='100%'
+                                                    value={product.componentType}
+                                                    onChange={(value) => handleInputChange('componentType', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Interface Type"
+                                                    options={expansionInterfaceTypes}
+                                                    width='100%'
+                                                    value={product.interfaceType}
+                                                    onChange={(value) => handleInputChange('interfaceType', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    placeholder="Watts"
+                                                    label="TDP"
+                                                    width='100%'
+                                                    value={product.tdp}
+                                                    onChange={(value) => handleInputChange('tdp', value)}
+                                                />
+                                            </div>
+                                            {product.componentType === "sound_card" && (
+                                                <div>
+                                                    <InputField
+                                                        type='select'
+                                                        label="Audio Channels"
+                                                        options={soundCardChannels}
+                                                        width='100%'
+                                                        value={product.soundCardChannels}
+                                                        onChange={(value) => handleInputChange('soundCardChannels', value)}
+                                                    />
+                                                </div>
+                                            )}
+                                            {product.componentType === "wired_network_adapter" && (
+                                                <div>
+                                                    <InputField
+                                                        type='select'
+                                                        label="Network Speed"
+                                                        options={wiredNetworkSpeeds}
+                                                        width='100%'
+                                                        value={product.networkSpeed}
+                                                        onChange={(value) => handleInputChange('networkSpeed', value)}
+                                                    />
+                                                </div>
+                                            )}
+                                            {product.componentType === "wireless_network_adapter" && (
+                                                <div>
+                                                    <InputField
+                                                        type='select'
+                                                        label="WiFi Standard"
+                                                        options={wifiStandards}
+                                                        width='100%'
+                                                        value={product.wifiStandard}
+                                                        onChange={(value) => handleInputChange('wifiStandard', value)}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
