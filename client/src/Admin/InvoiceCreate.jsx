@@ -7,23 +7,13 @@ import { InputField } from "../AtomicComponents/Inputs/Input";
 import {
   StockType,
   main,
-  //InvoiceStatus,   ----->meka nis app eka run une na.me part eka withrk missing kyla kynwa.meka hoyla part eka adala thanta danna.
+  InvoiceStatus,
 } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import { Divider, IconButton, TextField, Button } from "@mui/material";
 import { Add, RemoveCircle } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
-
-import theme from "../AtomicComponents/theme";
-import { DashboardLayout } from "@toolpad/core";
-import { Outlet } from "react-router-dom";
-
-import ToolpadFixer from "../MoleculesComponents/ToolpadFixer";
-
-
-
-
 
 function InvoiceCreate() {
   const navigate = useNavigate();
@@ -68,9 +58,6 @@ function InvoiceCreate() {
   };
 
   return (
-    <div>
-        <ToolpadFixer/>
-    <div className="ml-[330px] -mt-[600px]">
     <div className="pl-6 grid grid-rows">
       <div className="mt-3 mb-6">
         <PageTitle value="Create Invoice" />
@@ -261,8 +248,6 @@ function InvoiceCreate() {
           />
         </div>
       </div>
-    </div>
-    </div>
     </div>
   );
 }

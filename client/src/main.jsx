@@ -34,6 +34,12 @@ import ForgetPassword from "./Login/Forgetpassword.jsx";
 // User Components
 import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
 import UserComplaints from "./User/UserComplaints.jsx";
+import UserProfile from "./UserdashboardFeature/pages/UserProfile.jsx";
+import RMAsupport from "./UserdashboardFeature/pages/RMAsupport.jsx";
+import MyOrders from "./UserdashboardFeature/pages/MyOrders.jsx";
+import OrderHistory from "./UserdashboardFeature/pages/OrderHistory.jsx";
+import SavedBuilds from "./UserdashboardFeature/pages/SavedBuilds.jsx";
+import Settings from "./UserdashboardFeature/pages/Settings.jsx";
 
 // Other Pages
 import Home from "./pages/Home/Home.jsx";
@@ -61,27 +67,24 @@ createRoot(root).render(
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}
-            
-              
-              <Route path="/" element={<Home />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="about" element={<About />} />
-              <Route path="loginpage" element={<Testing />} />
-              <Route path="cartpage" element={<CartPage />} />
-              <Route path="paymentgateway" element={<PaymentGateway />} />
-              <Route
-                path="productcategorypage"
-                element={<ProductCategoryPage />}
-              />
-              <Route
-                path="productcategorypage/:categoryName"
-                element={<ProductCategoryPage />}
-              />
-              <Route path="itempage/:id" element={<ItemPage />} />
-              <Route path="search" element={<SearchResults />} />
-              <Route path="laptop" element={<LaptopCategoryPage />} />
-              <Route path="custom-build" element={<SelectGameAndBudgetpage />} />
-            
+
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="loginpage" element={<Testing />} />
+            <Route path="cartpage" element={<CartPage />} />
+            <Route path="paymentgateway" element={<PaymentGateway />} />
+            <Route
+              path="productcategorypage"
+              element={<ProductCategoryPage />}
+            />
+            <Route
+              path="productcategorypage/:categoryName"
+              element={<ProductCategoryPage />}
+            />
+            <Route path="itempage/:id" element={<ItemPage />} />
+            <Route path="search" element={<SearchResults />} />
+            <Route path="laptop" element={<LaptopCategoryPage />} />
 
             {/* Authentication Routes */}
             <Route path="/auth/signup" element={<Signup />} />
@@ -93,55 +96,39 @@ createRoot(root).render(
             {/* User Routes */}
             <Route path="/user/complaint" element={<ComplaintSubmit />} />
             <Route path="/user/complaintHistory" element={<UserComplaints />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/myOrders" element={<MyOrders />} />
+            <Route path="/rmaSupport" element={<RMAsupport />} />
+            <Route path="/orderHistory" element={<OrderHistory />} />
+            <Route path="/savedBuilds" element={<SavedBuilds />} />
+            <Route path="/settings" element={<Settings />} />
 
             {/* Admin Routes */}
-            
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="admin" element={<AdminProfile />} />
-              <Route path="admin/profile" element={<AdminProfile />} />
-              <Route path="admin/setting" element={<AdminSetting />} />
 
-              <Route path="products" element={<ManageProducts />} />
-              <Route
-                path="products/manageproduct"
-                element={<ManageProducts />}
-              />
-              <Route
-                path="products/createproduct"
-                element={<CreateProducts />}
-              />
-              <Route path="usermanage" element={<Usermanage />} />
-              <Route
-                path="feedbackmanage/complaints"
-                element={<Complaints />}
-              />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="admin" element={<AdminProfile />} />
+            <Route path="admin/profile" element={<AdminProfile />} />
+            <Route path="admin/setting" element={<AdminSetting />} />
 
-              <Route path="games" element={<ManageGames />} />
-              <Route
-                path="games/managegames"
-                element={<ManageGames />}
-              />
-              <Route
-                path="games/creategame"
-                element={<CreateGames />}
-              />
-              <Route path="usermanage" element={<Usermanage />} />
-              <Route
-                path="feedbackmanage/complaints"
-                element={<Complaints />}
-              />
-              
+            <Route path="products" element={<ManageProducts />} />
+            <Route path="products/manageproduct" element={<ManageProducts />} />
+            <Route path="products/createproduct" element={<CreateProducts />} />
+            <Route path="usermanage" element={<Usermanage />} />
+            <Route path="feedbackmanage/complaints" element={<Complaints />} />
 
+            <Route path="games" element={<ManageGames />} />
+            <Route path="games/managegames" element={<ManageGames />} />
+            <Route path="games/creategame" element={<CreateGames />} />
+            <Route path="usermanage" element={<Usermanage />} />
+            <Route path="feedbackmanage/complaints" element={<Complaints />} />
 
-
-              <Route path="feedbackmanage/rma" element={<RMA />} />
-              <Route
-                path="feedbackmanage/comments&reviews"
-                element={<Review />}
-              />
-              <Route path="invoice/invoicelist" element={<InvoiceList />} />
-              <Route path="invoice/invoicecreate" element={<InvoiceCreate />} />
-            
+            <Route path="feedbackmanage/rma" element={<RMA />} />
+            <Route
+              path="feedbackmanage/comments&reviews"
+              element={<Review />}
+            />
+            <Route path="invoice/invoicelist" element={<InvoiceList />} />
+            <Route path="invoice/invoicecreate" element={<InvoiceCreate />} />
           </Routes>
         </BrowserRouter>
       </StrictMode>

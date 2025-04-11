@@ -10,15 +10,13 @@ import {
   RadioGroup,
   FormLabel,
   FormHelperText,
-
 } from "@mui/material";
-import React, { useRef, useEffect } from "react";
-import InputAdornment from '@mui/material/InputAdornment';
-import { inputBaseClasses } from '@mui/material/InputBase';
-
+import React from "react";
+import InputAdornment from "@mui/material/InputAdornment";
+import { inputBaseClasses } from "@mui/material/InputBase";
 
 export function InputField({
-  label = null,
+  label,
   type = "text",
   width = "180px",
   rows,
@@ -41,20 +39,17 @@ export function InputField({
     return (
       <TextField
         type={type}
-        multiline
         label={label}
         fontSize={fontSize}
         variant={variant}
         value={value}
         color={color}
-        rows={rows}
         width={width}
         disabled={disabled}
         helperText={helperText}
         error={!!error}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
         slotProps={{
           input: {
@@ -94,42 +89,55 @@ export function InputField({
     );
   }
 
-  // <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
-
-
-  if (type === "number") {
-    const inputRef = useRef();
-
-    useEffect(() => {
-      const input = inputRef.current;
-      if (input) {
-        const stopPageScroll = (e) => {
-          e.stopPropagation(); // Allow input scroll, block page scroll
-        };
-
-        input.addEventListener("wheel", stopPageScroll);
-
-        return () => {
-          input.removeEventListener("wheel", stopPageScroll);
-        };
-      }
-    }, []);
+  if (type === "textarea") {
     return (
       <TextField
-        inputRef={inputRef}
+        type={type}
+        multiline
+        label={label}
+        fontSize={fontSize}
+        color={color}
+        rows={rows}
+        value={value}
+        disabled={disabled}
+        helperText={helperText}
+        width={width}
+        variant={variant}
+        error={!!error}
+        onChange={(e) => {
+          if (onChange) onChange(e.target.value);
+        }}
+        sx={{
+          width: width,
+          marginBottom: "10px",
+          "& .MuiInputBase-input": {
+            fontSize: fontSize || "16px",
+          },
+          "& .MuiInputLabel-root": {
+            fontSize: fontSize || "16px",
+          },
+          "& .MuiInputBase-root": {
+            "& fieldset": {
+              borderWidth: 1,
+              borderRadius: 2,
+            },
+          },
+        }}
+      />
+    );
+  }
+
+  if (type === "number") {
+    return (
+      <TextField
         type={type}
         label={label}
         fontSize={fontSize}
-        value={value}
         variant={variant}
         color={color}
         width={width}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
-        }}
-        inputProps={{
-          min: 0,
+          if (onChange) onChange(e.target.value);
         }}
         slotProps={{
           inputLabel: {
@@ -163,16 +171,15 @@ export function InputField({
         select
         label={label}
         fontSize={fontSize}
+        value={value}
+        onChange={(e) => {
+          if (onChange) onChange(e.target.value);
+        }}
         variant={variant}
         color={color}
-        value={value}
         disabled={disabled}
         error={!!error}
         helperText={helperText}
-        onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
-        }}
         sx={{ width }}
       >
         {options.map((option, index) => (
@@ -193,7 +200,6 @@ export function InputField({
         onChange={(_, newValue) => {
           onChange(newValue ? newValue.value : "");
         }}
-
         disabled={disabled}
         renderInput={(params) => (
           <TextField
@@ -218,7 +224,6 @@ export function InputField({
         onChange={(_, newValue) => {
           onChange(newValue ? newValue.value : "");
         }}
-
         disabled={disabled}
         renderInput={(params) => (
           <TextField
@@ -227,7 +232,7 @@ export function InputField({
             slotProps={{
               input: {
                 ...params.InputProps,
-                type: 'search',
+                type: "search",
               },
             }}
             error={!!error}
@@ -247,8 +252,7 @@ export function InputField({
             <Checkbox
               checked={value}
               onChange={(e) => {
-                if (onChange)
-                  onChange(e.target.checked);
+                if (onChange) onChange(e.target.checked);
               }}
               size={size}
               color={color}
@@ -256,7 +260,6 @@ export function InputField({
             />
           }
           label={label}
-          value={value}
         />
         {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormGroup>
@@ -267,7 +270,11 @@ export function InputField({
     return (
       <FormControl error={!!error} disabled={disabled}>
         <FormLabel>{label}</FormLabel>
-        <RadioGroup row={row} value={value} onChange={(e) => onChange(e.target.value)}>
+        <RadioGroup
+          row={row}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        >
           {options.map((option, index) => (
             <FormControlLabel
               key={index}
