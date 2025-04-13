@@ -1,11 +1,14 @@
-import { Button, TextField, CircularProgress, Box, Card, Typography, Divider } from "@mui/material";
 import React, { useState } from "react";
+import {
+  TextField, Button, CircularProgress,
+  Box, Typography, Divider
+} from "@mui/material";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
 import { setAuthUser } from "../Store/authSlice";
-import pcImage from "../assets/PC.webp";
+import pcImage from "../assets/images/pc3.jpg";
 import logo from '../assets/logo.png';
 
 const ResetPassword = () => {
@@ -18,12 +21,12 @@ const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!otp || !email || !password || !passwordConfirm) {
       toast.error("Please fill all fields");
       return;
     }
-
     if (password !== passwordConfirm) {
       toast.error("Passwords do not match");
       return;
@@ -31,14 +34,12 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
-      const data = { email, otp, password, passwordConfirm };
-      const response = await axios.post(
+      const { data } = await axios.post(
         "http://localhost:8000/api/v1/users/reset-password",
-        data,
+        { email, otp, password, passwordConfirm },
         { withCredentials: true }
       );
-
-      dispatch(setAuthUser(response.data.data.user));
+      dispatch(setAuthUser(data.data.user));
       toast.success("Password reset successfully");
       navigate('/auth/login');
     } catch (error) {
@@ -49,116 +50,82 @@ const ResetPassword = () => {
   };
 
   return (
-    <Box className="flex h-screen bg-gray-300 items-center justify-center p-4 shadow-2xl backdrop-blur-2xl bg-opacity-60">
+    <Box
+      className="w-screen h-screen bg-cover bg-center flex items-center justify-center"
+      sx={{
+        backgroundImage: `url(${pcImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      {/* Blurry overlay */}
+      <Box className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
 
-      <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
-        {/* Left Section */}
-        <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
-          <img
-            src={logo}
-            alt="Logo"
-            className="w-30 mb-4"
-          />
-          <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
-            Get compatible recommendations
-            <br /> Pick your ideal components
+      <Box className="relative z-10 w-full max-w-4xl h-[630px] flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
+
+        {/* Left side: Logo and quote */}
+        <Box className="hidden md:flex flex-col justify-center items-center p-10 text-white w-1/2">
+          <img src={logo} alt="Buildify Logo" className="h-18 mb-4" />
+          <Typography variant="h6" className="text-center font-light">
+            Get compatible recommendations <br /> Pick your ideal components
           </Typography>
-          <img
-            src={pcImage}
-            alt="PC"
-            className="w-full max-w-[300px] !mt-4"
-          />
         </Box>
 
-        {/* Vertical Divider */}
-        <Divider
-          orientation="vertical"
-          flexItem
-          className="!bg-white/30 !mx-6 !hidden md:!block"
-        />
-
-        {/* Right Section */}
-        <Box className="flex-1 !min-w-[180px] !max-w-sm">
-
+        {/* Right side: Reset Form */}
+        <Box className="w-full md:w-1/2 p-8">
           <Box className="flex flex-col items-center mb-6">
-
-            <Typography variant="h4" className="!text-white !font-bold !text-2xl">
+            <img src={logo} alt="Logo" className="w-16 mb-2 md:hidden" />
+            <Typography variant="h5" className="!text-white font-bold">
               Reset Password
             </Typography>
           </Box>
 
-          <form className="space-y-4">
-            {/* OTP Field */}
-            <div className="space-y-1">
-              <label className="text-white text-xs font-medium">Verification Code</label>
-              <TextField
-                fullWidth
-                variant="outlined"
-                size="small"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="!bg-white !rounded"
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  className: "!text-xs"
-                }}
-              />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+            {[
+              { label: "Verification Code", value: otp, setter: setOtp, name: "otp", type: "text" },
+              { label: "New Password", value: password, setter: setPassword, name: "password", type: "password" },
+              { label: "Confirm Password", value: passwordConfirm, setter: setPasswordConfirm, name: "passwordConfirm", type: "password" }
+            ].map(({ label, value, setter, name, type }, idx) => (
+              <div key={idx}>
+                <label className="text-white text-xs font-medium">{label}</label>
+                <TextField
+                  fullWidth
+                  type={type}
+                  variant="outlined"
+                  size="small"
+                  value={value}
+                  onChange={(e) => setter(e.target.value)}
+                  name={name}
+                  className="!bg-white !rounded-lg"
+                  sx={{
+                    "& .MuiOutlinedInput-root": { borderRadius: '8px' },
+                    "& .MuiInputBase-root": { borderColor: "#9b4de5", color: "#6a2c9c" },
+                    "& .MuiOutlinedInput-input": { padding: "8px 12px" },
+                  }}
+                />
+              </div>
+            ))}
 
-            {/* Password Field */}
-            <div className="space-y-1">
-              <label className="text-white text-xs font-medium">New Password</label>
-              <TextField
-                fullWidth
-                type="password"
-                variant="outlined"
-                size="small"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="!bg-white !rounded"
-                InputProps={{ className: "!text-xs" }}
-              />
-            </div>
-
-            {/* Confirm Password Field */}
-            <div className="space-y-1">
-              <label className="text-white text-xs font-medium">Confirm Password</label>
-              <TextField
-                fullWidth
-                type="password"
-                variant="outlined"
-                size="small"
-                value={passwordConfirm}
-                onChange={(e) => setPasswordConfirm(e.target.value)}
-                className="!bg-white !rounded"
-                InputProps={{ className: "!text-xs" }}
-              />
-            </div>
-
-            {/* Submit Button */}
             <Button
               fullWidth
-              onClick={handleSubmit}
-              className="!bg-[#60A5FA] !text-white !font-bold !py-1.5 !rounded-lg
-                      hover:!bg-[#3B82F6] !text-sm !normal-case"
+              type="submit"
+              className="!bg-[#6a2c9c] !text-white !font-bold !py-1.5 !rounded-lg hover:!bg-[#7a32c6] !text-sm  !mt-12"
               disabled={loading}
             >
               {loading ? <CircularProgress size={20} /> : "Reset Password"}
             </Button>
 
-            {/* Back Link */}
-            <Typography className="!text-white !text-center !mt-4 !text-xs">
+            <Typography className="!text-white !text-center !mt-6 !text-xs">
               <Link
                 to="/auth/forgetpassword"
-                className="!text-[#60A5FA] hover:!underline"
+                className="!text-[#9b4de5] hover:!underline"
               >
                 Back to Forgot Password
               </Link>
             </Typography>
           </form>
         </Box>
-      </Card>
+      </Box>
     </Box>
   );
 };
