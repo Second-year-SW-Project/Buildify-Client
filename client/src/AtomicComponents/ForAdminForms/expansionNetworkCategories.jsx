@@ -1,5 +1,3 @@
-// expansionNetworkCategories.js
-
 const expansionNetworkAttributes = {
     componentType: [
       { value: "sound_card", label: "Sound Card" },
@@ -31,13 +29,4 @@ const expansionNetworkAttributes = {
     ],
   };
   
-  const manufactureExpansionNetwork = [
-    { value: "creative", label: "Creative" }, // For Sound Cards
-    { value: "asus", label: "ASUS" },
-    { value: "tp-link", label: "TP-Link" }, // For Network Adapters
-    { value: "intel", label: "Intel" },
-    { value: "realtek", label: "Realtek" },
-    { value: "netgear", label: "Netgear" },
-  ];
-  
-  export { expansionNetworkAttributes, manufactureExpansionNetwork };
+  export { expansionNetworkAttributes };

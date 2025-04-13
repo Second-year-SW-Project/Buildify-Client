@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import theme from '../AtomicComponents/theme';
 import { InputField } from '../AtomicComponents/Inputs/Input';
 import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector';
-import { cpuCores, cpuThreads, gpuAttributes, ramAttributes } from '../AtomicComponents/ForProductForm/Category';
+import { cpuCores, cpuThreads, gpuAttributes, ramAttributes } from '../AtomicComponents/ForAdminForms/Category';
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 import axios from 'axios';
 import { toast } from 'sonner';
