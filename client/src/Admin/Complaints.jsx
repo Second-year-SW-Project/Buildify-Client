@@ -131,7 +131,15 @@ const Complaints = () => {
 
           <Button
             variant="contained"
-            className="bg-purple-600 hover:bg-purple-700 text-white h-[56px]"
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            style={{
+              padding: "14px 18px",
+              width: "180px",
+              textTransform: "none",
+              fontSize: "16px",
+              borderRadius: "10px",
+              fontWeight: "bold"
+            }}
             onClick={fetchComplaints}
           >
             Search
@@ -145,12 +153,57 @@ const Complaints = () => {
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
-                <TableCell className="font-bold text-black py-3">User Details</TableCell>
-                <TableCell className="font-bold text-black py-3">Date</TableCell>
-                <TableCell className="font-bold text-black py-3">Complaint</TableCell>
-                <TableCell className="font-bold text-black py-3">Complaint Type</TableCell>
-                <TableCell className="font-bold text-black py-3">Status</TableCell>
-                <TableCell className="font-bold text-black py-3">Action</TableCell>
+                <TableCell  style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>
+            User Details
+            </TableCell>
+
+                <TableCell  style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Date</TableCell>
+                <TableCell  style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Complaint</TableCell>
+                <TableCell  style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Complaint Type</TableCell>
+                <TableCell  style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Status</TableCell>
+                <TableCell  style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -209,7 +262,7 @@ const Complaints = () => {
                           setOpenDialog(true);
                         }}
                       >
-                        <ReplyIcon fontSize="small" />
+                        <ReplyIcon fontSize="30px" />
                       </IconButton>
                     </TableCell>
                   </TableRow>

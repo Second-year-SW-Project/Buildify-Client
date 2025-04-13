@@ -132,7 +132,15 @@ const RMA = () => {
         <Button
           variant="contained"
           onClick={fetchRequests}
-          sx={{ height: 45 }}
+          className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+          style={{
+            padding: "14px 18px",
+            width: "180px",
+            textTransform: "none",
+            fontSize: "16px",
+            borderRadius: "10px",
+            fontWeight: "bold"
+          }}
         >
           Search
         </Button>
@@ -143,12 +151,12 @@ const RMA = () => {
         <Table>
           <TableHead sx={{ bgcolor: '#f4e6ff' }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Order ID</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Subject</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Reason</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Created Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Action</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' , color: 'gray' }}>Order ID</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Subject</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Reason</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Created Date</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -246,7 +254,16 @@ const RMA = () => {
           <Button
             variant="contained"
             onClick={handleResponseSubmit}
-            sx={{ bgcolor: '#641A90', '&:hover': { bgcolor: '#4A136B' } }}
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            style={{
+              padding: "14px 18px",
+              width: "180px",
+              textTransform: "none",
+              fontSize: "16px",
+              borderRadius: "10px",
+              fontWeight: "bold"
+            }}
+            
           >
             Submit Response
           </Button>

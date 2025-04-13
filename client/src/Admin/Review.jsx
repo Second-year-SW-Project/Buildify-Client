@@ -176,7 +176,15 @@ const Review = () => {
   </FormControl>
 
   <button
-    className="p-4 h-12 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 w-24 flex items-center justify-center"
+     className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+     style={{
+       padding: "14px 18px",
+       width: "180px",
+       textTransform: "none",
+       fontSize: "16px",
+       borderRadius: "10px",
+       fontWeight: "bold"
+     }}
     onClick={fetchReviews}
   >
     Filter
@@ -282,13 +290,29 @@ const Review = () => {
     </span>
                   <div className="flex items-center space-x-4 mt-4">
                     <button
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700"
+                       className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                       style={{
+                         padding: "14px 18px",
+                         width: "180px",
+                         textTransform: "none",
+                         fontSize: "16px",
+                         borderRadius: "10px",
+                         fontWeight: "bold"
+                       }}
                       onClick={() => handleDialogOpen(review._id)}
                     >
                       Public Response
                     </button>
                     <button
-                      className="ml-2 px-4 py-2 bg-gray-300 rounded-lg shadow-md hover:bg-gray-400"
+                       className="bg-gray-400 hover:bg-gray-500 text-white font-bold"
+                       style={{
+                         padding: "14px 18px",
+                         width: "180px",
+                         textTransform: "none",
+                         fontSize: "16px",
+                         borderRadius: "10px",
+                         fontWeight: "bold"
+                       }}
                       onClick={() => handleDialogOpen(review._id)}
                     >
                       Direct Message

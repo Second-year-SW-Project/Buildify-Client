@@ -166,37 +166,41 @@ const handleSubmit = async (e) => {
                 height: "100px", 
                 borderRadius: "50%", 
                 objectFit: "cover", 
-                border: "1px solid #6a1b9a" 
+                border: "1px solid rgb(152, 56, 212)" 
               }} 
             />
           </div>
           
           ) : (
-            <AccountCircleIcon sx={{ fontSize: 60, color: "#6a1b9a" }} />
+            <AccountCircleIcon sx={{ fontSize: 80, color: "#9333ea" }}/>
           )}
           
           {editable && (
             
 
             <Button
-              variant="contained"
-              component="label"
-              sx={{ 
-                mt: 2,
-                backgroundColor: "#6a1b9a",
-                "&:hover": { backgroundColor: "#4a148c" },
-                textTransform: "none"
-              }}
-              disabled={uploading}
-            >
-              {uploading ? "Uploading..." : "Change Photo"}
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-            </Button>
+            variant="contained"
+            component="label"
+            disabled={uploading}
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            sx={{
+              textTransform: "none",
+              padding: "14px 18px",
+              width: "180px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}
+          >
+            {uploading ? "Uploading..." : "Change Photo"}
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+          </Button>
+          
             
           )}
         </Box>
@@ -274,24 +278,42 @@ const handleSubmit = async (e) => {
           <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
           <Button
   variant="contained"
-  disabled={loading.profile}  // Replace with the appropriate loading state if needed
+  disabled={loading.profile}
   onClick={toggleEditable}
-  className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+  className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+  style={{
+    padding: "14px 18px",
+    width: "180px",
+    textTransform: "none",
+    fontSize: "16px",
+    borderRadius: "10px",
+    fontWeight: "bold"
+  }}
 >
   {editable ? "Cancel" : "Edit Profile"}
 </Button>
 
 
+
+
             {editable && (
-              <Button
-              variant="contained"
-              type="submit"
-              className={`px-6 py-2 text-white ${loading || uploading ? 'bg-gray-500 hover:bg-gray-600' : 'bg-purple-700 hover:bg-purple-800'}`}
-              disabled={loading || uploading}
-            >
-              {loading ? "Saving..." : "Save Changes"}
-            </Button>
-            
+             <Button
+             variant="contained"
+             type="submit"
+             className={`text-white font-bold ${loading || uploading ? 'bg-gray-500 hover:bg-gray-600' : 'bg-purple-700 hover:bg-purple-800'}`}
+             disabled={loading || uploading}
+             style={{
+               padding: "14px 18px",
+               width: "180px",
+               fontSize: "16px",
+               borderRadius: "10px",
+               textTransform: "none",
+               fontWeight: "bold"
+             }}
+           >
+             {loading ? "Saving..." : "Save Changes"}
+           </Button>
+           
             
             )}
           </Box>

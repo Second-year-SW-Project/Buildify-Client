@@ -165,7 +165,15 @@ const Usermanage = () => {
             <Button
               onClick={handleSearch}
               variant="contained"
-              className="bg-purple-600 hover:bg-purple-700 text-white h-[56px]"
+              className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+  style={{
+    padding: "14px 18px",
+    width: "180px",
+    textTransform: "none",
+    fontSize: "16px",
+    borderRadius: "10px",
+    fontWeight: "bold"
+  }}
               sx={{ width: '400px' }}
             >
               Search
@@ -176,7 +184,15 @@ const Usermanage = () => {
             onClick={handleAddNewUser}
             variant="contained"
             color="primary"
-             className="bg-purple-600 hover:bg-purple-700 text-white h-[56px]"
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            style={{
+              padding: "14px 18px",
+              width: "180px",
+              textTransform: "none",
+              fontSize: "16px",
+              borderRadius: "10px",
+              fontWeight: "bold"
+            }}
           >
             Add New User
           </Button>
@@ -184,89 +200,144 @@ const Usermanage = () => {
 
 
 
-          <TableContainer component={Paper}>
-            <Table sx={{ marginLeft: "15px" }}>
-              <TableHead>
-                <TableRow style={{ backgroundColor: "#F4E6FF" }}>
-                  <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Name</TableCell>
-                  <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Email</TableCell>
-                  <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Role</TableCell>
-                  <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredUsers.length > 0 ? (
-                  filteredUsers.map((user) => (
-                    <TableRow key={user._id}>
-                      <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>{user.name}</TableCell>
-                      <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>{user.email}</TableCell>
-                      <TableCell style={{ padding: "8px", verticalAlign: "middle" }}>
-                        <Button
-                          variant="contained"
-                          sx={{
-                            backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD", // Very light green for admin, very light blue for user
-                            color: user.Role === "admin" ? "#1B5E20" : "#0D47A1", // Dark green for admin, dark blue for user
-                            fontWeight: "bold",
-                            fontSize: "12px", // Small font size
-                            padding: "2px 8px", // Compact button size
-                            minWidth: "auto", // Prevents unnecessary expansion
-                            borderRadius: "8px", // Smooth rounded corners
-                            textTransform: "none", // Keeps text normal (not uppercase)
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            "&:hover": {
-                              backgroundColor: user.Role === "admin" ? "#D0F8CE" : "#D6EAF8", // Slightly darker shade on hover
-                            },
-                          }}
-                        >
-                          {user.Role}
-                        </Button>
-                      </TableCell>
-                      <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
-                        <IconButton
-                          onClick={() => startEditing(user)}
-                          style={{
-                            color: "#641A90", // Purple color
-                            padding: "8px", // Slightly reduced padding
-                          }}
-                        >
-                          <Edit style={{ fontSize: "18px" }} /> {/* Adjust icon size */}
-                        </IconButton>
-                        <IconButton
-  onClick={() => openDeleteConfirmationDialog(user)}
-  style={{
-    color: "#641A90",
-    padding: "8px",
+          <TableContainer 
+  component={Paper} 
+  sx={{ 
+    width: "100%", 
+    borderTop: "1px solid  #B0B0B0", 
+    borderLeft: "1px solid  #B0B0B0", 
+    borderRight: "1px solid  #B0B0B0", 
   }}
 >
-  <Delete style={{ fontSize: "18px" }} />
-</IconButton>
+  <Table sx={{ 
+    width: "100%", 
+    tableLayout: "auto", 
+    borderCollapse: "collapse" // Ensures borders don’t double up
+  }}>
+    <TableHead>
+      <TableRow style={{ backgroundColor: "#F4E6FF" }}>
+        <TableCell 
+          style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}
+        >
+          Name
+        </TableCell>
+        <TableCell 
+          style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}
+        >
+          Email
+        </TableCell>
+        <TableCell 
+          style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}
+        >
+          Role
+        </TableCell>
+        <TableCell 
+          style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}
+        >
+          Actions
+        </TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {filteredUsers.length > 0 ? (
+        filteredUsers.map((user) => (
+          <TableRow key={user._id}>
+            <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+              {user.name}
+            </TableCell>
+            <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+              {user.email}
+            </TableCell>
+            <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD",
+                  color: user.Role === "admin" ? "#1B5E20" : "#0D47A1",
+                  fontWeight: "bold",
+                  fontSize: "12px",
+                  padding: "2px 8px",
+                  minWidth: "auto",
+                  borderRadius: "8px",
+                  textTransform: "none",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  "&:hover": {
+                    backgroundColor: user.Role === "admin" ? "#D0F8CE" : "#D6EAF8",
+                  },
+                }}
+              >
+                {user.Role}
+              </Button>
+            </TableCell>
+            <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+              <IconButton onClick={() => startEditing(user)} style={{ color: "#641A90", padding: "8px" }}>
+                <Edit style={{ fontSize: "30px", color: "grey" }} />
+              </IconButton>
+              <IconButton onClick={() => openDeleteConfirmationDialog(user)} style={{ color: "#641A90", padding: "8px" }}>
+                <Delete style={{ fontSize: "30px", color: "red" }} />
+              </IconButton>
+            </TableCell>
+          </TableRow>
+        ))
+      ) : (
+        <TableRow>
+          <TableCell colSpan="4" style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
+            No matching users found
+          </TableCell>
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
 
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan="4" style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
-                      No matching users found
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+{/* Pagination */}
+<TablePagination
+  rowsPerPageOptions={[5, 10, 25]}
+  component="div"
+  count={filteredUsers.length}
+  rowsPerPage={rowsPerPage}
+  page={page}
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={handleChangeRowsPerPage}
+  sx={{
+    borderTop: "1px solid #e0e0e0", // Light grey top border for pagination
+    borderBottom: "1px solid  #B0B0B0",
+     borderRight: "1px solid  #B0B0B0",
+      borderLeft: "1px solid  #B0B0B0", // Dark grey bottom border for pagination
+    padding: "10px 0" // Optional: adjusts padding if you want it slightly tighter
+  }}
+/>
 
-          {/* Pagination */}
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={filteredUsers.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
         </Box>
 
         {/* Edit/Add User Dialog */}
