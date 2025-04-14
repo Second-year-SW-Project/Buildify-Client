@@ -85,6 +85,7 @@ createRoot(root).render(
             <Route path="itempage/:id" element={<ItemPage />} />
             <Route path="search" element={<SearchResults />} />
             <Route path="laptop" element={<LaptopCategoryPage />} />
+            <Route path="easymode" element={<SelectGameAndBudgetpage />} />
 
             {/* Authentication Routes */}
             <Route path="/auth/signup" element={<Signup />} />
@@ -120,6 +121,7 @@ createRoot(root).render(
             <Route path="games" element={<ManageGames />} />
             <Route path="games/managegames" element={<ManageGames />} />
             <Route path="games/creategame" element={<CreateGames />} />
+            <Route path="games/creategame/:id" element={<CreateGames />} />
             <Route path="usermanage" element={<Usermanage />} />
             <Route path="feedbackmanage/complaints" element={<Complaints />} />
 
