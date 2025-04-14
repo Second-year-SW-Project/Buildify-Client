@@ -113,6 +113,7 @@ createRoot(root).render(
             <Route path="products" element={<ManageProducts />} />
             <Route path="products/manageproduct" element={<ManageProducts />} />
             <Route path="products/createproduct" element={<CreateProducts />} />
+            <Route path="products/createproduct/:id" element={<CreateProducts />} />
             <Route path="usermanage" element={<Usermanage />} />
             <Route path="feedbackmanage/complaints" element={<Complaints />} />
 

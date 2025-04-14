@@ -203,23 +203,25 @@ const CreateProducts = () => {
         if (isEditMode) {
             const fetchProduct = async () => {
                 try {
-                    const res = await axios.get(`http://localhost:8000/api/product/${id}`);
+                    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
                     if (res.data.Success) {
                         const fetchedProduct = res.data.data;
+                        // Exclude _id from product state
+                        const { _id, ...productFields } = fetchedProduct;
                         setProduct({
                             ...initialProductState,
-                            ...fetchedProduct,
-                            imgUrls: fetchedProduct.imgUrls || [],
-                            powerConnectors: fetchedProduct.powerConnectors || [],
-                            supportedMemoryTypes: fetchedProduct.supportedMemoryTypes || [],
-                            pcieSlots: fetchedProduct.pcieSlots || [],
-                            storageInterfaces: fetchedProduct.storageInterfaces || [],
-                            supportedMotherboardSizes: fetchedProduct.supportedMotherboardSizes || [],
+                            ...productFields,
+                            imgUrls: productFields.imgUrls || [],
+                            powerConnectors: productFields.powerConnectors || [],
+                            supportedMemoryTypes: productFields.supportedMemoryTypes || [],
+                            pcieSlots: productFields.pcieSlots || [],
+                            storageInterfaces: productFields.storageInterfaces || [],
+                            supportedMotherboardSizes: productFields.supportedMotherboardSizes || [],
                         });
-                        setSelectedImages(fetchedProduct.imgUrls || []);
+                        setSelectedImages(productFields.imgUrls || []);
                         let foundMainCategory = null;
                         for (const [key, categoryList] of Object.entries(subCategories)) {
-                            if (categoryList.some((item) => item.value === fetchedProduct.type)) {
+                            if (categoryList.some((item) => item.value === productFields.type)) {
                                 foundMainCategory = key;
                                 break;
                             }
@@ -233,17 +235,21 @@ const CreateProducts = () => {
                         if (mainCategoryLabel) {
                             dispatch(setSelectedMainCategory(mainCategoryLabel));
                         }
-                        dispatch(setSelectedSubCategory(fetchedProduct.type));
-                        dispatch(setSelectedManufacture(fetchedProduct.manufacturer));
+                        dispatch(setSelectedSubCategory(productFields.type));
+                        dispatch(setSelectedManufacture(productFields.manufacturer));
+                    } else {
+                        toast.error('Failed to load product');
+                        navigate('/products/manageproduct');
                     }
                 } catch (error) {
                     console.error('Error fetching product:', error);
-                    toast.error('Failed to load product data.');
+                    toast.error('Failed to load product data');
+                    navigate('/products/manageproduct');
                 }
             };
             fetchProduct();
         }
-    }, [id, dispatch, isEditMode]);
+    }, [id, dispatch, isEditMode, navigate]);
 
     useEffect(() => {
         setProduct((prevProduct) => ({
@@ -271,8 +277,11 @@ const CreateProducts = () => {
         e.preventDefault();
         try {
             const formData = new FormData();
+            // Only append new image files, not URLs
             selectedImages.forEach((image, index) => {
-                formData.append(`image${index + 1}`, image);
+                if (typeof image !== 'string') {
+                    formData.append(`image${index + 1}`, image);
+                }
             });
 
             if (product.type === 'processor') {
@@ -281,11 +290,13 @@ const CreateProducts = () => {
             }
 
             validateRequiredFields(product, isEditMode);
-            formData.append('product', JSON.stringify(product));
+            // Exclude _id from product payload
+            const { _id, ...productData } = product;
+            formData.append('product', JSON.stringify(productData));
 
             const endpoint = isEditMode
-                ? `http://localhost:8000/api/product/${id}`
-                : `http://localhost:8000/api/product/add`;
+                ? `${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`
+                : `${import.meta.env.VITE_BACKEND_URL}/api/product/add`;
 
             const response = isEditMode
                 ? await axios.put(endpoint, formData)
@@ -301,7 +312,8 @@ const CreateProducts = () => {
                         imageSelectorRef.current.deleteAllImages();
                     }
                 }
-                navigate('/products/manageproduct');
+                // Uncomment to navigate after submission
+                // navigate('/products/manageproduct');
             } else {
                 toast.error(isEditMode ? 'Error in updating' : 'Error creating product. Please try again.');
             }
@@ -1560,10 +1572,11 @@ const CreateProducts = () => {
                     <div className="SubmitButton flex justify-end mr-6 mb-6">
                         <PrimaryButton
                             type="submit"
-                            name="Add Product"
+                            name={isEditMode ? 'Update Product' : 'Add Product'}
                             isBold={1}
                             buttonSize="medium"
-                            fontSize="16px" />
+                            fontSize="16px"
+                        />
                     </div>
                 </form>
             </div>
