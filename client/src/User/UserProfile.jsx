@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Box } from "@mui/system";
 import SideNav from "./SideNav";
-import { Divider, Paper, Button, IconButton, TextField } from "@mui/material";
+import { Divider, Paper, Button, IconButton } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EditIcon from "@mui/icons-material/Edit";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../AtomicComponents/Buttons/Buttons";
-import Navbar from '../MoleculesComponents/User_component/Navbar';
+import Navbar from "../MoleculesComponents/User_component/Navbar";
 import axios from "axios";
 import { toast } from "sonner";
 import { setAuthUser } from "../Store/authSlice";
@@ -15,98 +15,146 @@ import { setAuthUser } from "../Store/authSlice";
 export default function UserProfile() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const token =
-    useSelector((state) => state.auth.accessToken) ||
-    localStorage.getItem("accessToken");
-
   const [isEnabled, setIsEnabled] = useState(false);
+  const [editable, setEditable] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isEditable, setIsEditable] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    address: "",
+    name: user?.name || "",
+    email: user?.email || "",
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    address: user?.address || "",
     profilePicture: user?.profilePicture || "",
   });
 
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        address: user.address || "",
-        profilePicture: user.profilePicture || "",
+        name: user.name,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        address: user.address,
+        profilePicture: user.profilePicture,
       });
-      setIsEnabled(user.is2FAEnabled || false);
     }
   }, [user]);
 
-  const handleChange = (field, value) => {
-    if (!isEditable) return;
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  const wrappedHandle = (field) => (val) =>
+    handleChange({ target: { name: field, value: val } });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "profile_pictures");
+
+    try {
+      setUploading(true);
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/dfdjzbfjn/image/upload`,
+        formData
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        profilePicture: response.data.secure_url,
+      }));
+      toast.success("Profile picture updated successfully");
+    } catch (error) {
+      toast.error("Image upload failed");
+      console.error("Cloudinary upload error:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const toggleEditable = () => {
+    if (editable) {
+      // Reset form data if canceling edits
+      setFormData({
+        name: user.name,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        address: user.address,
+        profilePicture: user.profilePicture,
+      });
+    }
+    setEditable(!editable);
+  };
+
+  // Updated handleSubmit function
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const updatedFields = {};
-
-    for (const key in formData) {
-      if (formData[key] !== user[key]) {
-        updatedFields[key] = formData[key];
-      }
-    }
-
-    if (isEnabled !== user.is2FAEnabled) {
-      updatedFields.is2FAEnabled = isEnabled;
-    }
-
-    if (Object.keys(updatedFields).length === 0) {
-      toast.info("No changes made");
-      setLoading(false);
-      return;
-    }
-
     try {
+      // Validate required fields
+      if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        throw new Error("Invalid email format");
+      }
+
+      // Send only allowed fields
+      // const updateData = {
+      //   name: formData.name.trim(),
+      //   email: formData.email.trim(),
+      //   firstName: formData.firstName.trim(),
+      //   lastName: formData.lastName.trim(),
+      //   address: formData.address.trim(),
+      //   profilePicture: formData.profilePicture || user.profilePicture,
+      // };
+      const updateData = {
+        name: formData.name?.trim() || "",
+        email: formData.email?.trim() || "",
+        firstName: formData.firstName?.trim() || "",
+        lastName: formData.lastName?.trim() || "",
+        address: formData.address?.trim() || "",
+        profilePicture: formData.profilePicture || user.profilePicture || "",
+      };
+
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/update-profile",
-        updatedFields,
+        `http://localhost:8000/api/v1/users/update-profile`,
+        updateData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
+          withCredentials: true,
         }
       );
 
-      dispatch(setAuthUser(response.data));
+      dispatch(setAuthUser(response.data.user));
       toast.success("Profile updated successfully");
-      setIsEditable(false);
+      setEditable(false);
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to update profile");
-      toast.error("Failed to update profile");
+      const serverError = error.response?.data?.error;
+      const validationErrors = error.response?.data?.fields?.join(", ") || [];
+
+      setError(
+        validationErrors
+          ? `Invalid fields: ${validationErrors}`
+          : serverError || "An error occurred. Please try again."
+      );
+
+      toast.error(`Update failed: ${error.message}`);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleToggle = () => {
-    if (!isEditable) return;
-    setIsEnabled(!isEnabled);
-  };
-
-  const toggleEdit = () => {
-    setIsEditable((prev) => !prev);
   };
 
   return (
@@ -132,13 +180,77 @@ export default function UserProfile() {
             >
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold mt-5 mb-6">Profile</h1>
-                <IconButton onClick={toggleEdit} title="Edit Profile">
-                  <EditIcon />
-                </IconButton>
+                <Button
+                  variant="contained"
+                  disabled={loading.profile}
+                  onClick={toggleEditable}
+                  className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                  style={{
+                    padding: "14px 18px",
+                    width: "180px",
+                    textTransform: "none",
+                    fontSize: "16px",
+                    borderRadius: "10px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {editable ? "Cancel" : "Edit Profile"}
+                </Button>
               </div>
               <Divider />
               <Box sx={{ pt: 3 }}>
-                <AccountCircleIcon sx={{ fontSize: 50 }} color="primary" />
+                <Box sx={{ pt: 3, textAlign: "center" }}>
+                  {formData.profilePicture ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <img
+                        src={formData.profilePicture}
+                        alt="Profile"
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          borderRadius: "50%",
+                          objectFit: "cover",
+                          border: "1px solid rgb(152, 56, 212)",
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <AccountCircleIcon
+                      sx={{ fontSize: 80, color: "#9333ea" }}
+                    />
+                  )}
+
+                  {editable && (
+                    <Button
+                      variant="contained"
+                      component="label"
+                      disabled={uploading}
+                      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                      sx={{
+                        textTransform: "none",
+                        padding: "14px 18px",
+                        width: "180px",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      {uploading ? "Uploading..." : "Change Photo"}
+                      <input
+                        type="file"
+                        hidden
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                      />
+                    </Button>
+                  )}
+                </Box>
                 <form onSubmit={handleSubmit}>
                   <div className="flex flex-col md:flex-row mt-5">
                     <div className="flex-1 mb-5 mr-1">
@@ -147,10 +259,10 @@ export default function UserProfile() {
                         variant="outlined"
                         label="User Name"
                         value={formData.name}
-                        onChange={(val) => handleChange("name", val)}
+                        onChange={wrappedHandle("name")}
                         width="70%"
                         outlinedActive
-                        disabled={!isEditable}
+                        disabled={!editable}
                       />
                     </div>
                     <div className="flex-1 mb-5">
@@ -159,10 +271,10 @@ export default function UserProfile() {
                         variant="outlined"
                         label="First Name"
                         value={formData.firstName}
-                        onChange={(val) => handleChange("firstName", val)}
+                        onChange={wrappedHandle("firstName")}
                         width="70%"
                         outlinedActive
-                        disabled={!isEditable}
+                        disabled={!editable}
                       />
                     </div>
                   </div>
@@ -174,10 +286,10 @@ export default function UserProfile() {
                         variant="outlined"
                         label="Last Name"
                         value={formData.lastName}
-                        onChange={(val) => handleChange("lastName", val)}
+                        onChange={wrappedHandle("lastName")}
                         width="70%"
                         outlinedActive
-                        disabled={!isEditable}
+                        disabled={!editable}
                       />
                     </div>
                     <div className="flex-1 mb-5">
@@ -186,10 +298,10 @@ export default function UserProfile() {
                         variant="outlined"
                         label="Email Address"
                         value={formData.email}
-                        onChange={(val) => handleChange("email", val)}
+                        onChange={wrappedHandle("email")}
                         width="70%"
                         outlinedActive
-                        disabled={!isEditable}
+                        disabled={!editable}
                       />
                     </div>
                   </div>
@@ -200,11 +312,11 @@ export default function UserProfile() {
                       variant="outlined"
                       label="Address"
                       value={formData.address}
-                      onChange={(val) => handleChange("address", val)}
+                      onChange={wrappedHandle("address")}
                       width="86%"
                       rows={3}
                       outlinedActive
-                      disabled={!isEditable}
+                      disabled={!editable}
                     />
                   </div>
 
@@ -217,15 +329,15 @@ export default function UserProfile() {
                     </p>
                     <OutlinedButton
                       name={isEnabled ? "Disable" : "Enable"}
-                      onClick={handleToggle}
-                      disabled={!isEditable}
+                      // onClick={handleToggle}
+                      disabled={!editable}
                     />
                   </Paper>
 
                   <InputField
                     type="checkbox"
                     label="Sign up for emails to get updates"
-                    disabled={!isEditable}
+                    disabled={!editable}
                   />
                   <p className="text-purple-600 font-medium mt-4">
                     Change password
@@ -234,7 +346,7 @@ export default function UserProfile() {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={!isEditable || loading}
+                    disabled={!editable || loading}
                   >
                     {loading ? "Saving..." : "Save Changes"}
                   </Button>

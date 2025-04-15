@@ -28,6 +28,7 @@ export function InputField({
   error,
   value,
   Auto,
+  name,
   onChange = null,
   row = false,
   size = "medium",
@@ -45,6 +46,7 @@ export function InputField({
         value={value}
         color={color}
         width={width}
+        name={name}
         disabled={disabled}
         helperText={helperText}
         error={!!error}
@@ -99,6 +101,7 @@ export function InputField({
         color={color}
         rows={rows}
         value={value}
+        name={name}
         disabled={disabled}
         helperText={helperText}
         width={width}
