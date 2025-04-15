@@ -1,24 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import {
   StockType,
-  main,
   InvoiceStatus,
 } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
-import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import { Divider, IconButton, TextField, Button } from "@mui/material";
-import { Add, RemoveCircle } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
 import ToolpadFixer from "../MoleculesComponents/ToolpadFixer.jsx";
 
 function InvoiceCreate() {
   const navigate = useNavigate();
 
+  // State for from fields
+  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [invoiceStatus, setInvoiceStatus] = useState("draft");
+  const [dateCreated, setDateCreated] = useState(new Date());
+  const [dueDate, setDueDate] = useState(new Date());
+  const [shippingCost, setShippingCost] = useState(0);
+  const [discount, setDiscount] = useState(0);
   const [fromEdit, setFromEdit] = useState(false);
   const [toEdit, setToEdit] = useState(false);
   const [fromAddress, setFromAddress] = useState("");
@@ -33,6 +39,20 @@ function InvoiceCreate() {
     },
   ]);
 
+  // Price calculations
+  const calculateSubtotal = () => {
+    return items.reduce((sum, item) => {
+      const itemTotal =
+        parseFloat(item.price || 0) * parseFloat(item.quantity || 0);
+      return sum + itemTotal;
+    }, 0);
+  };
+
+  const subtotal = calculateSubtotal();
+  const total =
+    subtotal + parseFloat(shippingCost || 0) - parseFloat(discount || 0);
+
+  // Item management
   const handleItemChange = (index, key, value) => {
     const updatedItems = [...items];
     updatedItems[index][key] = value;
@@ -56,6 +76,40 @@ function InvoiceCreate() {
     const updatedItems = [...items];
     updatedItems.splice(index, 1);
     setItems(updatedItems);
+  };
+
+  // API Configuration
+  const API_URL = "http://localhost:8000/api/invoices";
+
+  const handleSubmit = async (isDraft = false) => {
+    const invoiceData = {
+      fromAddress,
+      toAddress,
+      items: items.map((item) => ({
+        itemCode: item.itemCode,
+        itemName: item.itemName,
+        subCategory: item.subCategory,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      shippingCost: parseFloat(shippingCost),
+      discount: parseFloat(discount),
+      subtotal,
+      total,
+      invoiceNumber,
+      invoiceStatus: isDraft ? "draft" : invoiceStatus,
+      dateCreated,
+      dueDate,
+    };
+
+    try {
+      const response = await axios.post(`${API_URL}/create`, invoiceData);
+      alert(response.data.message);
+      // navigate("/invoices");
+    } catch (error) {
+      console.error("Invoice creation failed:", error);
+      alert(`Error: ${error.response?.data?.error || error.message}`);
+    }
   };
 
   return (
@@ -161,6 +215,8 @@ function InvoiceCreate() {
                     type="textarea"
                     label="Invoice Number"
                     width="100%"
+                    value={invoiceNumber}
+                    onChange={setInvoiceNumber}
                   />
                 </div>
                 <div>
@@ -169,13 +225,25 @@ function InvoiceCreate() {
                     label="Status"
                     options={InvoiceStatus}
                     width="100%"
+                    value={invoiceStatus}
+                    onChange={setInvoiceStatus}
                   />
                 </div>
                 <div>
-                  <SetDate width="100%" label="Date Created" />
+                  <SetDate
+                    width="100%"
+                    label="Date Created"
+                    value={dateCreated}
+                    onChange={setDateCreated}
+                  />
                 </div>
                 <div>
-                  <SetDate width="100%" label="Due Date" />
+                  <SetDate
+                    width="100%"
+                    label="Due Date"
+                    value={dueDate}
+                    onChange={setDueDate}
+                  />
                 </div>
               </div>
 
@@ -253,18 +321,61 @@ function InvoiceCreate() {
                   Add Item
                 </Button>
               </div>
+              <div className="ml-auto w-1/3">
+                <div className="grid grid-cols-2 gap-x-2 ">
+                  <InputField
+                    type="text"
+                    Placeholder="LKR"
+                    label="Shipping Cost"
+                    width="100%"
+                    value={shippingCost}
+                    onChange={(val) => setShippingCost(val)}
+                  />
+                  <InputField
+                    type="text"
+                    Placeholder="LKR"
+                    label="Discount"
+                    width="100%"
+                    value={discount}
+                    onChange={(val) => setDiscount(val)}
+                  />
+                </div>
+                <div className="float-right">
+                  <p className="text-purple-600 font-semibold mb-1">
+                    Subtotal: LKR {subtotal.toFixed(2)}
+                  </p>
+                  <p className="text-purple-600 font-semibold mb-1">
+                    Shipping: LKR {parseFloat(shippingCost || 0).toFixed(2)}
+                  </p>
+                  <p className="text-purple-600 font-semibold mb-1">
+                    Discount: LKR {parseFloat(discount || 0).toFixed(2)}
+                  </p>
+                  <p className="font-semibold mb-1 text-lg">
+                    Total: LKR {total.toFixed(2)}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="pb-4 mr-4">
             <div className="float-right">
-              <AddButton
-                name="Create Invoice"
-                isBold={1}
-                buttonSize="medium"
-                fontSize="16px"
-                onClick={() => navigate("/invoice/invoicecreate")}
-              />
+              <div className="flex gap-2">
+                <AddButton
+                  name="Create Invoice"
+                  isBold={1}
+                  buttonSize="medium"
+                  fontSize="16px"
+                  onClick={() => handleSubmit(false)}
+                />
+                <Button
+                  variant="outlined"
+                  size="medium"
+                  onClick={() => handleSubmit(true)}
+                >
+                  Save Draft
+                </Button>
+              </div>
             </div>
           </div>
         </div>

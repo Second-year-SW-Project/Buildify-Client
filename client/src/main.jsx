@@ -40,6 +40,7 @@ import MyOrders from "./UserdashboardFeature/pages/MyOrders.jsx";
 import OrderHistory from "./UserdashboardFeature/pages/OrderHistory.jsx";
 import SavedBuilds from "./UserdashboardFeature/pages/SavedBuilds.jsx";
 import Settings from "./UserdashboardFeature/pages/Settings.jsx";
+import OrderDetails from "./UserdashboardFeature/pages/OrderDetails.jsx";
 
 // Other Pages
 import Home from "./pages/Home/Home.jsx";
@@ -101,6 +102,7 @@ createRoot(root).render(
             <Route path="/orderHistory" element={<OrderHistory />} />
             <Route path="/savedBuilds" element={<SavedBuilds />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/orderDetails" element={<OrderDetails />} />
 
             {/* Admin Routes */}
 

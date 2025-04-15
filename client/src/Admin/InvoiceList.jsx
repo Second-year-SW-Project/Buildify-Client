@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { UserTable } from "../MoleculesComponents/Table";
 import CustomerCard from "../AtomicComponents/Cards/Customercard";
-import TimeCard from "../AtomicComponents/Cards/TimeCard";
+import DateCard from "../AtomicComponents/Cards/Datecard";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
@@ -26,13 +26,13 @@ function InvoiceList() {
     {
       customerCard: (
         <CustomerCard
-          name="ASUS ROG Strix SCAR 16 (2024) G634JZR"
-          type="Casing"
+          name="Gethmi Rathnayaka"
+          type="INV1234"
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSi50-FcEbEamVMqvkhUo8jklEge0uZIG9pbg&s"
         />
       ),
-      startdate: <TimeCard date="2024-02-14" time="1.30 pm" />,
-      enddate: <TimeCard date="2024-02-14" time="1.30 pm" />,
+      startdate: <DateCard date="2024-02-14" />,
+      enddate: <DateCard date="2024-02-14" />,
       amount: "720,000 LKR",
     },
   ];
