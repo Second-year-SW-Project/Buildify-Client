@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography } from "@mui/material";
 
-export default function CustomerCard({ name, invId, src }) {
+export default function CustomerCard({ name, type, src }) {
   return (
     <div className="flex items-center space-x-3">
       <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -23,7 +23,7 @@ export default function CustomerCard({ name, invId, src }) {
           {name}
         </Typography>
         <Typography variant="body2" fontWeight="bold" color="primary">
-          {invId}
+          {type}
         </Typography>
       </div>
     </div>
