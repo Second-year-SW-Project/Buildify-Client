@@ -380,6 +380,11 @@ const CreateProducts = () => {
             // Prepare product data for submission
             const productData = {
                 ...filteredProduct,
+                gpu_vram_gb: filteredProduct.gpuVramGB,
+                gpu_boost_clock_mhz: filteredProduct.gpuBoostClockMHz,
+                ram_size_gb: filteredProduct.ramSizeGB,
+                ram_speed_mhz: filteredProduct.ramSpeedMHz,
+                ram_type: filteredProduct.ramType,
                 supported_memory_types: Array.isArray(filteredProduct.supportedMemoryTypes)
                     ? filteredProduct.supportedMemoryTypes.join(',')
                     : filteredProduct.supportedMemoryTypes || '',
