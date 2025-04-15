@@ -103,48 +103,63 @@ const RMA = () => {
                           </div>
 
       {/* Search Filters */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-        <TextField
-          label="Order ID"
-          value={filters.orderId}
-          onChange={(e) => setFilters(prev => ({ ...prev, orderId: e.target.value }))}
-          size="small"
-           className="h-12"
-           InputProps={{ style: { height: 48 } }} // Ensures consistent height
-           sx={{ flex: 1, width: 'auto', maxWidth: 400 }} // Set the max width for the field
-        />
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel>Status</InputLabel>
-          <Select
-            value={filters.status}
-             className="h-12"
-            onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-            label="Status"
-            size="small"
-            sx={{ flex: 1, width: 'auto', maxWidth: 400 }} // Set the max width for the field
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="Processing">Processing</MenuItem>
-            <MenuItem value="Resolved">Resolved</MenuItem>
-            <MenuItem value="Pending">Pending</MenuItem>
-          </Select>
-        </FormControl>
-        <Button
-          variant="contained"
-          onClick={fetchRequests}
-          className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-          style={{
-            padding: "14px 18px",
-            width: "180px",
-            textTransform: "none",
-            fontSize: "16px",
-            borderRadius: "10px",
-            fontWeight: "bold"
-          }}
-        >
-          Search
-        </Button>
-      </Box>
+      <Box sx={{ display: 'flex', gap: 2, mb: 6,mt:6, alignItems: 'center' }}>
+  <TextField
+    label="Order ID"
+    value={filters.orderId}
+    onChange={(e) => setFilters(prev => ({ ...prev, orderId: e.target.value }))}
+    sx={{
+      '& .MuiOutlinedInput-root': {
+        height: 56,
+        width: 350,
+        borderRadius: '4px'
+      }
+    }}
+  />
+
+  <FormControl
+  >
+    <InputLabel>Status</InputLabel>
+    <Select
+      value={filters.status}
+      onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+      label="Status"
+      sx={{
+        height: 56,
+        width: 350,
+        borderRadius: '4px',
+        '& .MuiSelect-select': {
+          paddingTop: '16px',
+          paddingBottom: '16px'
+        }
+      }}
+    >
+      <MenuItem value="">All</MenuItem>
+      <MenuItem value="Processing">Processing</MenuItem>
+      <MenuItem value="Resolved">Resolved</MenuItem>
+      <MenuItem value="Pending">Pending</MenuItem>
+    </Select>
+  </FormControl>
+
+  <Button
+    variant="contained"
+    onClick={fetchRequests}
+    className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+    style={{
+      padding: "14px 18px", // height ~48px
+      width: "200px",
+      textTransform: "none",
+      fontSize: "16px",
+      borderRadius: "10px",
+      fontWeight: "bold"
+    }}
+  >
+    Search
+  </Button>
+</Box>
+
+
+
 
       {/* Requests Table */}
       <TableContainer component={Paper}>
