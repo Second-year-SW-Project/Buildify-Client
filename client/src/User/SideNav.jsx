@@ -14,7 +14,7 @@ export default function SideNav() {
     <aside className="fixed top-[175px] w-64 h-[calc(100vh-4rem)] bg-white border-r shadow-md p-4">
       <List>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/profile" className="group">
+          <ListItemButton component={Link} to="/user/profile" className="group">
             <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
@@ -25,7 +25,11 @@ export default function SideNav() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/savedBuilds" className="group">
+          <ListItemButton
+            component={Link}
+            to="/user/savedBuilds"
+            className="group"
+          >
             <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
@@ -36,7 +40,11 @@ export default function SideNav() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/myOrders" className="group">
+          <ListItemButton
+            component={Link}
+            to="/user/myOrders"
+            className="group"
+          >
             <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
@@ -47,7 +55,11 @@ export default function SideNav() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/rmaSupport" className="group">
+          <ListItemButton
+            component={Link}
+            to="/user/RMAsupport"
+            className="group"
+          >
             <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
@@ -58,7 +70,11 @@ export default function SideNav() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/orderHistory" className="group">
+          <ListItemButton
+            component={Link}
+            to="/user/orderHistory"
+            className="group"
+          >
             <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>
@@ -69,7 +85,11 @@ export default function SideNav() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/settings" className="group">
+          <ListItemButton
+            component={Link}
+            to="/user/settings"
+            className="group"
+          >
             <ListItemIcon className="group-hover:text-purple-500">
               <InboxIcon />
             </ListItemIcon>
@@ -80,7 +100,11 @@ export default function SideNav() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton component={Link} to="/user/complaint" className="group">
+          <ListItemButton
+            component={Link}
+            to="/user/complaint"
+            className="group"
+          >
             <ListItemIcon className="group-hover:text-purple-500">
               <InboxIcon />
             </ListItemIcon>

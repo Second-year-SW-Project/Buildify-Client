@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import SideNav from "../SideNav";
-import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
+import SideNav from "./SideNav";
+import Navbar from "../MoleculesComponents/User_component/Navbar";
 import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import OrderCard from "../../AtomicComponents/Cards/OrderDetailsCard";
+import OrderCard from "../AtomicComponents/Cards/OrderDetailsCard";
 
 export default function MyOrders() {
   const [value, setValue] = React.useState("1");

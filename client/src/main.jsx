@@ -32,6 +32,8 @@ import UserProfile from "./User/UserProfile.jsx";
 import SavedBuilds from "./User/SavedBuilds.jsx";
 import OrderHistory from "./User/OrderHistory.jsx";
 import OrderDetails from "./User/OrderDetails.jsx";
+import MyOrders from "./User/MyOrders.jsx";
+import Settings from "./User/Settings.jsx";
 
 // 🆕 Add these two lines:
 import { PersistGate } from "redux-persist/integration/react";
@@ -76,12 +78,32 @@ const router = createBrowserRouter([
         Component: UserComplaints,
       },
       {
-        path: "/RMAsupport",
+        path: "/user/RMAsupport",
         Component: RMAsupport,
       },
       {
-        path: "/profile",
+        path: "/user/profile",
         Component: UserProfile,
+      },
+      {
+        path: "/user/savedBuilds",
+        Component: SavedBuilds,
+      },
+      {
+        path: "/user/myOrders",
+        Component: MyOrders,
+      },
+      {
+        path: "/user/orderHistory",
+        Component: OrderHistory,
+      },
+      {
+        path: "/user/myOrders/orderDetails",
+        Component: OrderDetails,
+      },
+      {
+        path: "/user/settings",
+        Component: Settings,
       },
       {
         path: "/",
