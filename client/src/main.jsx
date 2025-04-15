@@ -29,6 +29,9 @@ import InvoiceList from "./Admin/InvoiceList.jsx";
 import InvoiceCreate from "./Admin/InvoiceCreate.jsx";
 import RMAsupport from "./User/RMAsupport.jsx";
 import UserProfile from "./User/UserProfile.jsx";
+import SavedBuilds from "./User/SavedBuilds.jsx";
+import OrderHistory from "./User/OrderHistory.jsx";
+import OrderDetails from "./User/OrderDetails.jsx";
 
 // 🆕 Add these two lines:
 import { PersistGate } from "redux-persist/integration/react";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import SideNav from "../SideNav";
-import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
+import SideNav from "./SideNav";
+import Navbar from "../MoleculesComponents/User_component/Navbar";
 import { Box, Button, Divider } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
