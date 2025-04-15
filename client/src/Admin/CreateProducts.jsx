@@ -78,7 +78,7 @@ const CreateProducts = () => {
     const ramTypeOptions = ramAttributes.type;
     const ramSpeedOptions = ramAttributes.speed;
     const ramSizeOptions = ramAttributes.size;
-    const motherboardChipsets = motherboardAttributes.motherboardChipset;
+    const motherboardChipsets = motherboardAttributes.chipsets;
     const motherboardSocket = motherboardAttributes.motherboardSocket;
     const motherboardFormFactors = motherboardAttributes.formFactor;
     const motherboardRamSlots = motherboardAttributes.ramSlots;
@@ -92,10 +92,11 @@ const CreateProducts = () => {
     const gpuVramOptions = gpuAttributes.gpuVram;
     const gpuSeriesOptions = gpuAttributes.gpuSeries;
     const gpuChipsetOptions = gpuAttributes.gpuChipset;
+    const gpuCores = gpuAttributes.gpuCores;
     const storageTypes = storageAttributes.storageTypes;
     const storageCapacities = storageAttributes.storageCapacities;
     const casingFormFactors = casingAttributes.formFactor;
-    const casingSupportedMotherboardSizes = casingAttributes.supportedMotherboardSizes;
+    const casingSupportedMotherboardSizes = casingAttributes.supportedMotherboardSizes;//Maximum size
     const keyboardManufacturerOptions = keyboardAttributes.manufacturer;
     const keyboardTypeOptions = keyboardAttributes.type;
     const mouseTypeOptions = mouseAttributes.type;
@@ -155,7 +156,7 @@ const CreateProducts = () => {
         desktopType: '',
         interfaceType: '',
         length: '',
-        powerConnectors: [],
+        powerConnectors: '',
         vram: '',
         series: '',
         cudaCores: '',
@@ -180,12 +181,12 @@ const CreateProducts = () => {
         stockPrice: '',
         storageType: '',
         storageCapacity: '',
-        supportedMotherboardSizes: [],
+        supportedMotherboardSizes: '',//Maximum Size
         wattage: '',
         maxTdp: '',
         height: '',
         motherboardChipset: '',
-        supportedMemoryTypes: [],
+        supportedMemoryTypes: '',
         pcieSlots: [],
         storageInterfaces: [],
         gpuChipset: '',
@@ -201,55 +202,71 @@ const CreateProducts = () => {
 
     useEffect(() => {
         if (isEditMode) {
-            const fetchProduct = async () => {
-                try {
-                    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
-                    if (res.data.Success) {
-                        const fetchedProduct = res.data.data;
-                        // Exclude _id from product state
-                        const { _id, ...productFields } = fetchedProduct;
-                        setProduct({
-                            ...initialProductState,
-                            ...productFields,
-                            imgUrls: productFields.imgUrls || [],
-                            powerConnectors: productFields.powerConnectors || [],
-                            supportedMemoryTypes: productFields.supportedMemoryTypes || [],
-                            pcieSlots: productFields.pcieSlots || [],
-                            storageInterfaces: productFields.storageInterfaces || [],
-                            supportedMotherboardSizes: productFields.supportedMotherboardSizes || [],
-                        });
-                        setSelectedImages(productFields.imgUrls || []);
-                        let foundMainCategory = null;
-                        for (const [key, categoryList] of Object.entries(subCategories)) {
-                            if (categoryList.some((item) => item.value === productFields.type)) {
-                                foundMainCategory = key;
-                                break;
-                            }
-                        }
-                        const mainCategoryLabelMap = {
-                            Necessary: 'Necessary',
-                            Optional: 'Optional',
-                            Common: 'Common',
-                        };
-                        const mainCategoryLabel = mainCategoryLabelMap[foundMainCategory];
-                        if (mainCategoryLabel) {
-                            dispatch(setSelectedMainCategory(mainCategoryLabel));
-                        }
-                        dispatch(setSelectedSubCategory(productFields.type));
-                        dispatch(setSelectedManufacture(productFields.manufacturer));
-                    } else {
-                        toast.error('Failed to load product');
-                        navigate('/products/manageproduct');
-                    }
-                } catch (error) {
-                    console.error('Error fetching product:', error);
-                    toast.error('Failed to load product data');
-                    navigate('/products/manageproduct');
+          const fetchProduct = async () => {
+            try {
+              if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+                throw new Error('Invalid product ID format');
+              }
+              console.log('Fetching product with ID:', id);
+              const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
+              if (res.data.Success) {
+                const fetchedProduct = res.data.data;
+                setProduct({
+                  ...initialProductState,
+                  ...fetchedProduct,
+                  imgUrls: fetchedProduct.imgUrls || [],
+                  supported_memory_types: Array.isArray(fetchedProduct.supported_memory_types)
+                    ? fetchedProduct.supported_memory_types.join(',')
+                    : fetchedProduct.supported_memory_types || '',
+                  power_connectors: Array.isArray(fetchedProduct.power_connectors)
+                    ? fetchedProduct.power_connectors.join(',')
+                    : fetchedProduct.power_connectors || '',
+                  pcieSlots: fetchedProduct.pcieSlots?.map((slot) => ({
+                    type: slot.type || '',
+                    version: slot.version || '4.0',
+                    count: slot.count != null ? slot.count : 1,
+                  })) || [],
+                  storageInterfaces: fetchedProduct.storageInterfaces?.map((intf) => ({
+                    type: intf.type || '',
+                    count: intf.count != null ? intf.count : 1,
+                  })) || [],
+                  supported_motherboard_sizes: Array.isArray(fetchedProduct.supported_motherboard_sizes)
+                    ? fetchedProduct.supported_motherboard_sizes.join(',')
+                    : fetchedProduct.supported_motherboard_sizes || '',
+                });
+                setSelectedImages(fetchedProduct.imgUrls || []);
+                let foundMainCategory = null;
+                for (const [key, categoryList] of Object.entries(subCategories)) {
+                  if (categoryList.some((item) => item.value === fetchedProduct.type)) {
+                    foundMainCategory = key;
+                    break;
+                  }
                 }
-            };
-            fetchProduct();
+                const mainCategoryLabelMap = {
+                  Necessary: 'Necessary',
+                  Optional: 'Optional',
+                  Common: 'Common',
+                };
+                const mainCategoryLabel = mainCategoryLabelMap[foundMainCategory];
+                if (mainCategoryLabel) {
+                  dispatch(setSelectedMainCategory(mainCategoryLabel));
+                }
+                dispatch(setSelectedSubCategory(fetchedProduct.type));
+                dispatch(setSelectedManufacture(fetchedProduct.manufacturer));
+              } else {
+                console.error('Backend response:', res.data);
+                toast.error(res.data.message || 'Failed to load product');
+                navigate('/products/manageproduct');
+              }
+            } catch (error) {
+              console.error('Fetch product error:', error.response?.data || error.message);
+              toast.error(error.response?.data?.message || error.message || 'Failed to load product data');
+              navigate('/products/manageproduct');
+            }
+          };
+          fetchProduct();
         }
-    }, [id, dispatch, isEditMode, navigate]);
+      }, [id, dispatch, isEditMode, navigate]);
 
     useEffect(() => {
         setProduct((prevProduct) => ({
@@ -269,57 +286,80 @@ const CreateProducts = () => {
     const handleArrayChange = (field, value) => {
         setProduct((prevProduct) => ({
             ...prevProduct,
-            [field]: Array.isArray(value) ? value : [value],
+            [field]: Array.isArray(value) ? value : [],
         }));
     };
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
         try {
-            const formData = new FormData();
-            // Only append new image files, not URLs
-            selectedImages.forEach((image, index) => {
-                if (typeof image !== 'string') {
-                    formData.append(`image${index + 1}`, image);
-                }
-            });
-
-            if (product.type === 'processor') {
-                if (!product.includesCooler) product.includesCooler = false;
-                if (!product.integratedGraphics) product.integratedGraphics = false;
+          const formData = new FormData();
+          selectedImages.forEach((image, index) => {
+            if (typeof image !== 'string') {
+              formData.append(`image${index + 1}`, image);
             }
-
-            validateRequiredFields(product, isEditMode);
-            // Exclude _id from product payload
-            const { _id, ...productData } = product;
-            formData.append('product', JSON.stringify(productData));
-
-            const endpoint = isEditMode
-                ? `${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`
-                : `${import.meta.env.VITE_BACKEND_URL}/api/product/add`;
-
-            const response = isEditMode
-                ? await axios.put(endpoint, formData)
-                : await axios.post(endpoint, formData);
-
-            if (response.data.Success) {
-                toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
-                if (!isEditMode) {
-                    setProduct({ ...initialProductState });
-                    setSelectedImages([]);
-                    dispatch(resetForm());
-                    if (imageSelectorRef.current) {
-                        imageSelectorRef.current.deleteAllImages();
-                    }
-                }
-                // Uncomment to navigate after submission
-                // navigate('/products/manageproduct');
-            } else {
-                toast.error(isEditMode ? 'Error in updating' : 'Error creating product. Please try again.');
+          });
+          if (selectedImages.some((img) => typeof img === 'string')) {
+            formData.append('existingImgUrls', JSON.stringify(selectedImages.filter((img) => typeof img === 'string')));
+          }
+          if (product.type === 'processor') {
+            product.includesCooler = product.includesCooler ?? false;
+            product.integratedGraphics = product.integratedGraphics ?? false;
+          }
+          const productData = {
+            ...product,
+            supported_memory_types: Array.isArray(product.supported_memory_types)
+              ? product.supported_memory_types.join(',')
+              : product.supported_memory_types || '',
+            power_connectors: Array.isArray(product.power_connectors)
+              ? product.power_connectors.join(',')
+              : product.power_connectors || '',
+            supported_motherboard_sizes: Array.isArray(product.supported_motherboard_sizes)
+              ? product.supported_motherboard_sizes.join(',')
+              : product.supported_motherboard_sizes || '',
+            pcieSlots: product.pcieSlots?.map((slot) => ({
+              type: slot.type || '',
+              version: slot.version || '4.0',
+              count: slot.count != null ? slot.count : 1,
+            })) || [],
+            storageInterfaces: product.storageInterfaces?.map((intf) => ({
+              type: intf.type || '',
+              count: intf.count != null ? intf.count : 1,
+            })) || [],
+          };
+          validateRequiredFields(productData, isEditMode);
+          formData.append('product', JSON.stringify(productData));
+          const endpoint = isEditMode
+            ? `${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`
+            : `${import.meta.env.VITE_BACKEND_URL}/api/product/add`;
+          const response = isEditMode
+            ? await axios.put(endpoint, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+              })
+            : await axios.post(endpoint, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+              });
+          if (response.data.Success) {
+            toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
+            if (!isEditMode) {
+              setProduct({
+                ...initialProductState,
+                quantity: '',
+                price: '',
+                stockPrice: '',
+              });
+              setSelectedImages([]);
+              dispatch(resetForm());
+              if (imageSelectorRef.current) {
+                imageSelectorRef.current.deleteAllImages();
+              }
             }
+          } else {
+            toast.error(response.data.message || (isEditMode ? 'Error in updating' : 'Error creating product'));
+          }
         } catch (error) {
-            console.error(error);
-            toast.error(error.message);
+          console.error('Submission error:', error.response?.data || error.message);
+          toast.error(error.response?.data?.message || error.message || 'Failed to update product');
         }
     };
 
@@ -370,6 +410,7 @@ const CreateProducts = () => {
                 'powerConnectors',
                 'vram',
                 'gpuChipset',
+                'gpuCores',
             ],
             ram: [
                 'name',
@@ -506,7 +547,13 @@ const CreateProducts = () => {
         const missingFields = requiredFields.filter((field) => {
             if (field === 'imgUrls' && isEditMode) return false;
             if (field === 'imgUrls') return product.imgUrls.length === 0;
-            if (field === 'supportedMemoryTypes' || field === 'pcieSlots' || field === 'storageInterfaces' || field === 'supportedMotherboardSizes' || field === 'powerConnectors') {
+            if (
+                field === 'supportedMemoryTypes' ||
+                field === 'pcieSlots' ||
+                field === 'storageInterfaces' ||
+                field === 'supportedMotherboardSizes' ||
+                field === 'powerConnectors'
+            ) {
                 return !product[field] || product[field].length === 0;
             }
             return product[field] === null || product[field] === '' || product[field] === undefined;
@@ -514,6 +561,29 @@ const CreateProducts = () => {
 
         if (missingFields.length > 0) {
             throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}.`);
+        }
+
+        // Additional validation for motherboard
+        if (product.type === 'motherboard') {
+            if (
+                product.pcieSlots.some(
+                    (slot) => !slot.type || !slot.version || !slot.count || slot.count < 1
+                )
+            ) {
+                throw new Error('All PCIe slots must have a type, version, and valid count.');
+            }
+            if (
+                product.storageInterfaces.some(
+                    (intf) => !intf.type || !intf.count || intf.count < 1
+                )
+            ) {
+                throw new Error('All storage interfaces must have a type and valid count.');
+            }
+            // Check for duplicate type-version pairs in PCIe slots
+            const slotKeys = product.pcieSlots.map((slot) => `${slot.type}-${slot.version}`);
+            if (new Set(slotKeys).size !== slotKeys.length) {
+                throw new Error('Duplicate PCIe slot type-version combinations are not allowed.');
+            }
         }
     };
 
@@ -656,10 +726,11 @@ const CreateProducts = () => {
                                     </div>
                                     <div>
                                         <InputField
+                                            key={`quantity-${product.type}`} // Force re-render on type change
                                             type="number"
                                             label="Quantity"
                                             width="100%"
-                                            value={product.quantity}
+                                            value={product.quantity || ''}
                                             onChange={(value) => handleInputChange('quantity', value)}
                                         />
                                     </div>
@@ -667,19 +738,21 @@ const CreateProducts = () => {
                                 <div className="formProperty3 grid gap-4 grid-cols-2 flex flex-row mt-4 mb-4">
                                     <div>
                                         <InputField
+                                            key={`quantity-${product.type}`} // Force re-render on type change
                                             type="number"
                                             label="Price"
                                             width="100%"
-                                            value={product.price}
+                                            value={product.price || ''}
                                             onChange={(value) => handleInputChange('price', value)}
                                         />
                                     </div>
                                     <div>
                                         <InputField
+                                            key={`quantity-${product.type}`} // Force re-render on type change
                                             type="number"
                                             label="Stock Price"
                                             width="100%"
-                                            value={product.stockPrice}
+                                            value={product.stockPrice || ''}
                                             onChange={(value) => handleInputChange('stockPrice', value)}
                                         />
                                     </div>
@@ -789,8 +862,8 @@ const CreateProducts = () => {
                                                     options={coolerSupportedSockets}
                                                     width="100%"
                                                     value={product.supportedSocket}
-                                                    onChange={(value) => handleArrayChange('supportedSocket', value)}
-                                                    multiple
+                                                    onChange={(value) => handleInputChange('supportedSocket', value)}
+                                                    
                                                 />
                                             </div>
                                             <div>
@@ -882,12 +955,12 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="Memory Types"
+                                                    label="Supported Memory Type"
                                                     options={motherboardMemoryTypes}
                                                     value={product.supportedMemoryTypes}
-                                                    onChange={(value) => handleArrayChange('supportedMemoryTypes', value)}
+                                                    onChange={(value) => handleInputChange('supportedMemoryTypes', value)}
                                                     width="100%"
-                                                    multiple
+
                                                 />
                                             </div>
                                             <div>
@@ -901,53 +974,133 @@ const CreateProducts = () => {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="subMotherboardProperty2 grid gap-y-2 gap-x-4 grid-cols-3 flex flex-row">
+                                        <div className="subMotherboardProperty2 grid gap-y-2 gap-x-4 grid-cols-2 flex flex-row">
                                             <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="PCIe Slots"
-                                                    options={motherboardPcieSlotType}
-                                                    value={product.pcieSlots.map((slot) => slot.type)}
-                                                    onChange={(value) =>
-                                                        handleArrayChange(
-                                                            'pcieSlots',
-                                                            value.map((v) => ({ type: v, version: '4.0' }))
-                                                        )
-                                                    }
-                                                    width="100%"
-                                                    multiple
+                                                <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px' }}>
+                                                    PCIe Slots
+                                                </Typography>
+                                                {product.pcieSlots.map((slot, index) => (
+                                                    <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
+                                                        <InputField
+                                                            type="select"
+                                                            label={`Slot ${index + 1} Type`}
+                                                            options={motherboardPcieSlotType}
+                                                            value={slot.type}
+                                                            onChange={(value) => {
+                                                                const updatedPcieSlots = [...product.pcieSlots];
+                                                                updatedPcieSlots[index] = { ...updatedPcieSlots[index], type: value };
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            width="33%"
+                                                        />
+                                                        <InputField
+                                                            type="select"
+                                                            label={`Slot ${index + 1} Version`}
+                                                            options={motherboardPcieVersion}
+                                                            value={slot.version}
+                                                            onChange={(value) => {
+                                                                const updatedPcieSlots = [...product.pcieSlots];
+                                                                updatedPcieSlots[index] = { ...updatedPcieSlots[index], version: value };
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            width="33%"
+                                                        />
+                                                        <InputField
+                                                            type="number"
+                                                            label={`Count`}
+                                                            value={slot.count}
+                                                            onChange={(value) => {
+                                                                const updatedPcieSlots = [...product.pcieSlots];
+                                                                updatedPcieSlots[index] = {
+                                                                    ...updatedPcieSlots[index],
+                                                                    count: parseInt(value) || 1,
+                                                                };
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            width="20%"
+                                                            min={1}
+                                                        />
+                                                        <PrimaryButton
+                                                            name="Remove"
+                                                            onClick={() => {
+                                                                const updatedPcieSlots = product.pcieSlots.filter((_, i) => i !== index);
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            buttonSize="small"
+                                                            isBold={0}
+                                                        />
+                                                    </div>
+                                                ))}
+                                                <PrimaryButton
+                                                    name="Add PCIe Slot"
+                                                    onClick={() => {
+                                                        const updatedPcieSlots = [
+                                                            ...product.pcieSlots,
+                                                            { type: motherboardPcieSlotType[0]?.value || 'x16', version: '4.0', count: 1 },
+                                                        ];
+                                                        handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                    }}
+                                                    buttonSize="medium"
+                                                    isBold={1}
+                                                    style={{ marginTop: '10px' }}
                                                 />
                                             </div>
                                             <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="PCIe Version"
-                                                    options={motherboardPcieVersion}
-                                                    value={product.pcieSlots.map((slot) => slot.version)}
-                                                    onChange={(value) =>
-                                                        handleArrayChange(
-                                                            'pcieSlots',
-                                                            value.map((v) => ({ type: product.pcieSlots[0]?.type || 'x16', version: v }))
-                                                        )
-                                                    }
-                                                    width="100%"
-                                                    multiple
-                                                />
-                                            </div>
-                                            <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="Storage Interfaces"
-                                                    options={motherboardStorageTypes}
-                                                    value={product.storageInterfaces.map((intf) => intf.type)}
-                                                    onChange={(value) =>
-                                                        handleArrayChange(
-                                                            'storageInterfaces',
-                                                            value.map((v) => ({ type: v, count: 1 }))
-                                                        )
-                                                    }
-                                                    width="100%"
-                                                    multiple
+                                                <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px' }}>
+                                                    Storage Interfaces
+                                                </Typography>
+                                                {product.storageInterfaces.map((intf, index) => (
+                                                    <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
+                                                        <InputField
+                                                            type="select"
+                                                            label={`Interface ${index + 1} Type`}
+                                                            options={motherboardStorageTypes}
+                                                            value={intf.type}
+                                                            onChange={(value) => {
+                                                                const updatedStorageInterfaces = [...product.storageInterfaces];
+                                                                updatedStorageInterfaces[index] = { ...updatedStorageInterfaces[index], type: value };
+                                                                handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                            }}
+                                                            width="50%"
+                                                        />
+                                                        <InputField
+                                                            type="number"
+                                                            label={`Count`}
+                                                            value={intf.count}
+                                                            onChange={(value) => {
+                                                                const updatedStorageInterfaces = [...product.storageInterfaces];
+                                                                updatedStorageInterfaces[index] = {
+                                                                    ...updatedStorageInterfaces[index],
+                                                                    count: parseInt(value) || 1,
+                                                                };
+                                                                handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                            }}
+                                                            width="30%"
+                                                            min={1}
+                                                        />
+                                                        <PrimaryButton
+                                                            name="Remove"
+                                                            onClick={() => {
+                                                                const updatedStorageInterfaces = product.storageInterfaces.filter((_, i) => i !== index);
+                                                                handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                            }}
+                                                            buttonSize="small"
+                                                            isBold={0}
+                                                        />
+                                                    </div>
+                                                ))}
+                                                <PrimaryButton
+                                                    name="Add Storage Interface"
+                                                    onClick={() => {
+                                                        const updatedStorageInterfaces = [
+                                                            ...product.storageInterfaces,
+                                                            { type: motherboardStorageTypes[0]?.value || 'SATA', count: 1 },
+                                                        ];
+                                                        handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                    }}
+                                                    buttonSize="medium"
+                                                    isBold={1}
+                                                    style={{ marginTop: '10px' }}
                                                 />
                                             </div>
                                         </div>
@@ -1065,8 +1218,8 @@ const CreateProducts = () => {
                                                     options={gpuPowerConnectors}
                                                     width="100%"
                                                     value={product.powerConnectors}
-                                                    onChange={(value) => handleArrayChange('powerConnectors', value)}
-                                                    multiple
+                                                    onChange={(value) => handleInputChange('powerConnectors', value)}
+                                                    
                                                 />
                                             </div>
                                             <div>
@@ -1099,6 +1252,16 @@ const CreateProducts = () => {
                                                     onChange={(value) => handleInputChange('gpuChipset', value)}
                                                 />
                                             </div>
+                                            <div>
+                                                <InputField
+                                                    type="number"
+                                                    label="GPU Cores"
+                                                    options={gpuCores}
+                                                    width="100%"
+                                                    value={product.gpuCores}
+                                                    onChange={(value) => handleInputChange('gpuCores', value)}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -1122,8 +1285,8 @@ const CreateProducts = () => {
                                                     options={casingSupportedMotherboardSizes}
                                                     width="100%"
                                                     value={product.supportedMotherboardSizes}
-                                                    onChange={(value) => handleArrayChange('supportedMotherboardSizes', value)}
-                                                    multiple
+                                                    onChange={(value) => handleInputChange('supportedMotherboardSizes', value)}
+                                                    
                                                 />
                                             </div>
                                             <div>
