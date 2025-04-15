@@ -334,7 +334,7 @@ const Complaints = () => {
           <div className="flex items-start space-x-5">
            
             <Avatar 
-                src={selectedComplaint.user?.avatar || ''} 
+                src={selectedComplaint.user?.profilePicture || ''} 
                  sx={{ width: 56, height: 56 }}
               className="ring-2 ring-purple-500"
               >
