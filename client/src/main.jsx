@@ -28,6 +28,7 @@ import Review from "./Admin/Review.jsx";
 import InvoiceList from "./Admin/InvoiceList.jsx";
 import InvoiceCreate from "./Admin/InvoiceCreate.jsx";
 import RMAsupport from "./User/RMAsupport.jsx";
+import UserProfile from "./User/UserProfile.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
       {
         path: "/RMAsupport",
         Component: RMAsupport,
+      },
+      {
+        path: "/profile",
+        Component: UserProfile,
       },
       {
         path: "/",
