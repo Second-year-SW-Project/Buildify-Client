@@ -79,6 +79,17 @@ export default function SideNav() {
             />
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/user/complaint" className="group">
+            <ListItemIcon className="group-hover:text-purple-500">
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Complaints"
+              className="group-hover:text-purple-500"
+            />
+          </ListItemButton>
+        </ListItem>
       </List>
     </aside>
   );
