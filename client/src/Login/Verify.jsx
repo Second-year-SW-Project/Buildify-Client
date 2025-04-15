@@ -9,6 +9,7 @@ import logo from "../assets/logo.png";
 import pcImage from "../assets/images/pc3.jpg";
 
 const Verify = () => {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -19,12 +20,14 @@ const Verify = () => {
   const user = useSelector((state) => state.auth.user); // <-- Now it will work
 
   useEffect(() => {
+
     if (!user) {
       navigate("/auth/signup", { replace: true });
     }
   }, [user, navigate]);
 
   const handleChange = (index, event) => {
+
     const { value } = event.target;
     if (/^\d{0,1}$/.test(value)) {
       const newOtp = [...otp];
@@ -38,6 +41,7 @@ const Verify = () => {
   };
 
   const handleKeyDown = (index, event) => {
+
     const { key } = event;
     if (key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -45,6 +49,7 @@ const Verify = () => {
   };
 
   const handlePaste = (e) => {
+
     const pasteData = e.clipboardData.getData("text").slice(0, 6);
     if (/^\d+$/.test(pasteData)) {
       const newOtp = pasteData.split("").concat(Array(6 - pasteData.length).fill(""));
@@ -56,20 +61,26 @@ const Verify = () => {
   };
 
   const handleSubmit = async () => {
+
     setLoading(true);
     try {
+
       const otpValue = otp.join("");
+
       const response = await axios.post(
         "http://localhost:8000/api/v1/users/verify",
         { otp: otpValue },
         { withCredentials: true }
       );
+
       dispatch(setAuthUser(response.data.data.user));
       toast.success("Verification successful!");
       navigate("/auth/login");
+
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };
@@ -81,9 +92,11 @@ const Verify = () => {
         withCredentials: true,
       });
       toast.success("New OTP sent to your email");
-    } catch (error) {
+    } 
+    catch (error) {
       toast.error(error.response?.data?.message || "Resend failed");
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };
@@ -97,11 +110,11 @@ const Verify = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* Blurry overlay */}
+      
       <Box className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
 
       <Box className="relative z-10 w-full max-w-4xl h-[630px] flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
-        {/* Left side: Logo and quote */}
+        {/* Left side part */}
         <Box className="hidden md:flex flex-col justify-center items-center p-10 text-white w-1/2">
           <img src={logo} alt="Buildify Logo" className="h-18 mb-4" />
           <Typography variant="h6" className="text-center font-light">
@@ -109,7 +122,7 @@ const Verify = () => {
           </Typography>
         </Box>
 
-        {/* Right side: OTP Form */}
+        {/* Right side part*/}
         <Box className="w-full md:w-1/2 p-8">
           <Box className="flex flex-col items-center mb-6">
             <img src={logo} alt="Logo" className="w-16 mb-2 md:hidden" />
@@ -147,7 +160,7 @@ const Verify = () => {
             ))}
           </Box>
 
-          {/* Hidden input for paste functionality */}
+          
           <TextField
             inputRef={hiddenInputRef}
             style={{

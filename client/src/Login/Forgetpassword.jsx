@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import {
-  TextField, Button, CircularProgress, Box, Typography, Divider
-} from "@mui/material";
+import {TextField, Button, CircularProgress, Box, Typography, Divider} from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-
 import logo from '../assets/logo.png';
 import pcImage from "../assets/images/pc3.jpg";
 
 const ForgetPassword = () => {
+  
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();

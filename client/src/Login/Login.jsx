@@ -1,19 +1,16 @@
 import React, { useState } from "react";
-import {
-  TextField, Button, CircularProgress,
-  Box, Typography, Divider
-} from "@mui/material";
+import {TextField, Button, CircularProgress,Box, Typography, Divider} from "@mui/material";
 import { Google as GoogleIcon } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { toast } from 'sonner';
 import { setAuthUser } from "../Store/authSlice";
-
 import logo from '../assets/logo.png';
 import pcImage from "../assets/images/pc3.jpg";
 
 const Login = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -23,15 +20,18 @@ const Login = () => {
   });
 
   const handleChange = (e) => {
+
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const submitHandler = async (e) => {
+
     e.preventDefault();
     setLoading(true);
 
     try {
+
       const response = await axios.post(
         "http://localhost:8000/api/v1/users/login",
         formData,
@@ -45,7 +45,9 @@ const Login = () => {
       localStorage.setItem('token', response.data.token);
 
       navigate(user.Role === "admin" ? '/dashboard' : '/user/complaint');
+
     } catch (error) {
+
       if (error.response) {
         toast.error(error.response.data.message);
       } else if (error.request) {
@@ -53,7 +55,8 @@ const Login = () => {
       } else {
         toast.error("An error occurred during login");
       }
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   };
@@ -71,7 +74,7 @@ const Login = () => {
         backgroundPosition: 'center',
       }}
     >
-      {/* Blurry overlay */}
+
       <Box className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
 
       <Box className="relative z-10 w-full max-w-4xl h-[630px] flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
@@ -94,7 +97,7 @@ const Login = () => {
           </Box>
 
           <form onSubmit={submitHandler} className="space-y-4">
-            {/* Email */}
+            
             <div>
               <label className="text-white text-xs font-medium">Email</label>
               <TextField
@@ -113,7 +116,7 @@ const Login = () => {
               />
             </div>
 
-            {/* Password */}
+            
             <div>
               <label className="text-white text-xs font-medium">Password</label>
               <TextField
@@ -132,14 +135,14 @@ const Login = () => {
               />
             </div>
 
-            {/* Forgot Password */}
+      
             <Typography className="!text-right !mb-2">
               <Link to="/auth/forgetpassword" className="!text-[#9b4de5] hover:!no-underline !text-xs">
                 Forgot Password?
               </Link>
             </Typography>
 
-            {/* Login Button */}
+            
             <Button
               fullWidth
               type="submit"
@@ -149,7 +152,7 @@ const Login = () => {
               {loading ? <CircularProgress size={20} /> : "Login"}
             </Button>
 
-            {/* Divider */}
+            
             <Divider
               sx={{
                 my: 3,
@@ -162,7 +165,7 @@ const Login = () => {
               <span className="text-xs text-white">or</span>
             </Divider>
 
-            {/* Google Button */}
+          
             <Button
               fullWidth
               variant="contained"
@@ -174,7 +177,7 @@ const Login = () => {
               Continue with Google
             </Button>
 
-            {/* Signup Link */}
+            
             <Typography className="!text-white !text-center !mt-4 !text-xs">
               Don't have an account?{" "}
               <Link to="/auth/signup" className="!text-[#9b4de5] hover:!no-underline">

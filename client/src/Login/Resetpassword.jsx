@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  TextField, Button, CircularProgress,
-  Box, Typography, Divider
-} from "@mui/material";
+import {TextField, Button, CircularProgress,Box, Typography, Divider} from "@mui/material";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
@@ -12,12 +9,15 @@ import pcImage from "../assets/images/pc3.jpg";
 import logo from '../assets/logo.png';
 
 const ResetPassword = () => {
+
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
 
@@ -58,12 +58,12 @@ const ResetPassword = () => {
         backgroundPosition: 'center',
       }}
     >
-      {/* Blurry overlay */}
+    
       <Box className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
 
       <Box className="relative z-10 w-full max-w-4xl h-[630px] flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
 
-        {/* Left side: Logo and quote */}
+        {/* Left side part */}
         <Box className="hidden md:flex flex-col justify-center items-center p-10 text-white w-1/2">
           <img src={logo} alt="Buildify Logo" className="h-18 mb-4" />
           <Typography variant="h6" className="text-center font-light">
@@ -71,7 +71,7 @@ const ResetPassword = () => {
           </Typography>
         </Box>
 
-        {/* Right side: Reset Form */}
+        {/* Right side part */}
         <Box className="w-full md:w-1/2 p-8">
           <Box className="flex flex-col items-center mb-6">
             <img src={logo} alt="Logo" className="w-16 mb-2 md:hidden" />

@@ -1,15 +1,11 @@
 import React, { useState } from "react";
-import {
-  TextField, Button, Checkbox, FormControlLabel,
-  CircularProgress, Box, Typography, Divider
-} from "@mui/material";
+import {TextField, Button, Checkbox, FormControlLabel,CircularProgress, Box, Typography, Divider} from "@mui/material";
 import { Google as GoogleIcon } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { toast } from 'sonner';
 import { setAuthUser } from "../Store/authSlice";
-
 import logo from '../assets/logo.png';
 import pcImage from "../assets/images/pc3.jpg";
 
@@ -19,7 +15,10 @@ const Signup = () => {
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "", email: "", password: "", passwordConfirm: ""
+    name: "",
+    email: "",
+    password: "",
+    passwordConfirm: ""
   });
   const [termsAccepted, setTermsAccepted] = useState(false);
 
@@ -45,22 +44,28 @@ const Signup = () => {
     }
 
     try {
+
       const response = await axios.post(
         "http://localhost:8000/api/v1/users/signup",
         formData,
         { withCredentials: true }
       );
+
       const user = response.data.data.user;
       toast.success("Sign up successful!");
       dispatch(setAuthUser(user));
       navigate('/auth/verify');
+
     } catch (error) {
+
       if (error.response) {
         toast.error(error.response.data.message);
-      } else {
+      } 
+      else {
         toast.error("An error occurred during signup");
       }
-    } finally {
+    }
+     finally {
       setLoading(false);
     }
   };
@@ -79,35 +84,43 @@ const Signup = () => {
 
       }}
     >
-      {/* Blurry overlay */}
+      
       <Box className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
-
 
       <Box className="relative z-10 w-full max-w-4xl flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
         
-        {/* Left side: Logo and quote */}
+        {/* Left side part */}
         <Box className="hidden md:flex flex-col justify-center items-center p-10 text-white w-1/2">
+
           <img src={logo} alt="Buildify Logo" className="h-18 mb-4" />
           <Typography variant="h6" className="text-center font-light">
             Get compatible recommendations <br /> Pick your ideal components
           </Typography>
+
         </Box>
 
-        {/* Right side: Signup Form */}
+        {/* Right side part */}
         <Box className="w-full md:w-1/2 p-8">
+
           <Box className="flex flex-col items-center mb-6">
+
             <img src={logo} alt="Logo" className="w-16 mb-2 md:hidden" />
             <Typography variant="h5" className="!text-white font-bold">
               Sign Up
             </Typography>
+
           </Box>
 
           <form onSubmit={submitHandler} className="space-y-4">
+
             {["name", "email", "password", "passwordConfirm"].map((field, idx) => (
+
               <div key={idx}>
+
                 <label className="text-white text-xs font-medium capitalize">
                   {field.replace("Confirm", " Confirm")}
                 </label>
+
                 <TextField
                   fullWidth
                   type={field.includes("password") ? "password" : "text"}
@@ -119,14 +132,14 @@ const Signup = () => {
                   className="!bg-white !rounded-lg"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      borderRadius: '8px', // Adjust the border-radius here
+                      borderRadius: '8px', 
                     },
                     "& .MuiInputBase-root": {
                       borderColor: "#9b4de5",
                       color: "#6a2c9c",
                     },
                     "& .MuiOutlinedInput-input": {
-                      padding: "8px 12px", // Reduce the padding for slightly smaller input
+                      padding: "8px 12px", 
                     },
                   }}
                 />
@@ -134,19 +147,24 @@ const Signup = () => {
             ))}
 
             <FormControlLabel
+
               control={
+
                 <Checkbox
                   className="!text-white"
                   size="small"
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
                 />
+
               }
+
               label={
                 <span className="text-white text-xs">
                   Accept the T&C and have read the Privacy Policy
                 </span>
               }
+              
             />
 
             <Button
