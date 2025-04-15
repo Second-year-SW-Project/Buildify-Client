@@ -15,7 +15,7 @@ const ItemCard = ({ product }) => {
 
   return (
     <div className="w-full max-w-[350px] md:max-w-[320px] sm:max-w-[300px] border-2 border-[#D099FE9C] rounded-2xl shadow-lg p-6 sm:p-4 text-center relative transition-all cursor-pointer hover:shadow-xl hover:scale-105">
-      
+
       {/* Wrap only navigable content inside Link */}
       <Link to={`/itempage/${product._id}`} className="block no-underline">
 

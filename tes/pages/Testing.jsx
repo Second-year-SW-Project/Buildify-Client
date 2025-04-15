@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import Iconset from "../AtomicComponents/Icons/Iconset";
 import theme from "../AtomicComponents/theme";
 import { DashboardLayout } from "@toolpad/core";
@@ -160,7 +161,7 @@ const NAVIGATION = [
   },
 ];
 
-export default function ToolpadFixer() {
+export default function Testing() {
   return (
     <DashboardLayout
       navigation={NAVIGATION}
@@ -182,7 +183,7 @@ export default function ToolpadFixer() {
       }}
       theme={theme}
     >
-      
+      <Outlet />
     </DashboardLayout>
   );
 }

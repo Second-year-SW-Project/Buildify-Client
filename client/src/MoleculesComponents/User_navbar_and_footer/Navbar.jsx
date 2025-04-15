@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 
 import { useState, useEffect } from "react";
 import { HelpOutline, ShoppingCart, AccountCircle } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Usersearchbar from "./Usersearchbar";
 
 
@@ -40,6 +40,8 @@ export default function Navbar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  const navigate = useNavigate();
+
 
 
 
@@ -51,7 +53,7 @@ export default function Navbar() {
 
         <div className="flex-shrink-0 mt-[16px] ml-[-10px] mr-[75px]">
           <Link to="/home">
-            <img src="../src/assets/images/Logos/logo-gray.png" alt="Logo" />
+            <img src="../../../../src/assets/images/Logos/logo-gray.png" alt="Logo" />
           </Link>
         </div>
 
@@ -93,10 +95,10 @@ export default function Navbar() {
               />
               {openDropdown === "profile" && (
                 <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-                  <Link to="/loginpage" className="block px-4 py-2 hover:bg-blue-400">
+                  <Link to="http://localhost:5173" className="block px-4 py-2 hover:bg-blue-400">
                     Profile
                   </Link>
-                  <Link to="/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
+                  <Link to="http://localhost:5173/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
                     Login
                   </Link>
                 </div>

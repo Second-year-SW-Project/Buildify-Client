@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { subCategories, manufacture, socketTypes } from "../AtomicComponents/ForProductForm/Category";
+import { subCategories, manufacture, socketTypes } from "../AtomicComponents/ForAdminForms/Category";
 
 const initialState = {
     selectedMainCategory: "",

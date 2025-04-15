@@ -1,77 +1,81 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
 import { useParams } from 'react-router-dom';
-import axios from "axios"
+import axios from 'axios';
 import Itemcard from '../../../components/ItemCard';
 
+export default function Product_item_grid({ filters, allProducts, setAllProducts }) {
+  const { categoryName } = useParams();
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
+  // Fetch all products for the category once
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/product/filter?attribute=type&value=${categoryName}`
+        );
+        setAllProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
 
+    fetchProducts();
+  }, [categoryName, setAllProducts]);
 
-export default function Product_item_grid() {
+  // Apply filters on client-side
+  useEffect(() => {
+    let filtered = [...allProducts];
 
-
-
-    const { categoryName } = useParams(); // Get the category name from the URL
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
-      // Fetch products by category
-      const fetchProducts = async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:8000/api/product/filter?attribute=type&value=${categoryName}`
-          );
-          console.log("product==================", response)
-          setProducts(response.data);
-          setLoading(false);
-        } catch (error) {
-          console.error('Error fetching products:', error);
-          setLoading(false);
-        }
-      };
-  
-      fetchProducts();
-    }, [categoryName]);
-  
-    if (loading) {
-      return <div>Loading...</div>;
+    // Brand filter
+    if (filters.brand && filters.brand.length > 0) {
+      filtered = filtered.filter(product =>
+        filters.brand.includes(product.manufacturer?.toUpperCase())
+      );
     }
-  
+    if (filters.capacity && filters.capacity.length > 0) {
+      filtered = filtered.filter(product =>
+        filters.capacity.includes(product.vram)
+      );
+    }
+
+    // Price range filter
+    if (filters.priceRange && filters.priceRange.length === 2) {
+      const [min, max] = filters.priceRange;
+      filtered = filtered.filter(product => {
+        const price = parseFloat(product.price);
+        return price >= min && price <= max;
+      });
+    }
+
+    // TODO: Add other common filters here for GPU, RAM, Processor
+
+    setFilteredProducts(filtered);
+  }, [filters, allProducts]);
+
+  if (!filteredProducts) return <div>Loading...</div>;
+
+
+
+
+
+
+
+
 
   return (
 
-        
 
-        <div >
-
-          
-            
-            
-
+    <div className=" ml-5 grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3  gap-y-10 gap-x-12 px-9 py-9">
+      {filteredProducts.map(product => (
+        <Itemcard key={product._id} product={product} />
+      ))}
+    </div>
 
 
-              
-            {/* if you want test remove ml and mt of below div.. */}
-
-            <div className="ml-[230px] mt-[-1080px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-10  px-7 py-8">
-                {products.map(product => (
-                    <Itemcard key={product._id}  product={product} />
-                ))}
-            </div>
-            
-          
-          
-          
-      
+  );
 
 
 
-        </div>
-    
-    
-  )
+
 }
-
-
-

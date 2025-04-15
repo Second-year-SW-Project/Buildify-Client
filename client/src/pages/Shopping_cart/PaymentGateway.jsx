@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, increaseQuantity, decreaseQuantity } from "../../redux/cartSlice";
@@ -10,6 +11,10 @@ import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
+
+
+
+
 const stripePromise = loadStripe("pk_test_51RAt66QrMZYW3Chd7hWi12tUhngYuiEe7M1hBUpvJAHIIZq95xF9yo97ZQBuup7avOuiTojlhqxm3R0GbxAmNexx00e2V1MOzb"); // Replace with your Stripe test publishable key
 
 const PaymentGateway = () => {
@@ -19,11 +24,12 @@ const PaymentGateway = () => {
   const handleCheckout = async (paymentMethodId) => {
     try {
       const sanitizedCartItems = cartItems.map((item) => ({
-        _id: item._id || item.Id,
+        _id: item._id || item.id,
         name: item.name,
         category: item.type,
         quantity: item.quantity,
-        price: item.price,
+        price: item.price
+        
       }));
 
       console.log("Sending Checkout Request:", { items: sanitizedCartItems, total: totalPrice });
@@ -113,6 +119,7 @@ const PaymentGateway = () => {
       <div>
         <Footer />
       </div>
+      
     </div>
   );
 };
@@ -157,6 +164,7 @@ const CheckoutForm = ({ onCheckout }) => {
 
     if (error) {
       console.error("Payment Method Error:", error);
+      
       alert("Payment failed. Please try again.");
     } else {
       onCheckout(paymentMethod.id);

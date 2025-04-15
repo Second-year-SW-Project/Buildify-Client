@@ -40,6 +40,9 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PermMediaSharpIcon from '@mui/icons-material/PermMediaSharp';
 import AddPhotoAlternateSharpIcon from '@mui/icons-material/AddPhotoAlternateSharp';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import GamesIcon from '@mui/icons-material/Games';
+import VideogameAssetSharpIcon from '@mui/icons-material/VideogameAssetSharp';
 
 export default function Iconset({ type = 'notification', fontSize = '30px', color }) {
     const renderIcon = () => {
@@ -86,6 +89,9 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'cart': return <ShoppingCartIcon color={color} sx={{ fontSize }} />;
             case 'admin': return <AdminPanelSettingsIcon color={color} sx={{ fontSize }} />;
             case 'profile': return <AccountCircleIcon color={color} sx={{ fontSize }} />;
+            case 'games': return <SportsEsportsIcon color={color} sx={{ fontSize }} />;
+            case 'gamesList': return <GamesIcon color={color} sx={{ fontSize }} />;
+            case 'gamesCreate': return <VideogameAssetSharpIcon color={color} sx={{ fontSize }} />;
             default: return null;
         }
     };

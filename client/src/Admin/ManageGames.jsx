@@ -10,20 +10,6 @@ import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
-import Iconset from "../AtomicComponents/Icons/Iconset";
-import { DashboardLayout } from "@toolpad/core";
-import theme from '../AtomicComponents/theme';
-import ToolpadFixer from "../MoleculesComponents/ToolpadFixer";
-
-
-
-
-
-
-
-
-
-
 
 function ManageGames() {
     const [games, setGames] = useState([]);
@@ -132,71 +118,70 @@ function ManageGames() {
 
     return (
         <div>
-          <ToolpadFixer></ToolpadFixer>
-        <div className="ml-[330px] -mt-[600px]">
-        <div className='pl-6'>
-            {/* Header Section */}
-            <div className='mt-3'>
-                <PageTitle value="Manage Games" />
-                <CustomBreadcrumbs
-                    paths={[
-                        { label: 'Games', href: "/games" },
-                        { label: 'Manage Games' },
-                    ]}
-                />
-            </div>
+            <div>
+                <div className='pl-6'>
+                    {/* Header Section */}
+                    <div className='mt-3'>
+                        <PageTitle value="Manage Games" />
+                        <CustomBreadcrumbs
+                            paths={[
+                                { label: 'Games', href: "/games" },
+                                { label: 'Manage Games' },
+                            ]}
+                        />
+                    </div>
 
-            {/* Button Section */}
-            <div className="pb-4 mr-4 flex justify-end">
-                <AddButton
-                    name="Add Game"
-                    isBold={1}
-                    buttonSize="medium"
-                    fontSize="16px"
-                    onClick={() => navigate('/games/creategame')}
-                />
-            </div>
+                    {/* Button Section */}
+                    <div className="pb-4 mr-4 flex justify-end">
+                        <AddButton
+                            name="Add Game"
+                            isBold={1}
+                            buttonSize="medium"
+                            fontSize="16px"
+                            onClick={() => navigate('/games/creategame')}
+                        />
+                    </div>
 
-            {/* Table and Filter Section */}
-            <div className="mb-10 mr-4 border-2 border-black-200 rounded-md">
-                <div className='filterForm grid gap-4 grid-cols-1 p-4'>
-                    <div className='filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4'>
-                        <div className="col-span-2">
-                            <SearchBar
-                                placeholder="Search games by name or description"
-                                width="100%"
-                                value={searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    fetchGames(e.target.value);
-                                }}
+                    {/* Table and Filter Section */}
+                    <div className="mb-10 mr-4 border-2 border-black-200 rounded-md">
+                        <div className='filterForm grid gap-4 grid-cols-1 p-4'>
+                            <div className='filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4'>
+                                <div className="col-span-2">
+                                    <SearchBar
+                                        placeholder="Search games by name or description"
+                                        width="100%"
+                                        value={searchTerm}
+                                        onChange={(e) => {
+                                            setSearchTerm(e.target.value);
+                                            fetchGames(e.target.value);
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="overflow-x-auto" style={{ width: '100%', borderRadius: "20px" }}>
+                            <UserTable
+                                columns={gameColumns}
+                                data={gameData}
+                                iconTypes={iconTypes}
+                                iconActions={iconActions}
                             />
                         </div>
                     </div>
-                </div>
-                <div className="overflow-x-auto" style={{ width: '100%', borderRadius: "20px" }}>
-                    <UserTable
-                        columns={gameColumns}
-                        data={gameData}
-                        iconTypes={iconTypes}
-                        iconActions={iconActions}
+
+                    {/* Delete Confirmation Dialog */}
+                    <DialogAlert
+                        name="Delete Game"
+                        Title="Confirm Deletion"
+                        message="Are you sure you want to delete this game? This action cannot be undone."
+                        Disagree="Cancel"
+                        Agree="Delete"
+                        open={openDialog}
+                        handleClose={() => setOpenDialog(false)}
+                        handleAgree={handleDelete}
                     />
                 </div>
             </div>
-
-            {/* Delete Confirmation Dialog */}
-            <DialogAlert
-                name="Delete Game"
-                Title="Confirm Deletion"
-                message="Are you sure you want to delete this game? This action cannot be undone."
-                Disagree="Cancel"
-                Agree="Delete"
-                open={openDialog}
-                handleClose={() => setOpenDialog(false)}
-                handleAgree={handleDelete}
-            />
-        </div>
-        </div>
         </div>
     );
 }

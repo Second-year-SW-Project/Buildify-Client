@@ -11,7 +11,7 @@ import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import { AddButton, PrimaryButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
-import { StockType, main, subCategories } from '../AtomicComponents/ForProductForm/Category';
+import { StockType, main, subCategories } from '../AtomicComponents/ForAdminForms/Category';
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import { useSelector, useDispatch } from "react-redux";

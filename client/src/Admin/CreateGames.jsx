@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import theme from '../AtomicComponents/theme';
 import { InputField } from '../AtomicComponents/Inputs/Input';
 import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector';
-import { cpuCores, cpuThreads, gpuAttributes, ramAttributes } from '../AtomicComponents/ForProductForm/Category';
+import { cpuCores, cpuThreads, gpuAttributes, ramAttributes } from '../AtomicComponents/ForAdminForms/Category';
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -13,7 +13,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import Iconset from "../AtomicComponents/Icons/Iconset";
 import { DashboardLayout } from "@toolpad/core";
 
-import ToolpadFixer from "../MoleculesComponents/ToolpadFixer";
 
 
 const CreateGames = () => {
@@ -202,231 +201,230 @@ const CreateGames = () => {
 
     return (
         <div>
-            <ToolpadFixer />
-        <div className='ml-[330px] -mt-[600px]'>
-            <div className='mt-3 mb-5 ml-6 mr-6'>
-                <div><PageTitle value={isEditMode ? 'Edit Game' : 'Add New Game'}></PageTitle></div>
-                <CustomBreadcrumbs
-                    paths={[
-                        { label: 'Games', href: "/games" },
-                        { label: isEditMode ? 'Edit Game' : 'New Game' },
-                    ]}
-                />
-            </div>
             <div>
-                <form onSubmit={onSubmitHandler}>
-                    <div className='grid-flow-* gap-20 pl-3 pr-3 grid gap-y-4 mb-4'>
-                        <div className='Details border-2 border-gray-100 rounded-lg pt-4 pb-4'>
-                            <div className='DetailsHeader ml-3 mr-3 h-fit mb-4'>
-                                <Typography variant='h5' fontWeight="bold">Details</Typography>
-                                <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>Name, Description, Image</Typography>
-                            </div>
-                            <hr></hr>
-                            <div className='DetailsBody ml-3 mr-3'>
-                                <div className='formTitle1 mt-2 mb-4'>
-                                    <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Name</Typography>
-                                    <InputField
-                                        onChange={(value) => handleInputChange('name', value)}
-                                        value={game.name}
-                                        type='text'
-                                        label="Game Name"
-                                        width='100%'
-                                    />
+                <div className='mt-3 mb-5 ml-6 mr-6'>
+                    <div><PageTitle value={isEditMode ? 'Edit Game' : 'Add New Game'}></PageTitle></div>
+                    <CustomBreadcrumbs
+                        paths={[
+                            { label: 'Games', href: "/games" },
+                            { label: isEditMode ? 'Edit Game' : 'New Game' },
+                        ]}
+                    />
+                </div>
+                <div>
+                    <form onSubmit={onSubmitHandler}>
+                        <div className='grid-flow-* gap-20 pl-3 pr-3 grid gap-y-4 mb-4'>
+                            <div className='Details border-2 border-gray-100 rounded-lg pt-4 pb-4'>
+                                <div className='DetailsHeader ml-3 mr-3 h-fit mb-4'>
+                                    <Typography variant='h5' fontWeight="bold">Details</Typography>
+                                    <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>Name, Description, Image</Typography>
                                 </div>
-                                <div className='formTitle2 mt-4 mb-4'>
-                                    <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Description</Typography>
-                                    <InputField
-                                        onChange={(value) => handleInputChange('description', value)}
-                                        value={game.description}
-                                        type='text'
-                                        label="Description"
-                                        width='100%'
-                                        rows={12}
-                                    />
-                                </div>
-                                <div className='formTitle3 mt-4 mb-4'>
-                                    <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Image</Typography>
-                                    <ImageSelector
-                                        ref={imageSelectorRef}
-                                        onImagesSelect={(images) => {
-                                            setSelectedImage(images[0]); // Only one image for games
-                                            setGame((prevGame) => ({
-                                                ...prevGame,
-                                                image: images.length > 0 ? URL.createObjectURL(images[0]) : ""
-                                            }));
-                                        }}
-                                        maxImages={1} // Limit to one image
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div className='Requirements border-2 border-gray-100 rounded-lg drop-shadow-2xl pt-4 pb-4'>
-                            <div className='RequirementsHeader ml-3 mr-3 h-fit mb-4'>
-                                <Typography variant='h5' fontWeight="bold">System Requirements</Typography>
-                                <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>CPU, GPU, RAM Specifications</Typography>
-                            </div>
-                            <hr></hr>
-                            <div className='RequirementsBody ml-3 mr-3'>
-                                <div className='cpuRequirements grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                    <Typography variant='h6' fontWeight="bold">CPU Requirements</Typography>
-                                    <div className='subCpuRequirements grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                        <div>
-                                            <InputField
-                                                type='select'
-                                                label="Cores"
-                                                options={cpuCores}
-                                                width='100%'
-                                                value={game.cpu.cores}
-                                                onChange={(value) => handleNestedInputChange('cpu', 'cores', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='select'
-                                                label="Threads"
-                                                options={cpuThreads}
-                                                width='100%'
-                                                value={game.cpu.threads}
-                                                onChange={(value) => handleNestedInputChange('cpu', 'threads', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='text'
-                                                placeholder="e.g., 3.2 GHz"
-                                                label="Base Clock (GHz)"
-                                                width='100%'
-                                                value={game.cpu.baseClock}
-                                                onChange={(value) => handleNestedInputChange('cpu', 'baseClock', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='text'
-                                                placeholder="e.g., 4.6 GHz"
-                                                label="Boost Clock (GHz)"
-                                                width='100%'
-                                                value={game.cpu.boostClock}
-                                                onChange={(value) => handleNestedInputChange('cpu', 'boostClock', value)}
-                                            />
-                                        </div>
+                                <hr></hr>
+                                <div className='DetailsBody ml-3 mr-3'>
+                                    <div className='formTitle1 mt-2 mb-4'>
+                                        <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Name</Typography>
+                                        <InputField
+                                            onChange={(value) => handleInputChange('name', value)}
+                                            value={game.name}
+                                            type='text'
+                                            label="Game Name"
+                                            width='100%'
+                                        />
                                     </div>
-                                </div>
-                                <div className='gpuRequirements grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                    <Typography variant='h6' fontWeight="bold">GPU Requirements</Typography>
-                                    <div className='subGpuRequirements grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                        <div>
-                                            <InputField
-                                                type='select'
-                                                label="Series"
-                                                options={[
-                                                    { value: 'GTX', label: 'GTX' },
-                                                    { value: 'RTX 2000', label: 'RTX 2000' },
-                                                    { value: 'RTX 3000', label: 'RTX 3000' },
-                                                    { value: 'RTX 4000', label: 'RTX 4000' },
-                                                    { value: 'RX 6000', label: 'RX 6000' },
-                                                    { value: 'RX 7000', label: 'RX 7000' },
-                                                ]}
-                                                width='100%'
-                                                value={game.gpu.series}
-                                                onChange={(value) => handleNestedInputChange('gpu', 'series', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='select'
-                                                label="VRAM (GB)"
-                                                options={gpuVramOptions}
-                                                width='100%'
-                                                value={game.gpu.vramGB}
-                                                onChange={(value) => handleNestedInputChange('gpu', 'vramGB', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='text'
-                                                placeholder="e.g., 2520 MHz"
-                                                label="Boost Clock (MHz)"
-                                                width='100%'
-                                                value={game.gpu.boostClockMHz}
-                                                onChange={(value) => handleNestedInputChange('gpu', 'boostClockMHz', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='text'
-                                                label="Cores"
-                                                width='100%'
-                                                value={game.gpu.cores}
-                                                onChange={(value) => handleNestedInputChange('gpu', 'cores', value)}
-                                            />
-                                        </div>
+                                    <div className='formTitle2 mt-4 mb-4'>
+                                        <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Description</Typography>
+                                        <InputField
+                                            onChange={(value) => handleInputChange('description', value)}
+                                            value={game.description}
+                                            type='text'
+                                            label="Description"
+                                            width='100%'
+                                            rows={12}
+                                        />
                                     </div>
-                                </div>
-                                <div className='ramRequirements grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                    <Typography variant='h6' fontWeight="bold">RAM Requirements</Typography>
-                                    <div className='subRamRequirements grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
-                                        <div>
-                                            <InputField
-                                                type='select'
-                                                label="Size (GB)"
-                                                options={ramSizeOptions}
-                                                width='100%'
-                                                value={game.ram.sizeGB}
-                                                onChange={(value) => handleNestedInputChange('ram', 'sizeGB', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='select'
-                                                label="Speed (MHz)"
-                                                options={ramSpeedOptions}
-                                                width='100%'
-                                                value={game.ram.speedMHz}
-                                                onChange={(value) => handleNestedInputChange('ram', 'speedMHz', value)}
-                                            />
-                                        </div>
-                                        <div>
-                                            <InputField
-                                                type='select'
-                                                label="Type"
-                                                options={ramTypeOptions}
-                                                width='100%'
-                                                value={game.ram.type}
-                                                onChange={(value) => handleNestedInputChange('ram', 'type', value)}
-                                            />
-                                        </div>
+                                    <div className='formTitle3 mt-4 mb-4'>
+                                        <Typography variant='h6' fontWeight="bold" style={{ marginBottom: "6px" }}>Image</Typography>
+                                        <ImageSelector
+                                            ref={imageSelectorRef}
+                                            onImagesSelect={(images) => {
+                                                setSelectedImage(images[0]); // Only one image for games
+                                                setGame((prevGame) => ({
+                                                    ...prevGame,
+                                                    image: images.length > 0 ? URL.createObjectURL(images[0]) : ""
+                                                }));
+                                            }}
+                                            maxImages={1} // Limit to one image
+                                        />
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className='p-4'>
-                            <div className='float-right flex flex-row gap-x-2'>
-                                {isEditMode && (
+                            <div className='Requirements border-2 border-gray-100 rounded-lg drop-shadow-2xl pt-4 pb-4'>
+                                <div className='RequirementsHeader ml-3 mr-3 h-fit mb-4'>
+                                    <Typography variant='h5' fontWeight="bold">System Requirements</Typography>
+                                    <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>CPU, GPU, RAM Specifications</Typography>
+                                </div>
+                                <hr></hr>
+                                <div className='RequirementsBody ml-3 mr-3'>
+                                    <div className='cpuRequirements grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
+                                        <Typography variant='h6' fontWeight="bold">CPU Requirements</Typography>
+                                        <div className='subCpuRequirements grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Cores"
+                                                    options={cpuCores}
+                                                    width='100%'
+                                                    value={game.cpu.cores}
+                                                    onChange={(value) => handleNestedInputChange('cpu', 'cores', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Threads"
+                                                    options={cpuThreads}
+                                                    width='100%'
+                                                    value={game.cpu.threads}
+                                                    onChange={(value) => handleNestedInputChange('cpu', 'threads', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    placeholder="e.g., 3.2 GHz"
+                                                    label="Base Clock (GHz)"
+                                                    width='100%'
+                                                    value={game.cpu.baseClock}
+                                                    onChange={(value) => handleNestedInputChange('cpu', 'baseClock', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    placeholder="e.g., 4.6 GHz"
+                                                    label="Boost Clock (GHz)"
+                                                    width='100%'
+                                                    value={game.cpu.boostClock}
+                                                    onChange={(value) => handleNestedInputChange('cpu', 'boostClock', value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='gpuRequirements grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
+                                        <Typography variant='h6' fontWeight="bold">GPU Requirements</Typography>
+                                        <div className='subGpuRequirements grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Series"
+                                                    options={[
+                                                        { value: 'GTX', label: 'GTX' },
+                                                        { value: 'RTX 2000', label: 'RTX 2000' },
+                                                        { value: 'RTX 3000', label: 'RTX 3000' },
+                                                        { value: 'RTX 4000', label: 'RTX 4000' },
+                                                        { value: 'RX 6000', label: 'RX 6000' },
+                                                        { value: 'RX 7000', label: 'RX 7000' },
+                                                    ]}
+                                                    width='100%'
+                                                    value={game.gpu.series}
+                                                    onChange={(value) => handleNestedInputChange('gpu', 'series', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="VRAM (GB)"
+                                                    options={gpuVramOptions}
+                                                    width='100%'
+                                                    value={game.gpu.vramGB}
+                                                    onChange={(value) => handleNestedInputChange('gpu', 'vramGB', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    placeholder="e.g., 2520 MHz"
+                                                    label="Boost Clock (MHz)"
+                                                    width='100%'
+                                                    value={game.gpu.boostClockMHz}
+                                                    onChange={(value) => handleNestedInputChange('gpu', 'boostClockMHz', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='text'
+                                                    label="Cores"
+                                                    width='100%'
+                                                    value={game.gpu.cores}
+                                                    onChange={(value) => handleNestedInputChange('gpu', 'cores', value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='ramRequirements grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4'>
+                                        <Typography variant='h6' fontWeight="bold">RAM Requirements</Typography>
+                                        <div className='subRamRequirements grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Size (GB)"
+                                                    options={ramSizeOptions}
+                                                    width='100%'
+                                                    value={game.ram.sizeGB}
+                                                    onChange={(value) => handleNestedInputChange('ram', 'sizeGB', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Speed (MHz)"
+                                                    options={ramSpeedOptions}
+                                                    width='100%'
+                                                    value={game.ram.speedMHz}
+                                                    onChange={(value) => handleNestedInputChange('ram', 'speedMHz', value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type='select'
+                                                    label="Type"
+                                                    options={ramTypeOptions}
+                                                    width='100%'
+                                                    value={game.ram.type}
+                                                    onChange={(value) => handleNestedInputChange('ram', 'type', value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='p-4'>
+                                <div className='float-right flex flex-row gap-x-2'>
+                                    {isEditMode && (
+                                        <PrimaryButton
+                                            fontSize="16px"
+                                            name="Cancel"
+                                            buttonSize="medium"
+                                            isBold={1}
+                                            color={"ternaryDark"}
+                                            padding="50px"
+                                            type="button"
+                                            onClick={() => navigate('/games/managegames')} // Adjust route as needed
+                                        />
+                                    )}
                                     <PrimaryButton
                                         fontSize="16px"
-                                        name="Cancel"
+                                        name={isEditMode ? 'Update Game' : 'Add Game'}
                                         buttonSize="medium"
                                         isBold={1}
-                                        color={"ternaryDark"}
-                                        padding="50px"
-                                        type="button"
-                                        onClick={() => navigate('/games/managegames')} // Adjust route as needed
+                                        type="submit"
                                     />
-                                )}
-                                <PrimaryButton
-                                    fontSize="16px"
-                                    name={isEditMode ? 'Update Game' : 'Add Game'}
-                                    buttonSize="medium"
-                                    isBold={1}
-                                    type="submit"
-                                />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
         </div>
     );
 };

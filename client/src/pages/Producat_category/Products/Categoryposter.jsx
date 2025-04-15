@@ -48,6 +48,8 @@ const Categoryposter = () => {
 
   var title = "";  //category title
   var image = "";  //category background image
+  var lapimage = "https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg?cs=srgb&dl=pexels-veeterzy-303383.jpg&fm=jpg";  //category background image
+
 
   switch (categoryName) {
     case "gpu":
@@ -72,6 +74,7 @@ const Categoryposter = () => {
 
     case "laptop":
       title = "LAPTOPS";
+      image =lapimage;
       break;
 
     default:
