@@ -272,9 +272,16 @@ const Usermanage = () => {
           <TableRow key={user._id}>
             <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
             <Box display="flex" alignItems="center">
-                            <Avatar alt={user.name} src={user.profilePicture} sx={{ width: 40, height: 40, marginRight: 2 }} />
-                            {user.name}
-                          </Box>
+  <Avatar 
+    alt={user.name} 
+    src={user.profilePicture || ''} 
+    sx={{ width: 40, height: 40, marginRight: 2 }}
+  >
+    {!user.profilePicture && user.name.charAt(0).toUpperCase()}
+  </Avatar>
+  {user.name}
+</Box>
+
               
             </TableCell>
             <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
