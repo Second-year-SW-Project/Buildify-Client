@@ -196,10 +196,9 @@ const RMA = () => {
             ) : (
               requests.map((request) => (
                 <TableRow key={request._id} hover>
-                  <TableCell>{request.userId?.name || 'N/A'}</TableCell>
-<TableCell>{request.userId?.email || 'N/A'}</TableCell>
-
                   <TableCell>{request.orderId}</TableCell>
+                  <TableCell>{request.userId?.name || 'N/A'}</TableCell>
+                  <TableCell>{request.userId?.email || 'N/A'}</TableCell>
                   <TableCell>{request.subject}</TableCell>
                   <TableCell>{request.reason}</TableCell>
                   <TableCell>
