@@ -27,6 +27,7 @@ import UserComplaints from "./User/UserComplaints.jsx";
 import Review from "./Admin/Review.jsx";
 import InvoiceList from "./Admin/InvoiceList.jsx";
 import InvoiceCreate from "./Admin/InvoiceCreate.jsx";
+import RMAsupport from "./User/RMAsupport.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: "/user/complaintHistory",
         Component: UserComplaints,
+      },
+      {
+        path: "/RMAsupport",
+        Component: RMAsupport,
       },
       {
         path: "/",

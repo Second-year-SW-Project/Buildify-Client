@@ -167,6 +167,9 @@ const RMA = () => {
           <TableHead sx={{ bgcolor: '#f4e6ff' }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' , color: 'gray' }}>Order ID</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Name</TableCell>
+<TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Email</TableCell>
+
               <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Subject</TableCell>
               <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Reason</TableCell>
               <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Status</TableCell>
@@ -193,6 +196,9 @@ const RMA = () => {
             ) : (
               requests.map((request) => (
                 <TableRow key={request._id} hover>
+                  <TableCell>{request.userId?.name || 'N/A'}</TableCell>
+<TableCell>{request.userId?.email || 'N/A'}</TableCell>
+
                   <TableCell>{request.orderId}</TableCell>
                   <TableCell>{request.subject}</TableCell>
                   <TableCell>{request.reason}</TableCell>
