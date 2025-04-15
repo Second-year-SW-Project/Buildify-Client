@@ -4,7 +4,6 @@ import { Box } from "@mui/system";
 import SideNav from "./SideNav";
 import { Divider, Paper, Button, IconButton } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import EditIcon from "@mui/icons-material/Edit";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../AtomicComponents/Buttons/Buttons";
 import Navbar from "../MoleculesComponents/User_component/Navbar";
