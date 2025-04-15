@@ -271,7 +271,11 @@ const Usermanage = () => {
         filteredUsers.map((user) => (
           <TableRow key={user._id}>
             <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
-              {user.name}
+            <Box display="flex" alignItems="center">
+                            <Avatar alt={user.name} src={user.profilePicture} sx={{ width: 40, height: 40, marginRight: 2 }} />
+                            {user.name}
+                          </Box>
+              
             </TableCell>
             <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
               {user.email}
