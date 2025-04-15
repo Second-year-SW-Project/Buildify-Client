@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  CircularProgress
+  CircularProgress, Avatar
 } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
@@ -236,59 +236,169 @@ const RMA = () => {
       </TableContainer>
 
       {/* Response Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md">
-        <DialogTitle sx={{ bgcolor: '#f4e6ff' }}>
-          Manage RMA Request - {selectedRequest?.orderId}
-        </DialogTitle>
-        <DialogContent sx={{ py: 3 }}>
-          {selectedRequest && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box>
-                <Typography variant="subtitle2">Subject:</Typography>
-                <Typography>{selectedRequest.subject}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Reason:</Typography>
-                <Typography>{selectedRequest.reason}</Typography>
-              </Box>
-              <Box>
-                <Typography variant="subtitle2">Message:</Typography>
-                <Typography sx={{ whiteSpace: 'pre-wrap' }}>
-                  {selectedRequest.message}
-                </Typography>
-              </Box>
-              <TextField
-                multiline
-                rows={4}
-                fullWidth
-                label="Admin Response"
-                value={responseText}
-                onChange={(e) => setResponseText(e.target.value)}
-                sx={{ mt: 2 }}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md" sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '900px' } }}>
+  <DialogTitle
+    sx={{
+      bgcolor: '#f4e6ff',
+      fontWeight: '600',
+      fontSize: '22px',
+      borderBottom: '2px solid #d0b4f2',
+      color: '#4b0082',
+      py: 2.5,
+      px: 4,
+      letterSpacing: '0.5px',
+      borderRadius: '16px',
+      marginBottom: '10px'
+    }}
+  >
+    Manage RMA Request - {selectedRequest?.orderId}
+  </DialogTitle>
+
+  <DialogContent sx={{ py: 2, px: 2, bgcolor: '#faf5ff', borderRadius: '12px' }}>
+    {selectedRequest && (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3,
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)',
+          p: 3,
+          marginTop: '10px'
+        }}
+      >
+        {/* User Info Section */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box>
+            {selectedRequest.userId?.profilePicture ? (
+              <Box
+                component="img"
+                src={selectedRequest.userId?.profilePicture}
+                alt="User"
+                sx={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: '50%',
+                  border: '3px solid #c084fc',
+                  objectFit: 'cover',
+                  transition: '0.3s ease',
+                }}
               />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ bgcolor: '#f4e6ff', px: 3, py: 2 }}>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={handleResponseSubmit}
-            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-            style={{
+            ) : (
+              <Avatar
+                sx={{
+                  width: 65,
+                  height: 65,
+                  bgcolor: '#c084fc',
+                  color: 'white',
+                  fontSize: 28,
+                  border: '3px solid #c084fc',
+                  transition: '0.3s ease',
+                }}
+              >
+                {selectedRequest.userId?.name.charAt(0).toUpperCase()}
+              </Avatar>
+            )}
+          </Box>
+          <Box>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#6b21a8' }}>
+              {selectedRequest.userId?.name || 'Unknown User'}
+            </Typography>
+            <Typography sx={{ fontSize: '14px', color: '#666' }}>
+              {selectedRequest.userId?.email || 'No Email'}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* RMA Info */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7e22ce' }}>
+            Subject:
+          </Typography>
+          <Typography sx={{ fontSize: '15px', color: '#444' }}>
+            {selectedRequest.subject}
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7e22ce' }}>
+            Reason:
+          </Typography>
+          <Typography sx={{ fontSize: '15px', color: '#444' }}>
+            {selectedRequest.reason}
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7e22ce' }}>
+            Message:
+          </Typography>
+          <Typography sx={{ fontSize: '15px', whiteSpace: 'pre-wrap', color: '#444' }}>
+            {selectedRequest.message}
+          </Typography>
+        </Box>
+
+        {/* Admin Response */}
+        <TextField
+          multiline
+          rows={4}
+          fullWidth
+          label="Admin Response"
+          variant="outlined"
+          value={responseText}
+          onChange={(e) => setResponseText(e.target.value)}
+          sx={{
+            mt: 1,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '10px',
+              bgcolor: '#f3e8ff',
+            },
+            '& .MuiInputLabel-root': {
+              color: '#7c3aed',
+            },
+          }}
+        />
+      </Box>
+    )}
+  </DialogContent>
+
+  <DialogActions sx={{  px: 2, py: 1 }}>
+    <Button
+      onClick={() => setOpenDialog(false)}
+      className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
+            sx={{
+              textTransform: "none",
               padding: "14px 18px",
               width: "180px",
-              textTransform: "none",
               fontSize: "16px",
-              borderRadius: "10px",
-              fontWeight: "bold"
-            }}
-            
-          >
-            Submit Response
-          </Button>
-        </DialogActions>
-      </Dialog>
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }} >
+    
+      Cancel
+    </Button>
+
+    <Button
+      variant="contained"
+      onClick={handleResponseSubmit}
+      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+      sx={{
+        textTransform: "none",
+        padding: "14px 18px",
+        width: "180px",
+        fontSize: "16px",
+        fontWeight: "bold",
+        borderRadius: "10px"
+      }}
+    >
+      Submit Response
+    </Button>
+  </DialogActions>
+</Dialog>
+
+
+
     </Box>
   );
 };

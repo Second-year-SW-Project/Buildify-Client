@@ -362,7 +362,7 @@ const Usermanage = () => {
       {formData.profilePicture ? (
         <Avatar src={formData.profilePicture} sx={{ width: 56, height: 56, mr: 2 }} />
       ) : (
-        <Avatar sx={{ width: 56, height: 56, mr: 2, backgroundColor: '#B0BEC5' }}>
+        <Avatar sx={{ width: 56, height: 56, mr: 2, bgcolor: '#c084fc'}}>
           {/* Default initial letter */}
           {formData.name ? formData.name.charAt(0).toUpperCase() : '?'}
         </Avatar>

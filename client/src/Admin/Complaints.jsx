@@ -335,7 +335,7 @@ const Complaints = () => {
            
             <Avatar 
                 src={selectedComplaint.user?.profilePicture || ''} 
-                 sx={{ width: 56, height: 56 }}
+                 sx={{ width: 56, height: 56, bgcolor: '#c084fc' }}
               className="ring-2 ring-purple-500"
               >
                 {!selectedComplaint.user?.profilePicture && selectedComplaint.user?.name.charAt(0).toUpperCase()}
