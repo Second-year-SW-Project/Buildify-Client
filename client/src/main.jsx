@@ -30,6 +30,13 @@ import InvoiceCreate from "./Admin/InvoiceCreate.jsx";
 import RMAsupport from "./User/RMAsupport.jsx";
 import UserProfile from "./User/UserProfile.jsx";
 
+// 🆕 Add these two lines:
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
+
+// 🆕 Create persistor
+const persistor = persistStore(store);
+
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 // Define the router configuration
@@ -137,13 +144,13 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    {" "}
-    {/* Wrap everything with Provider */}
-    <ThemeProvider theme={theme}>
-      <Toaster />
-      <StrictMode>
-        <RouterProvider router={router} /> {/* Only use RouterProvider here */}
-      </StrictMode>
-    </ThemeProvider>
+    <PersistGate loading={null} persistor={persistor}>
+      <ThemeProvider theme={theme}>
+        <Toaster />
+        <StrictMode>
+          <RouterProvider router={router} />
+        </StrictMode>
+      </ThemeProvider>
+    </PersistGate>
   </Provider>
 );
