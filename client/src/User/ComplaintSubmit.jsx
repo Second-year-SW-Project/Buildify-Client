@@ -3,6 +3,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Box, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import Navbar from '../MoleculesComponents/User_component/Navbar';
 
 const ComplaintSubmit = () => {
   const navigate = useNavigate();
@@ -35,7 +36,12 @@ const ComplaintSubmit = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ marginTop: '4rem', padding: '2rem' }}>
+    <Container 
+  maxWidth={false} 
+  disableGutters 
+>
+  <Navbar />
+
       <Box sx={{ 
         backgroundColor: 'white',
         padding: '2.5rem',
