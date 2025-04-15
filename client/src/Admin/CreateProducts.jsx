@@ -202,71 +202,71 @@ const CreateProducts = () => {
 
     useEffect(() => {
         if (isEditMode) {
-          const fetchProduct = async () => {
-            try {
-              if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-                throw new Error('Invalid product ID format');
-              }
-              console.log('Fetching product with ID:', id);
-              const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
-              if (res.data.Success) {
-                const fetchedProduct = res.data.data;
-                setProduct({
-                  ...initialProductState,
-                  ...fetchedProduct,
-                  imgUrls: fetchedProduct.imgUrls || [],
-                  supported_memory_types: Array.isArray(fetchedProduct.supported_memory_types)
-                    ? fetchedProduct.supported_memory_types.join(',')
-                    : fetchedProduct.supported_memory_types || '',
-                  power_connectors: Array.isArray(fetchedProduct.power_connectors)
-                    ? fetchedProduct.power_connectors.join(',')
-                    : fetchedProduct.power_connectors || '',
-                  pcieSlots: fetchedProduct.pcieSlots?.map((slot) => ({
-                    type: slot.type || '',
-                    version: slot.version || '4.0',
-                    count: slot.count != null ? slot.count : 1,
-                  })) || [],
-                  storageInterfaces: fetchedProduct.storageInterfaces?.map((intf) => ({
-                    type: intf.type || '',
-                    count: intf.count != null ? intf.count : 1,
-                  })) || [],
-                  supported_motherboard_sizes: Array.isArray(fetchedProduct.supported_motherboard_sizes)
-                    ? fetchedProduct.supported_motherboard_sizes.join(',')
-                    : fetchedProduct.supported_motherboard_sizes || '',
-                });
-                setSelectedImages(fetchedProduct.imgUrls || []);
-                let foundMainCategory = null;
-                for (const [key, categoryList] of Object.entries(subCategories)) {
-                  if (categoryList.some((item) => item.value === fetchedProduct.type)) {
-                    foundMainCategory = key;
-                    break;
-                  }
+            const fetchProduct = async () => {
+                try {
+                    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+                        throw new Error('Invalid product ID format');
+                    }
+                    console.log('Fetching product with ID:', id);
+                    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
+                    if (res.data.Success) {
+                        const fetchedProduct = res.data.data;
+                        setProduct({
+                            ...initialProductState,
+                            ...fetchedProduct,
+                            imgUrls: fetchedProduct.imgUrls || [],
+                            supported_memory_types: Array.isArray(fetchedProduct.supported_memory_types)
+                                ? fetchedProduct.supported_memory_types.join(',')
+                                : fetchedProduct.supported_memory_types || '',
+                            power_connectors: Array.isArray(fetchedProduct.power_connectors)
+                                ? fetchedProduct.power_connectors.join(',')
+                                : fetchedProduct.power_connectors || '',
+                            pcieSlots: fetchedProduct.pcieSlots?.map((slot) => ({
+                                type: slot.type || '',
+                                version: slot.version || '4.0',
+                                count: slot.count != null ? slot.count : 1,
+                            })) || [],
+                            storageInterfaces: fetchedProduct.storageInterfaces?.map((intf) => ({
+                                type: intf.type || '',
+                                count: intf.count != null ? intf.count : 1,
+                            })) || [],
+                            supported_motherboard_sizes: Array.isArray(fetchedProduct.supported_motherboard_sizes)
+                                ? fetchedProduct.supported_motherboard_sizes.join(',')
+                                : fetchedProduct.supported_motherboard_sizes || '',
+                        });
+                        setSelectedImages(fetchedProduct.imgUrls || []);
+                        let foundMainCategory = null;
+                        for (const [key, categoryList] of Object.entries(subCategories)) {
+                            if (categoryList.some((item) => item.value === fetchedProduct.type)) {
+                                foundMainCategory = key;
+                                break;
+                            }
+                        }
+                        const mainCategoryLabelMap = {
+                            Necessary: 'Necessary',
+                            Optional: 'Optional',
+                            Common: 'Common',
+                        };
+                        const mainCategoryLabel = mainCategoryLabelMap[foundMainCategory];
+                        if (mainCategoryLabel) {
+                            dispatch(setSelectedMainCategory(mainCategoryLabel));
+                        }
+                        dispatch(setSelectedSubCategory(fetchedProduct.type));
+                        dispatch(setSelectedManufacture(fetchedProduct.manufacturer));
+                    } else {
+                        console.error('Backend response:', res.data);
+                        toast.error(res.data.message || 'Failed to load product');
+                        navigate('/products/manageproduct');
+                    }
+                } catch (error) {
+                    console.error('Fetch product error:', error.response?.data || error.message);
+                    toast.error(error.response?.data?.message || error.message || 'Failed to load product data');
+                    navigate('/products/manageproduct');
                 }
-                const mainCategoryLabelMap = {
-                  Necessary: 'Necessary',
-                  Optional: 'Optional',
-                  Common: 'Common',
-                };
-                const mainCategoryLabel = mainCategoryLabelMap[foundMainCategory];
-                if (mainCategoryLabel) {
-                  dispatch(setSelectedMainCategory(mainCategoryLabel));
-                }
-                dispatch(setSelectedSubCategory(fetchedProduct.type));
-                dispatch(setSelectedManufacture(fetchedProduct.manufacturer));
-              } else {
-                console.error('Backend response:', res.data);
-                toast.error(res.data.message || 'Failed to load product');
-                navigate('/products/manageproduct');
-              }
-            } catch (error) {
-              console.error('Fetch product error:', error.response?.data || error.message);
-              toast.error(error.response?.data?.message || error.message || 'Failed to load product data');
-              navigate('/products/manageproduct');
-            }
-          };
-          fetchProduct();
+            };
+            fetchProduct();
         }
-      }, [id, dispatch, isEditMode, navigate]);
+    }, [id, dispatch, isEditMode, navigate]);
 
     useEffect(() => {
         setProduct((prevProduct) => ({
@@ -293,73 +293,151 @@ const CreateProducts = () => {
     const onSubmitHandler = async (e) => {
         e.preventDefault();
         try {
-          const formData = new FormData();
-          selectedImages.forEach((image, index) => {
-            if (typeof image !== 'string') {
-              formData.append(`image${index + 1}`, image);
+            const formData = new FormData();
+            selectedImages.forEach((image, index) => {
+                if (typeof image !== 'string') {
+                    formData.append(`image${index + 1}`, image);
+                }
+            });
+            if (selectedImages.some((img) => typeof img === 'string')) {
+                formData.append('existingImgUrls', JSON.stringify(selectedImages.filter((img) => typeof img === 'string')));
             }
-          });
-          if (selectedImages.some((img) => typeof img === 'string')) {
-            formData.append('existingImgUrls', JSON.stringify(selectedImages.filter((img) => typeof img === 'string')));
-          }
-          if (product.type === 'processor') {
-            product.includesCooler = product.includesCooler ?? false;
-            product.integratedGraphics = product.integratedGraphics ?? false;
-          }
-          const productData = {
-            ...product,
-            supported_memory_types: Array.isArray(product.supported_memory_types)
-              ? product.supported_memory_types.join(',')
-              : product.supported_memory_types || '',
-            power_connectors: Array.isArray(product.power_connectors)
-              ? product.power_connectors.join(',')
-              : product.power_connectors || '',
-            supported_motherboard_sizes: Array.isArray(product.supported_motherboard_sizes)
-              ? product.supported_motherboard_sizes.join(',')
-              : product.supported_motherboard_sizes || '',
-            pcieSlots: product.pcieSlots?.map((slot) => ({
-              type: slot.type || '',
-              version: slot.version || '4.0',
-              count: slot.count != null ? slot.count : 1,
-            })) || [],
-            storageInterfaces: product.storageInterfaces?.map((intf) => ({
-              type: intf.type || '',
-              count: intf.count != null ? intf.count : 1,
-            })) || [],
-          };
-          validateRequiredFields(productData, isEditMode);
-          formData.append('product', JSON.stringify(productData));
-          const endpoint = isEditMode
-            ? `${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`
-            : `${import.meta.env.VITE_BACKEND_URL}/api/product/add`;
-          const response = isEditMode
-            ? await axios.put(endpoint, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-              })
-            : await axios.post(endpoint, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-              });
-          if (response.data.Success) {
-            toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
-            if (!isEditMode) {
-              setProduct({
-                ...initialProductState,
-                quantity: '',
-                price: '',
-                stockPrice: '',
-              });
-              setSelectedImages([]);
-              dispatch(resetForm());
-              if (imageSelectorRef.current) {
-                imageSelectorRef.current.deleteAllImages();
-              }
+
+            // Define allowed fields for each product type
+            const allowedFieldsByType = {
+                processor: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'socketType', 'tdp', 'coreCount', 'threadCount', 'baseClock',
+                    'boostClock', 'integratedGraphics', 'includesCooler', 'imgUrls'
+                ],
+                cooling: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'coolerType', 'supportedSocket', 'maxTdp', 'height', 'tdp', 'imgUrls'
+                ],
+                motherboard: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'socketType', 'motherboardChipset', 'formFactor', 'ramSlots',
+                    'maxRam', 'supportedMemoryTypes', 'pcieSlots', 'storageInterfaces',
+                    'tdp', 'imgUrls'
+                ],
+                ram: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'memoryType', 'memoryCapacity', 'memorySpeed', 'tdp', 'imgUrls'
+                ],
+                storage: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'storageType', 'storageCapacity', 'tdp', 'imgUrls'
+                ],
+                gpu: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'interfaceType', 'tdp', 'length', 'powerConnectors', 'vram',
+                    'gpuChipset', 'gpuCores', 'imgUrls'
+                ],
+                casing: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'formFactor', 'supportedMotherboardSizes', 'maxGpuLength',
+                    'maxCoolerHeight', 'imgUrls'
+                ],
+                power: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'wattage', 'efficiencyRating', 'modularType', 'imgUrls'
+                ],
+                laptop: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'displaySize', 'resolution', 'cpu', 'ram', 'storage', 'graphicCard',
+                    'laptopType', 'imgUrls'
+                ],
+                prebuild: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'cpu', 'cpuCores', 'cpuThreads', 'cpuBaseClock', 'cpuBoostClock',
+                    'graphicCard', 'gpuSeries', 'gpuVramGB', 'gpuBoostClockMHz',
+                    'gpuCores', 'ramSizeGB', 'ramSpeedMHz', 'ramType', 'storage',
+                    'desktopType', 'imgUrls'
+                ],
+                expansion_network: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price',
+                    'componentType', 'soundCardChannels', 'networkSpeed', 'wifiStandard',
+                    'interfaceType', 'imgUrls'
+                ],
+                default: [
+                    'type', 'name', 'description', 'manufacturer', 'quantity', 'price', 'imgUrls'
+                ],
+            };
+
+            // Filter product object to include only allowed fields
+            const productType = product.type || 'default';
+            const allowedFields = allowedFieldsByType[productType] || allowedFieldsByType.default;
+            const filteredProduct = Object.fromEntries(
+                Object.entries(product).filter(([key]) => allowedFields.includes(key))
+            );
+
+            // Set defaults for processor-specific fields if necessary
+            if (productType === 'processor') {
+                filteredProduct.integratedGraphics = filteredProduct.integratedGraphics ?? false;
+                filteredProduct.includesCooler = filteredProduct.includesCooler ?? false;
             }
-          } else {
-            toast.error(response.data.message || (isEditMode ? 'Error in updating' : 'Error creating product'));
-          }
+
+            // Prepare product data for submission
+            const productData = {
+                ...filteredProduct,
+                supported_memory_types: Array.isArray(filteredProduct.supportedMemoryTypes)
+                    ? filteredProduct.supportedMemoryTypes.join(',')
+                    : filteredProduct.supportedMemoryTypes || '',
+                power_connectors: Array.isArray(filteredProduct.powerConnectors)
+                    ? filteredProduct.powerConnectors.join(',')
+                    : filteredProduct.powerConnectors || '',
+                supported_motherboard_sizes: Array.isArray(filteredProduct.supportedMotherboardSizes)
+                    ? filteredProduct.supportedMotherboardSizes.join(',')
+                    : filteredProduct.supportedMotherboardSizes || '',
+                pcieSlots: filteredProduct.pcieSlots?.map((slot) => ({
+                    type: slot.type || '',
+                    version: slot.version || '4.0',
+                    count: slot.count != null ? slot.count : 1,
+                })) || [],
+                storageInterfaces: filteredProduct.storageInterfaces?.map((intf) => ({
+                    type: intf.type || '',
+                    count: intf.count != null ? intf.count : 1,
+                })) || [],
+            };
+
+            // Validate required fields
+            validateRequiredFields(productData, isEditMode);
+
+            // Append product data to form
+            formData.append('product', JSON.stringify(productData));
+
+            const endpoint = isEditMode
+                ? `${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`
+                : `${import.meta.env.VITE_BACKEND_URL}/api/product/add`;
+            const response = isEditMode
+                ? await axios.put(endpoint, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                })
+                : await axios.post(endpoint, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+
+            if (response.data.Success) {
+                toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
+                if (!isEditMode) {
+                    setProduct({
+                        ...initialProductState,
+                        quantity: '',
+                        price: '',
+                        stockPrice: '',
+                    });
+                    setSelectedImages([]);
+                    dispatch(resetForm());
+                    if (imageSelectorRef.current) {
+                        imageSelectorRef.current.deleteAllImages();
+                    }
+                }
+            } else {
+                toast.error(response.data.message || (isEditMode ? 'Error in updating' : 'Error creating product'));
+            }
         } catch (error) {
-          console.error('Submission error:', error.response?.data || error.message);
-          toast.error(error.response?.data?.message || error.message || 'Failed to update product');
+            console.error('Submission error:', error.response?.data || error.message);
+            toast.error(error.response?.data?.message || error.message || 'Failed to update product');
         }
     };
 
@@ -863,7 +941,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.supportedSocket}
                                                     onChange={(value) => handleInputChange('supportedSocket', value)}
-                                                    
+
                                                 />
                                             </div>
                                             <div>
@@ -1219,7 +1297,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.powerConnectors}
                                                     onChange={(value) => handleInputChange('powerConnectors', value)}
-                                                    
+
                                                 />
                                             </div>
                                             <div>
@@ -1286,7 +1364,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.supportedMotherboardSizes}
                                                     onChange={(value) => handleInputChange('supportedMotherboardSizes', value)}
-                                                    
+
                                                 />
                                             </div>
                                             <div>
