@@ -7,9 +7,9 @@ const main = [
 ];
 
 const StockType = [
-  { value: "InStock", label: "In Stock" },
-  { value: "OutStock", label: "Out of Stock" },
-  { value: "lowStock", label: "Low Stock" },
+  { value: "In Stock", label: "In Stock" },
+  { value: "Out of Stock", label: "Out of Stock" },
+  { value: "Low Stock", label: "Low Stock" },
 ];
 
 const InvoiceStatus = [

@@ -96,7 +96,16 @@ const router = createBrowserRouter([
           },
           {
             path: "games/creategame",
-            Component: CreateGames,
+            children: [
+              {
+                index: true, // Route when no ID is provided
+                Component: CreateGames,
+              },
+              {
+                path: ":id", // Route for editing a product
+                Component: CreateGames,
+              },
+            ],
           },
           {
             path: "/products",
@@ -110,11 +119,11 @@ const router = createBrowserRouter([
             path: "/products/createproduct",
             children: [
               {
-                index: true, // Default route when no ID is provided
+                index: true, //Route when no ID is provided
                 Component: CreateProducts,
               },
               {
-                path: ":id", // Dynamic route for editing a product
+                path: ":id", //Route for editing a product
                 Component: CreateProducts,
               },
             ],

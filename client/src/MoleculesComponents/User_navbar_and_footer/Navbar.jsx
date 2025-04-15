@@ -95,10 +95,10 @@ export default function Navbar() {
               />
               {openDropdown === "profile" && (
                 <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-                  <Link to="http://localhost:5173" className="block px-4 py-2 hover:bg-blue-400">
+                  <Link to="/http://localhost:5173" className="block px-4 py-2 hover:bg-blue-400">
                     Profile
                   </Link>
-                  <Link to="http://localhost:5173/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
+                  <Link to="http://localhost:5173/auth/login" className="block px-4 py-2 hover:bg-blue-400">
                     Login
                   </Link>
                 </div>

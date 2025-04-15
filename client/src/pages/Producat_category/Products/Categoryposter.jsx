@@ -1,5 +1,5 @@
 import React from "react";
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import axios from "axios"
@@ -43,7 +43,7 @@ const Categoryposter = () => {
 
 
 
-// switch case for category title and poster changing //
+  // switch case for category title and poster changing //
 
 
   var title = "";  //category title
@@ -54,18 +54,18 @@ const Categoryposter = () => {
   switch (categoryName) {
     case "gpu":
       title = "GRAPHIC CARDS";
-      image ='../categorybg.jpg';
+      image = '../../../../public/categorybg.jpg';
       break;
 
     case "ram":
       title = "RAM CARDS";
-      image ='../rambanner.jpg';
+      image = '../../../../public/rambanner.jpg';
 
       break;
 
     case "processor":
       title = "PROCESSORS";
-      image ='../processorbannernew.jpg';
+      image = '../../../../public/processorbannernew.jpg';
       break;
 
     case "motherboard":
@@ -74,7 +74,7 @@ const Categoryposter = () => {
 
     case "laptop":
       title = "LAPTOPS";
-      image =lapimage;
+      image = lapimage;
       break;
 
     default:

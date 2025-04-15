@@ -60,7 +60,7 @@ const CreateGames = () => {
         if (isEditMode) {
             const fetchGame = async () => {
                 try {
-                    const res = await axios.get(`http://localhost:8000/api/game/games/${id}`);
+                    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/game/games/${id}`);
                     if (res.data.success) {
                         const fetchedGame = res.data.game;
                         console.log("Fetched Game====================================", fetchedGame);
