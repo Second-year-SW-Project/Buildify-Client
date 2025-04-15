@@ -69,7 +69,7 @@ const Usermanage = () => {
   const startEditing = (user) => {
     setEditingUser(user._id);
     setIsEditing(true);
-    setFormData({ name: user.name, email: user.email, Role: user.Role, password: "" });
+    setFormData({ name: user.name, email: user.email, Role: user.Role, password: "", profilePicture: user.profilePicture });
     setOpenModal(true);
   };
 
@@ -345,59 +345,181 @@ const Usermanage = () => {
         </Box>
 
         {/* Edit/Add User Dialog */}
-        <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-          <DialogTitle>{isEditing ? "Edit User" : "Add New User"}</DialogTitle>
-          <DialogContent>
-            <TextField
-              label="Name"
-              fullWidth
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Email"
-              fullWidth
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              sx={{ mb: 2 }}
-            />
-            <Select
-              label="Role"
-              fullWidth
-              value={formData.Role}
-              onChange={(e) => setFormData({ ...formData, Role: e.target.value })}
-              sx={{ mb: 2 }}
-            >
-              <MenuItem value="user">User</MenuItem>
-              <MenuItem value="admin">Admin</MenuItem>
-            </Select>
-            <TextField
-              label="Password"
-              type="password"
-              fullWidth
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              sx={{ mb: 2 }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-            <Button onClick={saveUser} variant="contained">{isEditing ? "Save Changes" : "Add User"}</Button>
-          </DialogActions>
-        </Dialog>
+        <Dialog open={openModal} onClose={() => setOpenModal(false)} sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '500px' } }}>
+  <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: '500', textAlign: 'center', color: '#4B4B4B' }}>
+    {isEditing ? "Edit User" : "Add New User"}
+  </DialogTitle>
+  <DialogContent>
+    <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
+      {/* Show profile picture or default icon next to the name */}
+      {formData.profilePicture ? (
+        <Avatar src={formData.profilePicture} sx={{ width: 56, height: 56, mr: 2 }} />
+      ) : (
+        <Avatar sx={{ width: 56, height: 56, mr: 2, backgroundColor: '#B0BEC5' }}>
+          {/* Default initial letter */}
+          {formData.name ? formData.name.charAt(0).toUpperCase() : '?'}
+        </Avatar>
+      )}
+      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#4B4B4B' }}>
+        {formData.name || 'No Name'}
+      </Typography>
+    </Box>
+    <TextField
+      label="Name"
+      fullWidth
+      value={formData.name}
+      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+      sx={{
+        mb: 3,
+        '& .MuiInputBase-root': {
+          borderRadius: '10px',
+          backgroundColor: '#F4F4F4',
+        },
+        '& .MuiFormLabel-root': {
+          fontWeight: 'bold',
+        }
+      }}
+      variant="outlined"
+    />
+    <TextField
+      label="Email"
+      fullWidth
+      value={formData.email}
+      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+      sx={{
+        mb: 3,
+        '& .MuiInputBase-root': {
+          borderRadius: '10px',
+          backgroundColor: '#F4F4F4',
+        },
+        '& .MuiFormLabel-root': {
+          fontWeight: 'bold',
+        }
+      }}
+      variant="outlined"
+    />
+    <Select
+      label="Role"
+      fullWidth
+      value={formData.Role}
+      onChange={(e) => setFormData({ ...formData, Role: e.target.value })}
+      sx={{
+        mb: 3,
+        '& .MuiInputBase-root': {
+          borderRadius: '10px',
+          backgroundColor: '#F4F4F4',
+        },
+        '& .MuiFormLabel-root': {
+          fontWeight: 'bold',
+        }
+      }}
+      variant="outlined"
+    >
+      <MenuItem value="user">User</MenuItem>
+      <MenuItem value="admin">Admin</MenuItem>
+    </Select>
+    <TextField
+      label="Password"
+      type="password"
+      fullWidth
+      value={formData.password}
+      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+      sx={{
+        mb: 3,
+        '& .MuiInputBase-root': {
+          borderRadius: '10px',
+          backgroundColor: '#F4F4F4',
+        },
+        '& .MuiFormLabel-root': {
+          fontWeight: 'bold',
+        }
+      }}
+      variant="outlined"
+    />
+  </DialogContent>
+  <DialogActions sx={{ justifyContent: 'center' }}>
+    <Button onClick={() => setOpenModal(false)} className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
+            sx={{
+              textTransform: "none",
+              padding: "14px 18px",
+              width: "180px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}>
+      Cancel
+    </Button>
+    <Button
+      onClick={saveUser}
+      variant="contained"
+      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            sx={{
+              textTransform: "none",
+              padding: "14px 18px",
+              width: "180px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}
+    >
+      {isEditing ? "Save Changes" : "Add User"}
+    </Button>
+  </DialogActions>
+</Dialog>
+
+
 
           {/* Delete Confirmation Dialog */}
-          <Dialog open={openDeleteDialog} onClose={closeDeleteConfirmationDialog}>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogContent>
-              <Typography>Are you sure you want to delete this user?</Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeDeleteConfirmationDialog}>Cancel</Button>
-              <Button onClick={deleteUser} color="error">Delete</Button>
-            </DialogActions>
-          </Dialog>
+          <Dialog open={openDeleteDialog} onClose={closeDeleteConfirmationDialog} sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '450px' } }}>
+  <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: '500', textAlign: 'center', color: '#4B4B4B' }}>
+    Confirm Deletion
+  </DialogTitle>
+  <DialogContent sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+    <Typography variant="body1" sx={{ fontSize: '1rem', color: '#4B4B4B', textAlign: 'center' }}>
+      Are you sure you want to delete this user?
+    </Typography>
+  </DialogContent>
+  <DialogActions sx={{ justifyContent: 'center', paddingBottom: '20px' }}>
+    <Button
+      onClick={closeDeleteConfirmationDialog}
+      className="bg-gray-500 hover:bg-gray-200 text-gray-800 font-bold"
+      sx={{
+        textTransform: 'none',
+        padding: '14px 18px',
+        width: '180px',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        borderRadius: '10px',
+        '&:hover': {
+          backgroundColor: '#E0E0E0',  // Tailwind hover color equivalent
+        }
+      }}
+    >
+      Cancel
+    </Button>
+    <Button
+      onClick={deleteUser}
+      color="error"
+      variant="contained"
+      sx={{
+        textTransform: 'none',
+        fontWeight: 'bold',
+        backgroundColor: '#FF3D3D',
+        width: '180px',
+        padding: '14px 18px',
+        fontSize: '16px',
+        borderRadius: '10px',
+        '&:hover': {
+          backgroundColor: '#D32F2F',
+        }
+      }}
+    >
+      Delete
+    </Button>
+  </DialogActions>
+</Dialog>
+
+
         </div>
       </div>
     </div>
