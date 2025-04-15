@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { Button, TextField, Box, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import Navbar from '../MoleculesComponents/User_component/Navbar';
+import SideNav from './SideNav';
 
 const ComplaintSubmit = () => {
   const navigate = useNavigate();
@@ -42,6 +43,9 @@ const ComplaintSubmit = () => {
 >
   <Navbar />
 
+<div>
+  <SideNav />
+  <div>
       <Box sx={{ 
         backgroundColor: 'white',
         padding: '2.5rem',
@@ -143,6 +147,8 @@ const ComplaintSubmit = () => {
           </Button>
         </form>
       </Box>
+      </div>
+      </div>
     </Container>
   );
 };
