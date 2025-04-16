@@ -352,14 +352,26 @@ const Complaints = () => {
 
         {/* Dialog Footer */}
         <DialogActions sx={{ px: 5, py: 3, backgroundColor: '#F9F7FF' }}>
-          <Button onClick={() => setOpenDialog(false)} variant="text" className="text-purple-600">
+          <Button onClick={() => setOpenDialog(false)} variant="text"  className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
+            sx={{
+              textTransform: "none", padding: "14px 18px",
+              width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px"
+            }}>
             Cancel
           </Button>
           <Button
             onClick={handleRespond}
             variant="contained"
             color="primary"
-            className="text-white"
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            sx={{
+              textTransform: "none",
+              padding: "14px 18px",
+              width: "180px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}
           >
             Submit Response
           </Button>
