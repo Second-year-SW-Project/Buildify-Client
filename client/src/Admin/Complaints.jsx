@@ -91,9 +91,7 @@ const Complaints = () => {
         {/* Search and Filter Section */}
         <div className="flex gap-4 mb-6 items-center">
           <TextField
-            placeholder="Search complaints..."
-            variant="outlined"
-            size="small"
+            placeholder="Search"
             className="w-96"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -101,8 +99,7 @@ const Complaints = () => {
               '& .MuiOutlinedInput-root': {
                 height: 56,
                 borderRadius: '8px',
-                '&:hover fieldset': { borderColor: '#641A90' },
-                '&.Mui-focused fieldset': { borderColor: '#641A90' }
+              
               }
             }}
           />

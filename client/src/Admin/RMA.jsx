@@ -21,7 +21,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  CircularProgress, Avatar
+  CircularProgress,
+  TablePagination,
+  Avatar
 } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
@@ -40,6 +42,10 @@ const RMA = () => {
   const [responseText, setResponseText] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
 
+  // Pagination states
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
   const fetchRequests = async () => {
     try {
       setLoading(true);
@@ -50,10 +56,8 @@ const RMA = () => {
         }
       });
 
-      // Ensure response is always an array
       const data = Array.isArray(response?.data) ? response.data : [];
       setRequests(data);
-      
     } catch (error) {
       console.error('Fetch Error:', error);
       toast.error('Failed to load requests');
@@ -91,110 +95,116 @@ const RMA = () => {
     Pending: 'bg-yellow-100 text-yellow-800'
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const paginatedRequests = requests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <Box sx={{ p: 3 }}>
       <div className='mt-3 mb-5'>
-                              <PageTitle value="RMA & Support"></PageTitle>
-                              <CustomBreadcrumbs
-                                  paths={[
-                                      { label: 'Feedback Manage', href: "/feedbackmanage/rma" },
-                                      { label: 'RMA & Support' },
-                                  ]} />
-                          </div>
+        <PageTitle value="RMA & Support" />
+        <CustomBreadcrumbs
+          paths={[
+            { label: 'Feedback Manage', href: "/feedbackmanage/rma" },
+            { label: 'RMA & Support' },
+          ]}
+        />
+      </div>
 
-      {/* Search Filters */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 6,mt:6, alignItems: 'center' }}>
-  <TextField
-    label="Order ID"
-    value={filters.orderId}
-    onChange={(e) => setFilters(prev => ({ ...prev, orderId: e.target.value }))}
-    sx={{
-      '& .MuiOutlinedInput-root': {
-        height: 56,
-        width: 350,
-        borderRadius: '4px'
-      }
-    }}
-  />
+      {/* Filters */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 6, mt: 6, alignItems: 'center' }}>
+        <TextField
+          label="Order ID"
+          value={filters.orderId}
+          onChange={(e) => setFilters(prev => ({ ...prev, orderId: e.target.value }))}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              height: 56,
+              width: 350,
+              borderRadius: '4px'
+            }
+          }}
+        />
+        <FormControl>
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={filters.status}
+            onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
+            label="Status"
+            sx={{
+              height: 56,
+              width: 350,
+              borderRadius: '4px',
+              '& .MuiSelect-select': {
+                paddingTop: '16px',
+                paddingBottom: '16px'
+              }
+            }}
+          >
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="Processing">Processing</MenuItem>
+            <MenuItem value="Resolved">Resolved</MenuItem>
+            <MenuItem value="Pending">Pending</MenuItem>
+          </Select>
+        </FormControl>
 
-  <FormControl
-  >
-    <InputLabel>Status</InputLabel>
-    <Select
-      value={filters.status}
-      onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-      label="Status"
-      sx={{
-        height: 56,
-        width: 350,
-        borderRadius: '4px',
-        '& .MuiSelect-select': {
-          paddingTop: '16px',
-          paddingBottom: '16px'
-        }
-      }}
-    >
-      <MenuItem value="">All</MenuItem>
-      <MenuItem value="Processing">Processing</MenuItem>
-      <MenuItem value="Resolved">Resolved</MenuItem>
-      <MenuItem value="Pending">Pending</MenuItem>
-    </Select>
-  </FormControl>
+        <Button
+          variant="contained"
+          onClick={fetchRequests}
+          className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+          sx={{
+            padding: "14px 18px",
+            width: "200px",
+            textTransform: "none",
+            fontSize: "16px",
+            borderRadius: "10px",
+            fontWeight: "bold"
+          }}
+        >
+          Search
+        </Button>
+      </Box>
 
-  <Button
-    variant="contained"
-    onClick={fetchRequests}
-    className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-    style={{
-      padding: "14px 18px", // height ~48px
-      width: "200px",
-      textTransform: "none",
-      fontSize: "16px",
-      borderRadius: "10px",
-      fontWeight: "bold"
-    }}
-  >
-    Search
-  </Button>
-</Box>
-
-
-
-
-      {/* Requests Table */}
+      {/* Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead sx={{ bgcolor: '#f4e6ff' }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' , color: 'gray' }}>Order ID</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Order ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Name</TableCell>
-<TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Email</TableCell>
-
-              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Subject</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Reason</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Status</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Created Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' , color: 'gray'}}>Action</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Email</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Subject</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Reason</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Created Date</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={8} align="center">
                   <CircularProgress />
                   <Typography variant="body2" sx={{ mt: 1 }}>Loading requests...</Typography>
                 </TableCell>
               </TableRow>
-            ) : requests.length === 0 ? (
+            ) : paginatedRequests.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography variant="body2" color="textSecondary">
                     No RMA requests found
                   </Typography>
                 </TableCell>
               </TableRow>
             ) : (
-              requests.map((request) => (
+              paginatedRequests.map((request) => (
                 <TableRow key={request._id} hover>
                   <TableCell>{request.orderId}</TableCell>
                   <TableCell>{request.userId?.name || 'N/A'}</TableCell>
@@ -202,18 +212,34 @@ const RMA = () => {
                   <TableCell>{request.subject}</TableCell>
                   <TableCell>{request.reason}</TableCell>
                   <TableCell>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 2,
-                        ...statusColors[request.status]
-                      }}
-                    >
-                      {request.status}
-                    </Typography>
-                  </TableCell>
+  <Typography
+    variant="caption"
+    sx={{
+      px: 1.5,
+      py: 0.5,
+      borderRadius: '8px',
+      fontWeight: 600,
+      display: 'inline-block',
+      minWidth: 90,
+      textAlign: 'center',
+      color:
+        request.status === 'Resolved'
+          ? '#15803d'
+          : request.status === 'Processing'
+          ? '#92400e'
+          : '#b91c1c',
+      bgcolor:
+        request.status === 'Resolved'
+          ? '#dcfce7'
+          : request.status === 'Processing'
+          ? '#fef3c7'
+          : '#fee2e2',
+    }}
+  >
+    {request.status}
+  </Typography>
+</TableCell>
+
                   <TableCell>
                     {format(new Date(request.createdAt), 'MMM dd, yyyy HH:mm')}
                   </TableCell>
@@ -233,172 +259,101 @@ const RMA = () => {
             )}
           </TableBody>
         </Table>
+
+        {/* Pagination */}
+        <TablePagination
+          component="div"
+          count={requests.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          rowsPerPageOptions={[5, 10, 25]}
+        />
       </TableContainer>
 
       {/* Response Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md" sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '900px' } }}>
-  <DialogTitle
-    sx={{
-      bgcolor: '#f4e6ff',
-      fontWeight: '600',
-      fontSize: '22px',
-      borderBottom: '2px solid #d0b4f2',
-      color: '#4b0082',
-      py: 2.5,
-      px: 4,
-      letterSpacing: '0.5px',
-      borderRadius: '16px',
-      marginBottom: '10px'
-    }}
-  >
-    Manage RMA Request - {selectedRequest?.orderId}
-  </DialogTitle>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md"
+        sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '900px' } }}>
+        <DialogTitle sx={{
+          bgcolor: '#f4e6ff', fontWeight: '600', fontSize: '22px', borderBottom: '2px solid #d0b4f2',
+          color: '#4b0082', py: 2.5, px: 4, letterSpacing: '0.5px', borderRadius: '16px', marginBottom: '10px'
+        }}>
+          Manage RMA Request - {selectedRequest?.orderId}
+        </DialogTitle>
 
-  <DialogContent sx={{ py: 2, px: 2, bgcolor: '#faf5ff', borderRadius: '12px' }}>
-    {selectedRequest && (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 3,
-          backgroundColor: '#ffffff',
-          borderRadius: '12px',
-          boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)',
-          p: 3,
-          marginTop: '10px'
-        }}
-      >
-        {/* User Info Section */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box>
-            {selectedRequest.userId?.profilePicture ? (
-              <Box
-                component="img"
-                src={selectedRequest.userId?.profilePicture}
-                alt="User"
+        <DialogContent sx={{ py: 2, px: 2, bgcolor: '#faf5ff', borderRadius: '12px' }}>
+          {selectedRequest && (
+            <Box sx={{
+              display: 'flex', flexDirection: 'column', gap: 3, backgroundColor: '#ffffff',
+              borderRadius: '12px', boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)', p: 3, marginTop: '10px'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Avatar
+                  src={selectedRequest.userId?.profilePicture}
+                  sx={{
+                    width: 65, height: 65, bgcolor: '#c084fc', color: 'white',
+                    fontSize: 28, border: '3px solid #c084fc'
+                  }}
+                >
+                  {selectedRequest.userId?.name?.charAt(0).toUpperCase()}
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#6b21a8' }}>
+                    {selectedRequest.userId?.name || 'Unknown User'}
+                  </Typography>
+                  <Typography sx={{ fontSize: '14px', color: '#666' }}>
+                    {selectedRequest.userId?.email || 'No Email'}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Typography><strong>Subject:</strong> {selectedRequest.subject}</Typography>
+              <Typography><strong>Reason:</strong> {selectedRequest.reason}</Typography>
+              <Typography><strong>Message:</strong><br />{selectedRequest.message}</Typography>
+
+              <TextField
+                multiline
+                rows={4}
+                fullWidth
+                label="Admin Response"
+                variant="outlined"
+                value={responseText}
+                onChange={(e) => setResponseText(e.target.value)}
                 sx={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: '50%',
-                  border: '3px solid #c084fc',
-                  objectFit: 'cover',
-                  transition: '0.3s ease',
+                  mt: 1,
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '10px',
+                    bgcolor: '#f3e8ff',
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: '#7c3aed',
+                  },
                 }}
               />
-            ) : (
-              <Avatar
-                sx={{
-                  width: 65,
-                  height: 65,
-                  bgcolor: '#c084fc',
-                  color: 'white',
-                  fontSize: 28,
-                  border: '3px solid #c084fc',
-                  transition: '0.3s ease',
-                }}
-              >
-                {selectedRequest.userId?.name.charAt(0).toUpperCase()}
-              </Avatar>
-            )}
-          </Box>
-          <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#6b21a8' }}>
-              {selectedRequest.userId?.name || 'Unknown User'}
-            </Typography>
-            <Typography sx={{ fontSize: '14px', color: '#666' }}>
-              {selectedRequest.userId?.email || 'No Email'}
-            </Typography>
-          </Box>
-        </Box>
+            </Box>
+          )}
+        </DialogContent>
 
-        {/* RMA Info */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7e22ce' }}>
-            Subject:
-          </Typography>
-          <Typography sx={{ fontSize: '15px', color: '#444' }}>
-            {selectedRequest.subject}
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7e22ce' }}>
-            Reason:
-          </Typography>
-          <Typography sx={{ fontSize: '15px', color: '#444' }}>
-            {selectedRequest.reason}
-          </Typography>
-        </Box>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#7e22ce' }}>
-            Message:
-          </Typography>
-          <Typography sx={{ fontSize: '15px', whiteSpace: 'pre-wrap', color: '#444' }}>
-            {selectedRequest.message}
-          </Typography>
-        </Box>
-
-        {/* Admin Response */}
-        <TextField
-          multiline
-          rows={4}
-          fullWidth
-          label="Admin Response"
-          variant="outlined"
-          value={responseText}
-          onChange={(e) => setResponseText(e.target.value)}
-          sx={{
-            mt: 1,
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '10px',
-              bgcolor: '#f3e8ff',
-            },
-            '& .MuiInputLabel-root': {
-              color: '#7c3aed',
-            },
-          }}
-        />
-      </Box>
-    )}
-  </DialogContent>
-
-  <DialogActions sx={{  px: 2, py: 1 }}>
-    <Button
-      onClick={() => setOpenDialog(false)}
-      className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
+        <DialogActions sx={{ px: 2, py: 1 }}>
+          <Button onClick={() => setOpenDialog(false)}
+            className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
             sx={{
-              textTransform: "none",
-              padding: "14px 18px",
-              width: "180px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              borderRadius: "10px"
-            }} >
-    
-      Cancel
-    </Button>
-
-    <Button
-      variant="contained"
-      onClick={handleResponseSubmit}
-      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-      sx={{
-        textTransform: "none",
-        padding: "14px 18px",
-        width: "180px",
-        fontSize: "16px",
-        fontWeight: "bold",
-        borderRadius: "10px"
-      }}
-    >
-      Submit Response
-    </Button>
-  </DialogActions>
-</Dialog>
-
-
-
+              textTransform: "none", padding: "14px 18px",
+              width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px"
+            }}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={handleResponseSubmit}
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            sx={{
+              textTransform: "none", padding: "14px 18px",
+              width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px"
+            }}>
+            Submit Response
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

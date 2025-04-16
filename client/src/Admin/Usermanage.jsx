@@ -267,67 +267,60 @@ const Usermanage = () => {
       </TableRow>
     </TableHead>
     <TableBody>
-      {filteredUsers.length > 0 ? (
-        filteredUsers.map((user) => (
-          <TableRow key={user._id}>
-            <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
-            <Box display="flex" alignItems="center">
-  <Avatar 
-    alt={user.name} 
-    src={user.profilePicture || ''} 
-    sx={{ width: 40, height: 40, marginRight: 2 }}
-  >
-    {!user.profilePicture && user.name.charAt(0).toUpperCase()}
-  </Avatar>
-  {user.name}
-</Box>
+  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    .map((user) => (
+      <TableRow key={user._id}>
+        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+          <Box display="flex" alignItems="center">
+            <Avatar 
+              alt={user.name} 
+              src={user.profilePicture || ''} 
+              sx={{ width: 40, height: 40, marginRight: 2 }}
+            >
+              {!user.profilePicture && user.name.charAt(0).toUpperCase()}
+            </Avatar>
+            {user.name}
+          </Box>
+        </TableCell>
+        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+          {user.email}
+        </TableCell>
+        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD",
+              color: user.Role === "admin" ? "#1B5E20" : "#0D47A1",
+              fontWeight: "bold",
+              fontSize: "12px",
+              padding: "2px 8px",
+              minWidth: "auto",
+              borderRadius: "8px",
+              textTransform: "none",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              "&:hover": {
+                backgroundColor: user.Role === "admin" ? "#D0F8CE" : "#D6EAF8",
+              },
+            }}
+          >
+            {user.Role}
+          </Button>
+        </TableCell>
+        <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+          <IconButton onClick={() => startEditing(user)} style={{ color: "#641A90", padding: "8px" }}>
+            <Edit style={{ fontSize: "30px", color: "grey" }} />
+          </IconButton>
+          <IconButton onClick={() => openDeleteConfirmationDialog(user)} style={{ color: "#641A90", padding: "8px" }}>
+            <Delete style={{ fontSize: "30px", color: "red" }} />
+          </IconButton>
+        </TableCell>
+      </TableRow>
+    ))
+  }
+</TableBody>
 
-              
-            </TableCell>
-            <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
-              {user.email}
-            </TableCell>
-            <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD",
-                  color: user.Role === "admin" ? "#1B5E20" : "#0D47A1",
-                  fontWeight: "bold",
-                  fontSize: "12px",
-                  padding: "2px 8px",
-                  minWidth: "auto",
-                  borderRadius: "8px",
-                  textTransform: "none",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  "&:hover": {
-                    backgroundColor: user.Role === "admin" ? "#D0F8CE" : "#D6EAF8",
-                  },
-                }}
-              >
-                {user.Role}
-              </Button>
-            </TableCell>
-            <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
-              <IconButton onClick={() => startEditing(user)} style={{ color: "#641A90", padding: "8px" }}>
-                <Edit style={{ fontSize: "30px", color: "grey" }} />
-              </IconButton>
-              <IconButton onClick={() => openDeleteConfirmationDialog(user)} style={{ color: "#641A90", padding: "8px" }}>
-                <Delete style={{ fontSize: "30px", color: "red" }} />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        ))
-      ) : (
-        <TableRow>
-          <TableCell colSpan="4" style={{ padding: "8px", textAlign: "center", verticalAlign: "middle" }}>
-            No matching users found
-          </TableCell>
-        </TableRow>
-      )}
-    </TableBody>
   </Table>
 </TableContainer>
 
