@@ -326,64 +326,110 @@ const Review = () => {
 
         {/* Response Dialog */}
        {/* Response Dialog */}
-<Dialog
+       <Dialog
   open={openDialog}
   onClose={handleDialogClose}
-  PaperProps={{ 
-    className: "rounded-2xl min-w-[600px]",
-    sx: { 
-      '& .MuiDialog-container': {
-        '& .MuiPaper-root': {
-          width: '100%',
-          maxWidth: '600px',
-        },
-      },
-    }
+  PaperProps={{
+    className: "rounded-3xl shadow-xl min-w-[600px] border border-gray-200",
+    sx: {
+      p: 3,
+      borderRadius: 4,
+      boxShadow: 6,
+      width: '800px',
+    },
   }}
 >
-  <DialogTitle className="bg-purple-100 text-gray-900 rounded-t-2xl py-4">
-    <div className="flex items-center space-x-3">
+  <DialogTitle
+    className="bg-purple-100 text-gray-900 rounded-[2rem] py-4 px-6 border-b border-purple-200"
+    sx={{ borderRadius: 4 }}
+  >
+    <div className="flex items-center space-x-3 rounded-t-2xl mb-3">
       <SendIcon className="text-purple-600" />
       <span className="font-bold text-xl">Write Response</span>
     </div>
   </DialogTitle>
-  <DialogContent className="pt-6 pb-4 space-y-4">
+
+  <DialogContent
+    className="pt-2 pb-2 px-6 space-y-6 rounded-t-2xl mt-4"
+    sx={{ borderRadius: 4 }}
+  >
     <TextField
       autoFocus
       fullWidth
       multiline
       rows={4}
       variant="outlined"
-      label="Your response..."
-      className="rounded-lg"
-      InputProps={{
-        className: "focus:ring-2 focus:ring-purple-500 text-base"
-      }}
+      label="Your response"
       value={response[currentReviewId] || ""}
       onChange={(e) => handleResponseChange(currentReviewId, e.target.value)}
+      className="rounded-lg"
+      InputProps={{
+        className:
+          "focus:ring-2 focus:ring-purple-500 text-base bg-white rounded-md shadow-sm",
+      }}
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          borderRadius: 4,
+          backgroundColor: '#fff',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+        },
+        '& label.Mui-focused': {
+          color: '#7e22ce',
+        },
+        '& .MuiOutlinedInput-root.Mui-focused fieldset': {
+          borderColor: '#a855f7',
+          boxShadow: '0 0 0 2px rgba(168, 85, 247, 0.3)',
+        },
+      }}
     />
-    <div className="flex items-center text-gray-600">
-      <MailIcon className="mr-2" />
-      <span className="font-medium">
-        {reviews.find(r => r._id === currentReviewId)?.userId?.email}
+
+    <div className="flex items-center gap-3 text-gray-700 bg-gray-50 px-5 py-3 rounded-lg border border-gray-200 shadow-sm">
+      <MailIcon className="text-purple-500 w-5 h-5" />
+      <span className="font-medium truncate text-sm sm:text-base">
+        {reviews.find((r) => r._id === currentReviewId)?.userId?.email || "No email found"}
       </span>
     </div>
   </DialogContent>
-  <DialogActions className="px-6 pb-4 gap-3">
-    <button
+
+  <DialogActions className="px-6 pb-5 gap-4 border-t border-gray-100">
+    <Button
       onClick={handleDialogClose}
-      className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow-md hover:bg-gray-400 transition-colors duration-200"
+      className="bg-gray-500 hover:bg-gray-200 text-gray-800 font-bold"
+      sx={{
+        textTransform: 'none',
+        padding: '14px 18px',
+        width: '180px',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        borderRadius: '10px',
+        '&:hover': {
+          backgroundColor: '#E0E0E0',  // Tailwind hover color equivalent
+        }
+      }}
     >
       Cancel
-    </button>
-    <button
+    </Button>
+    <Button
       onClick={() => handleResponseSubmit(currentReviewId)}
-      className="px-4 py-2 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-200"
+      sx={{
+        textTransform: "none",
+        padding: "14px 18px",
+        width: "180px",
+        fontSize: "16px",
+        fontWeight: "bold",
+        borderRadius: "10px",
+        backgroundColor: "#7e22ce", // purple-700
+        color: "#fff",
+        '&:hover': {
+          backgroundColor: "#6b21a8", // purple-800
+        },
+      }}
     >
       Submit Response
-    </button>
+    </Button>
   </DialogActions>
 </Dialog>
+
       </div>
     </div>
   );

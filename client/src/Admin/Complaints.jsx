@@ -203,7 +203,7 @@ const Complaints = () => {
                     </TableCell>
 
                     <TableCell>
-                      <span className={`px-3 py-1 rounded-full text-sm ${
+                      <span className={`px-2 py-1 rounded-full text-sm whitespace-nowrap ${
                         complaint.status === 'Resolved' ? 'bg-green-100 text-green-800' :
                         complaint.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-blue-100 text-blue-800'
