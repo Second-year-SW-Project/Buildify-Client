@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
-import Navbar from "../MoleculesComponents/User_component/Navbar";
+import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";

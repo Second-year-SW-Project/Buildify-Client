@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import SideNav from "./SideNav";
-import Navbar from "../MoleculesComponents/User_component/Navbar";
+import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box, Divider, Paper, Typography, Button } from "@mui/material";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 
