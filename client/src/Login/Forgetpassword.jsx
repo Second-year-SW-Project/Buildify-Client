@@ -15,16 +15,21 @@ const ForgetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
+
       await axios.post(
         "http://localhost:8000/api/v1/users/forget-password",
         { email },
         { withCredentials: true }
       );
+
       toast.success("Reset OTP sent to email");
       navigate(`/auth/resetpassword?email=${encodeURIComponent(email)}`);
+
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to send reset email");
+
     } finally {
       setLoading(false);
     }
@@ -51,7 +56,7 @@ const ForgetPassword = () => {
           </Typography>
         </Box>
 
-        {/* Right section - Forgot Password form */}
+        {/* Right section */}
         <Box className="w-full md:w-1/2 p-8">
           <Box className="flex flex-col items-center mb-6">
             <img src={logo} alt="Logo" className="w-16 mb-2 md:hidden" />

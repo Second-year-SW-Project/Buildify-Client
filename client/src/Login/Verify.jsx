@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { TextField, Button, CircularProgress, Box, Typography, Divider } from "@mui/material";
 import { toast } from 'sonner';
-import { useDispatch, useSelector } from "react-redux"; // <-- Add this import for useSelector
+import { useDispatch, useSelector } from "react-redux"; 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { setAuthUser } from "../Store/authSlice";
@@ -17,7 +17,7 @@ const Verify = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
   const hiddenInputRef = useRef(null);
-  const user = useSelector((state) => state.auth.user); // <-- Now it will work
+  const user = useSelector((state) => state.auth.user); 
 
   useEffect(() => {
 
