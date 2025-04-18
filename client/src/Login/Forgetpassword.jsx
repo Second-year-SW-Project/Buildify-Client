@@ -96,7 +96,7 @@ const ForgetPassword = () => {
               {loading ? <CircularProgress size={20} /> : "Send Reset Code"}
             </Button>
 
-            <Typography className="!text-white !text-center !mt-4 !text-xs mt-6">
+            <Typography className="!text-white !text-center !mt-6 !text-xs">
               Remember your password?{" "}
               <Link to="/auth/login" className="!text-[#9b4de5] hover:!underline">
                 Login here
