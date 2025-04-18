@@ -47,6 +47,7 @@ import MyOrders from "./User/MyOrders.jsx";
 import OrderHistory from "./User/OrderHistory.jsx";
 import SavedBuilds from "./User/SavedBuilds.jsx";
 import Settings from "./User/Settings.jsx";
+import OrderDetails from "./User/OrderDetails.jsx";
 import Home from "./pages/Home/Home.jsx";
 import About from "./pages/About_page/About.jsx";
 import LoginPage from "./pages/Login_page/Login_page.jsx";
@@ -149,6 +150,7 @@ const router = createBrowserRouter([
       { path: "user/complaintHistory", element: <UserComplaints /> },
       { path: "user/profile", element: <UserProfile /> },
       { path: "user/orders", element: <MyOrders /> },
+      { path: "/user/orders/:orderId", element: <OrderDetails /> },
       { path: "user/rmaSupport", element: <RMAsupport /> },
       { path: "user/orderHistory", element: <OrderHistory /> },
       { path: "user/savedBuilds", element: <SavedBuilds /> },

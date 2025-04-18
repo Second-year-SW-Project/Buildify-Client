@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
-import Navbar from "../MoleculesComponents/User_component/Navbar";
+import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box, Button, Divider } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";

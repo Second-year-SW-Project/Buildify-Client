@@ -256,7 +256,7 @@ export default function UserProfile() {
                   <div className="flex flex-col md:flex-row mt-5">
                     <div className="flex-1 mb-5 mr-1">
                       <InputField
-                        type="textarea"
+                        type="text"
                         variant="outlined"
                         label="User Name"
                         value={formData.name}
@@ -268,7 +268,7 @@ export default function UserProfile() {
                     </div>
                     <div className="flex-1 mb-5">
                       <InputField
-                        type="textarea"
+                        type="text"
                         variant="outlined"
                         label="First Name"
                         value={formData.firstName}
@@ -283,7 +283,7 @@ export default function UserProfile() {
                   <div className="flex flex-col md:flex-row">
                     <div className="flex-1 mb-5 mr-1">
                       <InputField
-                        type="textarea"
+                        type="text"
                         variant="outlined"
                         label="Last Name"
                         value={formData.lastName}
@@ -295,7 +295,7 @@ export default function UserProfile() {
                     </div>
                     <div className="flex-1 mb-5">
                       <InputField
-                        type="textarea"
+                        type="text"
                         variant="outlined"
                         label="Email Address"
                         value={formData.email}
@@ -309,7 +309,7 @@ export default function UserProfile() {
 
                   <div className="flex-1 mb-5 mr-1">
                     <InputField
-                      type="textarea"
+                      type="text"
                       variant="outlined"
                       label="Address"
                       value={formData.address}
