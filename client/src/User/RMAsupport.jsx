@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import SideNav from './SideNav';
-import Navbar from '../MoleculesComponents/User_component/Navbar';
+import SideNav from "./SideNav";
+import Navbar from "../MoleculesComponents/User_component/Navbar";
 import { Box, Divider, Paper, Typography, Button } from "@mui/material";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 
@@ -128,12 +128,24 @@ export default function RMAsupport() {
                       value={formData.reason}
                       onChange={(value) => handleChange("reason", value)}
                       options={[
-                        { value: "defective", label: "Defective or Damaged Parts" },
+                        {
+                          value: "defective",
+                          label: "Defective or Damaged Parts",
+                        },
                         { value: "incorrectorder", label: "Incorrect Order" },
-                        { value: "incompatible", label: "Compatibility Issues" },
+                        {
+                          value: "incompatible",
+                          label: "Compatibility Issues",
+                        },
                         { value: "changedmind", label: "Changed My Mind" },
-                        { value: "lowperformance", label: "Performance Below Expectations" },
-                        { value: "incorrectspecifications", label: "Incorrect Specifications" },
+                        {
+                          value: "lowperformance",
+                          label: "Performance Below Expectations",
+                        },
+                        {
+                          value: "incorrectspecifications",
+                          label: "Incorrect Specifications",
+                        },
                         { value: "support", label: "Support Request" },
                         { value: "other", label: "Other" },
                       ]}
@@ -216,7 +228,10 @@ export default function RMAsupport() {
                                 Date:{" "}
                                 {new Date(rma.createdAt).toLocaleDateString()}
                               </Typography>
-                              <Button variant="contained" className="bg-gray-400">
+                              <Button
+                                variant="contained"
+                                className="bg-gray-400"
+                              >
                                 Open
                               </Button>
                               <Button

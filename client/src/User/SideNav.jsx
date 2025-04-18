@@ -40,11 +40,7 @@ export default function SideNav() {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton
-            component={Link}
-            to="/user/myOrders"
-            className="group"
-          >
+          <ListItemButton component={Link} to="/user/orders" className="group">
             <ListItemIcon className="group-hover:text-purple-500">
               <MailIcon />
             </ListItemIcon>

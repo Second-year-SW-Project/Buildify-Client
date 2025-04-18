@@ -90,7 +90,7 @@ const router = createBrowserRouter([
         Component: SavedBuilds,
       },
       {
-        path: "/user/myOrders",
+        path: "/user/orders",
         Component: MyOrders,
       },
       {
@@ -98,7 +98,7 @@ const router = createBrowserRouter([
         Component: OrderHistory,
       },
       {
-        path: "/user/myOrders/orderDetails",
+        path: "/user/orders/:orderId",
         Component: OrderDetails,
       },
       {

@@ -180,10 +180,11 @@ export default function UserProfile() {
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold mt-5 mb-6">Profile</h1>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   disabled={loading.profile}
                   onClick={toggleEditable}
-                  className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                  className="bg-purple-600 hover:bg-purple-600 hover:text-white font-bold"
+                  sx={{ borderRadius: 850, textTransform: "none", px: 2 }}
                   style={{
                     padding: "14px 18px",
                     width: "180px",
@@ -198,13 +199,14 @@ export default function UserProfile() {
               </div>
               <Divider />
               <Box sx={{ pt: 3 }}>
-                <Box sx={{ pt: 3, textAlign: "center" }}>
+                <Box sx={{ pt: 2, textAlign: "left", pb: 2 }}>
                   {formData.profilePicture ? (
                     <div
                       style={{
                         display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: "left",
+                        alignItems: "left",
+                        marginBottom: "5px",
                       }}
                     >
                       <img
@@ -227,17 +229,17 @@ export default function UserProfile() {
 
                   {editable && (
                     <Button
-                      variant="contained"
+                      variant="outlined"
                       component="label"
                       disabled={uploading}
-                      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                      className="bg-purple-600 hover:bg-purple-600 hover:text-white font-bold mt-2"
                       sx={{
                         textTransform: "none",
-                        padding: "14px 18px",
+                        padding: "12px 14px",
                         width: "180px",
                         fontSize: "16px",
                         fontWeight: "bold",
-                        borderRadius: "10px",
+                        borderRadius: "12px",
                       }}
                     >
                       {uploading ? "Uploading..." : "Change Photo"}

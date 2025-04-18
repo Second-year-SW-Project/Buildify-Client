@@ -104,7 +104,7 @@ function InvoiceCreate() {
     try {
       const response = await axios.post(`${API_URL}/create`, invoiceData);
       alert(response.data.message);
-      // navigate("/invoices");
+      navigate("/invoice/invoicelist");
     } catch (error) {
       console.error("Invoice creation failed:", error);
       alert(`Error: ${error.response?.data?.error || error.message}`);
@@ -253,16 +253,15 @@ function InvoiceCreate() {
                     value={item.itemCode}
                     onChange={(val) => handleItemChange(index, "itemCode", val)}
                   />
-                  <div className="flex flex-col w-full">
-                    <p className="mb-1">Item Name</p>
-                    <TextField
-                      size="small"
-                      value={item.itemName}
-                      onChange={(e) =>
-                        handleItemChange(index, "itemName", e.target.value)
-                      }
-                    />
-                  </div>
+
+                  <InputField
+                    type="textarea"
+                    label="Item name"
+                    width="100%"
+                    value={item.itemName}
+                    onChange={(val) => handleItemChange(index, "itemName", val)}
+                  />
+
                   <InputField
                     type="select"
                     label="Sub Category"

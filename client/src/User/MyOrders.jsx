@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_component/Navbar";
 import { Box } from "@mui/material";
@@ -9,45 +11,70 @@ import TabPanel from "@mui/lab/TabPanel";
 import OrderCard from "../AtomicComponents/Cards/OrderDetailsCard";
 
 export default function MyOrders() {
-  const [value, setValue] = React.useState("1");
+  const navigate = useNavigate();
+  const [value, setValue] = useState("1");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  // Dummy data for orders
-  const orders = [
-    {
-      id: 1,
-      status: "Awaiting delivery",
-      itemName: "Build name 1",
-      totalAmount: "LKR 250,000.00",
-      orderDate: "Nov 12, 2024",
-      orderId: "1109M8B2Y7A0Z3_O6W",
-      type: "build",
-      imageUrl: "https://via.placeholder.com/100",
-    },
-    {
-      id: 2,
-      status: "Delivered",
-      itemName: "Item name 2",
-      totalAmount: "LKR 150,000.00",
-      orderDate: "Nov 10, 2024",
-      orderId: "1109M8B2Y7A0Z3_O6X",
-      type: "component",
-      imageUrl: "https://via.placeholder.com/100",
-    },
-    {
-      id: 3,
-      status: "Awaiting delivery",
-      itemName: "Build name 3",
-      totalAmount: "LKR 350,000.00",
-      orderDate: "Nov 15, 2024",
-      orderId: "1109M8B2Y7A0Z3_O6Y",
-      type: "build",
-      imageUrl: "https://via.placeholder.com/100",
-    },
-  ];
+  useEffect(() => {
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:8000/api/checkout/product-orders",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            signal: controller.signal,
+          }
+        );
+
+        if (isMounted) {
+          const formatted = res.data.map((order) => {
+            const itemCount = order.items.reduce(
+              (total, item) => total + item.quantity,
+              0
+            );
+            return {
+              ...order,
+              type: "component",
+              itemName: order.items[0]?.name || "Unknown",
+              totalAmount: Number(order.total).toLocaleString("en-LK", {
+                style: "currency",
+                currency: "LKR",
+              }),
+              orderDate: new Date(order.createdAt).toDateString(),
+              orderId: order._id,
+              imageUrl: "https://picsum.photos/100",
+              itemCount: itemCount,
+            };
+          });
+
+          setOrders(formatted);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (isMounted && err.name !== "AbortError") {
+          console.error("Failed to fetch product orders", err);
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchOrders();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, []);
 
   const filteredOrders = orders.filter((order) => {
     if (value === "1") return true;
@@ -90,43 +117,58 @@ export default function MyOrders() {
                       </TabList>
                     </Box>
                     <TabPanel value="1">
-                      {filteredOrders.map((order) => (
-                        <OrderCard
-                          key={order.id}
-                          status={order.status}
-                          itemName={order.itemName}
-                          totalAmount={order.totalAmount}
-                          orderDate={order.orderDate}
-                          orderId={order.orderId}
-                          imageUrl={order.imageUrl}
-                        />
-                      ))}
+                      {loading ? (
+                        <p>Loading...</p>
+                      ) : (
+                        filteredOrders.map((order) => (
+                          <OrderCard
+                            key={order.orderId}
+                            status={order.status}
+                            totalAmount={order.totalAmount}
+                            orderDate={order.orderDate}
+                            orderId={order.orderId}
+                            imageUrl={order.imageUrl}
+                            itemCount={order.itemCount}
+                            onDetailsClick={() => navigate(`${order.orderId}`)}
+                          />
+                        ))
+                      )}
                     </TabPanel>
                     <TabPanel value="2">
-                      {filteredOrders.map((order) => (
-                        <OrderCard
-                          key={order.id}
-                          status={order.status}
-                          itemName={order.itemName}
-                          totalAmount={order.totalAmount}
-                          orderDate={order.orderDate}
-                          orderId={order.orderId}
-                          imageUrl={order.imageUrl}
-                        />
-                      ))}
+                      {loading ? (
+                        <p>Loading...</p>
+                      ) : (
+                        filteredOrders.map((order) => (
+                          <OrderCard
+                            key={order.orderId}
+                            status={order.status}
+                            totalAmount={order.totalAmount}
+                            orderDate={order.orderDate}
+                            orderId={order.orderId}
+                            imageUrl={order.imageUrl}
+                            itemCount={order.itemCount}
+                            onDetailsClick={() => navigate(`/${order.orderId}`)}
+                          />
+                        ))
+                      )}
                     </TabPanel>
                     <TabPanel value="3">
-                      {filteredOrders.map((order) => (
-                        <OrderCard
-                          key={order.id}
-                          status={order.status}
-                          itemName={order.itemName}
-                          totalAmount={order.totalAmount}
-                          orderDate={order.orderDate}
-                          orderId={order.orderId}
-                          imageUrl={order.imageUrl}
-                        />
-                      ))}
+                      {loading ? (
+                        <p>Loading...</p>
+                      ) : (
+                        filteredOrders.map((order) => (
+                          <OrderCard
+                            key={order.orderId}
+                            status={order.status}
+                            totalAmount={order.totalAmount}
+                            orderDate={order.orderDate}
+                            orderId={order.orderId}
+                            imageUrl={order.imageUrl}
+                            itemCount={order.itemCount}
+                            onDetailsClick={() => navigate(`${order.orderId}`)}
+                          />
+                        ))
+                      )}
                     </TabPanel>
                   </TabContext>
                 </Box>

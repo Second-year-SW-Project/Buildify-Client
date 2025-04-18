@@ -151,6 +151,7 @@ export function InputField({
         helperText={helperText}
         sx={{
           width: width,
+          marginBottom: "10px",
           "& .MuiInputBase-input": {
             fontSize: fontSize || "16px",
           },
@@ -183,7 +184,7 @@ export function InputField({
         disabled={disabled}
         error={!!error}
         helperText={helperText}
-        sx={{ width }}
+        sx={{ width, marginBottom: "10px" }}
       >
         {options.map((option, index) => (
           <MenuItem key={index} value={option.value}>
