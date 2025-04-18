@@ -25,11 +25,12 @@ const PaymentGateway = () => {
     try {
       const sanitizedCartItems = cartItems.map((item) => ({
         _id: item._id || item.id,
+        product_image: item.imgUrls?.[0]?.url || null,
         name: item.name,
         category: item.type,
         quantity: item.quantity,
         price: item.price
-        
+
       }));
 
       console.log("Sending Checkout Request:", { items: sanitizedCartItems, total: totalPrice });
@@ -88,16 +89,16 @@ const PaymentGateway = () => {
                 {/* Quantity Control + Price + Remove */}
                 <div className="flex items-center justify-end space-x-6 w-2/3">
                   <div className="flex items-center space-x-2 border px-3 py-1 rounded-md">
-                 
+
                     <span className="px-3 py-1 text-lg">{item.quantity}</span>
-                   
+
                   </div>
 
                   <p className="text-lg font-semibold text-gray-800">
                     {(item.price * item.quantity).toLocaleString()} LKR
                   </p>
 
-                  
+
                 </div>
               </div>
             ))}
@@ -119,7 +120,7 @@ const PaymentGateway = () => {
       <div>
         <Footer />
       </div>
-      
+
     </div>
   );
 };
@@ -164,7 +165,7 @@ const CheckoutForm = ({ onCheckout }) => {
 
     if (error) {
       console.error("Payment Method Error:", error);
-      
+
       alert("Payment failed. Please try again.");
     } else {
       onCheckout(paymentMethod.id);

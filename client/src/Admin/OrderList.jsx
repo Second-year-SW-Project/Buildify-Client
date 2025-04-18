@@ -10,6 +10,7 @@ import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 import SetDate from '../AtomicComponents/Inputs/date';
 import { SearchBar } from '../AtomicComponents/Inputs/Searchbar';
 
+
 function OrderList() {
 
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ function OrderList() {
     const orderColumns = [
         { id: "Id", label: "OrderID" },
         { id: "userCard", label: "Customer" },
-        { id: "date", label: "Created at" },
+        { id: "date", label: "Ordered at" },
         { id: "quantity", label: "Items" },
         { id: "price", label: "Price" },
         { id: "orderStatus", label: "Status" },

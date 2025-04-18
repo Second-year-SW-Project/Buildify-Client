@@ -3,14 +3,13 @@ import "./index.css";
 import { createRoot } from "react-dom/client";
 import { StrictMode } from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { Toaster } from "sonner";
 import theme from "./AtomicComponents/theme.jsx";
-import store from "./Store/store.js"; // Import your Redux store
+import store from "./Store/store.js";
 
 import CustomerApp from "./CustomerApp.jsx";
 import AdminApp from "./AdminApp.jsx";
@@ -38,17 +37,16 @@ import Login from "./Login/Login.jsx";
 import Verify from "./Login/Verify.jsx";
 import ResetPassword from "./Login/Resetpassword.jsx";
 import ForgetPassword from "./Login/Forgetpassword.jsx";
-
-// User Components
 import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
 import UserComplaints from "./User/UserComplaints.jsx";
+
+// User Components
 import UserProfile from "./UserdashboardFeature/pages/UserProfile.jsx";
 import RMAsupport from "./UserdashboardFeature/pages/RMAsupport.jsx";
 import MyOrders from "./UserdashboardFeature/pages/MyOrders.jsx";
 import OrderHistory from "./UserdashboardFeature/pages/OrderHistory.jsx";
 import SavedBuilds from "./UserdashboardFeature/pages/SavedBuilds.jsx";
 import Settings from "./UserdashboardFeature/pages/Settings.jsx";
-
 import Home from "./pages/Home/Home.jsx";
 import About from "./pages/About_page/About.jsx";
 import LoginPage from "./pages/Login_page/Login_page.jsx";
@@ -64,164 +62,97 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const router = createBrowserRouter([
     {
+        // Admin Routes
         path: "/adminpanel",
-        Component: AdminApp,
+        element: <AdminApp />,
         children: [
-            {
-                path: "auth/signup",
-                Component: Signup,
-            },
-            {
-                path: "auth/login",
-                Component: Login,
-            },
-            {
-                path: "auth/verify",
-                Component: Verify,
-            },
-            {
-                path: "auth/resetpassword",
-                Component: ResetPassword,
-            },
-            {
-                path: "auth/forgetpassword",
-                Component: ForgetPassword,
-            },
-            {
-                path: "user/complaint",
-                Component: ComplaintSubmit,
-            },
-            {
-                path: "user/complaintHistory",
-                Component: UserComplaints,
-            },
+            { path: "auth/signup", element: <Signup /> },
+            { path: "auth/login", element: <Login /> },
+            { path: "auth/verify", element: <Verify /> },
+            { path: "auth/resetpassword", element: <ResetPassword /> },
+            { path: "auth/forgetpassword", element: <ForgetPassword /> },
+            { path: "user/complaint", element: <ComplaintSubmit /> },
+            { path: "user/complaintHistory", element: <UserComplaints /> },
             {
                 path: "",
-                Component: Layout,
+                element: <Layout />,
                 children: [
-                    {
-                        path: "dashboard",
-                        Component: Dashboard,
-                    },
-                    {
-                        path: "admin",
-                        Component: AdminProfile,
-                    },
-                    {
-                        path: "admin/profile",
-                        Component: AdminProfile,
-                    },
-                    {
-                        path: "admin/setting",
-                        Component: AdminSetting,
-                    },
-                    {
-                        path: "games",
-                        Component: ManageGames,
-                    },
-                    {
-                        path: "games/managegames",
-                        Component: ManageGames,
-                    },
+                    { path: "dashboard", element: <Dashboard /> },
+                    { path: "admin", element: <AdminProfile /> },
+                    { path: "admin/profile", element: <AdminProfile /> },
+                    { path: "admin/setting", element: <AdminSetting /> },
+                    { path: "games", element: <ManageGames /> },
+                    { path: "games/managegames", element: <ManageGames /> },
                     {
                         path: "games/creategame",
                         children: [
-                            {
-                                index: true, // Route when no ID is provided
-                                Component: CreateGames,
-                            },
-                            {
-                                path: ":id", // Route for editing a product
-                                Component: CreateGames,
-                            },
+                            { index: true, element: <CreateGames /> },
+                            { path: ":id", element: <CreateGames /> },
                         ],
                     },
-                    {
-                        path: "products",
-                        Component: ManageProducts,
-                    },
-                    {
-                        path: "products/manageproduct",
-                        Component: ManageProducts,
-                    },
+                    { path: "products", element: <ManageProducts /> },
+                    { path: "products/manageproduct", element: <ManageProducts /> },
                     {
                         path: "products/createproduct",
                         children: [
-                            {
-                                index: true, //Route when no ID is provided
-                                Component: CreateProducts,
-                            },
-                            {
-                                path: ":id", //Route for editing a product
-                                Component: CreateProducts,
-                            },
+                            { index: true, element: <CreateProducts /> },
+                            { path: ":id", element: <CreateProducts /> },
                         ],
-                    },
-                    {
-                        path: "orders",
-                        Component: OrderList,
                     },
                     {
                         path: "orders/orderlist",
                         children: [
-                            {
-                                index: true, //Route when no ID is provided
-                                Component: OrderList,
-                            },
-                            {
-                                path: ":id", //Route for editing a product
-                                Component: OrderList,
-                            },
+                            { index: true, element: <OrderList /> },
+                            { path: ":id", element: <OrderList /> },
                         ],
                     },
                     {
                         path: "orders/receivedorders",
                         children: [
-                            {
-                                index: true, //Route when no ID is provided
-                                Component: ReceivedOrders,
-                            },
-                            {
-                                path: ":id", //Route for editing a product
-                                Component: ReceivedOrders,
-                            },
+                            { index: true, element: <ReceivedOrders /> },
+                            { path: ":id", element: <ReceivedOrders /> },
                         ],
                     },
-
-                    {
-                        path: "usermanage",
-                        Component: Usermanage,
-                    },
-                    {
-                        path: "feedbackmanage",
-                        Component: Complaints,
-                    },
-                    {
-                        path: "feedbackmanage/complaints",
-                        Component: Complaints,
-                    },
-                    {
-                        path: "feedbackmanage/rma",
-                        Component: RMA,
-                    },
-                    {
-                        path: "feedbackmanage/comments&reviews",
-                        Component: Review,
-                    },
-                    {
-                        path: "invoice",
-                        Component: InvoiceList,
-                    },
-                    {
-                        path: "invoice/invoicelist",
-                        Component: InvoiceList,
-                    },
-                    {
-                        path: "invoice/invoicecreate",
-                        Component: InvoiceCreate,
-                    },
+                    { path: "usermanage", element: <Usermanage /> },
+                    { path: "feedbackmanage", element: <Complaints /> },
+                    { path: "feedbackmanage/complaints", element: <Complaints /> },
+                    { path: "feedbackmanage/rma", element: <RMA /> },
+                    { path: "feedbackmanage/comments&reviews", element: <Review /> },
+                    { path: "invoice", element: <InvoiceList /> },
+                    { path: "invoice/invoicelist", element: <InvoiceList /> },
+                    { path: "invoice/invoicecreate", element: <InvoiceCreate /> },
                 ],
             },
+        ],
+    },
+    {
+        // Customer Routes
+        path: "/",
+        element: <CustomerApp />,
+        children: [
+            { path: "home", element: <Home /> },
+            { path: "about", element: <About /> },
+            { path: "cartpage", element: <CartPage /> },
+            { path: "paymentgateway", element: <PaymentGateway /> },
+            { path: "productcategorypage", element: <ProductCategoryPage /> },
+            {
+                path: "productcategorypage/:categoryName",
+                element: <ProductCategoryPage />,
+            },
+            { path: "itempage/:id", element: <ItemPage /> },
+            { path: "search", element: <SearchResults /> },
+            { path: "laptop", element: <LaptopCategoryPage /> },
+            { path: "selectgame", element: <SelectGameAndBudgetpage /> },
+
+            // User
+            { path: "user/complaint", element: <ComplaintSubmit /> },
+            { path: "user/complaintHistory", element: <UserComplaints /> },
+            { path: "profile", element: <UserProfile /> },
+            { path: "myOrders", element: <MyOrders /> },
+            { path: "rmaSupport", element: <RMAsupport /> },
+            { path: "orderHistory", element: <OrderHistory /> },
+            { path: "savedBuilds", element: <SavedBuilds /> },
+            { path: "settings", element: <Settings /> },
         ],
     },
 ]);
@@ -234,47 +165,12 @@ createRoot(root).render(
         <PersistGate loading={null} persistor={persistor}>
             <ThemeProvider theme={theme}>
                 <Toaster />
-                {/* Customer Routes */}
-                <BrowserRouter>
-                    <Routes>
-                        {/* Main Routes */}
-                        <Route path="/" element={<CustomerApp />} />
-                        <Route path="/home" element={<Home />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/cartpage" element={<CartPage />} />
-                        <Route path="/paymentgateway" element={<PaymentGateway />} />
-                        <Route
-                            path="/productcategorypage"
-                            element={<ProductCategoryPage />}
-                        />
-                        <Route
-                            path="/productcategorypage/:categoryName"
-                            element={<ProductCategoryPage />}
-                        />
-                        <Route path="/itempage/:id" element={<ItemPage />} />
-                        <Route path="/search" element={<SearchResults />} />
-                        <Route path="/laptop" element={<LaptopCategoryPage />} />
 
-
-                        {/* User Routes */}
-                        <Route path="/user/complaint" element={<ComplaintSubmit />} />
-                        <Route path="/user/complaintHistory" element={<UserComplaints />} />
-                        <Route path="/profile" element={<UserProfile />} />
-                        <Route path="/myOrders" element={<MyOrders />} />
-                        <Route path="/rmaSupport" element={<RMAsupport />} />
-                        <Route path="/orderHistory" element={<OrderHistory />} />
-                        <Route path="/savedBuilds" element={<SavedBuilds />} />
-                        <Route path="/settings" element={<Settings />} />
-
-                    </Routes>
-                </BrowserRouter>
-                {/* AdminPanel Routes */}
                 <StrictMode>
                     <RouterProvider router={router} />
                 </StrictMode>
 
             </ThemeProvider>
-
         </PersistGate>
     </Provider>
 );

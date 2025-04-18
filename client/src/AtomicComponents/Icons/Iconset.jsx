@@ -43,8 +43,10 @@ import AddPhotoAlternateSharpIcon from '@mui/icons-material/AddPhotoAlternateSha
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import GamesIcon from '@mui/icons-material/Games';
 import VideogameAssetSharpIcon from '@mui/icons-material/VideogameAssetSharp';
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
-export default function Iconset({ type = 'notification', fontSize = '30px', color }) {
+export default function Iconset({ type = 'notification', fontSize = '30px', color, isOpen }) {
     const renderIcon = () => {
 
         switch (type) {
@@ -92,6 +94,10 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'games': return <SportsEsportsIcon color={color} sx={{ fontSize }} />;
             case 'gamesList': return <GamesIcon color={color} sx={{ fontSize }} />;
             case 'gamesCreate': return <VideogameAssetSharpIcon color={color} sx={{ fontSize }} />;
+            case 'toggle':
+                return isOpen
+                    ? <KeyboardArrowUpIcon color={color} sx={{ fontSize }} />
+                    : <KeyboardArrowDownIcon color={color} sx={{ fontSize }} />;
             default: return null;
         }
     };
