@@ -27,7 +27,7 @@ export default function Productcategorypage() {
 
       <Navbar></Navbar>
 
-      <Categoryposter></Categoryposter>
+      <Categoryposter></Categoryposter> 
 
       <div className='font-bold  ml-[300px] mt-5 -mb-[41px]'>All Products</div>
       

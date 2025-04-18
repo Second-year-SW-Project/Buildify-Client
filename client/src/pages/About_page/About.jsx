@@ -1,73 +1,83 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 
-export default function PCBuilderBanners() {
-  const navigate = useNavigate();
+const OrdersPage = () => {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const backgroundStyle = {
-    backgroundImage: "url('../../../../public/modeposter.png')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
-  };
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/checkout"); // Replace with your backend URL
+        if (!response.ok) {
+          throw new Error("Failed to fetch orders");
+        }
+        const data = await response.json();
+        setOrders(data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  if (loading) {
+    return <p>Loading orders...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error}</p>;
+  }
 
   return (
-    <div
-      style={backgroundStyle}
-      className="min-h-screen w-full px-4 py-56 flex flex-col items-center gap-8"
-    >
-      {/* Banner Box */}
-      <div className="w-full max-w-4xl space-y-20">
-
-        {/* Advanced Builder */}
-        <div className="bg-gradient-to-br from-red-900/80 to-red-600/70 rounded-xl p-8 flex flex-col lg:flex-row items-center text-white shadow-xl backdrop-blur-sm">
-          <div className="lg:w-1/2">
-            <h2 className="text-2xl font-bold mb-2">Advanced Builder</h2>
-            <p className="mb-5 text-base leading-relaxed">
-              Custom built to order. Our PC builder lets you choose the
-              components you need to outclass your adversaries.
-            </p>
-            <button
-              onClick={() => navigate("/advanced-builder")}
-              className="bg-white text-red-700 font-semibold text-sm px-4 py-2 rounded hover:bg-gray-200 transition"
-            >
-              Customize Now
-            </button>
-          </div>
-          <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center">
-            <img
-              src="https://content.ibuypower.com/cdn-cgi/image/width=750,format=auto,quality=75/https://content.ibuypower.com//Images/en-US/Lobby/custom_main_1200x688.png?v=d06c6502df2519b6df5c0969713974d01c085129"
-              alt="Advanced Builder"
-              className="w-56 md:w-64 lg:w-72 object-contain"
-            />
-          </div>
-        </div>
-
-        {/* Easy Builder */}
-        <div className="bg-gradient-to-br from-red-900/80 to-red-600/70 rounded-xl p-8 flex flex-col lg:flex-row items-center text-white shadow-xl backdrop-blur-sm">
-          <div className="lg:w-1/2">
-            <h2 className="text-2xl font-bold mb-2">Easy Builder</h2>
-            <p className="mb-5 text-base leading-relaxed">
-              Custom build the perfect gaming PC based on the games you play and
-              we will ship it out in 5 business days!
-            </p>
-            <button
-              onClick={() => navigate("/easy-builder")}
-              className="bg-white text-red-700 font-semibold text-sm px-4 py-2 rounded hover:bg-gray-200 transition"
-            >
-              Customize Now
-            </button>
-          </div>
-          <div className="lg:w-1/2 mt-6 lg:mt-0 flex justify-center">
-            <img
-              src="https://content.ibuypower.com/cdn-cgi/image/width=750,format=auto,quality=75/https://content.ibuypower.com//Images/en-US/Lobby/ezb_main_nocut.png?v=d06c6502df2519b6df5c0969713974d01c085129"
-              alt="Easy Builder"
-              className="w-56 md:w-64 lg:w-72 object-contain"
-            />
-          </div>
-        </div>
-
+    <div>
+    
+      <div className="w-full max-w-7xl mx-auto mb-40 p-6 bg-white shadow-lg rounded-lg">
+        <h2 className="text-center text-xl font-bold bg-black text-white py-3 rounded-md">
+          All Orders
+        </h2>
+        {orders.length === 0 ? (
+          <p className="text-center text-gray-600 mt-5">No orders found</p>
+        ) : (
+          <table className="w-full mt-6 border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-300 px-4 py-2">Order ID</th>
+                <th className="border border-gray-300 px-4 py-2">Customer Name</th>
+                <th className="border border-gray-300 px-4 py-2">Total</th>
+                <th className="border border-gray-300 px-4 py-2">Items</th>
+                <th className="border border-gray-300 px-4 py-2">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order._id} className="text-center">
+                  <td className="border border-gray-300 px-4 py-2">{order._id}</td>
+                  <td className="border border-gray-300 px-4 py-2">{order.customerName}</td>
+                  <td className="border border-gray-300 px-4 py-2">{order.total} LKR</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {order.items.map((item) => (
+                      <p key={item._id}>
+                        {item.name} (x{item.quantity})
+                      </p>
+                    ))}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
+      
     </div>
   );
-}
+};
+
+export default OrdersPage;

@@ -6,16 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Usersearchbar from "./Usersearchbar";
 
 
-
-
-
-
-
-
-
-
-
-
 export default function Navbar() {
 
   const cartItems = useSelector(state => state.cart?.cartItems) || [];
@@ -95,12 +85,21 @@ export default function Navbar() {
               />
               {openDropdown === "profile" && (
                 <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-                  <Link to="/http://localhost:5173" className="block px-4 py-2 hover:bg-blue-400">
+                  <a href="http://localhost:5173/profile" className="block px-4 py-2 hover:bg-blue-400">
+                    Profile
+                  </a>
+                  <a href="http://localhost:5173/adminpanel/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
+                    Login
+                  </a>
+
+                  {/* <Link to="/loginpage" className="block px-4 py-2 hover:bg-blue-400">
                     Profile
                   </Link>
-                  <Link to="http://localhost:5173/auth/login" className="block px-4 py-2 hover:bg-blue-400">
+                  <Link to="/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
                     Login
-                  </Link>
+                  </Link> */}
+
+
                 </div>
               )}
             </div>
@@ -119,7 +118,7 @@ export default function Navbar() {
         <Link to="#" className="hover:text-blue-400">
           Custom Build
         </Link>
-        <Link to="#" className="hover:text-blue-400">
+        <Link to="/productcategorypage/prebuild" className="hover:text-blue-400">
           Pre Build
         </Link>
         <Link to="/productcategorypage/laptop" className="hover:text-blue-400">
@@ -141,24 +140,57 @@ export default function Navbar() {
           </button>
 
           {openDropdown === "components" && (
-            <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
+            <div className="absolute left-0 w-44 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
               <Link
                 to="/productcategorypage/gpu"
                 className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}   // Close dropdown on click
               >
                 Graphic Cards
               </Link>
               <Link
                 to="/productcategorypage/ram"
                 className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
               >
+
                 RAM
               </Link>
               <Link
                 to="/productcategorypage/processor"
                 className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}       // Close dropdown on click
               >
                 Processors
+              </Link>
+              <Link
+                to="/productcategorypage/motherboard"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}       // Close dropdown on click
+
+              >
+                MotherBoard
+              </Link>
+              <Link
+                to="/productcategorypage/power"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}       // Close dropdown on click
+              >
+                Power Supply
+              </Link>
+              <Link
+                to="/productcategorypage/storage"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}       // Close dropdown on click
+              >
+                Storage
+              </Link>
+              <Link
+                to="/productcategorypage/casing"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}       // Close dropdown on click
+              >
+                Casing
               </Link>
             </div>
           )}
@@ -180,13 +212,13 @@ export default function Navbar() {
 
           {openDropdown === "peripherals" && (
             <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)} >
                 Mice
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)} >
                 Keyboards
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)} >
                 Monitors
               </Link>
             </div>
@@ -207,13 +239,13 @@ export default function Navbar() {
 
           {openDropdown === "contact" && (
             <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)} >
                 Email Us
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)} >
                 Call Us
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)} >
                 Support
               </Link>
             </div>

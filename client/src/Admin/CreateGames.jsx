@@ -189,6 +189,8 @@ const CreateGames = () => {
                     if (imageSelectorRef.current) {
                         imageSelectorRef.current.deleteAllImages();
                     }
+                } else {
+                    navigate('/games/managegames');
                 }
             } else {
                 toast.error(isEditMode ? "Error updating game" : "Error adding game. Please try again.");

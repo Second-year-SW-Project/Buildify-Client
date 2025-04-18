@@ -2,7 +2,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import authSlice from './authSlice';
 import formSlice from './formSlice';
 import productSlice from './productSlice';
-import cartSlice from '../redux/cartSlice';  
+import cartSlice from '../redux/cartSlice';
 
 
 import {
@@ -28,7 +28,7 @@ const rootReducer = combineReducers({
   auth: authSlice,
   form: formSlice,
   product: productSlice,
-  cart : cartSlice,
+  cart: cartSlice,
   // Add your slices here
   // Add other reducers here as needed
 });
@@ -44,6 +44,7 @@ const store = configureStore({
       },
     }),
 });
+
 
 // Export the store
 export default store;

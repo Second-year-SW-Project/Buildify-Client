@@ -78,7 +78,7 @@ const PaymentGateway = () => {
                 {/* Product Image & Name */}
                 <div className="flex items-center space-x-4 w-1/3 min-w-[250px]">
                   <img
-                    src={item.imgUrls?.[0]?.url || "./graph1.png"}
+                    src={item.imgUrls?.[0]?.url || item.image || "./graph1.png"}
                     alt={item.name}
                     className="w-20 h-20 rounded-md object-cover"
                   />

@@ -5,6 +5,8 @@ const initialState = {
     selectedMainCategory: "",
     selectedSubCategory: "",
     selectedManufacture: "",
+    // selectedFilteredMainCategory: "",
+    // selectedFilteredSubCategory: "",
     subCategoryOptions: [subCategories],
     manufactureOptions: [manufacture],
     socketTypeOptions: [socketTypes],
@@ -15,6 +17,16 @@ const formSlice = createSlice({
     name: "form",
     initialState,
     reducers: {
+        // setSelectedFilterMainCategory: (state, action) => {
+        //     state.selectedFilteredMainCategory = action.payload;
+        //     // Update subcategory options based on the selected main category
+        //     state.subCategoryOptions = subCategories[action.payload] || [];
+        // },
+        // setSelectedFilterSubCategory: (state, action) => {
+        //     state.selectedFilteredSubCategory = action.payload;
+        //     // Update manufacture options based on the selected subcategory
+        //     state.manufactureOptions = manufacture[action.payload] || [];
+        // },
         setSelectedMainCategory: (state, action) => {
             state.selectedMainCategory = action.payload;
             // Update subcategory options based on the selected main category
@@ -31,7 +43,7 @@ const formSlice = createSlice({
             state.socketTypeOptions = socketTypes[action.payload] || [];
         },
         resetForm: (state) => {
-            return initialState; // Reset state to initial values
+            state = initialState; // Reset state to initial values
         }
     },
 });
@@ -40,6 +52,8 @@ export const {
     setSelectedMainCategory,
     setSelectedSubCategory,
     setSelectedManufacture,
+    // setSelectedFilterMainCategory,
+    // setSelectedFilterSubCategory,
     resetForm,
 } = formSlice.actions;
 

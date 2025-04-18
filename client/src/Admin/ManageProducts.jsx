@@ -33,9 +33,11 @@ function ManageProducts() {
     const dispatch = useDispatch();
 
     const {
-        selectedMainCategory,
         subCategoryOptions,
+        selectedMainCategory,
         selectedSubCategory,
+        // selectedFilteredMainCategory,
+        // selectedFilteredSubCategory
     } = useSelector((state) => state.form);
 
     const handleMainCategoryChange = (selectedValue) => {
@@ -64,6 +66,7 @@ function ManageProducts() {
         applyFilters();
     }, [statusFilter, selectedSubCategory, products, selectedDate]);
 
+    //fetch all the products
     const fetchProducts = async (searchTerm = "") => {
         try {
             const response = await axios.get("http://localhost:8000/api/product/all", {
@@ -89,6 +92,7 @@ function ManageProducts() {
         }
     };
 
+    //Apply the filters
     const applyFilters = (allProducts = products, selectedType = selectedSubCategory) => {
         let filtered = allProducts;
 
@@ -120,7 +124,7 @@ function ManageProducts() {
     };
 
     const handleEdit = (id) => {
-        navigate(`/products/createproduct/${id}`);
+        navigate(`/adminpanel/products/createproduct/${id}`);
     };
 
     const handleDelete = async () => {
@@ -145,6 +149,7 @@ function ManageProducts() {
         setOpenDialog(true);
     };
 
+    //Table Columns
     const productColumns = [
         { id: "productCard", label: "Product" },
         { id: "date", label: "Created at" },
@@ -160,6 +165,7 @@ function ManageProducts() {
         }
     };
 
+    // Table Data
     const productData = Array.isArray(filteredProducts)
         ? filteredProducts.map(product => ({
             id: product._id,
@@ -184,6 +190,7 @@ function ManageProducts() {
 
     return (
         <div className='pl-6 grid grid-rows'>
+            {/* Breadcrumbs */}
             <div className='mt-3'>
                 <PageTitle value="Manage Products"></PageTitle>
                 <CustomBreadcrumbs
@@ -193,6 +200,7 @@ function ManageProducts() {
                     ]} />
             </div>
 
+            {/* Add Product Button */}
             <div className="pb-4 mr-4">
                 <div className="float-right">
                     <AddButton
@@ -200,7 +208,7 @@ function ManageProducts() {
                         isBold={1}
                         buttonSize="medium"
                         fontSize="16px"
-                        onClick={() => navigate('/products/createproduct')}
+                        onClick={() => navigate('/adminpanel/products/createproduct')}
                     />
                 </div>
 
@@ -208,6 +216,7 @@ function ManageProducts() {
 
 
             <div className="mb-10 mr-4 border-2 border-black-200 rounded-md">
+                {/* filtering from */}
                 <div className='filterForm grid gap-4 grid-cols-1 flex flex-row p-4'>
                     <div className='filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4 flex flex-row'>
                         <div>
@@ -265,6 +274,7 @@ function ManageProducts() {
                         </div>
                     </div>
                 </div>
+                {/* Table Details */}
                 <div sx={{ width: '100%', borderRadius: "20px" }}>
                     <UserTable
                         columns={productColumns}
@@ -274,6 +284,7 @@ function ManageProducts() {
                     />
                 </div>
             </div>
+            {/* Alert Message */}
             <DialogAlert
                 name="Delete Product"
                 Title="Confirm Deletion"

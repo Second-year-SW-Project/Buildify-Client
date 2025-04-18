@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Button, Grid, Typography, Box, 
-  TextField, CircularProgress, Card, Divider 
+import {
+    Button, Grid, Typography, Box,
+    TextField, CircularProgress, Card, Divider
 } from '@mui/material';
 import { toast } from 'sonner';
 import axios from 'axios';
@@ -22,7 +22,7 @@ const Verify = () => {
 
     useEffect(() => {
         if (!user) {
-            navigate('/auth/signup', { replace: true });
+            navigate('adminpanel/auth/signup', { replace: true });
         }
     }, [user, navigate]);
 
@@ -31,7 +31,7 @@ const Verify = () => {
         if (/^\d+$/.test(pasteData)) {
             const newOtp = pasteData.split('').concat(Array(6 - pasteData.length).fill(''));
             setOtp(newOtp);
-            
+
             // Focus on last entered digit
             const focusIndex = Math.min(pasteData.length - 1, 5);
             inputRefs.current[focusIndex]?.focus();
@@ -63,11 +63,11 @@ const Verify = () => {
         try {
             const otpValue = otp.join('');
             const response = await axios.post(
-                'http://localhost:8000/api/v1/users/verify', 
-                { otp: otpValue }, 
+                'http://localhost:8000/api/v1/users/verify',
+                { otp: otpValue },
                 { withCredentials: true }
             );
-            
+
             dispatch(setAuthUser(response.data.data.user));
             toast.success('Verification successful');
             navigate('/auth/login');
@@ -96,33 +96,33 @@ const Verify = () => {
             <Card className="!bg-[#23103C] !rounded-xl !flex !p-8 !w-full md:!max-w-5xl !shadow-lg">
                 {/* Left Section */}
                 <Box className="flex-[1.2] !hidden md:!flex flex-col items-center justify-center !pr-6">
-                        <img 
-                              src={logo} 
-                              alt="Logo" 
-                              className="w-30 mb-4" 
-                            />
-                          <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
-                            Get compatible recommendations
-                            <br /> Pick your ideal components
-                          </Typography>
-                          <img 
-                            src={pcImage} 
-                            alt="PC" 
-                            className="w-full max-w-[300px] !mt-4" 
-                          />
-                        </Box>
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        className="w-30 mb-4"
+                    />
+                    <Typography variant="h6" className="!text-white !text-center !mb-6 !text-lg">
+                        Get compatible recommendations
+                        <br /> Pick your ideal components
+                    </Typography>
+                    <img
+                        src={pcImage}
+                        alt="PC"
+                        className="w-full max-w-[300px] !mt-4"
+                    />
+                </Box>
                 {/* Vertical Divider */}
-                <Divider 
-                    orientation="vertical" 
-                    flexItem 
-                    className="!bg-white/30 !mx-6 !hidden md:!block" 
+                <Divider
+                    orientation="vertical"
+                    flexItem
+                    className="!bg-white/30 !mx-6 !hidden md:!block"
                 />
 
                 {/* Right Section */}
                 <Box className="flex-1 !min-w-[180px] !max-w-sm">
 
                     <Box className="flex flex-col items-center mb-6">
-                        
+
                         <Typography variant="h4" className="!text-white !font-bold !text-2xl">
                             Verify Your Email
                         </Typography>
@@ -131,10 +131,10 @@ const Verify = () => {
                     {/* Hidden input for paste functionality */}
                     <TextField
                         inputRef={hiddenInputRef}
-                        style={{ 
-                            opacity: 0, 
-                            position: 'absolute', 
-                            pointerEvents: 'none' 
+                        style={{
+                            opacity: 0,
+                            position: 'absolute',
+                            pointerEvents: 'none'
                         }}
                         onPaste={handlePaste}
                     />

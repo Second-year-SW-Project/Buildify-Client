@@ -57,8 +57,9 @@ export default function Itemimage() {
           <button
             key={index}
             onClick={() => setMainImage(img)}
-            className={`border-2 rounded-lg p-2 transition ${Mainimage === img ? "border-black" : "border-gray-300 hover:border-gray-500"
-              }`}
+            className={`border-2 rounded-lg p-2 transition ${
+              Mainimage === img ? "border-black" : "border-gray-300 hover:border-gray-500"
+            }`}
           >
             <img
               src={img}

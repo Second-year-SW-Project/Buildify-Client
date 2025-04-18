@@ -238,24 +238,25 @@ const CreateProducts = () => {
                     const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
                     if (res.data.Success) {
 
-                        const fetchedProduct = res.data.data;
-                        // Exclude _id from product state
+                        const fetchedProduct = res.data;
+                        console.log("=====================fetched Product", fetchedProduct);
                         const { _id, ...productFields } = fetchedProduct;
 
                         setProduct({
                             ...initialProductState,
                             ...productFields,
                             imgUrls: productFields.imgUrls || [],
-                            powerConnectors: productFields.powerConnectors || [],
-                            supportedMemoryTypes: productFields.supportedMemoryTypes || [],
-                            pcieSlots: productFields.pcieSlots || [],
-                            storageInterfaces: productFields.storageInterfaces || [],
-                            supportedMotherboardSizes: productFields.supportedMotherboardSizes || [],
+                            //     powerConnectors: productFields.powerConnectors || [],
+                            //     supportedMemoryTypes: productFields.supportedMemoryTypes || [],
+                            //     pcieSlots: productFields.pcieSlots || [],
+                            //     storageInterfaces: productFields.storageInterfaces || [],
+                            //     supportedMotherboardSizes: productFields.supportedMotherboardSizes || [],
                         }); //to be comment(NEED TO CHECK)
                         setSelectedImages(productFields.imgUrls || []); //to be comment(NEED TO CHECK)
 
                         //Set main category
                         let foundMainCategory = null;
+
                         for (const [key, categoryList] of Object.entries(subCategories)) {
                             if (categoryList.some((item) => item.value === productFields.type)) {
                                 foundMainCategory = key;// "Necessary", "Optional", or "Common"
@@ -276,12 +277,12 @@ const CreateProducts = () => {
                         dispatch(setSelectedManufacture(productFields.manufacturer));
                     } else {
                         toast.error('Failed to load product');
-                        navigate('/products/manageproduct');
+                        // navigate('/products/manageproduct');
                     }
                 } catch (error) {
                     console.error('Error fetching product:', error);
                     toast.error('Failed to load product data');
-                    navigate('/products/manageproduct');
+                    // navigate('/products/manageproduct');
                 }
             };
             fetchProduct();
@@ -344,17 +345,17 @@ const CreateProducts = () => {
             if (response.data.Success) {
                 toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
                 if (!isEditMode) {
-                    //reset states
                     setProduct({ ...initialProductState });
                     //Reset Redux States
-                    setSelectedImages([]); //to be comment(NEED TO CHECK)
+                    setSelectedImages([]);
                     dispatch(resetForm());
                     if (imageSelectorRef.current) {
                         imageSelectorRef.current.deleteAllImages();
                     }
+                } else {
+                    navigate('/products/manageproduct');
                 }
-                // Uncomment to navigate after submission
-                // navigate('/products/manageproduct');
+
             } else {
                 toast.error(isEditMode ? 'Error in updating' : 'Error creating product. Please try again.');
             }

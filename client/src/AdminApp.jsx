@@ -3,7 +3,24 @@ import { Outlet } from "react-router-dom";
 import Iconset from './AtomicComponents/Icons/Iconset';
 import theme from './AtomicComponents/theme';
 
-const NAVIGATION = [
+const addBaseToSegments = (items, basePath) =>
+  items.map((item) => {
+    if (item.segment) {
+      const newSegment = `${basePath}/${item.segment}`;
+      return {
+        ...item,
+        segment: newSegment,
+        children: item.children
+          ? item.children
+          : undefined,
+      };
+    }
+    return item; // headers or dividers
+  });
+
+const BASE_PATH = 'adminpanel';
+
+const NAVIGATION = addBaseToSegments([
   {
     kind: 'header',
     title: 'Main',
@@ -56,6 +73,9 @@ const NAVIGATION = [
     ],
   },
   {
+    kind: 'divider',
+  },
+  {
     kind: 'header',
     title: 'Product & Order',
   },
@@ -88,9 +108,9 @@ const NAVIGATION = [
         icon: <Iconset type="orderList" />,
       },
       {
-        segment: 'receiveorder',
-        title: 'Received Order',
-        icon: <Iconset type="receiveOrder" />,
+        segment: 'receivedorders',
+        title: 'Received Orders',
+        icon: <Iconset type="receivedOrders" />,
       },
     ],
   },
@@ -161,7 +181,7 @@ const NAVIGATION = [
     ],
   },
 
-];
+], BASE_PATH);
 
 function AdminApp() {
 

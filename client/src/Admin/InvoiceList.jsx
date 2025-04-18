@@ -39,61 +39,58 @@ function InvoiceList() {
   const iconTypes = ["view", "edit", "delete"];
 
   return (
-    <div>
-      <ToolpadFixer></ToolpadFixer>
-      <div className="ml-[330px] -mt-[600px]">
-        <div className="pl-6 grid grid-rows">
-          <div className="mt-3">
-            <PageTitle value="Invoice List"></PageTitle>
-            <CustomBreadcrumbs
-              paths={[
-                { label: "Invoice", href: "/invoice/invoicelist" },
-                { label: "Invoice List" },
-              ]}
+    <div className="ml-[330px] -mt-[600px]">
+      <div className="pl-6 grid grid-rows">
+        <div className="mt-3">
+          <PageTitle value="Invoice List"></PageTitle>
+          <CustomBreadcrumbs
+            paths={[
+              { label: "Invoice", href: "/invoice/invoicelist" },
+              { label: "Invoice List" },
+            ]}
+          />
+        </div>
+
+        <div className="pb-4 mr-4">
+          <div className="float-right">
+            <AddButton
+              name="Create Invoice"
+              isBold={1}
+              buttonSize="medium"
+              fontSize="16px"
+              onClick={() => navigate("/invoice/invoicecreate")}
             />
           </div>
+        </div>
 
-          <div className="pb-4 mr-4">
-            <div className="float-right">
-              <AddButton
-                name="Create Invoice"
-                isBold={1}
-                buttonSize="medium"
-                fontSize="16px"
-                onClick={() => navigate("/invoice/invoicecreate")}
-              />
-            </div>
-          </div>
-
-          <div className="mr-4 border-2 border-black-200 rounded-md">
-            <div className="filterForm grid gap-4 grid-cols-1 flex flex-row p-4">
-              <div className="filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4 flex flex-row">
-                <div>
-                  <InputField
-                    type="select"
-                    label="All Orders"
-                    options={StockType}
-                    width="100%"
-                  />
-                </div>
-                <div>
-                  <SetDate width="100%" label="Start Date"></SetDate>
-                </div>
-                <div>
-                  <SetDate width="100%" label="End Date"></SetDate>
-                </div>
-                <div>
-                  <SearchBar placeholder="Search" width="100%"></SearchBar>
-                </div>
+        <div className="mr-4 border-2 border-black-200 rounded-md">
+          <div className="filterForm grid gap-4 grid-cols-1 flex flex-row p-4">
+            <div className="filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4 flex flex-row">
+              <div>
+                <InputField
+                  type="select"
+                  label="All Orders"
+                  options={StockType}
+                  width="100%"
+                />
+              </div>
+              <div>
+                <SetDate width="100%" label="Start Date"></SetDate>
+              </div>
+              <div>
+                <SetDate width="100%" label="End Date"></SetDate>
+              </div>
+              <div>
+                <SearchBar placeholder="Search" width="100%"></SearchBar>
               </div>
             </div>
-            <div sx={{ width: "100%", borderRadius: "20px" }}>
-              <UserTable
-                columns={invoiceColumns}
-                data={invoiceData}
-                iconTypes={iconTypes}
-              />
-            </div>
+          </div>
+          <div sx={{ width: "100%", borderRadius: "20px" }}>
+            <UserTable
+              columns={invoiceColumns}
+              data={invoiceData}
+              iconTypes={iconTypes}
+            />
           </div>
         </div>
       </div>

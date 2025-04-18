@@ -33,6 +33,8 @@ export default function Product_item_grid({ filters, allProducts, setAllProducts
         filters.brand.includes(product.manufacturer?.toUpperCase())
       );
     }
+
+    //size filter/capacity filter
     if (filters.capacity && filters.capacity.length > 0) {
       filtered = filtered.filter(product =>
         filters.capacity.includes(product.vram)

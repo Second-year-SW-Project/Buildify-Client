@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Dashboard() {
 
-    const navigate = useNavigate();
     return (
         <div class="size-auto">
             <PrimaryButton
@@ -17,7 +16,7 @@ export default function Dashboard() {
                 padding="50px"
                 type="button"
                 onClick={() => {
-                    window.location.href = 'http://localhost:5173/customer';
+                    window.location.href = 'http://localhost:5173';
                 }}
             />
         </div>

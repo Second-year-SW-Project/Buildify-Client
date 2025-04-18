@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import { useParams } from 'react-router-dom';
 import axios from "axios"
@@ -43,7 +43,7 @@ const Categoryposter = () => {
 
 
 
-  // switch case for category title and poster changing //
+// switch case for category title and poster changing //
 
 
   var title = "";  //category title
@@ -54,22 +54,47 @@ const Categoryposter = () => {
   switch (categoryName) {
     case "gpu":
       title = "GRAPHIC CARDS";
-      image = '../../../../public/categorybg.jpg';
+      image = "../../../../public/categorybg.jpg";
       break;
 
     case "ram":
       title = "RAM CARDS";
-      image = '../../../../public/rambanner.jpg';
+      image = "../../../../public/rambanner.jpg";
 
       break;
 
     case "processor":
       title = "PROCESSORS";
-      image = '../../../../public/processorbannernew.jpg';
+      image = "../../../../public/processorbannernew.jpg";
       break;
 
     case "motherboard":
       title = "MOTHERBOARDS";
+      image = "https://getwallpapers.com/wallpaper/full/2/2/4/564101.jpg";
+      //image = "https://getwallpapers.com/wallpaper/full/b/7/d/563146.jpg";
+      //image = "https://getwallpapers.com/wallpaper/full/c/3/6/563558.jpg";
+      break;
+
+    case "power":
+      title = "POWER SUPPLYS";
+      image = "https://rog.asus.com/media/1736246574698.jpg";
+      //image = "../../../../public/powersupplybanner.jpg";
+      //image = "https://pctekreviews.com/Reviews/ROG_THOR_1200/35.jpg";
+      break;
+
+    case "storage":
+      title = "STORAGE";
+      //image = "https://www.cyberpowerpc.com/template/2022/page/WD/Black/images/c1.jpg?v2";
+      //image = "https://www.techreviewer.com/virt/content/media/shared-graphics/tr-attr/ssd/1280x512-samsung-970-evo-ssd-m2-nvme_c9afca8c876d28d647914bb5eb7f5d40.webp/how-much-storage-for-gaming.webp";
+      image ="../../../../public/storagebanner.png";
+
+      break;
+
+    case "casing":
+      title = "CASINGS";
+      image = "../../../../public/casingbanner2.jpg";
+      //image = "../../../../public/casingbanner.jpg";
+    
       break;
 
     case "laptop":

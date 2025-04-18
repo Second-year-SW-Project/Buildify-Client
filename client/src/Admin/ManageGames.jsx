@@ -67,7 +67,7 @@ function ManageGames() {
     };
 
     const handleEdit = (id) => {
-        navigate(`/games/creategame/${id}`);
+        navigate(`/adminpanel/games/creategame/${id}`);
     };
 
     const handleDelete = async () => {
@@ -159,7 +159,7 @@ function ManageGames() {
                                 </div>
                             </div>
                         </div>
-                        <div className="overflow-x-auto" style={{ width: '100%', borderRadius: "20px" }}>
+                        <div sx={{ width: '100%', borderRadius: "20px" }}>
                             <UserTable
                                 columns={gameColumns}
                                 data={gameData}

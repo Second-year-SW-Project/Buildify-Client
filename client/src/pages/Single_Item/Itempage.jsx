@@ -12,6 +12,7 @@ import Itemspecs from './components/Itemspecs';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/cartSlice';
 
+import { toast } from 'sonner';
 
 
 
@@ -23,7 +24,7 @@ import { addToCart } from '../../redux/cartSlice';
 
 
 
-export let x = 1;
+export let  x=1;
 
 
 
@@ -32,7 +33,7 @@ export let x = 1;
 export default function Itempage() {
 
 
-  const { id } = useParams(); {/* get paticular data from id */ }
+  const { id } = useParams();            {/* get paticular data from id */}
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,130 +69,241 @@ export default function Itempage() {
   console.log(product.id);
 
   const handleAddToCart = () => {
-
-    console.log(product.type);
-    console.log(product.name);
-    console.log(product.price);
-
-    console.log(product.id);
-
-
+    
+      console.log(product.type);
+      console.log(product.name);
+      console.log(product.price);
+      
+      console.log(product.id);
+      
+    
     dispatch(addToCart(
       {
         _id: product.id,
         name: product.name,
         type: product.type,
         price: product.price,
-        image: product.imgUrls?.[0]?.url,
+        image:product.imgUrls?.[0]?.url,
         quantity: 1, // Default quantity to 1
       }
     ));
-    alert(`${product.name} added to cart`);
+    //alert(`${product.name} added to cart`);
+    toast.success(`${product.name} added to cart`, {
+      duration: 2000,
+      style: {
+        background: '#a036b2	',
+        color: '#fff',
+        fontSize: '16px',
+        fontWeight: 'bold',
+      },
+    });
+
   };
 
   //console.log(id); // Log the product data to the console
-  // Log the product data to the console
+   // Log the product data to the console
 
-  var spec1; //x
-  var spec2; //y
-  var spec3; //z
-  var spec4; //p
-  var spec5; //q   
-  var spec6; //r    //for warranty
-
-  var x;
-  var y;
-  var z;
-  var p;
-  var q;
-  var r;
-
-  switch (product.type) {
-    case "gpu":
-
-      spec1 = "Brand:";
-      spec2 = "Capacity:";
-      spec3 = "PCI:";
-      spec4 = "Series:";
-      spec5 = "Power Connectors:"
-      spec6 = "Warranty:";
-
-      x = product.manufacturer;
-      y = product.vram + " GB";
-      z = product.interfaceType;
-      p = product.series;
-      q = product.powerConnectors;
-      r = product.warranty;
-
-
-
-      break;
-
-
-    case "processor":
-      spec1 = "Brand:";  //x
-      spec2 = "Cores:";  //y
-      spec3 = "Threads:";  //z
-      spec4 = "Boost Clock:"  //p
-      spec5 = "Socket Type:";  //q
-      spec6 = "Warranty:";  //r
-
-
-      x = product.manufacturer;
-      y = product.coreCount;
-      z = product.threadCount;
-      p = product.boostClock + " GHz";
-      q = product.socketType;
-      r = product.warranty;
-
-      break;
-
-    case "ram":
-      spec1 = "Brand:";  //x
-      spec2 = "Capacity:";  //y
-      spec3 = "Type:";  //z
-      spec4 = "Speed:"  //p
-      spec5 = "Cache:";  //q
-      spec6 = "Warranty:";  //r
-
-
-      x = product.manufacturer;
-      y = product.memoryCapacity + " GB";
-      z = product.memoryType;
-
-      p = product.memoryType + " MHz";
-      q = product.memoryCapacity + " MB";
-      r = product.warranty;
-
-      break;
-
-
-    case "laptop":
-      spec1 = "Brand:";  //x
-      spec2 = "Ram:";  //y
-      spec3 = "Graphic Card:";  //z
-      spec4 = "Storage::"  //p
-      spec5 = "Resolution:";  //q
-      spec6 = "Warranty:";  //r
+   var spec1; //x
+   var spec2; //y
+   var spec3; //z
+   var spec4; //p
+   var spec5; //q   
+   var spec6; //r    //for warranty
+ 
+   var x;
+   var y;
+   var z;
+   var p;
+   var q;
+   var r;
+ 
+   switch (product.type) {
+     case "gpu":
+ 
+        spec1 = "Brand:";
+        spec2 = "Capacity:";
+        spec3 = "PCI:";
+        spec4 = "Series:";
+        spec5 =  "Power Connectors:"
+        spec6 = "Warranty:";
+ 
+       x = product.manufacturer.toUpperCase();             
+       y = product.vram + " GB"; 
+       z = product.interfaceType.toUpperCase();
+       p = product.series;
+       q = product.powerConnectors;
+       r = product.warranty;
+       
+ 
+       
+       break;
+ 
+ 
+       case "processor":
+         spec1 = "Brand:";  //x
+         spec2 = "Cores:";  //y
+         spec3 = "Threads:";  //z
+         spec4 = "Boost Clock:"  //p
+         spec5 = "Socket Type:";  //q
+         spec6 ="Warranty:";  //r
+      
+  
+        x = product.manufacturer.toUpperCase();
+        y = product. coreCount;
+        z = product.threadCount;
+        p = product.boostClock + " GHz";
+        q = product.socketType.toUpperCase();
+        r = product.warranty;
+     
+         break;
+ 
+         case "ram":
+           spec1 = "Brand:";  //x
+           spec2 = "Capacity:";  //y
+           spec3 = "Type:";  //z
+           spec4 = "Speed:"  //p
+           spec5 = "Cache:";  //q
+           spec6 ="Warranty:";  //r
+        
+    
+          x = product.manufacturer.toUpperCase();
+          y = product.memoryCapacity + " GB";
+          z = product.memoryType.toUpperCase();
+          
+          p = product.memorySpeed+ " MHz";
+          q = product.memoryCapacity + " MB";
+          r = product.warranty;
+       
+           break;
 
 
-      x = product.manufacturer;
-      y = product.ram + " GB";
-      z = product.graphicCard;
+           case "motherboard":
+            spec1 = "Brand:";  //x
+            spec2 = "Socket Type:";  //y
+            spec3 = "Chipset:";  //z
+            spec4 = "Ramslots:"  //p
+            spec5 = "Memory Type:";  //q
+            spec6 ="Warranty:";  //r
+         
+     
+           x = product.manufacturer.toUpperCase();
+           y = product.socketType.toUpperCase();
+           z = product.motherboardChipset;
+           
+           p = product.ramSlots;
+           q = product.supportedMemoryTypes;
+           r = product.warranty;
 
-      p = product.storage;
-      q = product.resolution;
-      r = product.warranty;
+           break; 
 
-      break;
+           case "power":
+            spec1 = "Brand:";  //x
+            spec2 = "Wattage:";  //y
+            spec3 = "Efficiecy:";  //z
+            spec4 = "Modular Type:"  //p
+            //spec5 = "Memory Type:";  //q
+            spec6 ="Warranty:";  //r
+         
+     
+           x = product.manufacturer.toUpperCase();
+           y = product.wattage + "W";
+           z = product.efficiencyRating.toUpperCase();
+           
+           p = product.modularType.toUpperCase();
+           //q = product.supportedMemoryTypes;
+           r = product.warranty;
+
+           break; 
+ 
+           case "storage":
+            spec1 = "Brand:";  //x
+            spec2 = "Storage Type:";  //y
+            spec3 = "Capacity:";  //z
+            //spec4 = "Speed:"  //p
+            //spec5 = "Resolution:";  //q
+            spec6 ="Warranty:";  //r
+         
+     
+           x = product.manufacturer.toUpperCase();
+           y = product.storageType.toUpperCase();
+           z = product.storageCapacity+"GB";
+           
+           //p = product.Speed;
+           //q = product.resolution;
+           r = product.warranty;
+
+           break;
+
+           case "casing":
+            spec1 = "Brand:";  //x
+            spec2 = "Supported Motherboard:";  //y
+            spec3 = "Max Gpu Length:";  //z
+            spec4 = "Max Cooler Height:"  //p
+            //spec5 = "Resolution:";  //q
+            spec6 ="Warranty:";  //r
+         
+     
+           x = product.manufacturer.toUpperCase();
+           y = product.supportedMotherboardSizes + " Models";
+           z = product.maxGpuLength+"mm";
+           
+           p = product.maxCoolerHeight+"mm";
+           //q = product.resolution;
+           r = product.warranty;
+
+           break;
 
 
+ 
+           case "laptop":
+             spec1 = "Brand:";  //x
+             spec2 = "Ram:";  //y
+             spec3 = "Graphic Card:";  //z
+             spec4 = "Storage::"  //p
+             spec5 = "Resolution:";  //q
+             spec6 ="Warranty:";  //r
+          
+      
+            x = product.manufacturer.toUpperCase();
+            y = product.ram + " GB";
+            z = product.graphicCard;
+            
+            p = product.storage;
+            q = product.resolution;
+            r = product.warranty;
+ 
+            break;
+
+            case "prebuild":
+              spec1 = "Brand:";  //x
+              spec2 = "Ram:";  //y
+              spec3 = "Graphic Card:";  //z
+              spec4 = "Storage::"  //p
+              spec5 = "Resolution:";  //q
+              spec6 ="Warranty:";  //r
+           
+       
+             x = product.manufacturer.toUpperCase();
+             y = product.ram + " GB";
+             z = product.graphicCard;
+             
+             p = product.storage;
+             q = product.resolution;
+             r = product.warranty;
+  
+             break;
+ 
 
 
-    default:
-      break;
-  }
-
+            
+           
+                     
+           
+   
+     default:
+       break;
+   }
+ 
 
 
   return (
@@ -210,11 +322,11 @@ export default function Itempage() {
         <div className="mt-[-560px] ml-[550px]">
           <div className="flex justify-end w-full">
             <div className="w-full md:mr-[50px] lg:w-1/2 xl:w-4/5 md:p-6 lg:p-8 text-gray-900">
-              <h2 className="pb-3 text-base md:text-lg lg:text-3xl font-semibold">
+              <h2 className="mt-4 pb-3 text-base md:text-lg lg:text-3xl font-semibold">
                 {product.name}
               </h2>
 
-              <div className="mt-2 space-y-4 text-xs md:text-sm lg:text-base">
+              <div className="mt-5 space-y-4 text-xs md:text-sm lg:text-base">
                 <p>
                   <span className="font-bold">{spec1}</span> {x}
                 </p>
@@ -263,7 +375,7 @@ export default function Itempage() {
           </div>
         </div>
 
-        <div className="mt-44 mb-9">
+        <div className="mt-28 mb-9">
           <ProductTabs />
         </div>
 
