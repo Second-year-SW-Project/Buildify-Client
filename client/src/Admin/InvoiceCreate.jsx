@@ -206,7 +206,7 @@ function InvoiceCreate() {
             <div className="grid gap-y-4 gap-x-4 grid-cols-4">
               <div>
                 <InputField
-                  type="textarea"
+                  type="text"
                   label="Invoice Number"
                   width="100%"
                   value={invoiceNumber}

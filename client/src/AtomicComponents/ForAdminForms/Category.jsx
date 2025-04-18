@@ -1,13 +1,17 @@
+import { expansionNetworkAttributes } from "./expansionNetworkCategories";
+
 const main = [
   { value: "Necessary", label: "Custom Build Necessary" },
   { value: "Optional", label: "Custom Build Optional" },
   { value: "Common", label: "Individual Category" },
 ];
+
 const StockType = [
-  { value: "InStock", label: "In Stock" },
-  { value: "OutStock", label: "Out of Stock" },
-  { value: "lowStock", label: "Low Stock" },
+  { value: "In Stock", label: "In Stock" },
+  { value: "Out of Stock", label: "Out of Stock" },
+  { value: "Low Stock", label: "Low Stock" },
 ];
+
 const InvoiceStatus = [
   { value: "draft", label: "Draft" },
   { value: "sent", label: "Sent" },
@@ -18,11 +22,12 @@ const InvoiceStatus = [
   { value: "cancelled", label: "Cancelled" },
   { value: "refunded", label: "Refunded" },
 ];
+
 const subCategories = {
   Necessary: [
     { value: "ram", label: "Ram" },
     { value: "gpu", label: "Graphic Cards" },
-    { value: "processors", label: "Processors" },
+    { value: "processor", label: "Processors" },
     { value: "motherboard", label: "Motherboard" },
     { value: "storage", label: "Storages" },
     { value: "casing", label: "Casing" },
@@ -39,7 +44,7 @@ const subCategories = {
   ],
   Common: [
     { value: "laptop", label: "Laptop" },
-    { value: "prebuilds", label: "Prebuilds" },
+    { value: "prebuild", label: "Prebuilds" },
     { value: "accessories", label: "Steaming Accessories" },
     { value: "externals", label: "External Storage" },
     { value: "cables_connectors", label: "Cables & Connectors" },
@@ -47,7 +52,7 @@ const subCategories = {
 };
 
 const manufacture = {
-  processors: [
+  processor: [
     { value: "intel", label: "Intel" },
     { value: "amd", label: "AMD" },
   ],
@@ -63,7 +68,7 @@ const manufacture = {
     { value: "gigabyte", label: "Gigabyte" },
     { value: "msi", label: "MSI" },
   ],
-  vga: [
+  gpu: [
     { value: "nvidia", label: "NVIDIA" },
     { value: "amd", label: "AMD" },
     { value: "msi", label: "MSI" },
@@ -79,8 +84,20 @@ const manufacture = {
     { value: "adata", label: "ADATA" },
     { value: "kingston", label: "Kingston" },
   ],
-  casing: [],
-  power: [],
+  casing: [
+    { value: "corsair", label: "Corsair" },
+    { value: "nzxt", label: "NZXT" },
+    { value: "lian_li", label: "Lian Li" },
+    { value: "cooler_master", label: "Cooler Master" },
+    { value: "fractal_design", label: "Fractal Design" },
+  ],
+  power: [
+    { value: "corsair", label: "Corsair" },
+    { value: "evga", label: "EVGA" },
+    { value: "seasonic", label: "Seasonic" },
+    { value: "thermaltake", label: "Thermaltake" },
+    { value: "be_quiet", label: "Be Quiet" },
+  ],
   cooling: [
     { value: "noctua", label: "Noctua" },
     { value: "corsair", label: "Corsair" },
@@ -120,8 +137,20 @@ const manufacture = {
     { value: "tripplite", label: "Tripplite" },
     { value: "cyberpowerpc", label: "CyberPowerPC" },
   ],
-  expansion_network: [],
-  gamepad: [],
+  expansion_network: [
+    { value: "creative", label: "Creative" },
+    { value: "asus", label: "ASUS" },
+    { value: "tp-link", label: "TP-Link" },
+    { value: "intel", label: "Intel" },
+    { value: "realtek", label: "Realtek" },
+    { value: "netgear", label: "Netgear" },
+  ],
+  gamepad: [
+    { value: "logitech", label: "Logitech" },
+    { value: "microsoft", label: "Microsoft" },
+    { value: "sony", label: "Sony" },
+    { value: "razer", label: "Razer" },
+  ],
   laptop: [
     { value: "dell", label: "Dell" },
     { value: "lenovo", label: "Lenovo" },
@@ -129,10 +158,15 @@ const manufacture = {
     { value: "asus", label: "ASUS" },
     { value: "acer", label: "Acer" },
     { value: "msi", label: "MSI" },
-    { value: "hp", label: "HP" },
     { value: "gigabyte", label: "Gigabyte" },
   ],
-  prebuilds: [],
+  prebuild: [
+    { value: "dell", label: "Dell" },
+    { value: "hp", label: "HP" },
+    { value: "asus", label: "ASUS" },
+    { value: "msi", label: "MSI" },
+    { value: "alienware", label: "Alienware" },
+  ],
 };
 
 const socketTypes = {
@@ -176,6 +210,30 @@ const cpuThreads = [
   { value: "32", label: "32 Threads" },
   { value: "64", label: "64 Threads" },
 ];
+
+const coolerAttributes = {
+  supportedSocket: [
+    { value: "lga1200", label: "LGA 1200" },
+    { value: "lga1151", label: "LGA 1151" },
+    { value: "lga2066", label: "LGA 2066" },
+    { value: "lga1700", label: "LGA 1700" },
+    { value: "am4", label: "AM4" },
+    { value: "tr4", label: "TR4" },
+    { value: "am5", label: "AM5" },
+    { value: "strx4", label: "sTRX4" },
+    { value: "swrx8", label: "sWRX8" },
+  ],
+  coolerType: [
+    { value: "air", label: "Air" },
+    { value: "liquid", label: "Liquid" },
+  ],
+  maxTdp: [
+    { value: 150, label: "150W" },
+    { value: 200, label: "200W" },
+    { value: 250, label: "250W" },
+    { value: 300, label: "300W" },
+  ],
+};
 
 const ramAttributes = {
   type: [
@@ -249,14 +307,25 @@ const motherboardAttributes = {
     { value: "128", label: "128GB" },
     { value: "256", label: "256GB" },
   ],
-  pcieSlotType: [],
-  pcieVersion: [],
-  storageType: [],
-  expansionSlots: [],
   memoryTypes: [
     { value: "ddr3", label: "DDR3" },
     { value: "ddr4", label: "DDR4" },
     { value: "ddr5", label: "DDR5" },
+  ],
+  pcieSlotType: [
+    { value: "x16", label: "PCIe x16" },
+    { value: "x8", label: "PCIe x8" },
+    { value: "x4", label: "PCIe x4" },
+    { value: "x1", label: "PCIe x1" },
+  ],
+  pcieVersion: [
+    { value: "3.0", label: "3.0" },
+    { value: "4.0", label: "4.0" },
+    { value: "5.0", label: "5.0" },
+  ],
+  storageType: [
+    { value: "M.2", label: "M.2" },
+    { value: "SATA", label: "SATA" },
   ],
 };
 
@@ -304,6 +373,27 @@ const gpuAttributes = {
     { value: "24", label: "24GB" },
     { value: "48", label: "48GB" },
   ],
+  gpuSeries: [
+    { value: "gtx", label: "GTX" },
+    { value: "rtx_2000", label: "RTX 2000" },
+    { value: "rtx_3000", label: "RTX 3000" },
+    { value: "rtx_4000", label: "RTX 4000" },
+    { value: "rx_6000", label: "RX 6000" },
+    { value: "rx_7000", label: "RX 7000" },
+  ],
+  gpuChipset: [
+    { value: "RTX_3060", label: "RTX 3060" },
+    { value: "RTX_3070", label: "RTX 3070" },
+    { value: "RTX_3080", label: "RTX 3080" },
+    { value: "RTX_3090", label: "RTX 3090" },
+    { value: "RTX_4060", label: "RTX 4060" },
+    { value: "RTX_4070", label: "RTX 4070" },
+    { value: "RTX_4080", label: "RTX 4080" },
+    { value: "RTX_4090", label: "RTX 4090" },
+    { value: "RX_6700", label: "RX 6700" },
+    { value: "RX_6800", label: "RX 6800" },
+    { value: "RX_6900", label: "RX 6900" },
+  ],
 };
 
 const casingAttributes = {
@@ -320,6 +410,32 @@ const casingAttributes = {
     { value: "mini_itx", label: "Mini-ITX" },
     { value: "e_atx", label: "E-ATX" },
     { value: "xl_atx", label: "XL-ATX" },
+  ],
+};
+
+const powerAttributes = {
+  wattage: [
+    { value: 400, label: "400W" },
+    { value: 500, label: "500W" },
+    { value: 600, label: "600W" },
+    { value: 650, label: "650W" },
+    { value: 750, label: "750W" },
+    { value: 850, label: "850W" },
+    { value: 1000, label: "1000W" },
+    { value: 1200, label: "1200W" },
+  ],
+  efficiencyRating: [
+    { value: "80_plus_white", label: "80+ White" },
+    { value: "80_plus_bronze", label: "80+ Bronze" },
+    { value: "80_plus_silver", label: "80+ Silver" },
+    { value: "80_plus_gold", label: "80+ Gold" },
+    { value: "80_plus_platinum", label: "80+ Platinum" },
+    { value: "80_plus_titanium", label: "80+ Titanium" },
+  ],
+  modularType: [
+    { value: "non_modular", label: "Non-Modular" },
+    { value: "semi_modular", label: "Semi-Modular" },
+    { value: "fully_modular", label: "Fully Modular" },
   ],
 };
 
@@ -343,24 +459,6 @@ const mouseAttributes = {
     { value: "wired", label: "Wired" },
     { value: "wireless", label: "Wireless" },
     { value: "bluetooth", label: "Bluetooth" },
-  ],
-};
-
-const coolerAttributes = {
-  supportedSocket: [
-    { value: "lga1200", label: "LGA 1200" },
-    { value: "lga1151", label: "LGA 1151" },
-    { value: "lga2066", label: "LGA 2066" },
-    { value: "lga1700", label: "LGA 1700" },
-    { value: "am4", label: "AM4" },
-    { value: "tr4", label: "TR4" },
-    { value: "am5", label: "AM5" },
-    { value: "strx4", label: "sTRX4" },
-    { value: "swrx8", label: "sWRX8" },
-  ],
-  coolerType: [
-    { value: "air", label: "Air" },
-    { value: "liquid", label: "Liquid" },
   ],
 };
 
@@ -442,7 +540,7 @@ const laptopAttributes = {
     { value: "professional", label: "Professional" },
     { value: "personal", label: "Personal" },
   ],
-  graphicsCard: [
+  graphicCard: [
     { value: "intel_integrated", label: "Intel Integrated GPU" },
     { value: "amd_integrated", label: "AMD Integrated GPU" },
     { value: "nvidia_rtx_4060", label: "NVIDIA RTX 4060" },
@@ -490,8 +588,6 @@ const desktopAttributes = {
   ],
 };
 
-// const allSubCategoryOptions = Object.values(subCategories).flatMap(options => options);
-
 export {
   main,
   StockType,
@@ -512,4 +608,6 @@ export {
   laptopAttributes,
   desktopAttributes,
   InvoiceStatus,
+  expansionNetworkAttributes,
+  powerAttributes,
 };

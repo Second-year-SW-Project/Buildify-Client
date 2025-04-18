@@ -53,7 +53,7 @@ export default function SideNav() {
         <ListItem disablePadding>
           <ListItemButton
             component={Link}
-            to="/user/RMAsupport"
+            to="/user/rmaSupport"
             className="group"
           >
             <ListItemIcon className="group-hover:text-purple-500">

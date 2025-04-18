@@ -147,12 +147,12 @@ const router = createBrowserRouter([
       // User
       { path: "user/complaint", element: <ComplaintSubmit /> },
       { path: "user/complaintHistory", element: <UserComplaints /> },
-      { path: "profile", element: <UserProfile /> },
-      { path: "myOrders", element: <MyOrders /> },
-      { path: "rmaSupport", element: <RMAsupport /> },
-      { path: "orderHistory", element: <OrderHistory /> },
-      { path: "savedBuilds", element: <SavedBuilds /> },
-      { path: "settings", element: <Settings /> },
+      { path: "user/profile", element: <UserProfile /> },
+      { path: "user/orders", element: <MyOrders /> },
+      { path: "user/rmaSupport", element: <RMAsupport /> },
+      { path: "user/orderHistory", element: <OrderHistory /> },
+      { path: "user/savedBuilds", element: <SavedBuilds /> },
+      { path: "user/settings", element: <Settings /> },
     ],
   },
 ]);
