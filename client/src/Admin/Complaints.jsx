@@ -35,7 +35,7 @@ const Complaints = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [responseText, setResponseText] = useState('');
-  const [status, setStatus] = useState('Pending'); // State to track status
+  const [status, setStatus] = useState('Pending');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [page, setPage] = useState(0);
@@ -74,13 +74,13 @@ const Complaints = () => {
   const handleRespond = async () => {
     try {
       await axios.put(`http://localhost:8000/api/complaints/admin/respond/${selectedComplaint._id}`, {
-        status: status, // Send the selected status
+        status,
         response: responseText
       });
       toast.success('Response submitted!');
       setOpenDialog(false);
       setResponseText('');
-      setStatus('Pending'); // Reset status to Pending after response submission
+      setStatus('Pending');
       fetchComplaints();
     } catch (err) {
       toast.error('Failed to submit response');
@@ -98,7 +98,8 @@ const Complaints = () => {
               paths={[
                 { label: 'Feedback Manage', href: "/feedbackmanage/complaints" },
                 { label: 'Complaint Management' },
-              ]} />
+              ]}
+            />
           </div>
         </div>
 
@@ -144,60 +145,23 @@ const Complaints = () => {
         
       </div>
 
-      {/* Complaints Table */}
+      
+
       <Paper className="rounded-lg shadow">
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: '#F4E6FF'  }}>
-                <TableCell   style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}>User Details</TableCell>
-                <TableCell   style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}>Date</TableCell>
-                <TableCell   style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}>Complaint</TableCell>
-                <TableCell   style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}>Complaint Type</TableCell>
-                <TableCell   style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}>Status</TableCell>
-                <TableCell   style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}>Action</TableCell>
+              <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
+                {['User Details', 'Date', 'Complaint', 'Complaint Type', 'Status', 'Action'].map(header => (
+                  <TableCell key={header} style={{
+                    padding: "8px 16px",
+                    textAlign: "left",
+                    verticalAlign: "middle",
+                    color: "grey",
+                    fontWeight: "bold",
+                    borderBottom: "1px solid #e0e0e0"
+                  }}>{header}</TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -207,26 +171,21 @@ const Complaints = () => {
                   <TableRow key={complaint._id} className="hover:bg-gray-50">
                     <TableCell>
                       <Box className="flex items-center space-x-3">
-                        <Avatar 
-                          src={complaint.user?.profilePicture || ''} 
+                        <Avatar
+                          src={complaint.user?.profilePicture || ''}
                           sx={{ width: 40, height: 40, marginRight: 2 }}
                         >
-                          {!complaint.user?.profilePicture && complaint.user?.name.charAt(0).toUpperCase()}
+                          {!complaint.user?.profilePicture && complaint.user?.name?.charAt(0).toUpperCase()}
                         </Avatar>
                         <Box>
-                          <Typography className="font-semibold text-gray-900" style={{fontWeight:"bold"}}>
-                            {complaint.user?.name}
-                          </Typography>
-                          <Typography className="text-sm text-gray-500">
-                            {complaint.user?.email}
-                          </Typography>
+                          <Typography className="font-semibold text-gray-900">{complaint.user?.name}</Typography>
+                          <Typography className="text-sm text-gray-500">{complaint.user?.email}</Typography>
                         </Box>
                       </Box>
                     </TableCell>
-
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="text-sm text-black" style={{fontWeight:"bold"}}>
+                        <span className="text-sm text-black font-bold">
                           {new Date(complaint.createdAt).toLocaleDateString()}
                         </span>
                         <span className="text-xs text-gray-500">
@@ -234,15 +193,8 @@ const Complaints = () => {
                         </span>
                       </div>
                     </TableCell>
-
-                    <TableCell className="text-gray-600" style={{fontWeight:"bold"}}>
-                      {complaint.description}
-                    </TableCell>
-
-                    <TableCell className="text-gray-600" style={{fontWeight:"bold"}}>
-                      {complaint.complaintType}
-                    </TableCell>
-
+                    <TableCell className="text-gray-600 font-bold">{complaint.description}</TableCell>
+                    <TableCell className="text-gray-600 font-bold">{complaint.complaintType}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-sm whitespace-nowrap ${
                         complaint.status === 'Resolved' ? 'bg-green-100 text-green-800' :
@@ -252,13 +204,14 @@ const Complaints = () => {
                         {complaint.status}
                       </span>
                     </TableCell>
-
                     <TableCell>
-                      <IconButton 
+                      <IconButton
                         className="text-purple-600 hover:bg-purple-50"
                         onClick={() => {
                           setSelectedComplaint(complaint);
                           setOpenDialog(true);
+                          setResponseText('');
+                          setStatus(complaint.status || 'Pending');
                         }}
                       >
                         <ReplyIcon fontSize="30px" />
@@ -281,6 +234,7 @@ const Complaints = () => {
       </Paper>
       </Box>
 
+      </Box>
       {/* Response Dialog */}
       <Dialog
         open={openDialog}
@@ -292,21 +246,18 @@ const Complaints = () => {
           sx: { overflow: 'hidden', borderRadius: '24px' },
         }}
       >
-        {/* Dialog Header */}
-        <DialogTitle
-          sx={{
-            backgroundColor: '#F3E8FF',
-            color: '#3A0C6F',
-            px: 5,
-            py: 3.5,
-            borderTopLeftRadius: '24px',
-            borderTopRightRadius: '24px',
-            borderBottom: '1px solid #ddd',
-          }}
-        >
+        <DialogTitle sx={{
+          backgroundColor: '#F9F7FF',
+          color: '#3A0C6F',
+          px: 5,
+          py: 3.5,
+          borderTopLeftRadius: '24px',
+          borderTopRightRadius: '24px',
+          borderBottom: '1px solid #ddd',
+        }}>
           <div className="flex justify-between items-center">
             <Typography variant="h6" className="font-bold tracking-wide flex items-center gap-2">
-              📝 Respond to Complaint
+              Respond to Complaint
             </Typography>
             <Typography variant="caption" className="text-sm text-gray-600 italic">
               {selectedComplaint && new Date(selectedComplaint.createdAt).toLocaleString()}
@@ -314,107 +265,66 @@ const Complaints = () => {
           </div>
         </DialogTitle>
 
-        {/* Dialog Content */}
         <DialogContent className="p-6 space-y-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 rounded-2xl">
           {selectedComplaint && (
             <>
-              {/* User Info Card */}
-              <div className="bg-gradient-to-br from-purple-50 via-purple-100 to-white p-5 rounded-2xl border border-purple-300 shadow-sm transition-transform hover:scale-[1.01] mt-6">
+              <div className="bg-purple-100 p-5 rounded-2xl border border-purple-600 shadow-sm">
                 <div className="flex items-start space-x-5">
-                  <Avatar 
-                    src={selectedComplaint.user?.profilePicture || ''} 
+                  <Avatar
+                    src={selectedComplaint.user?.profilePicture || ''}
                     sx={{ width: 56, height: 56, bgcolor: '#c084fc' }}
                     className="ring-2 ring-purple-500"
                   >
                     {!selectedComplaint.user?.profilePicture && selectedComplaint.user?.name.charAt(0).toUpperCase()}
                   </Avatar>
                   <div className="mt-1">
-                    <Typography className="font-bold text-purple-900 text-lg">
+                    <Typography className="font-bold text-gray-800 text-lg">
                       {selectedComplaint.user?.name}
                     </Typography>
-                    <Typography className="text-sm text-gray-600 mt-1">
+                    <Typography className="text-sm text-gray-800 mt-1">
                       {selectedComplaint.user?.email}
                     </Typography>
                   </div>
                 </div>
               </div>
 
-              {/* Complaint Description */}
               <div className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md">
-                <Typography className="text-gray-700 leading-relaxed text-base whitespace-pre-line font-medium">
-                  {selectedComplaint.description}
+                <Typography className="text-gray-800 text-base font-semibold mb-2">
+                  Complaint Description:
                 </Typography>
+                <Typography className="text-gray-600">{selectedComplaint.description}</Typography>
               </div>
 
-              {/* Divider */}
-              <div className="my-4 h-1 w-full bg-gradient-to-r from-purple-100 via-purple-300 to-purple-100 rounded-xl mx-auto"></div>
+              <TextField
+                label="Response"
+                fullWidth
+                multiline
+                rows={4}
+                value={responseText}
+                onChange={(e) => setResponseText(e.target.value)}
+              />
 
-              {/* Previous Response */}
-              {selectedComplaint.response && (
-                <div className="p-5 bg-gray-100 border border-gray-200 rounded-2xl shadow-sm">
-                  <Typography className="text-gray-800 leading-relaxed text-base font-medium">
-                    <span className="font-bold">Previous Response:</span>
-                    <div className="mt-2">{selectedComplaint.response}</div>
-                  </Typography>
-                </div>
-              )}
-
-              {/* Response Section */}
-              <div className="flex flex-col space-y-5">
-                {/* Select Complaint Status */}
-                <FormControl fullWidth>
-                  <InputLabel>Status</InputLabel>
-                  <Select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    label="Status"
-                    sx={{ height: 56, borderRadius: '8px' }}
-                  >
-                    <MenuItem value="Pending">Pending</MenuItem>
-                    <MenuItem value="In Progress">In Progress</MenuItem>
-                    <MenuItem value="Resolved">Resolved</MenuItem>
-                  </Select>
-                </FormControl>
-
-                {/* Response Text */}
-                <TextField
-                  label="Response"
-                  variant="outlined"
-                  value={responseText}
-                  onChange={(e) => setResponseText(e.target.value)}
-                  fullWidth
-                  multiline
-                  rows={4}
-                  sx={{ borderRadius: '8px' }}
-                />
-              </div>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  label="Status"
+                >
+                  <MenuItem value="Pending">Pending</MenuItem>
+                  <MenuItem value="In Progress">In Progress</MenuItem>
+                  <MenuItem value="Resolved">Resolved</MenuItem>
+                </Select>
+              </FormControl>
             </>
           )}
         </DialogContent>
 
-        {/* Dialog Footer */}
-        <DialogActions sx={{ px: 5, py: 3, backgroundColor: '#F9F7FF' }}>
-          <Button onClick={() => setOpenDialog(false)} variant="text"  className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
-            sx={{
-              textTransform: "none", padding: "14px 18px",
-              width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px"
-            }}>
+        <DialogActions className="px-6 py-4">
+          <Button onClick={() => setOpenDialog(false)} color="secondary" variant="outlined">
             Cancel
           </Button>
-          <Button
-            onClick={handleRespond}
-            variant="contained"
-            color="primary"
-            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-            sx={{
-              textTransform: "none",
-              padding: "14px 18px",
-              width: "180px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              borderRadius: "10px"
-            }}
-          >
+          <Button onClick={handleRespond} variant="contained" color="primary">
             Submit Response
           </Button>
         </DialogActions>

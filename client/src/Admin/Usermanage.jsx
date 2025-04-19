@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
-import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import debounce from 'lodash.debounce';
 
@@ -323,23 +323,16 @@ const Usermanage = () => {
   </Table>
 </TableContainer>
 
-{/* Pagination */}
-<TablePagination
-  rowsPerPageOptions={[5, 10, 25]}
-  component="div"
-  count={filteredUsers.length}
-  rowsPerPage={rowsPerPage}
-  page={page}
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={handleChangeRowsPerPage}
-  sx={{
-    // borderTop: "1px solid #e0e0e0", // Light grey top border for pagination
-     borderBottom: "1px solid  #e0e0e0",
-      borderRight: "1px solid  #e0e0e0",
-      borderLeft: "1px solid  #e0e0e0", // Dark grey bottom border for pagination
-    padding: "10px 0" // Optional: adjusts padding if you want it slightly tighter
-  }}
-/>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredUsers.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Box>
 
         </Box>
         </Box>
@@ -467,28 +460,16 @@ const Usermanage = () => {
   </DialogActions>
 </Dialog>
 
-
-
-          {/* Delete Confirmation Dialog */}
-           {/* Delete Confirmation Dialog */}
-                              <DialogAlert
-                                  name="Delete Game"
-                                  Title="Confirm Deletion"
-                                  message="Are you sure you want to delete this game? This action cannot be undone."
-                                  Disagree="Cancel"
-                                  Agree="Delete"
-                                  open={openDeleteDialog}
-                                  handleClose={closeDeleteConfirmationDialog}
-                                  handleAgree={deleteUser}
-                              />
-        
-
-
-        </div>
-      </div>
+      {/* Delete Confirmation Dialog */}
+      <DialogAlert
+        open={openDeleteDialog}
+        onClose={closeDeleteConfirmationDialog}
+        onConfirm={deleteUser}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this user? This action cannot be undone."
+      />
     </div>
   );
-}
-
+};
 
 export default Usermanage;
