@@ -9,6 +9,7 @@ import {
 import { Edit, Delete } from "@mui/icons-material";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 
 const Usermanage = () => {
   const [users, setUsers] = useState([]);
@@ -470,54 +471,18 @@ const Usermanage = () => {
 
 
           {/* Delete Confirmation Dialog */}
-          <Dialog open={openDeleteDialog} onClose={closeDeleteConfirmationDialog} sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '450px' } }}>
-  <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: '500', textAlign: 'center', color: '#4B4B4B' }}>
-    Confirm Deletion
-  </DialogTitle>
-  <DialogContent sx={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-    <Typography variant="body1" sx={{ fontSize: '1rem', color: '#4B4B4B', textAlign: 'center' }}>
-      Are you sure you want to delete this user?
-    </Typography>
-  </DialogContent>
-  <DialogActions sx={{ justifyContent: 'center', paddingBottom: '20px' }}>
-    <Button
-      onClick={closeDeleteConfirmationDialog}
-      className="bg-gray-500 hover:bg-gray-200 text-gray-800 font-bold"
-      sx={{
-        textTransform: 'none',
-        padding: '14px 18px',
-        width: '180px',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        borderRadius: '10px',
-        '&:hover': {
-          backgroundColor: '#E0E0E0',  // Tailwind hover color equivalent
-        }
-      }}
-    >
-      Cancel
-    </Button>
-    <Button
-      onClick={deleteUser}
-      color="error"
-      variant="contained"
-      sx={{
-        textTransform: 'none',
-        fontWeight: 'bold',
-        backgroundColor: '#FF3D3D',
-        width: '180px',
-        padding: '14px 18px',
-        fontSize: '16px',
-        borderRadius: '10px',
-        '&:hover': {
-          backgroundColor: '#D32F2F',
-        }
-      }}
-    >
-      Delete
-    </Button>
-  </DialogActions>
-</Dialog>
+           {/* Delete Confirmation Dialog */}
+                              <DialogAlert
+                                  name="Delete Game"
+                                  Title="Confirm Deletion"
+                                  message="Are you sure you want to delete this game? This action cannot be undone."
+                                  Disagree="Cancel"
+                                  Agree="Delete"
+                                  open={openDeleteDialog}
+                                  handleClose={closeDeleteConfirmationDialog}
+                                  handleAgree={deleteUser}
+                              />
+        
 
 
         </div>
