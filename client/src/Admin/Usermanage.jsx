@@ -335,7 +335,7 @@ const Usermanage = () => {
       </Box>
 
         </Box>
-        </Box>
+        
 
         {/* Edit/Add User Dialog */}
         <Dialog open={openModal} onClose={() => setOpenModal(false)} sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '500px' } }}>
@@ -468,6 +468,8 @@ const Usermanage = () => {
         title="Confirm Delete"
         description="Are you sure you want to delete this user? This action cannot be undone."
       />
+    </div>
+    </div>
     </div>
   );
 };

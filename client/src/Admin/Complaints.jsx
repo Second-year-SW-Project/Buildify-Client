@@ -234,9 +234,10 @@ const Complaints = () => {
       </Paper>
       </Box>
 
-      </Box>
+      
       {/* Response Dialog */}
-      <Dialog
+       {/* Response Dialog */}
+       <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         maxWidth="md"
@@ -246,18 +247,21 @@ const Complaints = () => {
           sx: { overflow: 'hidden', borderRadius: '24px' },
         }}
       >
-        <DialogTitle sx={{
-          backgroundColor: '#F9F7FF',
-          color: '#3A0C6F',
-          px: 5,
-          py: 3.5,
-          borderTopLeftRadius: '24px',
-          borderTopRightRadius: '24px',
-          borderBottom: '1px solid #ddd',
-        }}>
+        {/* Dialog Header */}
+        <DialogTitle
+          sx={{
+            backgroundColor: '#F3E8FF',
+            color: '#3A0C6F',
+            px: 5,
+            py: 3.5,
+            borderTopLeftRadius: '24px',
+            borderTopRightRadius: '24px',
+            borderBottom: '1px solid #ddd',
+          }}
+        >
           <div className="flex justify-between items-center">
             <Typography variant="h6" className="font-bold tracking-wide flex items-center gap-2">
-              Respond to Complaint
+              📝 Respond to Complaint
             </Typography>
             <Typography variant="caption" className="text-sm text-gray-600 italic">
               {selectedComplaint && new Date(selectedComplaint.createdAt).toLocaleString()}
@@ -265,70 +269,112 @@ const Complaints = () => {
           </div>
         </DialogTitle>
 
+        {/* Dialog Content */}
         <DialogContent className="p-6 space-y-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-purple-100 rounded-2xl">
           {selectedComplaint && (
             <>
-              <div className="bg-purple-100 p-5 rounded-2xl border border-purple-600 shadow-sm">
+              {/* User Info Card */}
+              <div className="bg-gradient-to-br from-purple-50 via-purple-100 to-white p-5 rounded-2xl border border-purple-300 shadow-sm transition-transform hover:scale-[1.01] mt-6">
                 <div className="flex items-start space-x-5">
-                  <Avatar
-                    src={selectedComplaint.user?.profilePicture || ''}
+                  <Avatar 
+                    src={selectedComplaint.user?.profilePicture || ''} 
                     sx={{ width: 56, height: 56, bgcolor: '#c084fc' }}
                     className="ring-2 ring-purple-500"
                   >
                     {!selectedComplaint.user?.profilePicture && selectedComplaint.user?.name.charAt(0).toUpperCase()}
                   </Avatar>
                   <div className="mt-1">
-                    <Typography className="font-bold text-gray-800 text-lg">
+                    <Typography className="font-bold text-purple-900 text-lg">
                       {selectedComplaint.user?.name}
                     </Typography>
-                    <Typography className="text-sm text-gray-800 mt-1">
+                    <Typography className="text-sm text-gray-600 mt-1">
                       {selectedComplaint.user?.email}
                     </Typography>
                   </div>
                 </div>
               </div>
 
+              {/* Complaint Description */}
               <div className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md">
-                <Typography className="text-gray-800 text-base font-semibold mb-2">
-                  Complaint Description:
+                <Typography className="text-gray-700 leading-relaxed text-base whitespace-pre-line font-medium">
+                  {selectedComplaint.description}
                 </Typography>
-                <Typography className="text-gray-600">{selectedComplaint.description}</Typography>
               </div>
 
-              <TextField
-                label="Response"
-                fullWidth
-                multiline
-                rows={4}
-                value={responseText}
-                onChange={(e) => setResponseText(e.target.value)}
-              />
+              {/* Divider */}
+              <div className="my-4 h-1 w-full bg-gradient-to-r from-purple-100 via-purple-300 to-purple-100 rounded-xl mx-auto"></div>
 
-              <FormControl fullWidth>
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  label="Status"
-                >
-                  <MenuItem value="Pending">Pending</MenuItem>
-                  <MenuItem value="In Progress">In Progress</MenuItem>
-                  <MenuItem value="Resolved">Resolved</MenuItem>
-                </Select>
-              </FormControl>
+              {/* Previous Response */}
+              {selectedComplaint.response && (
+                <div className="p-5 bg-gray-100 border border-gray-200 rounded-2xl shadow-sm">
+                  <Typography className="text-gray-800 leading-relaxed text-base font-medium">
+                    <span className="font-bold">Previous Response:</span>
+                    <div className="mt-2">{selectedComplaint.response}</div>
+                  </Typography>
+                </div>
+              )}
+
+              {/* Response Section */}
+              <div className="flex flex-col space-y-5">
+                {/* Select Complaint Status */}
+                <FormControl fullWidth>
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    label="Status"
+                    sx={{ height: 56, borderRadius: '8px' }}
+                  >
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="In Progress">In Progress</MenuItem>
+                    <MenuItem value="Resolved">Resolved</MenuItem>
+                  </Select>
+                </FormControl>
+
+                {/* Response Text */}
+                <TextField
+                  label="Response"
+                  variant="outlined"
+                  value={responseText}
+                  onChange={(e) => setResponseText(e.target.value)}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  sx={{ borderRadius: '8px' }}
+                />
+              </div>
             </>
           )}
         </DialogContent>
 
-        <DialogActions className="px-6 py-4">
-          <Button onClick={() => setOpenDialog(false)} color="secondary" variant="outlined">
+        {/* Dialog Footer */}
+        <DialogActions sx={{ px: 5, py: 3, backgroundColor: '#F9F7FF' }}>
+          <Button onClick={() => setOpenDialog(false)} variant="text"  className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
+            sx={{
+              textTransform: "none", padding: "14px 18px",
+              width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px"
+            }}>
             Cancel
           </Button>
-          <Button onClick={handleRespond} variant="contained" color="primary">
+          <Button
+            onClick={handleRespond}
+            variant="contained"
+            color="primary"
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            sx={{
+              textTransform: "none",
+              padding: "14px 18px",
+              width: "180px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}
+          >
             Submit Response
           </Button>
         </DialogActions>
       </Dialog>
+
     </div>
   );
 };
