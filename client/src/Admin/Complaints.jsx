@@ -295,7 +295,7 @@ const Complaints = () => {
         {/* Dialog Header */}
         <DialogTitle
           sx={{
-            backgroundColor: '#F3E8FF',
+            backgroundColor: '#F9F7FF',
             color: '#3A0C6F',
             px: 5,
             py: 3.5,
@@ -306,7 +306,7 @@ const Complaints = () => {
         >
           <div className="flex justify-between items-center">
             <Typography variant="h6" className="font-bold tracking-wide flex items-center gap-2">
-              📝 Respond to Complaint
+               Respond to Complaint
             </Typography>
             <Typography variant="caption" className="text-sm text-gray-600 italic">
               {selectedComplaint && new Date(selectedComplaint.createdAt).toLocaleString()}
@@ -319,7 +319,7 @@ const Complaints = () => {
           {selectedComplaint && (
             <>
               {/* User Info Card */}
-              <div className="bg-gradient-to-br from-purple-50 via-purple-100 to-white p-5 rounded-2xl border border-purple-300 shadow-sm transition-transform hover:scale-[1.01] mt-6">
+              <div className=" bg-purple-100 p-5 rounded-2xl border border-purple-600 shadow-sm transition-transform hover:scale-[1.01] mt-6">
                 <div className="flex items-start space-x-5">
                   <Avatar 
                     src={selectedComplaint.user?.profilePicture || ''} 
@@ -329,10 +329,10 @@ const Complaints = () => {
                     {!selectedComplaint.user?.profilePicture && selectedComplaint.user?.name.charAt(0).toUpperCase()}
                   </Avatar>
                   <div className="mt-1">
-                    <Typography className="font-bold text-purple-900 text-lg">
+                    <Typography className="font-bold  text-gray-800 text-lg">
                       {selectedComplaint.user?.name}
                     </Typography>
-                    <Typography className="text-sm text-gray-600 mt-1">
+                    <Typography className="text-sm text-gray-800 mt-1">
                       {selectedComplaint.user?.email}
                     </Typography>
                   </div>
@@ -351,7 +351,7 @@ const Complaints = () => {
 
               {/* Previous Response */}
               {selectedComplaint.response && (
-                <div className="p-5 bg-gray-100 border border-gray-200 rounded-2xl shadow-sm">
+                <div className="p-5 bg-white border border-gray-200 rounded-2xl shadow-sm">
                   <Typography className="text-gray-800 leading-relaxed text-base font-medium">
                     <span className="font-bold">Previous Response:</span>
                     <div className="mt-2">{selectedComplaint.response}</div>
@@ -368,7 +368,17 @@ const Complaints = () => {
                     value={status}
                     onChange={(e) => setStatus(e.target.value)}
                     label="Status"
-                    sx={{ height: 56, borderRadius: '8px' }}
+                    sx={{
+                      mb: 3,
+                      background: '#F4E6FF',
+                      '& .MuiInputBase-root': {
+                        borderRadius: '10px',
+                        backgroundColor: '#F4E6FF',
+                      },
+                      '& .MuiFormLabel-root': {
+                        fontWeight: 'bold',
+                      }
+                    }}
                   >
                     <MenuItem value="Pending">Pending</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
@@ -385,7 +395,16 @@ const Complaints = () => {
                   fullWidth
                   multiline
                   rows={4}
-                  sx={{ borderRadius: '8px' }}
+                  sx={{
+                    mb: 3,
+                    '& .MuiInputBase-root': {
+                      borderRadius: '10px',
+                      backgroundColor: '#F4E6FF',
+                    },
+                    '& .MuiFormLabel-root': {
+                      fontWeight: 'bold',
+                    }
+                  }}
                 />
               </div>
             </>

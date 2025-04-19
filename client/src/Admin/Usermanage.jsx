@@ -376,13 +376,14 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
         }
       }}
       variant="outlined"
+      
     />
     <TextField
       label="Email"
@@ -393,7 +394,7 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
@@ -410,7 +411,7 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
@@ -431,7 +432,7 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
