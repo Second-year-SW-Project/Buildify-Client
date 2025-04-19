@@ -8,8 +8,9 @@ import {
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
-import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
+import debounce from 'lodash.debounce';
 
 const Usermanage = () => {
   const [users, setUsers] = useState([]);
@@ -27,6 +28,14 @@ const Usermanage = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const debounced = debounce(() => {
+      handleSearch();
+    }, 300);
+    debounced();
+    return () => debounced.cancel();
+  }, [filters]);
 
   const fetchUsers = () => {
     axios.get("http://localhost:8000/api/v1/users")
@@ -121,378 +130,162 @@ const Usermanage = () => {
 
   return (
     <div>
-      <div style={{ padding: "30px" }}>
-        <div>
-          <Box sx={{ p: 4 }}>
-
-          <div className='mt-3 mb-5'>
-            <PageTitle value="User Manage"></PageTitle>
-            <CustomBreadcrumbs
-              paths={[
-                { label: 'User Manage' },
-              ]} />
-          </div>
-
-          {/* Search/Filters Section */}
-          <Box sx={{ display: 'flex', gap: 2, mb: 4, alignItems: 'center' }}>
-            <TextField
-              label="Search by Name"
-              name="name"
-              value={filters.name}
-              onChange={handleFilterChange}
-              fullWidth
-              sx={{ height: 56, borderRadius: '8px' }}
-            />
-            <TextField
-              label="Search by Email"
-              name="email"
-              value={filters.email}
-              onChange={handleFilterChange}
-              fullWidth
-              sx={{ height: 56, borderRadius: '8px' }}
-            />
-            <Select
-              name="Role"
-              value={filters.Role}
-              onChange={handleFilterChange}
-              fullWidth
-              displayEmpty
-              sx={{ height: 56, borderRadius: '8px' }}
-            >
-              <MenuItem value="">All Roles</MenuItem>
-              <MenuItem value="admin">Admin</MenuItem>
-              <MenuItem value="user">User</MenuItem>
-            </Select>
-            <Button
-              onClick={handleSearch}
-              variant="contained"
-              className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
-              sx={{ width: '400px' }}
-            >
-              Search
-            </Button>
-          </Box>
-
-          <Button
-            onClick={handleAddNewUser}
-            variant="contained"
-            color="primary"
-            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-            style={{
-              padding: "14px 18px",
-              width: "180px",
-              textTransform: "none",
-              fontSize: "16px",
-              borderRadius: "10px",
-              fontWeight: "bold"
-            }}
-          >
-            Add New User
-          </Button>
-          <div className="mb-5"></div>
-
-
-
-          <TableContainer 
-  component={Paper} 
-  sx={{ 
-    width: "100%", 
-    // borderTop: "1px solid  #B0B0B0", 
-    // borderLeft: "1px solid  #B0B0B0", 
-    // borderRight: "1px solid  #B0B0B0", 
-  }}
->
-  <Table sx={{ 
-    width: "100%", 
-    tableLayout: "auto", 
-    borderCollapse: "collapse" // Ensures borders don’t double up
-  }}>
-    <TableHead>
-      <TableRow style={{ backgroundColor: "#F4E6FF" }}>
-        <TableCell 
-          style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+      <Box sx={{ p: 4 }}>
+        <div className='mt-3 mb-5'>
+          <PageTitle value="User Manage" />
+          <CustomBreadcrumbs paths={[{ label: 'User Manage' }]} />
+        </div>
+        <Box className="flex justify-end mb-4 mr-4">
+        <Button
+          onClick={handleAddNewUser}
+          variant="contained"
+          color="primary"
+          className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+          style={{
+            padding: "14px 18px",
+            width: "180px",
+            textTransform: "none",
+            fontSize: "16px",
+            borderRadius: "10px",
+            fontWeight: "bold",
+            marginBottom: "10px"
           }}
         >
-          Name
-        </TableCell>
-        <TableCell 
-          style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}
-        >
-          Email
-        </TableCell>
-        <TableCell 
-          style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}
-        >
-          Role
-        </TableCell>
-        <TableCell 
-          style={{ 
-            padding: "8px 16px", 
-            textAlign: "left", 
-            verticalAlign: "middle", 
-            color: "grey", 
-            fontWeight: "bold", 
-            borderBottom: "1px solid #e0e0e0" // Light grey inner border
-          }}
-        >
-          Actions
-        </TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((user) => (
-      <TableRow key={user._id}>
-        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
-          <Box display="flex" alignItems="center">
-            <Avatar 
-              alt={user.name} 
-              src={user.profilePicture || ''} 
-              sx={{ width: 40, height: 40, marginRight: 2 }}
-            >
-              {!user.profilePicture && user.name.charAt(0).toUpperCase()}
-            </Avatar>
-            <Typography style={{fontWeight:"bold"}}>
-    {user.name}
-  </Typography>
-          </Box>
-        </TableCell>
-        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" ,fontWeight: "bold"}}>
-          {user.email}
-        </TableCell>
-        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0",fontWeight: "bold" }}>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD",
-              color: user.Role === "admin" ? "#1B5E20" : "#0D47A1",
-              fontWeight: "bold",
-              fontSize: "12px",
-              padding: "2px 8px",
-              minWidth: "auto",
-              borderRadius: "8px",
-              textTransform: "none",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              "&:hover": {
-                backgroundColor: user.Role === "admin" ? "#D0F8CE" : "#D6EAF8",
-              },
-            }}
-          >
-            {user.Role}
-          </Button>
-        </TableCell>
-        <TableCell style={{ padding: "8px", textAlign: "center", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
-          <IconButton onClick={() => startEditing(user)} style={{ color: "#641A90", padding: "8px" }}>
-            <Edit style={{ fontSize: "30px", color: "grey" }} />
-          </IconButton>
-          <IconButton onClick={() => openDeleteConfirmationDialog(user)} style={{ color: "#641A90", padding: "8px" }}>
-            <Delete style={{ fontSize: "30px", color: "red" }} />
-          </IconButton>
-        </TableCell>
-      </TableRow>
-    ))
-  }
-</TableBody>
-
-  </Table>
-</TableContainer>
-
-{/* Pagination */}
-<TablePagination
-  rowsPerPageOptions={[5, 10, 25]}
-  component="div"
-  count={filteredUsers.length}
-  rowsPerPage={rowsPerPage}
-  page={page}
-  onPageChange={handleChangePage}
-  onRowsPerPageChange={handleChangeRowsPerPage}
-  sx={{
-    // borderTop: "1px solid #e0e0e0", // Light grey top border for pagination
-     borderBottom: "1px solid  #e0e0e0",
-      borderRight: "1px solid  #e0e0e0",
-      borderLeft: "1px solid  #e0e0e0", // Dark grey bottom border for pagination
-    padding: "10px 0" // Optional: adjusts padding if you want it slightly tighter
-  }}
-/>
+          Add New User
+        </Button>
 
         </Box>
 
-        {/* Edit/Add User Dialog */}
-        <Dialog open={openModal} onClose={() => setOpenModal(false)} sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '500px' } }}>
-  <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: '500', textAlign: 'center', color: '#4B4B4B' }}>
-    {isEditing ? "Edit User" : "Add New User"}
-  </DialogTitle>
-  <DialogContent>
-    <Box sx={{ mb: 3, display: 'flex', alignItems: 'center' }}>
-      {/* Show profile picture or default icon next to the name */}
-      {formData.profilePicture ? (
-        <Avatar src={formData.profilePicture} sx={{ width: 56, height: 56, mr: 2 }} />
-      ) : (
-        <Avatar sx={{ width: 56, height: 56, mr: 2, bgcolor: '#c084fc'}}>
-          {/* Default initial letter */}
-          {formData.name ? formData.name.charAt(0).toUpperCase() : '?'}
-        </Avatar>
-      )}
-      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#4B4B4B' }}>
-        {formData.name || 'No Name'}
-      </Typography>
-    </Box>
-    <TextField
-      label="Name"
-      fullWidth
-      value={formData.name}
-      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-      sx={{
-        mb: 3,
-        '& .MuiInputBase-root': {
-          borderRadius: '10px',
-          backgroundColor: '#F4E6FF',
-        },
-        '& .MuiFormLabel-root': {
-          fontWeight: 'bold',
-        }
-      }}
-      variant="outlined"
-      
-    />
-    <TextField
-      label="Email"
-      fullWidth
-      value={formData.email}
-      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-      sx={{
-        mb: 3,
-        '& .MuiInputBase-root': {
-          borderRadius: '10px',
-          backgroundColor: '#F4E6FF',
-        },
-        '& .MuiFormLabel-root': {
-          fontWeight: 'bold',
-        }
-      }}
-      variant="outlined"
-    />
-    <Select
-      label="Role"
-      fullWidth
-      value={formData.Role}
-      onChange={(e) => setFormData({ ...formData, Role: e.target.value })}
-      sx={{
-        mb: 3,
-        '& .MuiInputBase-root': {
-          borderRadius: '10px',
-          backgroundColor: '#F4E6FF',
-        },
-        '& .MuiFormLabel-root': {
-          fontWeight: 'bold',
-        }
-      }}
-      variant="outlined"
-    >
-      <MenuItem value="user">User</MenuItem>
-      <MenuItem value="admin">Admin</MenuItem>
-    </Select>
-    <TextField
-      label="Password"
-      type="password"
-      fullWidth
-      value={formData.password}
-      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-      sx={{
-        mb: 3,
-        '& .MuiInputBase-root': {
-          borderRadius: '10px',
-          backgroundColor: '#F4E6FF',
-        },
-        '& .MuiFormLabel-root': {
-          fontWeight: 'bold',
-        }
-      }}
-      variant="outlined"
-    />
-  </DialogContent>
-  <DialogActions sx={{ justifyContent: 'center' }}>
-    <Button onClick={() => setOpenModal(false)} className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
-            sx={{
-              textTransform: "none",
-              padding: "14px 18px",
-              width: "180px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              borderRadius: "10px"
-            }}>
-      Cancel
-    </Button>
-    <Button
-      onClick={saveUser}
-      variant="contained"
-      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-            sx={{
-              textTransform: "none",
-              padding: "14px 18px",
-              width: "180px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              borderRadius: "10px"
-            }}
-    >
-      {isEditing ? "Save Changes" : "Add User"}
-    </Button>
-  </DialogActions>
-</Dialog>
 
+<Box className="mb-10 mr-4 pt-5 border-2 border-black-200 rounded-md">
+        <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', paddingRight: '15px' , paddingLeft: '15px'}}>
+          <TextField label="Search by Name" name="name" value={filters.name} onChange={handleFilterChange} fullWidth />
+          <TextField label="Search by Email" name="email" value={filters.email} onChange={handleFilterChange} fullWidth />
+          <Select name="Role" value={filters.Role} onChange={handleFilterChange} fullWidth displayEmpty>
+            <MenuItem value="">All Roles</MenuItem>
+            <MenuItem value="admin">Admin</MenuItem>
+            <MenuItem value="user">User</MenuItem>
+          </Select>
+        </Box>
 
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow style={{ backgroundColor: "#F4E6FF" }}>
+                <TableCell><strong>Name</strong></TableCell>
+                <TableCell><strong>Email</strong></TableCell>
+                <TableCell><strong>Role</strong></TableCell>
+                <TableCell><strong>Actions</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user) => (
+                  <TableRow key={user._id}>
+                    <TableCell>
+                      <Box display="flex" alignItems="center">
+                        <Avatar src={user.profilePicture || ''} sx={{ width: 40, height: 40, mr: 2 }}>
+                          {!user.profilePicture && user.name.charAt(0).toUpperCase()}
+                        </Avatar>
+                        <Typography fontWeight="bold">{user.name}</Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell fontWeight="bold">{user.email}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          backgroundColor: user.Role === "admin" ? "#E8F5E9" : "#E3F2FD",
+                          color: user.Role === "admin" ? "#1B5E20" : "#0D47A1",
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                          padding: "2px 8px",
+                          borderRadius: "8px",
+                          textTransform: "none"
+                        }}
+                      >
+                        {user.Role}
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => startEditing(user)}>
+                        <Edit style={{ color: "grey" }} />
+                      </IconButton>
+                      <IconButton onClick={() => openDeleteConfirmationDialog(user)}>
+                        <Delete style={{ color: "red" }} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
-          {/* Delete Confirmation Dialog */}
-           {/* Delete Confirmation Dialog */}
-                              <DialogAlert
-                                  name="Delete Game"
-                                  Title="Confirm Deletion"
-                                  message="Are you sure you want to delete this game? This action cannot be undone."
-                                  Disagree="Cancel"
-                                  Agree="Delete"
-                                  open={openDeleteDialog}
-                                  handleClose={closeDeleteConfirmationDialog}
-                                  handleAgree={deleteUser}
-                              />
-        
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredUsers.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Box>
 
+      </Box>
 
-        </div>
-      </div>
+      {/* Add/Edit Dialog */}
+      <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{isEditing ? "Edit User" : "Add New User"}</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            label="Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            fullWidth
+          />
+          <TextField
+            label="Email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            fullWidth
+          />
+          {!isEditing && (
+            <TextField
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              fullWidth
+            />
+          )}
+          <Select
+            value={formData.Role}
+            onChange={(e) => setFormData({ ...formData, Role: e.target.value })}
+            fullWidth
+          >
+            <MenuItem value="user">User</MenuItem>
+            <MenuItem value="admin">Admin</MenuItem>
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+          <Button onClick={saveUser} variant="contained" color="primary">
+            {isEditing ? "Save Changes" : "Add User"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <DialogAlert
+        open={openDeleteDialog}
+        onClose={closeDeleteConfirmationDialog}
+        onConfirm={deleteUser}
+        title="Confirm Delete"
+        description="Are you sure you want to delete this user? This action cannot be undone."
+      />
     </div>
   );
-}
-
+};
 
 export default Usermanage;

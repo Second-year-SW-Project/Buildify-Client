@@ -30,6 +30,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import debounce from 'lodash.debounce';
 
 const RMA = () => {
   const [requests, setRequests] = useState([]);
@@ -67,9 +68,17 @@ const RMA = () => {
     }
   };
 
+  // Debounced search effect
+  const debouncedFetch = debounce(fetchRequests, 500); // 500ms debounce delay
+
   useEffect(() => {
-    fetchRequests();
-  }, [filters]);
+    debouncedFetch();
+    // Cleanup debounced function on component unmount
+    return () => {
+      debouncedFetch.cancel();
+    };
+  }, [filters]); // Depend on filters to trigger search when they change
+
 
   const handleResponseSubmit = async () => {
     try {
@@ -118,8 +127,9 @@ const RMA = () => {
         />
       </div>
 
+<Box className="mb-10 mr-4 pt-5 border-2 border-black-200 rounded-md">
       {/* Filters */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 6, mt: 6, alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 2, mb: 2, mt: 1, alignItems: 'center', ml:2 }}>
         <TextField
           label="Order ID"
           value={filters.orderId}
@@ -155,21 +165,7 @@ const RMA = () => {
           </Select>
         </FormControl>
 
-        <Button
-          variant="contained"
-          onClick={fetchRequests}
-          className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-          sx={{
-            padding: "14px 18px",
-            width: "200px",
-            textTransform: "none",
-            fontSize: "16px",
-            borderRadius: "10px",
-            fontWeight: "bold"
-          }}
-        >
-          Search
-        </Button>
+       
       </Box>
 
       {/* Table */}
@@ -272,6 +268,7 @@ const RMA = () => {
         />
       </TableContainer>
 
+      </Box>
       {/* Response Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md"
   sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '900px' } }}>

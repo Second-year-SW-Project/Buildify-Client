@@ -28,6 +28,7 @@
     "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "lodash.debounce": "^4.0.8",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
