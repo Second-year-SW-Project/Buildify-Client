@@ -25,9 +25,9 @@ const Usermanage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  useEffect(() => {
+   useEffect(() => {
     fetchUsers();
-  }, []);
+   }, []);
 
  
   useEffect(() => {
@@ -461,13 +461,17 @@ const Usermanage = () => {
 </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <DialogAlert
-        open={openDeleteDialog}
-        onClose={closeDeleteConfirmationDialog}
-        onConfirm={deleteUser}
-        title="Confirm Delete"
-        description="Are you sure you want to delete this user? This action cannot be undone."
-      />
+     
+       <DialogAlert
+                      name="Delete User"
+                      Title="Confirm Deletion"
+                      message="Are you sure you want to delete this product? This action cannot be undone."
+                      Disagree="Cancel"
+                      Agree="Delete"
+                      open={openDeleteDialog}
+                      handleClose={closeDeleteConfirmationDialog}
+                      handleAgree={deleteUser}
+                  />
     </div>
     </div>
     </div>
