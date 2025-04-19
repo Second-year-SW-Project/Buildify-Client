@@ -28,6 +28,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import debounce from 'lodash.debounce';
 
 const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -57,7 +58,18 @@ const Complaints = () => {
     }
   };
 
-  useEffect(() => { fetchComplaints(); }, []);
+  useEffect(() => {
+    const debouncedFetch = debounce(() => {
+      fetchComplaints();
+    }, 400); // adjust delay to your liking
+  
+    debouncedFetch();
+  
+    return () => {
+      debouncedFetch.cancel();
+    };
+  }, [searchTerm, statusFilter]);
+  
 
   const handleRespond = async () => {
     try {
@@ -76,11 +88,11 @@ const Complaints = () => {
   };
 
   return (
-    <div className="p-6 h-screen bg-gray-50">
+    <div className="p-6 h-screen bg-white">
       {/* Header Section */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-6">
-          <div className='mt-3 mb-5'>
+      <div className="mt-3 mb-5">
+        <div>
+      
             <PageTitle value="Complaint Management"></PageTitle>
             <CustomBreadcrumbs
               paths={[
@@ -90,8 +102,9 @@ const Complaints = () => {
           </div>
         </div>
 
+<Box className="mb-10 border-2 border-black-200 rounded-md mt-6">
         {/* Search and Filter Section */}
-        <div className="flex gap-4 mb-6 items-center">
+        <div className="flex gap-4 mb-2 items-center p-5">
           <TextField
             placeholder="Search"
             className="w-96"
@@ -127,22 +140,8 @@ const Complaints = () => {
             </Select>
           </FormControl>
 
-          <Button
-            variant="contained"
-            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-            style={{
-              padding: "14px 18px",
-              width: "180px",
-              textTransform: "none",
-              fontSize: "16px",
-              borderRadius: "10px",
-              fontWeight: "bold"
-            }}
-            onClick={fetchComplaints}
-          >
-            Search
-          </Button>
-        </div>
+         
+        
       </div>
 
       {/* Complaints Table */}
@@ -280,6 +279,7 @@ const Complaints = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      </Box>
 
       {/* Response Dialog */}
       <Dialog

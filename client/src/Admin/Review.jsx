@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import debounce from 'lodash.debounce';
 
 const Review = () => {
   const [reviews, setReviews] = useState([]);

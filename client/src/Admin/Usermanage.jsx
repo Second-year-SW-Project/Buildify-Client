@@ -10,6 +10,7 @@ import { Edit, Delete } from "@mui/icons-material";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
+import debounce from 'lodash.debounce';
 
 const Usermanage = () => {
   const [users, setUsers] = useState([]);
@@ -27,6 +28,17 @@ const Usermanage = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+ 
+  useEffect(() => {
+    const debounced = debounce(() => {
+      handleSearch();
+    }, 300); // 300ms debounce
+  
+    debounced();
+    return () => debounced.cancel();
+  }, [filters]);
+  
 
   const fetchUsers = () => {
     axios.get("http://localhost:8000/api/v1/users")
@@ -121,20 +133,38 @@ const Usermanage = () => {
 
   return (
     <div>
-      <div style={{ padding: "30px" }}>
+      <div style={{ padding: "5px" }}>
         <div>
-          <Box sx={{ p: 4 }}>
+          <Box sx={{ p: 3 }}>
 
-          <div className='mt-3 mb-5'>
+          <div className=' mb-2'>
             <PageTitle value="User Manage"></PageTitle>
             <CustomBreadcrumbs
               paths={[
                 { label: 'User Manage' },
               ]} />
           </div>
-
+          <Box className="flex justify-end mb-3">
+          <Button
+            onClick={handleAddNewUser}
+            variant="contained"
+            color="primary"
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            style={{
+              padding: "14px 18px",
+              width: "180px",
+              textTransform: "none",
+              fontSize: "16px",
+              borderRadius: "10px",
+              fontWeight: "bold"
+            }}
+          >
+            Add New User
+          </Button>
+          </Box>
+<Box className="mb-10 border-2 border-black-200 rounded-md mt-6">
           {/* Search/Filters Section */}
-          <Box sx={{ display: 'flex', gap: 2, mb: 4, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 2, mb: 1, alignItems: 'center', padding: '15px' }}>
             <TextField
               label="Search by Name"
               name="name"
@@ -163,42 +193,8 @@ const Usermanage = () => {
               <MenuItem value="admin">Admin</MenuItem>
               <MenuItem value="user">User</MenuItem>
             </Select>
-            <Button
-              onClick={handleSearch}
-              variant="contained"
-              className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
-              sx={{ width: '400px' }}
-            >
-              Search
-            </Button>
+           
           </Box>
-
-          <Button
-            onClick={handleAddNewUser}
-            variant="contained"
-            color="primary"
-            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-            style={{
-              padding: "14px 18px",
-              width: "180px",
-              textTransform: "none",
-              fontSize: "16px",
-              borderRadius: "10px",
-              fontWeight: "bold"
-            }}
-          >
-            Add New User
-          </Button>
-          <div className="mb-5"></div>
-
 
 
           <TableContainer 
@@ -276,7 +272,7 @@ const Usermanage = () => {
             <Avatar 
               alt={user.name} 
               src={user.profilePicture || ''} 
-              sx={{ width: 40, height: 40, marginRight: 2 }}
+              sx={{ width: 40, height: 40, marginRight: 2, background: "#c084fc" }}
             >
               {!user.profilePicture && user.name.charAt(0).toUpperCase()}
             </Avatar>
@@ -346,6 +342,7 @@ const Usermanage = () => {
 />
 
         </Box>
+        </Box>
 
         {/* Edit/Add User Dialog */}
         <Dialog open={openModal} onClose={() => setOpenModal(false)} sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '500px' } }}>
@@ -376,7 +373,7 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
@@ -393,7 +390,7 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
@@ -410,7 +407,7 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
@@ -431,7 +428,7 @@ const Usermanage = () => {
         mb: 3,
         '& .MuiInputBase-root': {
           borderRadius: '10px',
-          backgroundColor: '#F4F4F4',
+          backgroundColor: '#F4E6FF',
         },
         '& .MuiFormLabel-root': {
           fontWeight: 'bold',
