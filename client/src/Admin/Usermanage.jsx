@@ -205,9 +205,9 @@ const Usermanage = () => {
   component={Paper} 
   sx={{ 
     width: "100%", 
-    borderTop: "1px solid  #B0B0B0", 
-    borderLeft: "1px solid  #B0B0B0", 
-    borderRight: "1px solid  #B0B0B0", 
+    // borderTop: "1px solid  #B0B0B0", 
+    // borderLeft: "1px solid  #B0B0B0", 
+    // borderRight: "1px solid  #B0B0B0", 
   }}
 >
   <Table sx={{ 
@@ -280,13 +280,15 @@ const Usermanage = () => {
             >
               {!user.profilePicture && user.name.charAt(0).toUpperCase()}
             </Avatar>
-            {user.name}
+            <Typography style={{fontWeight:"bold"}}>
+    {user.name}
+  </Typography>
           </Box>
         </TableCell>
-        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" ,fontWeight: "bold"}}>
           {user.email}
         </TableCell>
-        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" }}>
+        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0",fontWeight: "bold" }}>
           <Button
             variant="contained"
             sx={{
@@ -335,10 +337,10 @@ const Usermanage = () => {
   onPageChange={handleChangePage}
   onRowsPerPageChange={handleChangeRowsPerPage}
   sx={{
-    borderTop: "1px solid #e0e0e0", // Light grey top border for pagination
-    borderBottom: "1px solid  #B0B0B0",
-     borderRight: "1px solid  #B0B0B0",
-      borderLeft: "1px solid  #B0B0B0", // Dark grey bottom border for pagination
+    // borderTop: "1px solid #e0e0e0", // Light grey top border for pagination
+     borderBottom: "1px solid  #e0e0e0",
+      borderRight: "1px solid  #e0e0e0",
+      borderLeft: "1px solid  #e0e0e0", // Dark grey bottom border for pagination
     padding: "10px 0" // Optional: adjusts padding if you want it slightly tighter
   }}
 />

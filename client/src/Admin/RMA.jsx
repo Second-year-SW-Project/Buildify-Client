@@ -206,11 +206,11 @@ const RMA = () => {
             ) : (
               paginatedRequests.map((request) => (
                 <TableRow key={request._id} hover>
-                  <TableCell>{request.orderId}</TableCell>
-                  <TableCell>{request.userId?.name || 'N/A'}</TableCell>
-                  <TableCell>{request.userId?.email || 'N/A'}</TableCell>
-                  <TableCell>{request.subject}</TableCell>
-                  <TableCell>{request.reason}</TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>{request.orderId}</TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>{request.userId?.name || 'N/A'}</TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>{request.userId?.email || 'N/A'}</TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>{request.subject}</TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>{request.reason}</TableCell>
                   <TableCell>
   <Typography
     variant="caption"
@@ -240,7 +240,7 @@ const RMA = () => {
   </Typography>
 </TableCell>
 
-                  <TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>
                     {format(new Date(request.createdAt), 'MMM dd, yyyy HH:mm')}
                   </TableCell>
                   <TableCell>

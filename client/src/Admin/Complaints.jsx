@@ -150,13 +150,55 @@ const Complaints = () => {
         <TableContainer>
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
-                <TableCell>User Details</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Complaint</TableCell>
-                <TableCell>Complaint Type</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Action</TableCell>
+              <TableRow sx={{ backgroundColor: '#F4E6FF'  }}>
+                <TableCell   style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>User Details</TableCell>
+                <TableCell   style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Date</TableCell>
+                <TableCell   style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Complaint</TableCell>
+                <TableCell   style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Complaint Type</TableCell>
+                <TableCell   style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Status</TableCell>
+                <TableCell   style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -173,7 +215,7 @@ const Complaints = () => {
                           {!complaint.user?.profilePicture && complaint.user?.name.charAt(0).toUpperCase()}
                         </Avatar>
                         <Box>
-                          <Typography className="font-semibold text-gray-900">
+                          <Typography className="font-semibold text-gray-900" style={{fontWeight:"bold"}}>
                             {complaint.user?.name}
                           </Typography>
                           <Typography className="text-sm text-gray-500">
@@ -185,7 +227,7 @@ const Complaints = () => {
 
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="text-sm text-black">
+                        <span className="text-sm text-black" style={{fontWeight:"bold"}}>
                           {new Date(complaint.createdAt).toLocaleDateString()}
                         </span>
                         <span className="text-xs text-gray-500">
@@ -194,11 +236,11 @@ const Complaints = () => {
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-gray-600">
+                    <TableCell className="text-gray-600" style={{fontWeight:"bold"}}>
                       {complaint.description}
                     </TableCell>
 
-                    <TableCell className="text-gray-600">
+                    <TableCell className="text-gray-600" style={{fontWeight:"bold"}}>
                       {complaint.complaintType}
                     </TableCell>
 
