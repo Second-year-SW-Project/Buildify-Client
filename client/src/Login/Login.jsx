@@ -44,7 +44,7 @@ const Login = () => {
       dispatch(setAuthUser(user));
       localStorage.setItem('token', response.data.token);
 
-      navigate(user.Role === "admin" ? 'adminpanel/dashboard' : '/user/profile');
+      navigate(user.Role === "admin" ? '/adminpanel/dashboard' : '/user/profile');
 
     } catch (error) {
 
