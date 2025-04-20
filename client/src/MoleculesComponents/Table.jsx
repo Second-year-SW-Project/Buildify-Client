@@ -26,6 +26,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { format } from "date-fns";
 import OrderItemCard from '../AtomicComponents/Cards/OrderItemCard';
+import UserCard from "../AtomicComponents/Cards/Usercard.jsx";
 
 export function UserTable({ columns, data, iconTypes = [], iconActions = {}, width, color }) {
 
@@ -64,7 +65,7 @@ export function UserTable({ columns, data, iconTypes = [], iconActions = {}, wid
             {data
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
-                <TableRow key={index}>
+                <TableRow key={index} hover>
                   {columns.map((column) => (
                     <TableCell
                       key={column.id}
@@ -112,17 +113,14 @@ export function UserTable({ columns, data, iconTypes = [], iconActions = {}, wid
 };
 
 export function OrderTable({ columns, orders, iconTypes = [], iconActions = {}, width, color }) {
-  const [expandedRows, setExpandedRows] = React.useState([]);
+  const [expandedRowId, setExpandedRowId] = React.useState(null);
 
   const toggleRow = (orderId) => {
-    setExpandedRows((prev) =>
-      prev.includes(orderId)
-        ? prev.filter((id) => id !== orderId)
-        : [...prev, orderId]
-    );
+    setExpandedRowId((prev) => (prev === orderId ? null : orderId));
   };
+  
 
-  const isRowOpen = (rowId) => expandedRows.includes(rowId);
+  const isRowOpen = (rowId) => expandedRowId === rowId;
 
   const statusColorMap = {
     Successful: "success",
@@ -171,22 +169,14 @@ export function OrderTable({ columns, orders, iconTypes = [], iconActions = {}, 
                 const isOpen = isRowOpen(order._id);
                 return (
                   <React.Fragment key={order._id}>
-                    <TableRow hover>
+                    <TableRow 
+                      sx={{ backgroundColor: isOpen ? theme.palette.black200.main : theme.palette.white.main }} 
+                      hover>
                       <TableCell sx={{ fontWeight: "bold" }}>
-                        {order._id}
+                      {`#${order._id.slice(-4).toUpperCase()}`}
                       </TableCell>
                       <TableCell>
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          <Avatar src={order.profile_image} />
-                          <Box>
-                            <Typography fontWeight="bold">
-                              {order.user_name}
-                            </Typography>
-                            <Typography fontSize="small" color="gray">
-                              {order.email}
-                            </Typography>
-                          </Box>
-                        </Stack>
+                        <UserCard name={order.user_name} email={order.email} src={order.profile_image}/>
                       </TableCell>
                       <TableCell>
                         <Typography>
@@ -196,8 +186,8 @@ export function OrderTable({ columns, orders, iconTypes = [], iconActions = {}, 
                           {format(new Date(order.createdAt), "p")}
                         </Typography>
                       </TableCell>
-                      <TableCell>{order.items.length}</TableCell>
-                      <TableCell>{order.total.toLocaleString()} LKR</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>{order.items.length}</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>{order.total.toLocaleString()} LKR</TableCell>
                       <TableCell>
                         <Chip
                           label={order.status}
@@ -224,7 +214,7 @@ export function OrderTable({ columns, orders, iconTypes = [], iconActions = {}, 
                                 },
                               }}
                             >
-                            <Iconset type={type} isOpen={type === "toggle" ? isRowOpen(row._id) : undefined}/>
+                            <Iconset type={type} isOpen={type === "toggle" ? isRowOpen(order._id) : undefined}/>
                             </IconButton>
                           ))}
                         </TableCell>
@@ -239,7 +229,7 @@ export function OrderTable({ columns, orders, iconTypes = [], iconActions = {}, 
                                 key={item._id}
                                 direction="row"
                                 justifyContent="space-between"
-                                mb={1}
+                                mb={2}
                               >
                                 <OrderItemCard name={item.name} productId={"6005"} src={item.product_image} />
                                 <Typography flex={1}>x{item.quantity}</Typography>
@@ -261,7 +251,7 @@ export function OrderTable({ columns, orders, iconTypes = [], iconActions = {}, 
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={data.length}
+        count={orders.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

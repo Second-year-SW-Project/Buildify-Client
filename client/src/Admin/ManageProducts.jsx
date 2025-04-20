@@ -76,7 +76,7 @@ function ManageProducts() {
             console.log("API Response:", response.data);
 
             if (response.data && Array.isArray(response.data.data)) {
-                const allProducts = response.data.data;
+                const allProducts = response.data.data.reverse();
                 setProducts(allProducts);
                 applyFilters(allProducts);
             } else {

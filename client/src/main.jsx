@@ -130,6 +130,7 @@ const router = createBrowserRouter([
         path: "/",
         element: <CustomerApp />,
         children: [
+            { path: "", element: <Home /> },
             { path: "home", element: <Home /> },
             { path: "about", element: <About /> },
             { path: "cartpage", element: <CartPage /> },
