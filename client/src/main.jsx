@@ -62,116 +62,117 @@ import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameA
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const router = createBrowserRouter([
-  {
-    // Admin Routes
-    path: "/adminpanel",
-    element: <AdminApp />,
-    children: [
-      { path: "auth/signup", element: <Signup /> },
-      { path: "auth/login", element: <Login /> },
-      { path: "auth/verify", element: <Verify /> },
-      { path: "auth/resetpassword", element: <ResetPassword /> },
-      { path: "auth/forgetpassword", element: <ForgetPassword /> },
-      { path: "user/complaint", element: <ComplaintSubmit /> },
-      { path: "user/complaintHistory", element: <UserComplaints /> },
-      {
-        path: "",
-        element: <Layout />,
+    {
+        // Admin Routes
+        path: "/adminpanel",
+        element: <AdminApp />,
         children: [
-          { path: "dashboard", element: <Dashboard /> },
-          { path: "admin", element: <AdminProfile /> },
-          { path: "admin/profile", element: <AdminProfile /> },
-          { path: "admin/setting", element: <AdminSetting /> },
-          { path: "games", element: <ManageGames /> },
-          { path: "games/managegames", element: <ManageGames /> },
-          {
-            path: "games/creategame",
-            children: [
-              { index: true, element: <CreateGames /> },
-              { path: ":id", element: <CreateGames /> },
-            ],
-          },
-          { path: "products", element: <ManageProducts /> },
-          { path: "products/manageproduct", element: <ManageProducts /> },
-          {
-            path: "products/createproduct",
-            children: [
-              { index: true, element: <CreateProducts /> },
-              { path: ":id", element: <CreateProducts /> },
-            ],
-          },
-          {
-            path: "orders/orderlist",
-            children: [
-              { index: true, element: <OrderList /> },
-              { path: ":id", element: <OrderList /> },
-            ],
-          },
-          {
-            path: "orders/receivedorders",
-            children: [
-              { index: true, element: <ReceivedOrders /> },
-              { path: ":id", element: <ReceivedOrders /> },
-            ],
-          },
-          { path: "usermanage", element: <Usermanage /> },
-          { path: "feedbackmanage", element: <Complaints /> },
-          { path: "feedbackmanage/complaints", element: <Complaints /> },
-          { path: "feedbackmanage/rma", element: <RMA /> },
-          { path: "feedbackmanage/comments&reviews", element: <Review /> },
-          { path: "invoice", element: <InvoiceList /> },
-          { path: "invoice/invoicelist", element: <InvoiceList /> },
-          { path: "invoice/invoicecreate", element: <InvoiceCreate /> },
+            { path: "auth/signup", element: <Signup /> },
+            { path: "auth/login", element: <Login /> },
+            { path: "auth/verify", element: <Verify /> },
+            { path: "auth/resetpassword", element: <ResetPassword /> },
+            { path: "auth/forgetpassword", element: <ForgetPassword /> },
+            { path: "user/complaint", element: <ComplaintSubmit /> },
+            { path: "user/complaintHistory", element: <UserComplaints /> },
+            {
+                path: "",
+                element: <Layout />,
+                children: [
+                    { path: "dashboard", element: <Dashboard /> },
+                    { path: "admin", element: <AdminProfile /> },
+                    { path: "admin/profile", element: <AdminProfile /> },
+                    { path: "admin/setting", element: <AdminSetting /> },
+                    { path: "games", element: <ManageGames /> },
+                    { path: "games/managegames", element: <ManageGames /> },
+                    {
+                        path: "games/creategame",
+                        children: [
+                            { index: true, element: <CreateGames /> },
+                            { path: ":id", element: <CreateGames /> },
+                        ],
+                    },
+                    { path: "products", element: <ManageProducts /> },
+                    { path: "products/manageproduct", element: <ManageProducts /> },
+                    {
+                        path: "products/createproduct",
+                        children: [
+                            { index: true, element: <CreateProducts /> },
+                            { path: ":id", element: <CreateProducts /> },
+                        ],
+                    },
+                    {
+                        path: "orders/orderlist",
+                        children: [
+                            { index: true, element: <OrderList /> },
+                            { path: ":id", element: <OrderList /> },
+                        ],
+                    },
+                    {
+                        path: "orders/receivedorders",
+                        children: [
+                            { index: true, element: <ReceivedOrders /> },
+                            { path: ":id", element: <ReceivedOrders /> },
+                        ],
+                    },
+                    { path: "usermanage", element: <Usermanage /> },
+                    { path: "feedbackmanage", element: <Complaints /> },
+                    { path: "feedbackmanage/complaints", element: <Complaints /> },
+                    { path: "feedbackmanage/rma", element: <RMA /> },
+                    { path: "feedbackmanage/comments&reviews", element: <Review /> },
+                    { path: "invoice", element: <InvoiceList /> },
+                    { path: "invoice/invoicelist", element: <InvoiceList /> },
+                    { path: "invoice/invoicecreate", element: <InvoiceCreate /> },
+                ],
+            },
         ],
-      },
-    ],
-  },
-  {
-    // Customer Routes
-    path: "/",
-    element: <CustomerApp />,
-    children: [
-      { path: "home", element: <Home /> },
-      { path: "about", element: <About /> },
-      { path: "cartpage", element: <CartPage /> },
-      { path: "paymentgateway", element: <PaymentGateway /> },
-      { path: "productcategorypage", element: <ProductCategoryPage /> },
-      {
-        path: "productcategorypage/:categoryName",
-        element: <ProductCategoryPage />,
-      },
-      { path: "itempage/:id", element: <ItemPage /> },
-      { path: "search", element: <SearchResults /> },
-      { path: "laptop", element: <LaptopCategoryPage /> },
-      { path: "selectgame", element: <SelectGameAndBudgetpage /> },
+    },
+    {
+        // Customer Routes
+        path: "/",
+        element: <CustomerApp />,
+        children: [
+            { path: "", element: <Home /> },
+            { path: "home", element: <Home /> },
+            { path: "about", element: <About /> },
+            { path: "cartpage", element: <CartPage /> },
+            { path: "paymentgateway", element: <PaymentGateway /> },
+            { path: "productcategorypage", element: <ProductCategoryPage /> },
+            {
+                path: "productcategorypage/:categoryName",
+                element: <ProductCategoryPage />,
+            },
+            { path: "itempage/:id", element: <ItemPage /> },
+            { path: "search", element: <SearchResults /> },
+            { path: "laptop", element: <LaptopCategoryPage /> },
+            { path: "selectgame", element: <SelectGameAndBudgetpage /> },
 
-      // User
-      { path: "user/complaint", element: <ComplaintSubmit /> },
-      { path: "user/complaintHistory", element: <UserComplaints /> },
-      { path: "user/profile", element: <UserProfile /> },
-      { path: "user/orders", element: <MyOrders /> },
-      { path: "/user/orders/:orderId", element: <OrderDetails /> },
-      { path: "user/rmaSupport", element: <RMAsupport /> },
-      { path: "user/orderHistory", element: <OrderHistory /> },
-      { path: "user/savedBuilds", element: <SavedBuilds /> },
-      { path: "user/settings", element: <Settings /> },
-    ],
-  },
+            // User
+            { path: "user/complaint", element: <ComplaintSubmit /> },
+            { path: "user/complaintHistory", element: <UserComplaints /> },
+            { path: "user/profile", element: <UserProfile /> },
+            { path: "user/orders", element: <MyOrders /> },
+            { path: "/user/orders/:orderId", element: <OrderDetails /> },
+            { path: "user/rmaSupport", element: <RMAsupport /> },
+            { path: "user/orderHistory", element: <OrderHistory /> },
+            { path: "user/savedBuilds", element: <SavedBuilds /> },
+            { path: "user/settings", element: <Settings /> },
+        ],
+    },
 ]);
 
 const root = document.getElementById("root");
 const persistor = persistStore(store);
 
 createRoot(root).render(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <ThemeProvider theme={theme}>
-        <Toaster />
+    <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+            <ThemeProvider theme={theme}>
+                <Toaster />
 
-        <StrictMode>
-          <RouterProvider router={router} />
-        </StrictMode>
-      </ThemeProvider>
-    </PersistGate>
-  </Provider>
+                <StrictMode>
+                    <RouterProvider router={router} />
+                </StrictMode>
+            </ThemeProvider>
+        </PersistGate>
+    </Provider>
 );

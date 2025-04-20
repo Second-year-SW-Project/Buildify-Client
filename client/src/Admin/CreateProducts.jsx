@@ -565,7 +565,7 @@ const CreateProducts = () => {
     };
 
     return (
-        <div className="">
+        <div>
             <div className="mt-3 mb-5 ml-6 mr-6">
                 <div>
                     <PageTitle value={isEditMode ? 'Edit Products' : 'Create New Products'} />

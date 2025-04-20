@@ -96,8 +96,8 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'gamesCreate': return <VideogameAssetSharpIcon color={color} sx={{ fontSize }} />;
             case 'toggle':
                 return isOpen
-                    ? <KeyboardArrowUpIcon color={color} sx={{ fontSize }} />
-                    : <KeyboardArrowDownIcon color={color} sx={{ fontSize }} />;
+                    ? <KeyboardArrowUpIcon color={color} sx={{ fontSize: 40 }} />
+                    : <KeyboardArrowDownIcon color={color} sx={{ fontSize: 40 }} />;
             default: return null;
         }
     };
