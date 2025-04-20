@@ -85,7 +85,7 @@ export default function Navbar() {
               />
               {openDropdown === "profile" && (
                 <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-                  <a href="http://localhost:5173/profile" className="block px-4 py-2 hover:bg-blue-400">
+                  <a href="http://localhost:5173/user/profile" className="block px-4 py-2 hover:bg-blue-400">
                     Profile
                   </a>
                   <a href="http://localhost:5173/adminpanel/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
