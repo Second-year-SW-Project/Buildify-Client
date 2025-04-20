@@ -41,7 +41,7 @@ const ResetPassword = () => {
       );
       dispatch(setAuthUser(data.data.user));
       toast.success("Password reset successfully");
-      navigate('/auth/login');
+      navigate('/adminpanel/auth/login');
     } catch (error) {
       toast.error(error.response?.data?.message || "Password reset failed");
     } finally {

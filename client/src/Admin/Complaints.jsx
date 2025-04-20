@@ -178,8 +178,8 @@ const Complaints = () => {
                           {!complaint.user?.profilePicture && complaint.user?.name?.charAt(0).toUpperCase()}
                         </Avatar>
                         <Box>
-                          <Typography className="font-semibold text-gray-900">{complaint.user?.name}</Typography>
-                          <Typography className="text-sm text-gray-500">{complaint.user?.email}</Typography>
+                          <Typography className="font-bold text-black">{complaint.user?.name}</Typography>
+                          <Typography className="text-sm text-black font-semibold">{complaint.user?.email}</Typography>
                         </Box>
                       </Box>
                     </TableCell>
@@ -188,13 +188,13 @@ const Complaints = () => {
                         <span className="text-sm text-black font-bold">
                           {new Date(complaint.createdAt).toLocaleDateString()}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-black">
                           {new Date(complaint.createdAt).toLocaleTimeString()}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-gray-600 font-bold">{complaint.description}</TableCell>
-                    <TableCell className="text-gray-600 font-bold">{complaint.complaintType}</TableCell>
+                    <TableCell className="text-black font-bold">{complaint.description}</TableCell>
+                    <TableCell className="text-black font-bold">{complaint.complaintType}</TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 rounded-full text-sm whitespace-nowrap ${
                         complaint.status === 'Resolved' ? 'bg-green-100 text-green-800' :

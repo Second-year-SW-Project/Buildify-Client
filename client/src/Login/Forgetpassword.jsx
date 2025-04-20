@@ -25,7 +25,7 @@ const ForgetPassword = () => {
       );
 
       toast.success("Reset OTP sent to email");
-      navigate(`/auth/resetpassword?email=${encodeURIComponent(email)}`);
+      navigate(`/adminpanel/auth/resetpassword?email=${encodeURIComponent(email)}`);
 
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to send reset email");

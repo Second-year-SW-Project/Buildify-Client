@@ -96,7 +96,7 @@ const Usermanage = () => {
         })
         .catch(() => toast.error("Error updating user"));
     } else {
-      axios.post("http://localhost:8000/api/v1/users", formData)
+      axios.post("http://localhost:8000/api/v1/users/new", formData)
         .then(() => {
           toast.success("User added successfully");
           fetchUsers();
@@ -465,7 +465,7 @@ const Usermanage = () => {
        <DialogAlert
                       name="Delete User"
                       Title="Confirm Deletion"
-                      message="Are you sure you want to delete this product? This action cannot be undone."
+                      message="Are you sure you want to delete this user? This action cannot be undone."
                       Disagree="Cancel"
                       Agree="Delete"
                       open={openDeleteDialog}
