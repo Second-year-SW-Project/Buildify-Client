@@ -41,12 +41,13 @@ import ComplaintSubmit from "./User/ComplaintSubmit.jsx";
 import UserComplaints from "./User/UserComplaints.jsx";
 
 // User Components
-import UserProfile from "./UserdashboardFeature/pages/UserProfile.jsx";
-import RMAsupport from "./UserdashboardFeature/pages/RMAsupport.jsx";
-import MyOrders from "./UserdashboardFeature/pages/MyOrders.jsx";
-import OrderHistory from "./UserdashboardFeature/pages/OrderHistory.jsx";
-import SavedBuilds from "./UserdashboardFeature/pages/SavedBuilds.jsx";
-import Settings from "./UserdashboardFeature/pages/Settings.jsx";
+import UserProfile from "./User/UserProfile.jsx";
+import RMAsupport from "./User/RMAsupport.jsx";
+import MyOrders from "./User/MyOrders.jsx";
+import OrderHistory from "./User/OrderHistory.jsx";
+import SavedBuilds from "./User/SavedBuilds.jsx";
+import Settings from "./User/Settings.jsx";
+import OrderDetails from "./User/OrderDetails.jsx";
 import Home from "./pages/Home/Home.jsx";
 import About from "./pages/About_page/About.jsx";
 import LoginPage from "./pages/Login_page/Login_page.jsx";
@@ -56,7 +57,7 @@ import ProductCategoryPage from "./pages/Producat_category/Productcategorypage.j
 import ItemPage from "./pages/Single_Item/Itempage.jsx";
 import SearchResults from "./pages/Searchbar/SearchResults.jsx";
 import LaptopCategoryPage from "./pages/Laptop_category/Laptopcategorypage.jsx";
-import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx"
+import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -148,12 +149,13 @@ const router = createBrowserRouter([
             // User
             { path: "user/complaint", element: <ComplaintSubmit /> },
             { path: "user/complaintHistory", element: <UserComplaints /> },
-            { path: "profile", element: <UserProfile /> },
-            { path: "myOrders", element: <MyOrders /> },
-            { path: "rmaSupport", element: <RMAsupport /> },
-            { path: "orderHistory", element: <OrderHistory /> },
-            { path: "savedBuilds", element: <SavedBuilds /> },
-            { path: "settings", element: <Settings /> },
+            { path: "user/profile", element: <UserProfile /> },
+            { path: "user/orders", element: <MyOrders /> },
+            { path: "/user/orders/:orderId", element: <OrderDetails /> },
+            { path: "user/rmaSupport", element: <RMAsupport /> },
+            { path: "user/orderHistory", element: <OrderHistory /> },
+            { path: "user/savedBuilds", element: <SavedBuilds /> },
+            { path: "user/settings", element: <Settings /> },
         ],
     },
 ]);
@@ -170,7 +172,6 @@ createRoot(root).render(
                 <StrictMode>
                     <RouterProvider router={router} />
                 </StrictMode>
-
             </ThemeProvider>
         </PersistGate>
     </Provider>

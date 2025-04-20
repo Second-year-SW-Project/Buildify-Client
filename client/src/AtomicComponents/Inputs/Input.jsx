@@ -10,12 +10,10 @@ import {
   RadioGroup,
   FormLabel,
   FormHelperText,
-
 } from "@mui/material";
 import React, { useRef, useEffect } from "react";
-import InputAdornment from '@mui/material/InputAdornment';
-import { inputBaseClasses } from '@mui/material/InputBase';
-
+import InputAdornment from "@mui/material/InputAdornment";
+import { inputBaseClasses } from "@mui/material/InputBase";
 
 export function InputField({
   label = null,
@@ -29,6 +27,7 @@ export function InputField({
   Placeholder,
   error,
   value,
+  name,
   Auto,
   onChange = null,
   row = false,
@@ -46,6 +45,7 @@ export function InputField({
         fontSize={fontSize}
         variant={variant}
         value={value}
+        name={name}
         color={color}
         rows={rows}
         width={width}
@@ -53,8 +53,7 @@ export function InputField({
         helperText={helperText}
         error={!!error}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
         slotProps={{
           input: {
@@ -96,7 +95,6 @@ export function InputField({
 
   // <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
 
-
   if (type === "number") {
     const inputRef = useRef();
 
@@ -125,8 +123,7 @@ export function InputField({
         color={color}
         width={width}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
         inputProps={{
           min: 0,
@@ -140,6 +137,7 @@ export function InputField({
         helperText={helperText}
         sx={{
           width: width,
+          marginBottom: "10px",
           "& .MuiInputBase-input": {
             fontSize: fontSize || "16px",
           },
@@ -170,10 +168,9 @@ export function InputField({
         error={!!error}
         helperText={helperText}
         onChange={(e) => {
-          if (onChange)
-            onChange(e.target.value);
+          if (onChange) onChange(e.target.value);
         }}
-        sx={{ width }}
+        sx={{ width, marginBottom: "10px" }}
       >
         {options.map((option, index) => (
           <MenuItem key={index} value={option.value}>
@@ -193,7 +190,6 @@ export function InputField({
         onChange={(_, newValue) => {
           onChange(newValue ? newValue.value : "");
         }}
-
         disabled={disabled}
         renderInput={(params) => (
           <TextField
@@ -218,7 +214,6 @@ export function InputField({
         onChange={(_, newValue) => {
           onChange(newValue ? newValue.value : "");
         }}
-
         disabled={disabled}
         renderInput={(params) => (
           <TextField
@@ -227,7 +222,7 @@ export function InputField({
             slotProps={{
               input: {
                 ...params.InputProps,
-                type: 'search',
+                type: "search",
               },
             }}
             error={!!error}
@@ -247,8 +242,7 @@ export function InputField({
             <Checkbox
               checked={value}
               onChange={(e) => {
-                if (onChange)
-                  onChange(e.target.checked);
+                if (onChange) onChange(e.target.checked);
               }}
               size={size}
               color={color}
@@ -267,7 +261,11 @@ export function InputField({
     return (
       <FormControl error={!!error} disabled={disabled}>
         <FormLabel>{label}</FormLabel>
-        <RadioGroup row={row} value={value} onChange={(e) => onChange(e.target.value)}>
+        <RadioGroup
+          row={row}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        >
           {options.map((option, index) => (
             <FormControlLabel
               key={index}

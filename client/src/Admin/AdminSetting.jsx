@@ -268,7 +268,15 @@ if (!otpUrl) {
                 type="submit"
                 variant="contained"
                 disabled={loading.password}
-                className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+                className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                style={{
+                  padding: "14px 18px",
+                  width: "200px",
+                  textTransform: "none",
+                  fontSize: "16px",
+                  borderRadius: "10px",
+                  fontWeight: "bold"
+                }}
               >
                 {loading.password ? (
                   <CircularProgress size={24} className="text-white" />
@@ -296,7 +304,15 @@ if (!otpUrl) {
               variant="contained"
               onClick={handle2FADisable}
               disabled={loading.twoFADisable}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2"
+              className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+  style={{
+    padding: "14px 18px",
+    width: "180px",
+    textTransform: "none",
+    fontSize: "16px",
+    borderRadius: "10px",
+    fontWeight: "bold"
+  }}
             >
               {loading.twoFADisable ? (
                 <CircularProgress size={24} className="text-white" />
@@ -355,7 +371,16 @@ if (!otpUrl) {
                       type="submit"
                       variant="contained"
                       disabled={loading.twoFAEnable}
-                      className="mt-4 bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+                      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+  style={{
+    mt:2,
+    padding: "14px 18px",
+    width: "180px",
+    textTransform: "none",
+    fontSize: "16px",
+    borderRadius: "10px",
+    fontWeight: "bold"
+  }}
                     >
                       {loading.twoFAEnable ? (
                         <CircularProgress size={24} className="text-white" />
@@ -371,7 +396,15 @@ if (!otpUrl) {
                 variant="contained"
                 onClick={generate2FASecret}
                 disabled={loading.twoFAEnable}
-                className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+                className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+  style={{
+    padding: "14px 18px",
+    width: "180px",
+    textTransform: "none",
+    fontSize: "16px",
+    borderRadius: "10px",
+    fontWeight: "bold"
+  }}
               >
                 {loading.twoFAEnable ? (
                   <CircularProgress size={24} className="text-white" />

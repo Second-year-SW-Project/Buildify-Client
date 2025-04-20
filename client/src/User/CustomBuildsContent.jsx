@@ -1,5 +1,5 @@
 import React from "react";
-import PCBuildCard from "../../AtomicComponents/Cards/PCBuildCard";
+import PCBuildCard from "../AtomicComponents/Cards/PCBuildCard";
 
 export default function CustomBuildsContent() {
   const pcBuild = {

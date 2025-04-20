@@ -1,4 +1,4 @@
-import { expansionNetworkAttributes } from './expansionNetworkCategories';
+import { expansionNetworkAttributes } from "./expansionNetworkCategories";
 
 const main = [
   { value: "Necessary", label: "Custom Build Necessary" },
