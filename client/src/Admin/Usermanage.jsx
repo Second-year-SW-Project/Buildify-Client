@@ -25,19 +25,28 @@ const Usermanage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-   useEffect(() => {
-    fetchUsers();
-   }, []);
+
 
  
+
   useEffect(() => {
     const debounced = debounce(() => {
-      handleSearch();
-    }, 300); // 300ms debounce
-  
+      const { name, email, Role } = filters;
+      const isFiltering =
+        name?.trim() !== '' || email?.trim() !== '' || Role?.trim() !== '';
+
+      if (isFiltering) {
+        handleSearch();
+      } else {
+        fetchUsers();
+      }
+    }, 300); 
+
     debounced();
+
     return () => debounced.cancel();
   }, [filters]);
+  
   
 
   const fetchUsers = () => {
