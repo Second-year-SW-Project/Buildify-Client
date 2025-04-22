@@ -104,7 +104,7 @@ function InvoiceCreate() {
     try {
       const response = await axios.post(`${API_URL}/create`, invoiceData);
       alert(response.data.message);
-      navigate("/invoice/invoicelist");
+      navigate("/adminpanel/invoice/invoicelist");
     } catch (error) {
       console.error("Invoice creation failed:", error);
       alert(`Error: ${error.response?.data?.error || error.message}`);
@@ -135,7 +135,7 @@ function InvoiceCreate() {
               {fromEdit ? (
                 <div className="space-y-2">
                   <InputField
-                    type="textarea"
+                    type="text"
                     label="From"
                     variant="outlined"
                     width="100%"
@@ -178,7 +178,7 @@ function InvoiceCreate() {
               {toEdit ? (
                 <div className="space-y-2">
                   <InputField
-                    type="textarea"
+                    type="text"
                     label="To"
                     variant="outlined"
                     width="100%"
