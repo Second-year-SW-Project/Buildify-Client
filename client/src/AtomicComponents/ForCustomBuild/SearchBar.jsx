@@ -1,0 +1,157 @@
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import axios from 'axios';
+
+function SearchBar({ isExpanded, onExpand, onGameSelect }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [availableGames, setAvailableGames] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await axios.get('http://localhost:8000/api/game/games', {
+          timeout: 5000,
+        });
+        if (response.data.success) {
+          const transformedGames = response.data.games.map((game) => ({
+            id: game._id,
+            name: game.name,
+            description: game.description,
+            image: game.image,
+            cpu: {
+              cores: game.cpu.cores,
+              threads: game.cpu.threads,
+              baseClock: game.cpu.baseClock,
+              boostClock: game.cpu.boostClock,
+            },
+            gpu: {
+              series: game.gpu.series,
+              vramGB: game.gpu.vramGB,
+              boostClockMHz: game.gpu.boostClockMHz,
+              cores: game.gpu.cores,
+            },
+            ram: {
+              sizeGB: game.ram.sizeGB,
+              speedMHz: game.ram.speedMHz,
+              type: game.ram.type,
+            },
+          }));
+          setAvailableGames(transformedGames);
+        } else {
+          setError('Failed to fetch games from server');
+        }
+      } catch (err) {
+        console.error('Error fetching games:', err.message);
+        setError('Unable to connect to the server. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isExpanded) {
+      fetchGames();
+    }
+  }, [isExpanded]);
+
+  useEffect(() => {
+    if (searchTerm.trim().length > 0) {
+      const filteredResults = availableGames.filter((game) =>
+        game.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
+      );
+      setSearchResults(filteredResults);
+      setShowDropdown(true);
+    } else {
+      setSearchResults([]);
+      setShowDropdown(false);
+    }
+  }, [searchTerm, availableGames]);
+
+  const handleSelectGame = (game) => {
+    onGameSelect(game);
+    setSearchTerm('');
+    setShowDropdown(false);
+  };
+
+  return (
+    <div className="relative">
+      <div
+        className={`flex items-center bg-purple-700 rounded-full overflow-hidden transition-all duration-300 ${
+          isExpanded ? 'w-64' : 'w-12'
+        }`}
+      >
+        <button
+          onClick={onExpand}
+          className="flex items-center justify-center text-white h-12 w-12 flex-shrink-0"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
+          </svg>
+        </button>
+        {isExpanded && (
+          <input
+            type="text"
+            placeholder="Search games..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="bg-transparent text-white placeholder-purple-200 outline-none w-full pr-4"
+            autoFocus
+          />
+        )}
+      </div>
+      {isExpanded && showDropdown && (
+        <div className="absolute top-full right-0 mt-2 w-64 bg-white shadow-lg rounded-lg z-10 max-h-96 overflow-y-auto">
+          {isLoading ? (
+            <p className="p-3 text-gray-500">Loading games...</p>
+          ) : error ? (
+            <p className="p-3 text-red-500">{error}</p>
+          ) : searchResults.length > 0 ? (
+            <ul>
+              {searchResults.map((game) => (
+                <li
+                  key={game.id}
+                  className="p-3 hover:bg-purple-50 cursor-pointer flex items-center"
+                  onClick={() => handleSelectGame(game)}
+                >
+                  <img
+                    src={game.image}
+                    alt={game.name}
+                    className="w-10 h-10 object-cover rounded mr-3"
+                    loading="lazy"
+                  />
+                  <span>{game.name}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="p-3 text-gray-500">No games found</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+SearchBar.propTypes = {
+  isExpanded: PropTypes.bool.isRequired,
+  onExpand: PropTypes.func.isRequired,
+  onGameSelect: PropTypes.func.isRequired,
+};
+
+export default SearchBar;

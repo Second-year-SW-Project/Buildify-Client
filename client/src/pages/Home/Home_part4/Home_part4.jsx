@@ -1,97 +1,37 @@
-import React from 'react';
-import Reviewcardhome from './Reviewcardhome';
+////http://localhost:5000/api/products
+
+
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Reviewcardhome from "./Reviewcardhome";
 
 export default function Home_part4() {
+  const [reviews, setReviews] = useState([]);
 
-  const feedbackData = [
-    {
-      name: 'Savannah Nguyen',
-      description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do...',
-      rating: 4,
-    },
-    {
-      name: 'Ronald Richards',
-      description: 'Ullamco est sit aliqua dolor do amet sint. Velit officia consequat quis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.',
-      rating: 5,
-    },
-    {
-      name: 'Floyd Miles',
-      description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do...',
-      rating: 3,
-    },
-    {
-      name: 'Savannah Nguyen',
-      image: 'https://via.placeholder.com/150', 
-      description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do...',
-      rating: 4,
-    },
-    {
-        name: 'Savannah Nguyen',
-        image: 'https://via.placeholder.com/150', 
-        description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do...',
-        rating: 4,
-      },
-      {
-        name: 'Savannah Nguyen',
-        image: 'https://via.placeholder.com/150', // Replace with actual image 
-        description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do...',
-        rating: 4,
-      },
-    
-  ];
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/review/admin"); 
+        setReviews(response.data.slice(0, 6)); //show only 6 reviews
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
 
-
-
-
+    fetchReviews();
+  }, []);
 
   return (
+    <div className="w-full py-16 px-4">
+      {/* Section Title */}
+      <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">Customer Feedback</h2>
 
-
-    <div className="container mx-auto p-4">
-
-      <h2 className="text-2xl text-center font-bold mb-8">Customer Feedback</h2>
-
-
-
-      <div className="flex flex-wrap justify-end space-x-[65px] mr-48 text-justify">
-
-
-        {feedbackData.map((feedback, index) => (
-
-            
-          <Reviewcardhome
-            key={index}
-            name={feedback.name}
-            image={feedback.image}
-            description={feedback.description}
-            rating={feedback.rating}
-          />
+      {/* Reviews Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center">
+        {reviews.map((review) => (
+          <Reviewcardhome key={review._id} review={review} />
         ))}
-
-
       </div>
-
-
-
-
-
     </div>
   );
 }
-
-
-//only 6 items can be fetched from database dont add more..cuz it will affect to the size
-
-//i removed some image attrbutes from some objects for testing
-
-
-
-
-// one card props like this --->   
-
-//  {
-//    name: 'Savannah Nguyen',
-//    image: 'https://via.placeholder.com/150', 
-//    description: 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do...',
-//    rating: 4,
-//  },
