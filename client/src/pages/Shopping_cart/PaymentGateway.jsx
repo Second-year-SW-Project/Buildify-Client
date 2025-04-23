@@ -40,7 +40,7 @@ const PaymentGateway = () => {
 
       console.log("Sending Checkout Request:", { items: sanitizedCartItems, total: totalPrice });
 
-      const response = await fetch("http://localhost:8000/api/checkout", {
+      const response = await fetch("http://localhost:8000/api/checkout/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: sanitizedCartItems, total: totalPrice, paymentMethodId }),
