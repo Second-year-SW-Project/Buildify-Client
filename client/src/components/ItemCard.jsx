@@ -47,8 +47,8 @@ const ItemCard = ({ product }) => {
         </div>
 
         {/* Price Section */}
-        <p className="my-2 text-2xl md:text-xl sm:text-lg font-bold text-gray-800">
-          ${product.price}
+        <p className="my-2 text-2xl md:text-xl sm:text-lg font-bold text-gray-900">
+          {product.price} LKR
         </p>
       </Link>
 

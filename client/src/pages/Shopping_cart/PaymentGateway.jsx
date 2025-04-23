@@ -1,9 +1,11 @@
 
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart, increaseQuantity, decreaseQuantity } from "../../redux/cartSlice";
+import { removeFromCart, increaseQuantity, decreaseQuantity,clearCart } from "../../redux/cartSlice";
 import { Button, IconButton } from "@mui/material";
 import { Add, Remove, Delete, Label } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+
 
 import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
 import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer";
@@ -20,6 +22,9 @@ const stripePromise = loadStripe("pk_test_51RAt66QrMZYW3Chd7hWi12tUhngYuiEe7M1hB
 const PaymentGateway = () => {
   const cartItems = useSelector((state) => state.cart.cartItems) || [];
   const totalPrice = useSelector((state) => state.cart.totalPrice) || 0;
+
+  const dispatch = useDispatch(); // Add this
+  const navigate = useNavigate(); // Add this
 
   const handleCheckout = async (paymentMethodId) => {
     try {
@@ -46,6 +51,8 @@ const PaymentGateway = () => {
 
       if (response.ok) {
         alert("Transaction Successful! 🎉");
+        dispatch(clearCart()); // ✅ Clear the cart
+        navigate("/"); // ✅ Redirect to homepage
       } else {
         alert(`Transaction Failed: ${data.message}`);
       }

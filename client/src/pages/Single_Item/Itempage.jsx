@@ -59,7 +59,7 @@ export default function Itempage() {
     fetchProduct();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p className='bg-slate-600 text-center text-2xl'>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!product) return <p>Product not found</p>;
 
@@ -278,16 +278,16 @@ export default function Itempage() {
               spec1 = "Brand:";  //x
               spec2 = "Ram:";  //y
               spec3 = "Graphic Card:";  //z
-              spec4 = "Storage::"  //p
+              spec4 = "Storage:"  //p
               spec5 = "Resolution:";  //q
               spec6 ="Warranty:";  //r
            
        
              x = product.manufacturer.toUpperCase();
              y = product.ram + " GB";
-             z = product.graphicCard;
+             z = product.graphicCard.toUpperCase();
              
-             p = product.storage;
+             p = product.storage+" GB HDD";
              q = product.resolution;
              r = product.warranty;
   

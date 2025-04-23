@@ -86,7 +86,7 @@ const Categoryposter = () => {
       title = "STORAGE";
       //image = "https://www.cyberpowerpc.com/template/2022/page/WD/Black/images/c1.jpg?v2";
       //image = "https://www.techreviewer.com/virt/content/media/shared-graphics/tr-attr/ssd/1280x512-samsung-970-evo-ssd-m2-nvme_c9afca8c876d28d647914bb5eb7f5d40.webp/how-much-storage-for-gaming.webp";
-      image ="../../../../public/storagebanner.png";
+      image = "../../../../public/storagebanner.png";
 
       break;
 
@@ -94,13 +94,24 @@ const Categoryposter = () => {
       title = "CASINGS";
       image = "../../../../public/casingbanner2.jpg";
       //image = "../../../../public/casingbanner.jpg";
-    
+
       break;
 
     case "laptop":
       title = "LAPTOPS";
       image = lapimage;
       break;
+    case "prebuild":
+      title = "PRE BUILTS";
+      image = "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421092/casingbanner_ppinjp.jpg";
+      break;
+
+
+      case "expansion_network":
+        title = "EXPANTIONS";
+        image = "https://blog.bestbuy.ca/wp-content/uploads/2019/07/Sound-Cards.jpg";
+        break;  
+
 
     default:
       break;

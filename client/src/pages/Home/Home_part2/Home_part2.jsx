@@ -11,7 +11,7 @@ export default function Home_part2() {
   useEffect(() => {
     const fetchPCs = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/product/filter?'); // Axios fetch
+        const response = await axios.get('http://localhost:8000/api/product/filter?attribute=type&value=prebuild'); // Axios fetch
         setPcs(response.data.slice(0, 8)); // Select only the first 8 items
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -33,7 +33,7 @@ export default function Home_part2() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
         {pcs.map((pc) => (
           <div key={pc._id} className="flex justify-center">
-            <PCcardhome id={pc._id} name={pc.name} image={pc?.imgUrls?.[0]?.url} specs={pc.specs} price={pc.price} />
+            <PCcardhome id={pc._id} product={pc} />
           </div>
         ))}
       </div>
