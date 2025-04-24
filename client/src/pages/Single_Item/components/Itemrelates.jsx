@@ -1,46 +1,27 @@
 import React from 'react'
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import axios from "axios";
 
 
+export default function Itemrelates({category}) {
 
+  const [pcs, setPcs] = useState([]);
 
-export default function Itemrelates() {
-    const products = [
-      {
-        id: 1,
-        name: "Intel® Core Ultra 7 Processor 265K",
-        brand: "Intel",
-        price: "134,000 LKR",
-        image: "/images/ultra7.png",
-      },
-      {
-        id: 2,
-        name: "Intel Core Ultra 5 Processor 245K",
-        brand: "Intel",
-        price: "110,000 LKR",
-        image: "/images/ultra5.png",
-      },
-      {
-        id: 3,
-        name: "Intel Core i9 14900K (36M Cache, up to 6.00 GHz)",
-        brand: "Intel",
-        price: "165,000 LKR",
-        image: "/images/i9-14900K.png",
-      },
-      {
-        id: 4,
-        name: "Intel Core i9 14900KS (36M Cache, up to 6.20 GHz)",
-        brand: "Intel",
-        price: "225,000 LKR",
-        image: "/images/i9-14900KS.png",
-      },
-      {
-        id: 5,
-        name: "MSI GEFORCE RTX™ 3060 GAMING X 12GB",
-        brand: "ASUS",
-        price: "136,000 LKR",
-        image: "/images/rtx-3060.png",
-      },
-    ];
+  useEffect(() => {
+    const fetchPCs = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/api/product/filter?attribute=type&value=${category}`); // Axios fetch
+        setPcs(response.data.slice(0, 5)); // Select only the first 8 items
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchPCs();
+  }, []);
+
   
     return (
       <div className="ml-35 mr-35 px-6 py-12">
@@ -50,17 +31,17 @@ export default function Itemrelates() {
         </h2>
   
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {products.map((product) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 ">
+          {pcs.map((product) => (
             <div
-              key={product.id}
-              className="bg-white p-4 shadow-md rounded-lg text-center hover:shadow-xl transition duration-300"
+              key={product._id}
+              className="bg-white  shadow-md rounded-lg text-center hover:shadow-xl transition duration-300"
             >
               {/* Product Image */}
               <img
-                src={product.image}
+                src={product?.imgUrls?.[0]?.url}
                 alt={product.name}
-                className="w-full h-40 object-contain mb-4"
+                className="w-full h-32 object-contain mb-4"
               />
   
               {/* Product Name */}
@@ -70,13 +51,15 @@ export default function Itemrelates() {
   
               {/* Brand */}
               <p className="text-xs text-gray-600 mt-2">
-                <span className="font-semibold">Brand:</span> {product.brand}
+                <span className="font-semibold">Brand:</span> {product.manufacturer}
               </p>
   
               {/* Price */}
               <p className="text-lg font-semibold text-gray-900 mt-2">
-                {product.price}
+                {product.price} LKR
               </p>
+
+              
             </div>
           ))}
         </div>

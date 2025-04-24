@@ -1,16 +1,26 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // ✅ FIXED
+import { Link } from 'react-router-dom'; 
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../src/redux/cartSlice';
+import { toast } from 'sonner';
 
 const ItemCard = ({ product }) => {
   const dispatch = useDispatch();
 
   const handleAddToCart = (e) => {
-    e.stopPropagation(); // ✅ Prevent Link click
-    e.preventDefault();  // ✅ Prevent navigation
+    e.stopPropagation(); // 
+    e.preventDefault();  //
     dispatch(addToCart(product));
-    alert(`${product.name} added to cart`);
+    //alert(`${product.name} added to cart`);
+        toast.success(`${product.name} added to cart`, {
+          duration: 2000,
+          style: {
+            background: '#a036b2	',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          },
+        });
   };
 
   return (
@@ -37,8 +47,8 @@ const ItemCard = ({ product }) => {
         </div>
 
         {/* Price Section */}
-        <p className="my-2 text-2xl md:text-xl sm:text-lg font-bold text-gray-800">
-          ${product.price}
+        <p className="my-2 text-2xl md:text-xl sm:text-lg font-bold text-gray-900">
+          {product.price} LKR
         </p>
       </Link>
 

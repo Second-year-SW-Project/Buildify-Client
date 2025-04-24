@@ -2,16 +2,25 @@ import { useSelector } from "react-redux";
 
 import { useState, useEffect } from "react";
 import { HelpOutline, ShoppingCart, AccountCircle } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Usersearchbar from "./Usersearchbar";
-
-
-
-
-
-
-
-
+import MemoryIcon from '@mui/icons-material/Memory';
+import StorageIcon from '@mui/icons-material/Storage';
+import PowerIcon from '@mui/icons-material/Power';
+import DeveloperBoardIcon from '@mui/icons-material/DeveloperBoard';
+import DevicesIcon from '@mui/icons-material/Devices';
+import GraphicEqIcon from '@mui/icons-material/GraphicEq';
+import SdStorageIcon from '@mui/icons-material/SdStorage';
+import WebAssetIcon from '@mui/icons-material/WebAsset';
+import StraightenIcon from '@mui/icons-material/Straighten';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import InboxIcon from '@mui/icons-material/Inbox';
+import EarbudsIcon from '@mui/icons-material/Earbuds';
+import MonitorIcon from '@mui/icons-material/Monitor';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import CallIcon from '@mui/icons-material/Call';
+import QuizIcon from '@mui/icons-material/Quiz';
+import HelpIcon from '@mui/icons-material/Help';
 
 
 
@@ -40,6 +49,8 @@ export default function Navbar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  const navigate = useNavigate();
+
 
 
 
@@ -51,7 +62,10 @@ export default function Navbar() {
 
         <div className="flex-shrink-0 mt-[16px] ml-[-10px] mr-[75px]">
           <Link to="/home">
-            <img src="../src/assets/images/Logos/logo-gray.png" alt="Logo" />
+            <img
+              src="../../../../src/assets/images/Logos/logo-gray.png"
+              alt="Logo"
+            />
           </Link>
         </div>
 
@@ -93,12 +107,25 @@ export default function Navbar() {
               />
               {openDropdown === "profile" && (
                 <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-                  <Link to="/loginpage" className="block px-4 py-2 hover:bg-blue-400">
+                  <a
+                    href="http://localhost:5173/user/profile"
+                    className="block px-4 py-2 hover:bg-blue-400"
+                  >
+                    Profile
+                  </a>
+                  <a
+                    href="http://localhost:5173/adminpanel/auth/signup"
+                    className="block px-4 py-2 hover:bg-blue-400"
+                  >
+                    Login
+                  </a>
+
+                  {/* <Link to="/loginpage" className="block px-4 py-2 hover:bg-blue-400">
                     Profile
                   </Link>
                   <Link to="/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
                     Login
-                  </Link>
+                  </Link> */}
                 </div>
               )}
             </div>
@@ -117,7 +144,10 @@ export default function Navbar() {
         <Link to="#" className="hover:text-blue-400">
           Custom Build
         </Link>
-        <Link to="#" className="hover:text-blue-400">
+        <Link
+          to="/productcategorypage/prebuild"
+          className="hover:text-blue-400"
+        >
           Pre Build
         </Link>
         <Link to="/productcategorypage/laptop" className="hover:text-blue-400">
@@ -139,24 +169,63 @@ export default function Navbar() {
           </button>
 
           {openDropdown === "components" && (
-            <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
+            <div className="absolute left-0 w-48 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2 space-y-1">
+
               <Link
                 to="/productcategorypage/gpu"
                 className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
               >
+                <GraphicEqIcon fontSize="small" className="mr-2" />
                 Graphic Cards
               </Link>
               <Link
                 to="/productcategorypage/ram"
                 className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
               >
+                <StraightenIcon fontSize="small" className="mr-2" />
                 RAM
               </Link>
               <Link
                 to="/productcategorypage/processor"
                 className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
               >
+                <MemoryIcon fontSize="small" className="mr-2" />
                 Processors
+              </Link>
+              <Link
+                to="/productcategorypage/motherboard"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <DeveloperBoardIcon fontSize="small" className="mr-2" />
+                MotherBoard
+              </Link>
+              <Link
+                to="/productcategorypage/power"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <PowerSettingsNewIcon fontSize="small" className="mr-2" />
+                Power Supply
+              </Link>
+              <Link
+                to="/productcategorypage/storage"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <StorageIcon fontSize="small" className="mr-2" />
+                Storage
+              </Link>
+              <Link
+                to="/productcategorypage/casing"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <InboxIcon fontSize="small" className="mr-2" />
+                Casing
               </Link>
             </div>
           )}
@@ -178,13 +247,23 @@ export default function Navbar() {
 
           {openDropdown === "peripherals" && (
             <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
-                Mice
+              <Link
+                to="/productcategorypage/expansion_network"
+                className="block px-4 py-3 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <EarbudsIcon fontSize="small" className="mr-2" />
+                Expansions
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              {/* <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)} >
                 Keyboards
-              </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              </Link> */}
+              <Link
+                to="#"
+                className="block px-4 py-3 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <MonitorIcon fontSize="small" className="mr-2" />
                 Monitors
               </Link>
             </div>
@@ -205,13 +284,28 @@ export default function Navbar() {
 
           {openDropdown === "contact" && (
             <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link
+                to="#"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <MailOutlineIcon fontSize="small" className="mr-2" />
                 Email Us
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link
+                to="#"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <CallIcon fontSize="small" className="mr-2" />
                 Call Us
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400">
+              <Link
+                to="#"
+                className="block px-4 py-2 hover:bg-blue-400"
+                onClick={() => setOpenDropdown(null)}
+              >
+                <QuizIcon fontSize="small" className="mr-2" />
                 Support
               </Link>
             </div>

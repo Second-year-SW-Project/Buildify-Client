@@ -37,7 +37,7 @@ export default function Itemimage() {
   if (!product) return <p>Product not found</p>;
 
   // Fallback image in case `product.image1` is missing
-  const defaultImage = "../graph1.png";
+  const defaultImage = "../../../../public/graph1.png";
   const imageArray = [product?.imgUrls?.[0]?.url || defaultImage, defaultImage];
 
   return (

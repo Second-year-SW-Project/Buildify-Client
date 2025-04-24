@@ -1,8 +1,11 @@
+
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart, increaseQuantity, decreaseQuantity } from "../../redux/cartSlice";
+import { removeFromCart, increaseQuantity, decreaseQuantity,clearCart } from "../../redux/cartSlice";
 import { Button, IconButton } from "@mui/material";
 import { Add, Remove, Delete, Label } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+
 
 import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
 import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer";
@@ -10,25 +13,34 @@ import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
+
+
+
+
 const stripePromise = loadStripe("pk_test_51RAt66QrMZYW3Chd7hWi12tUhngYuiEe7M1hBUpvJAHIIZq95xF9yo97ZQBuup7avOuiTojlhqxm3R0GbxAmNexx00e2V1MOzb"); // Replace with your Stripe test publishable key
 
 const PaymentGateway = () => {
   const cartItems = useSelector((state) => state.cart.cartItems) || [];
   const totalPrice = useSelector((state) => state.cart.totalPrice) || 0;
 
+  const dispatch = useDispatch(); // Add this
+  const navigate = useNavigate(); // Add this
+
   const handleCheckout = async (paymentMethodId) => {
     try {
       const sanitizedCartItems = cartItems.map((item) => ({
-        _id: item._id || item.Id,
+        _id: item._id || item.id,
+        product_image: item.imgUrls?.[0]?.url || null,
         name: item.name,
         category: item.type,
         quantity: item.quantity,
-        price: item.price,
+        price: item.price
+
       }));
 
       console.log("Sending Checkout Request:", { items: sanitizedCartItems, total: totalPrice });
 
-      const response = await fetch("http://localhost:8000/api/checkout", {
+      const response = await fetch("http://localhost:8000/api/checkout/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: sanitizedCartItems, total: totalPrice, paymentMethodId }),
@@ -39,6 +51,8 @@ const PaymentGateway = () => {
 
       if (response.ok) {
         alert("Transaction Successful! 🎉");
+        dispatch(clearCart()); // ✅ Clear the cart
+        navigate("/"); // ✅ Redirect to homepage
       } else {
         alert(`Transaction Failed: ${data.message}`);
       }
@@ -72,7 +86,7 @@ const PaymentGateway = () => {
                 {/* Product Image & Name */}
                 <div className="flex items-center space-x-4 w-1/3 min-w-[250px]">
                   <img
-                    src={item.imgUrls?.[0]?.url || "./graph1.png"}
+                    src={item.imgUrls?.[0]?.url || item.image || "./graph1.png"}
                     alt={item.name}
                     className="w-20 h-20 rounded-md object-cover"
                   />
@@ -82,16 +96,16 @@ const PaymentGateway = () => {
                 {/* Quantity Control + Price + Remove */}
                 <div className="flex items-center justify-end space-x-6 w-2/3">
                   <div className="flex items-center space-x-2 border px-3 py-1 rounded-md">
-                 
+
                     <span className="px-3 py-1 text-lg">{item.quantity}</span>
-                   
+
                   </div>
 
                   <p className="text-lg font-semibold text-gray-800">
                     {(item.price * item.quantity).toLocaleString()} LKR
                   </p>
 
-                  
+
                 </div>
               </div>
             ))}
@@ -113,6 +127,7 @@ const PaymentGateway = () => {
       <div>
         <Footer />
       </div>
+
     </div>
   );
 };
@@ -157,6 +172,7 @@ const CheckoutForm = ({ onCheckout }) => {
 
     if (error) {
       console.error("Payment Method Error:", error);
+
       alert("Payment failed. Please try again.");
     } else {
       onCheckout(paymentMethod.id);

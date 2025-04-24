@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { useParams, useNavigate } from "react-router-dom";
 import Iconset from "../AtomicComponents/Icons/Iconset";
 import { DashboardLayout } from "@toolpad/core";
-import ToolpadFixer from "../MoleculesComponents/ToolpadFixer";
+
 
 
 const CreateGames = () => {
@@ -60,7 +60,7 @@ const CreateGames = () => {
         if (isEditMode) {
             const fetchGame = async () => {
                 try {
-                    const res = await axios.get(`http://localhost:8000/api/game/games/${id}`);
+                    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/game/games/${id}`);
                     if (res.data.success) {
                         const fetchedGame = res.data.game;
                         console.log("Fetched Game====================================", fetchedGame);
@@ -189,6 +189,8 @@ const CreateGames = () => {
                     if (imageSelectorRef.current) {
                         imageSelectorRef.current.deleteAllImages();
                     }
+                } else {
+                    navigate('/games/managegames');
                 }
             } else {
                 toast.error(isEditMode ? "Error updating game" : "Error adding game. Please try again.");
@@ -201,8 +203,7 @@ const CreateGames = () => {
 
     return (
         <div>
-            <ToolpadFixer />
-            <div className='ml-[330px] -mt-[600px]'>
+            <div>
                 <div className='mt-3 mb-5 ml-6 mr-6'>
                     <div><PageTitle value={isEditMode ? 'Edit Game' : 'Add New Game'}></PageTitle></div>
                     <CustomBreadcrumbs

@@ -40,8 +40,13 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PermMediaSharpIcon from '@mui/icons-material/PermMediaSharp';
 import AddPhotoAlternateSharpIcon from '@mui/icons-material/AddPhotoAlternateSharp';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import GamesIcon from '@mui/icons-material/Games';
+import VideogameAssetSharpIcon from '@mui/icons-material/VideogameAssetSharp';
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
-export default function Iconset({ type = 'notification', fontSize = '30px', color }) {
+export default function Iconset({ type = 'notification', fontSize = '30px', color, isOpen }) {
     const renderIcon = () => {
 
         switch (type) {
@@ -60,7 +65,7 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'productList': return <ListAltIcon color={color} sx={{ fontSize }} />;
             case 'productCreate': return <PlaylistAddIcon color={color} sx={{ fontSize }} />;
             case 'orderList': return <PlaylistAddCheckIcon color={color} sx={{ fontSize }} />;
-            case 'receiveOrder': return <EventNoteIcon color={color} sx={{ fontSize }} />;
+            case 'receivedOrders': return <EventNoteIcon color={color} sx={{ fontSize }} />;
             case 'comments': return <QuestionAnswerIcon color={color} sx={{ fontSize }} />;
             case 'RMA': return <TryIcon color={color} sx={{ fontSize }} />;
             case 'user-manage': return <GroupIcon color={color} sx={{ fontSize }} />;
@@ -86,6 +91,13 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'cart': return <ShoppingCartIcon color={color} sx={{ fontSize }} />;
             case 'admin': return <AdminPanelSettingsIcon color={color} sx={{ fontSize }} />;
             case 'profile': return <AccountCircleIcon color={color} sx={{ fontSize }} />;
+            case 'games': return <SportsEsportsIcon color={color} sx={{ fontSize }} />;
+            case 'gamesList': return <GamesIcon color={color} sx={{ fontSize }} />;
+            case 'gamesCreate': return <VideogameAssetSharpIcon color={color} sx={{ fontSize }} />;
+            case 'toggle':
+                return isOpen
+                    ? <KeyboardArrowUpIcon color={color} sx={{ fontSize: 40 }} />
+                    : <KeyboardArrowDownIcon color={color} sx={{ fontSize: 40 }} />;
             default: return null;
         }
     };

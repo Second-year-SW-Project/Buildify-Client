@@ -4,9 +4,9 @@ import AccountDropdown from '../MoleculesComponents/Admin_components/AccountDrop
 
 export default function Layout() {
     return (
-        
+        <DashboardLayout>
             <Outlet />
-    
+        </DashboardLayout>
     )
 }
 

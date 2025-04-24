@@ -1,4 +1,4 @@
-import { expansionNetworkAttributes } from './expansionNetworkCategories';
+import { expansionNetworkAttributes } from "./expansionNetworkCategories";
 
 const main = [
   { value: "Necessary", label: "Custom Build Necessary" },
@@ -7,9 +7,9 @@ const main = [
 ];
 
 const StockType = [
-  { value: "InStock", label: "In Stock" },
-  { value: "OutStock", label: "Out of Stock" },
-  { value: "lowStock", label: "Low Stock" },
+  { value: "In Stock", label: "In Stock" },
+  { value: "Out of Stock", label: "Out of Stock" },
+  { value: "Low Stock", label: "Low Stock" },
 ];
 
 const InvoiceStatus = [
@@ -468,7 +468,7 @@ const monitorAttributes = {
     { value: 20, label: "20 inches" },
     { value: 22, label: "22 inches" },
     { value: 24, label: "24 inches" },
-    { value: "27", label: "27 inches" },
+    { value: 27, label: "27 inches" },
     { value: 32, label: "32 inches" },
     { value: 34, label: "34 inches" },
     { value: 42, label: "42 inches" },

@@ -11,12 +11,12 @@ import {
   FormLabel,
   FormHelperText,
 } from "@mui/material";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import InputAdornment from "@mui/material/InputAdornment";
 import { inputBaseClasses } from "@mui/material/InputBase";
 
 export function InputField({
-  label,
+  label = null,
   type = "text",
   width = "180px",
   rows,
@@ -27,6 +27,7 @@ export function InputField({
   Placeholder,
   error,
   value,
+  name,
   Auto,
   onChange = null,
   row = false,
@@ -39,11 +40,14 @@ export function InputField({
     return (
       <TextField
         type={type}
+        multiline
         label={label}
         fontSize={fontSize}
         variant={variant}
         value={value}
+        name={name}
         color={color}
+        rows={rows}
         width={width}
         disabled={disabled}
         helperText={helperText}
@@ -89,55 +93,40 @@ export function InputField({
     );
   }
 
-  if (type === "textarea") {
-    return (
-      <TextField
-        type={type}
-        multiline
-        label={label}
-        fontSize={fontSize}
-        color={color}
-        rows={rows}
-        value={value}
-        disabled={disabled}
-        helperText={helperText}
-        width={width}
-        variant={variant}
-        error={!!error}
-        onChange={(e) => {
-          if (onChange) onChange(e.target.value);
-        }}
-        sx={{
-          width: width,
-          marginBottom: "10px",
-          "& .MuiInputBase-input": {
-            fontSize: fontSize || "16px",
-          },
-          "& .MuiInputLabel-root": {
-            fontSize: fontSize || "16px",
-          },
-          "& .MuiInputBase-root": {
-            "& fieldset": {
-              borderWidth: 1,
-              borderRadius: 2,
-            },
-          },
-        }}
-      />
-    );
-  }
+  // <p style={{ whiteSpace: 'pre-wrap' }}>{product.description}</p>
 
   if (type === "number") {
+    const inputRef = useRef();
+
+    useEffect(() => {
+      const input = inputRef.current;
+      if (input) {
+        const stopPageScroll = (e) => {
+          e.stopPropagation(); // Allow input scroll, block page scroll
+        };
+
+        input.addEventListener("wheel", stopPageScroll);
+
+        return () => {
+          input.removeEventListener("wheel", stopPageScroll);
+        };
+      }
+    }, []);
     return (
       <TextField
+        inputRef={inputRef}
         type={type}
         label={label}
         fontSize={fontSize}
+        value={value}
         variant={variant}
         color={color}
         width={width}
         onChange={(e) => {
           if (onChange) onChange(e.target.value);
+        }}
+        inputProps={{
+          min: 0,
         }}
         slotProps={{
           inputLabel: {
@@ -148,6 +137,7 @@ export function InputField({
         helperText={helperText}
         sx={{
           width: width,
+          marginBottom: "10px",
           "& .MuiInputBase-input": {
             fontSize: fontSize || "16px",
           },
@@ -171,16 +161,16 @@ export function InputField({
         select
         label={label}
         fontSize={fontSize}
-        value={value}
-        onChange={(e) => {
-          if (onChange) onChange(e.target.value);
-        }}
         variant={variant}
         color={color}
+        value={value}
         disabled={disabled}
         error={!!error}
         helperText={helperText}
-        sx={{ width }}
+        onChange={(e) => {
+          if (onChange) onChange(e.target.value);
+        }}
+        sx={{ width, marginBottom: "10px" }}
       >
         {options.map((option, index) => (
           <MenuItem key={index} value={option.value}>
@@ -260,6 +250,7 @@ export function InputField({
             />
           }
           label={label}
+          value={value}
         />
         {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormGroup>

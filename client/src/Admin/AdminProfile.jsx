@@ -8,12 +8,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
-import Iconset from "../AtomicComponents/Icons/Iconset";
-import theme from "../AtomicComponents/theme";
-import { DashboardLayout } from "@toolpad/core";
-import { Outlet } from "react-router-dom";
-import ToolpadFixer from "../MoleculesComponents/ToolpadFixer";
-
+import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 
 export default function AdminProfile() {
   const dispatch = useDispatch();
@@ -149,9 +144,6 @@ const handleSubmit = async (e) => {
   }
 };
   return (
-    <div>
-      <ToolpadFixer/>
-<div className="ml-[330px] -mt-[600px]">
     <Box>
       <Paper elevation={3} sx={{ padding: 4, width: "100%", boxShadow: 3, borderRadius: 3, backgroundColor: "white" }}>
         <div className='mt-3 mb-5'>
@@ -174,37 +166,46 @@ const handleSubmit = async (e) => {
                 height: "100px", 
                 borderRadius: "50%", 
                 objectFit: "cover", 
-                border: "1px solid #6a1b9a" 
+                border: "1px solid rgb(152, 56, 212)" 
               }} 
             />
           </div>
           
           ) : (
-            <AccountCircleIcon sx={{ fontSize: 60, color: "#6a1b9a" }} />
+            <AccountCircleIcon sx={{ fontSize: 80, color: "#9333ea" }}/>
           )}
           
           {editable && (
+            
+
             <Button
-              variant="contained"
-              component="label"
-              sx={{ 
-                mt: 2,
-                backgroundColor: "#6a1b9a",
-                "&:hover": { backgroundColor: "#4a148c" },
-                textTransform: "none"
-              }}
-              disabled={uploading}
-            >
-              {uploading ? "Uploading..." : "Change Photo"}
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-            </Button>
+            variant="contained"
+            component="label"
+            disabled={uploading}
+            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+            sx={{
+              textTransform: "none",
+              padding: "14px 18px",
+              width: "180px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}
+          >
+            {uploading ? "Uploading..." : "Change Photo"}
+            <input
+              type="file"
+              hidden
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+          </Button>
+          
+            
           )}
         </Box>
+        
+
         
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3} sx={{ mt: 3 }}>
@@ -277,24 +278,42 @@ const handleSubmit = async (e) => {
           <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
           <Button
   variant="contained"
-  disabled={loading.profile}  // Replace with the appropriate loading state if needed
+  disabled={loading.profile}
   onClick={toggleEditable}
-  className="bg-purple-700 hover:bg-purple-800 text-white px-6 py-2"
+  className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+  style={{
+    padding: "14px 18px",
+    width: "180px",
+    textTransform: "none",
+    fontSize: "16px",
+    borderRadius: "10px",
+    fontWeight: "bold"
+  }}
 >
   {editable ? "Cancel" : "Edit Profile"}
 </Button>
 
 
+
+
             {editable && (
-              <Button
-              variant="contained"
-              type="submit"
-              className={`px-6 py-2 text-white ${loading || uploading ? 'bg-gray-500 hover:bg-gray-600' : 'bg-purple-700 hover:bg-purple-800'}`}
-              disabled={loading || uploading}
-            >
-              {loading ? "Saving..." : "Save Changes"}
-            </Button>
-            
+             <Button
+             variant="contained"
+             type="submit"
+             className={`text-white font-bold ${loading || uploading ? 'bg-gray-500 hover:bg-gray-600' : 'bg-purple-700 hover:bg-purple-800'}`}
+             disabled={loading || uploading}
+             style={{
+               padding: "14px 18px",
+               width: "180px",
+               fontSize: "16px",
+               borderRadius: "10px",
+               textTransform: "none",
+               fontWeight: "bold"
+             }}
+           >
+             {loading ? "Saving..." : "Save Changes"}
+           </Button>
+           
             
             )}
           </Box>
@@ -307,7 +326,5 @@ const handleSubmit = async (e) => {
         )}
       </Paper>
     </Box>
-    </div>
-</div>
   );
 }
