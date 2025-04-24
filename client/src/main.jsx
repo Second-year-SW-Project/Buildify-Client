@@ -58,6 +58,7 @@ import ItemPage from "./pages/Single_Item/Itempage.jsx";
 import SearchResults from "./pages/Searchbar/SearchResults.jsx";
 import LaptopCategoryPage from "./pages/Laptop_category/Laptopcategorypage.jsx";
 import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx";
+import ChoosePartsPage from "./pages/ChoosePartsPage/ChoosePartsPage.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -145,6 +146,7 @@ const router = createBrowserRouter([
             { path: "search", element: <SearchResults /> },
             { path: "laptop", element: <LaptopCategoryPage /> },
             { path: "selectgame", element: <SelectGameAndBudgetpage /> },
+            { path: "chooseparts", element: <ChoosePartsPage />},
 
             // User
             { path: "user/complaint", element: <ComplaintSubmit /> },
