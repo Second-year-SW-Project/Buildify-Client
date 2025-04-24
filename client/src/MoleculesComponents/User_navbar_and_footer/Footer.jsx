@@ -13,7 +13,7 @@ export default function Footer() {
 
 
         <div className="w-full md:w-1/4 mb-6 md:mb-0">
-          <a href="#"><img src="../src/assets/images/Logos/logo-userfooterblue.png"></img></a>
+          <a href="/"><img src="../src/assets/images/Logos/logo-userfooterblue.png"></img></a>
           <p className="mt-2 text-justify text-sm">
             Explore the ultimate PC customization experience! Our platform offers top-quality 
             components, real-time compatibility checks, secure payments, and personalized support 
@@ -69,8 +69,8 @@ export default function Footer() {
           <h3 className="text-white font-semibold mb-3">Information</h3>
           <ul className="text-sm space-y-2">
             <li><a href="/about" className="hover:text-gray-400">About Us</a></li>
-            <li><a href="/showroom" className="hover:text-gray-400">Our Showroom</a></li>
-            <li><a href="/terms" className="hover:text-gray-400">Terms & Conditions</a></li>
+            <li><a href="/about" className="hover:text-gray-400">Our Showroom</a></li>
+            <li><a href="/about" className="hover:text-gray-400">Terms & Conditions</a></li>
           </ul>
         </div>
 

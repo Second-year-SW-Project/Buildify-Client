@@ -1,4 +1,4 @@
-import { colors, createTheme } from "@mui/material";
+import { createTheme } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -167,6 +167,9 @@ const theme = createTheme({
     info: {
       main: "#2C87C3",
     },
+    delete: {
+      main: '#ff5630',
+    },
     primaryprimary: {
       main: '#961AFD',
       contrastText: '#FFFFFF',
@@ -195,6 +198,10 @@ const theme = createTheme({
       main: '#1C1919',
       contrastText: '#FFFFFF',
     },
+    ternaryDark: {
+      main: '#797979',
+      contrastText: '#FFFFFF',
+    },
   },
   components: {
     MuiButton: {
@@ -213,7 +220,46 @@ const theme = createTheme({
             },
           },
         },
+        {
+          props: { variant: "text" },
+          style: {
+            textTransform: "none",
+            color: "#961AFD",
+            backgroundColor: "#FFFFFF",
+            "&:hover": {
+              backgroundColor: "#e8dbff",
+            },
+          },
+        },
       ],
+    },
+
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          transition: "all 0.3s ease-in-out",
+          "&:hover": {
+            borderRadius: "0px",
+          },
+          "&.Mui-selected": {
+            borderLeft: "5px solid #961AFD",
+            borderRadius: "0px",
+          },
+        },
+      },
+    },
+  },
+  cssVariables: {
+    colorSchemeSelector: 'class',
+  },
+  // colorSchemes: { light: true, dark: true },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 600,
+      lg: 1200,
+      xl: 1536,
     },
   },
 });

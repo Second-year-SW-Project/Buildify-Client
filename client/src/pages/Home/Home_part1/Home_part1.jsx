@@ -5,7 +5,7 @@ export default function Home_part1() {
     <div className="relative h-screen w-full ">
 
 
-       {/*image */} 
+      {/*image */}
       <img
         src="/Home1.jpg"
         alt="Gaming Setup"
@@ -17,7 +17,7 @@ export default function Home_part1() {
 
       {/*content */}
       <div className="top-[-0px] mt- absolute  inset-0 flex flex-col justify-center items-center text-center px-4  bg-black bg-opacity-50">
-       
+
         <h1 className="text-white text-4xl md:text-5xl font-bold mb-5 mt-[-300px]">
           Desk Deals Done Right.
         </h1>
@@ -31,7 +31,13 @@ export default function Home_part1() {
         <Button
           variant="contained"
           color="primary"
-          className="!bg-blue-600 hover:!bg-blue-700 !text-white !font-semibold !px-6 !py-3 !rounded-lg"
+          className="!font-semibold !px-6 !py-3 !rounded-lg"
+          sx={{
+            backgroundColor: "primary100",
+            "&:hover": {
+              backgroundColor: "primary900",
+            },
+          }}
         >
           Shop PCs
         </Button>

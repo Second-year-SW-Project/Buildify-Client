@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 
 
@@ -38,9 +38,11 @@ export default function Itemcard({ src="/graph1.png" , stock="In Stock" , itemna
 
 
   <div>
-    <a href='#hello'><button className="bg-[#7315E5] hover:bg-[#5A0DB2] text-white font-bold py-3 px-4 rounded text-lg md:text-md sm:text-sm">
+    <button className="bg-[#7315E5] hover:bg-[#5A0DB2] text-white font-bold py-3 px-4 rounded text-lg md:text-md sm:text-sm" onClick={() => alert("Item added")}
+      
+    >
       Add To Cart
-    </button></a>
+    </button>
   </div>
 
 
