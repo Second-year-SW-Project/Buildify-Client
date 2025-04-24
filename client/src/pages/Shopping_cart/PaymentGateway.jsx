@@ -26,7 +26,7 @@ const PaymentGateway = () => {
   const dispatch = useDispatch(); // Add this
   const navigate = useNavigate(); // Add this
 
-  const handleCheckout = async (paymentMethodId) => {
+  const handleCheckout = async (paymentMethodId,formData) => {
     try {
       const sanitizedCartItems = cartItems.map((item) => ({
         _id: item._id || item.id,
@@ -34,25 +34,28 @@ const PaymentGateway = () => {
         name: item.name,
         category: item.type,
         quantity: item.quantity,
-        price: item.price
-
+        price: item.price,
       }));
-
-      console.log("Sending Checkout Request:", { items: sanitizedCartItems, total: totalPrice });
-
+  
       const response = await fetch("http://localhost:8000/api/checkout/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: sanitizedCartItems, total: totalPrice, paymentMethodId }),
+        body: JSON.stringify({
+          items: sanitizedCartItems,
+          total: totalPrice,
+          paymentMethodId,
+          customerEmail: formData.email, // <-- Pass customer email here
+          customerName: formData.name,
+        }),
       });
-
+  
       const data = await response.json();
       console.log("Server Response:", data);
-
+  
       if (response.ok) {
         alert("Transaction Successful! 🎉");
-        dispatch(clearCart()); // ✅ Clear the cart
-        navigate("/"); // ✅ Redirect to homepage
+        dispatch(clearCart());
+        navigate("/");
       } else {
         alert(`Transaction Failed: ${data.message}`);
       }
@@ -61,7 +64,6 @@ const PaymentGateway = () => {
       alert("Transaction Failed! Please try again.");
     }
   };
-
   return (
     <div>
       <div>
@@ -175,7 +177,7 @@ const CheckoutForm = ({ onCheckout }) => {
 
       alert("Payment failed. Please try again.");
     } else {
-      onCheckout(paymentMethod.id);
+      onCheckout(paymentMethod.id,formData);
     }
   };
 
