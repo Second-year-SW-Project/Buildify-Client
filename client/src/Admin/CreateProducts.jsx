@@ -210,7 +210,7 @@ const CreateProducts = () => {
                     console.log('Fetching product with ID:', id);
                     const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
                     if (res.data.Success) {
-                        const fetchedProduct = res.data.data;
+                        const fetchedProduct = res.data;
                         setProduct({
                             ...initialProductState,
                             ...fetchedProduct,
@@ -857,7 +857,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
@@ -887,7 +887,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 3.2 GHz"
+                                                    Placeholder="e.g., 3.2 GHz"
                                                     label="Base Clock"
                                                     width="100%"
                                                     value={product.baseClock}
@@ -897,7 +897,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 4.6 GHz"
+                                                    Placeholder="e.g., 4.6 GHz"
                                                     label="Boost Clock"
                                                     width="100%"
                                                     value={product.boostClock}
@@ -962,7 +962,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="mm"
+                                                    Placeholder="mm"
                                                     label="Height"
                                                     width="100%"
                                                     value={product.height}
@@ -972,7 +972,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
@@ -1049,7 +1049,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
@@ -1225,7 +1225,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
@@ -1261,7 +1261,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
@@ -1287,7 +1287,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="mm"
+                                                    Placeholder="mm"
                                                     label="Length"
                                                     width="100%"
                                                     value={product.length}
@@ -1318,7 +1318,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
@@ -1375,7 +1375,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="mm"
+                                                    Placeholder="mm"
                                                     label="Max GPU Length"
                                                     width="100%"
                                                     value={product.maxGpuLength}
@@ -1385,7 +1385,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="number"
-                                                    placeholder="mm"
+                                                    Placeholder="mm"
                                                     label="Max Cooler Height"
                                                     width="100%"
                                                     value={product.maxCoolerHeight}
@@ -1631,7 +1631,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 3.2 GHz"
+                                                    Placeholder="e.g., 3.2 GHz"
                                                     label="CPU Base Clock"
                                                     width="100%"
                                                     value={product.cpuBaseClock}
@@ -1641,7 +1641,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 4.6 GHz"
+                                                    Placeholder="e.g., 4.6 GHz"
                                                     label="CPU Boost Clock"
                                                     width="100%"
                                                     value={product.cpuBoostClock}
@@ -1681,7 +1681,7 @@ const CreateProducts = () => {
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 2520 MHz"
+                                                    Placeholder="e.g., 2520 MHz"
                                                     label="GPU Boost Clock (MHz)"
                                                     width="100%"
                                                     value={product.gpuBoostClockMHz}
