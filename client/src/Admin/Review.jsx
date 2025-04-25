@@ -283,8 +283,14 @@ const Review = () => {
                 <div className="flex items-center">
                   <Avatar alt={review.userId?.name} src={review.userId?.profilePicture} />
                   <div className="ml-4">
-                    <p className="text-xl font-semibold">{review.userId?.name}</p>
+                    <p className="text-xl font-semibold">{review.userId?.name || 'Anonymous'}</p>
                     <p className="text-sm text-gray-500">{review.userId?.email}</p>
+                    <p className="text-gray-500">
+          <span className="font-semibold text-gray-700">Product:</span> {review.productName}
+        </p>
+        <p className="text-gray-500">
+          <span className="font-semibold text-gray-700">Category:</span> {review.productCategory}
+        </p>
                   </div>
                 </div>
                 <div className="text-yellow-500 flex items-center space-x-1">
