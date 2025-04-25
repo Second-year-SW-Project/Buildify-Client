@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../MoleculesComponents/User_navbar_and_footer/Navbar'; // Adjust the path to your Navbar component
 import Footer from '../../MoleculesComponents/User_navbar_and_footer/Footer'; // Adjust the path to your Footer component
 import BannerLargeContainer2 from '../../AtomicComponents/ForCustomBuild/BannerLargeContainer2';
@@ -6,6 +7,16 @@ import easyModeImage from '../../assets/images/ForCustomBuild/easy-mode.png';
 import advancedModeImage from '../../assets/images/ForCustomBuild/advanced-mode.png';
 
 const ModeSelectPage = () => {
+  const navigate = useNavigate();
+
+  const handleEasyModeClick = () => {
+    navigate('/selectgame');
+  };
+
+  const handleAdvancedModeClick = () => {
+    navigate('/chooseparts');
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-50">
       {/* Navbar at the top */}
@@ -28,6 +39,7 @@ const ModeSelectPage = () => {
             buttonText="Start"
             imageUrl={easyModeImage}
             className="transform hover:scale-105 transition-transform duration-300"
+            onClick={handleEasyModeClick}
           />
           <BannerLargeContainer2
             heading="ADVANCED MODE"
@@ -35,6 +47,7 @@ const ModeSelectPage = () => {
             buttonText="Start"
             imageUrl={advancedModeImage}
             className="transform hover:scale-105 transition-transform duration-300"
+            onClick={handleAdvancedModeClick}
           />
         </div>
       </div>
