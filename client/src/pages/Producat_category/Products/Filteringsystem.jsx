@@ -9,7 +9,7 @@ export default function Filteringsystem({ categoryName, setFilters, allProducts 
   const [maxPrice, setMaxPrice] = useState(100000);
 
 
-
+//for the getting price params
 
   useEffect(() => {
     if (allProducts.length > 0) {
@@ -21,7 +21,7 @@ export default function Filteringsystem({ categoryName, setFilters, allProducts 
   }, [allProducts]);
 
 
-
+//for getting brands
 
   const handleBrandToggle = (brand) => {
     setBrandFilters(prev =>
@@ -32,7 +32,7 @@ export default function Filteringsystem({ categoryName, setFilters, allProducts 
   };
 
 
-
+//for getting sizes
 
   const handleCapacityToggle = (cap) => {
     setCapacityFilters(prev =>

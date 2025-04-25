@@ -1,10 +1,11 @@
+import React, { useEffect, useState } from "react";
 
-import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, increaseQuantity, decreaseQuantity,clearCart } from "../../redux/cartSlice";
 import { Button, IconButton } from "@mui/material";
 import { Add, Remove, Delete, Label } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 
 import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
@@ -20,12 +21,48 @@ import { Elements, CardElement, useStripe, useElements } from "@stripe/react-str
 const stripePromise = loadStripe("pk_test_51RAt66QrMZYW3Chd7hWi12tUhngYuiEe7M1hBUpvJAHIIZq95xF9yo97ZQBuup7avOuiTojlhqxm3R0GbxAmNexx00e2V1MOzb"); // Replace with your Stripe test publishable key
 
 const PaymentGateway = () => {
+
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
   const cartItems = useSelector((state) => state.cart.cartItems) || [];
   const totalPrice = useSelector((state) => state.cart.totalPrice) || 0;
 
-  const dispatch = useDispatch(); // Add this
-  const navigate = useNavigate(); // Add this
+  const dispatch = useDispatch(); // for clearcart
+  const navigate = useNavigate(); // for navigate to home
 
+    useEffect(() => {
+      const token  = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      if (!token || !userId) {
+        setLoading(false);
+        return;
+      }
+  
+      const fetchUsers = async () => {
+        try {
+          const response = await axios.get("http://localhost:8000/api/v1/users", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          setUsers(response.data);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchUsers();
+    }, []);
+  
+
+    const userId = localStorage.getItem("userId");
+    const currentUserArray = users.filter((u) => u._id === userId);
+    const currentUser = currentUserArray.length > 0 ? currentUserArray[0] : null;
+
+    //the checkout button function
   const handleCheckout = async (paymentMethodId,formData) => {
     try {
       const sanitizedCartItems = cartItems.map((item) => ({
@@ -44,7 +81,8 @@ const PaymentGateway = () => {
           items: sanitizedCartItems,
           total: totalPrice,
           paymentMethodId,
-          customerEmail: formData.email, // <-- Pass customer email here
+          user:userId,   //user id that get from using token
+          customerEmail: formData.email, //  pass customer email here get from form
           customerName: formData.name,
         }),
       });
@@ -133,6 +171,8 @@ const PaymentGateway = () => {
     </div>
   );
 };
+
+//checkout form
 
 const CheckoutForm = ({ onCheckout }) => {
   const stripe = useStripe();

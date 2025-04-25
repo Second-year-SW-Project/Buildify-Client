@@ -27,7 +27,7 @@ export default function Home_part1() {
           Save big on gaming gear bundles and deck out your desk.
         </p>
 
-
+        {/* button that redirect to pcbuilds */}
         <Button
           variant="contained"
           color="primary"

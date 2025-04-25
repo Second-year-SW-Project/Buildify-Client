@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 const ItemCard = ({ product }) => {
   const dispatch = useDispatch();
 
+  //add to cart function
+
   const handleAddToCart = (e) => {
     e.stopPropagation(); // 
     e.preventDefault();  //
@@ -52,7 +54,6 @@ const ItemCard = ({ product }) => {
         </p>
       </Link>
 
-      {/* Add to Cart Button OUTSIDE the Link */}
       <div>
         <button
           className="bg-[#7315E5] hover:bg-[#5A0DB2] text-white font-bold py-3 px-4 rounded text-lg md:text-md sm:text-sm mt-2"

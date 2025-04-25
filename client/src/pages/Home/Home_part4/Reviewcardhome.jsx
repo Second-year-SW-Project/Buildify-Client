@@ -14,14 +14,14 @@ export default function Reviewcardhome({ review }) {
           <div>
             <h3 className="text-sm font-semibold text-gray-800 ml-2 ">{review.type}</h3>
             <p className="text-xs text-blue-600 font-medium ml-2 ">
-              Purchased: {review.userId}
+              Purchased: {review.type}
             </p>
           </div>
         </div>
         {/* Star Rating */}
         <div className="flex items-start">
           {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} className="text-yellow-400 text-2xl">
+            <span key={i} className="text-yellow-400 text-lg">
               {i < rating ? "★" : "☆"}
             </span>
           ))}

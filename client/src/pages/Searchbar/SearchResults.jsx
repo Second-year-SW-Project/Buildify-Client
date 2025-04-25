@@ -12,7 +12,7 @@ export default function SearchResults() {
   const [loading, setLoading] = useState(true);
   
   const [error, setError] = useState(null);
-
+  //fetch products for the query
   useEffect(() => {
     const fetchProducts = async () => {
       try {

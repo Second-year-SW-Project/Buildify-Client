@@ -103,6 +103,10 @@ export default function Itempage() {
   //console.log(id); // Log the product data to the console
    // Log the product data to the console
 
+
+
+   //switch case fo the categories,each category has various attributes,the main specs are here in variables
+
    var spec1; //x
    var spec2; //y
    var spec3; //z
