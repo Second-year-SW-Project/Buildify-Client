@@ -147,10 +147,10 @@ const Usermanage = () => {
           <Box sx={{ p: 3 }}>
 
           <div className=' mb-2'>
-            <PageTitle value="User Manage"></PageTitle>
+            <PageTitle value="User Management"></PageTitle>
             <CustomBreadcrumbs
               paths={[
-                { label: 'User Manage' },
+                { label: 'User Management' },
               ]} />
           </div>
           <Box className="flex justify-end mb-3">
@@ -420,24 +420,26 @@ const Usermanage = () => {
       <MenuItem value="user">User</MenuItem>
       <MenuItem value="admin">Admin</MenuItem>
     </Select>
-    <TextField
-      label="Password"
-      type="password"
-      fullWidth
-      value={formData.password}
-      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-      sx={{
-        mb: 3,
-        '& .MuiInputBase-root': {
-          borderRadius: '10px',
-          backgroundColor: '#F4E6FF',
-        },
-        '& .MuiFormLabel-root': {
-          fontWeight: 'bold',
-        }
-      }}
-      variant="outlined"
-    />
+    {!isEditing && (
+      <TextField
+        label="Password"
+        type="password"
+        fullWidth
+        value={formData.password}
+        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+        sx={{
+          mb: 3,
+          '& .MuiInputBase-root': {
+            borderRadius: '10px',
+            backgroundColor: '#F4E6FF',
+          },
+          '& .MuiFormLabel-root': {
+            fontWeight: 'bold',
+          }
+        }}
+        variant="outlined"
+      />
+    )}
   </DialogContent>
   <DialogActions sx={{ justifyContent: 'center' }}>
     <Button onClick={() => setOpenModal(false)} className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
