@@ -29,16 +29,14 @@ export default function PCBuilderBanners() {
           className="h-auto rounded-md px-12 py-8 flex flex-wrap lg:flex-nowrap items-center text-white shadow-xl backdrop-blur-sm"
         >
           <div className="w-full lg:w-1/2">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">Advanced Builder</h2>
-            <p className="mb-4 text-sm md:text-base leading-relaxed">
-              Custom built to order. Our PC builder lets you choose the
-              components you need to outclass your adversaries.
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">ADVANCED MODE</h2>
+            <p className="mb-4 text-sm md:text-base leading-relaxed">Build your ultimate custom PC—choose your components, and we'll ensure everything fits and works perfectly!
             </p>
             <button
-              onClick={() => navigate("/advanced-builder")}
+              onClick={() => navigate('/chooseparts')}
               className="bg-white text-red-700 font-semibold text-sm px-4 py-2 rounded hover:bg-gray-200 transition"
             >
-              Customize Now
+              Start
             </button>
           </div>
           <div className="w-full lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">
@@ -56,16 +54,15 @@ export default function PCBuilderBanners() {
           className=" h-auto rounded-md px-12 py-8 flex flex-wrap lg:flex-nowrap items-center  text-white shadow-xl backdrop-blur-sm"
         >
           <div className="w-full lg:w-1/2">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">Easy Builder</h2>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">EASY MODE</h2>
             <p className="mb-4 text-sm md:text-base leading-relaxed">
-              Custom build the perfect gaming PC based on the games you play and
-              we will ship it out in 5 business days!
+              Find your perfect gaming PC—choose your favorite games, set your budget, and let us do the rest!
             </p>
             <button
-              onClick={() => navigate("/easy-builder")}
+              onClick={() => navigate('/selectgame')}
               className="bg-white text-red-700 font-semibold text-sm px-4 py-2 rounded hover:bg-gray-200 transition"
             >
-              Customize Now
+              Start
             </button>
           </div>
           <div className="w-full lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">
@@ -79,6 +76,6 @@ export default function PCBuilderBanners() {
 
       </div>
     </div>
-    
+
   );
 }

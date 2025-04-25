@@ -36,7 +36,7 @@ const WarningPopup = ({ onClose, messages, type = 'warning' }) => {
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className={`relative ${styles.bgColor} rounded-lg shadow-xl w-full max-w-3xl mx-4 p-6 border-2 ${styles.borderColor}`}>
         {/* Header */}
-        <div className="flex items-center justify-center mb-4">
+        <div className="flex items-center justify-center mb-6">
           <div className="flex items-center space-x-3">
             {styles.icon}
             <h2 className={`text-2xl font-bold ${styles.textColor}`}>
@@ -46,16 +46,16 @@ const WarningPopup = ({ onClose, messages, type = 'warning' }) => {
         </div>
         
         {/* Content */}
-        <div className={`space-y-3 ${styles.textColor}`}>
+        <div className={`space-y-4 ${styles.textColor} text-center`}>
           {messages.map((message, index) => (
-            <div key={index} className="flex items-start space-x-3">
-              <p className="text-lg leading-relaxed">{message}</p>
+            <div key={index} className="flex justify-center">
+              <p className="text-lg leading-relaxed max-w-2xl">{message}</p>
             </div>
           ))}
         </div>
 
         {/* Footer */}
-        <div className="mt-6 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <button
             onClick={onClose}
             className={`px-6 py-2 rounded-md ${styles.textColor} ${styles.bgColor} hover:opacity-90 transition-opacity font-medium`}

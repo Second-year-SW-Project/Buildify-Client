@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Navbar from '../../MoleculesComponents/User_navbar_and_footer/Navbar';
 import Footer from '../../MoleculesComponents/User_navbar_and_footer/Footer';
 import ChoosePartsHeader from "../../AtomicComponents/ForCustomBuild/ChoosePartsHeader";
@@ -14,24 +14,21 @@ const ChooseParts = () => {
     { type: "note", text: "Choose components that are compatible with each other." },
     { type: "disclaimer", text: "Prices are subject to change based on availability." },
   ]);
-  
+
   // State for total TDP
   const [totalTDP, setTotalTDP] = useState("0W");
-  
+
   // State to track compatibility issues
   const [hasCompatibilityIssues, setHasCompatibilityIssues] = useState(false);
-  
+
   // Listen for changes in the PartsTable component
-  const handleComponentsChanged = (components) => {
-    // Use the extracted compatibility checker
+  const handleComponentsChanged = useCallback((components) => {
     const compatibilityResult = checkCompatibility(components);
-    
-    // Update state based on compatibility check results
     setMessages(compatibilityResult.messages);
     setTotalTDP(compatibilityResult.totalTDP);
     setHasCompatibilityIssues(compatibilityResult.hasCompatibilityIssues);
-  };
-  
+  }, []);  // Empty dependency array means this function reference won't change
+
   // Function to handle "Finish & Add to Quote" button click
   const handleFinishAndAddToQuote = () => {
     console.log("Finish & Add to Quote clicked");
@@ -53,7 +50,7 @@ const ChooseParts = () => {
       <div className="flex-grow bg-gray-100">
         {/* Header */}
         <ChoosePartsHeader />
-        
+
         {/* Compatibility Warning Banner */}
         <CompatibilityWarningBanner
           warningText="Warning! These parts have potential issues or incompatibilities. See details below."
@@ -70,7 +67,7 @@ const ChooseParts = () => {
           <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <PartsTable onComponentsChanged={handleComponentsChanged} />
           </div>
-          
+
           {/* Buttons Section - Center aligned */}
           <div className="flex justify-center gap-4 mb-36">
             {/* Finish & Save Draft Button */}
@@ -84,7 +81,7 @@ const ChooseParts = () => {
               onClick={handleFinishAndAddToQuote}
             />
           </div>
-          
+
           {/* Warning Messages - At the bottom */}
           <div className="mb-8">
             <WarningMessage messages={messages} />

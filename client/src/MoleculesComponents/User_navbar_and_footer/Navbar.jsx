@@ -141,12 +141,9 @@ export default function Navbar() {
         <Link to="/home" className="hover:text-blue-400">
           Home
         </Link>
-        <div 
-          className="hover:text-blue-400 cursor-pointer"
-          onClick={() => navigate('/modeselect')}
-        >
+        <Link to="/modeselect" className="hover:text-blue-400">
           Custom Build
-        </div>
+        </Link>
         <Link
           to="/productcategorypage/prebuild"
           className="hover:text-blue-400"
