@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../src/redux/cartSlice';
 import { toast } from 'sonner';
-import { calculateCPUScore, calculateGPUScore, calculateRAMScore } from '../utils/scoreCalculator';
+import { calculateCPUScore, calculateGPUScore, calculateRAMScore, calculatePrebuiltPcScore } from '../utils/scoreCalculator';
 
 const ItemCard = ({ product }) => {
   const dispatch = useDispatch();
@@ -73,6 +73,9 @@ const ItemCard = ({ product }) => {
           speedMHz: product.memorySpeed,
           type: product.memoryType
         });
+      case 'prebuild':
+        const scores = calculatePrebuiltPcScore(product);
+        return scores.total;
       default:
         return null;
     }
@@ -81,8 +84,8 @@ const ItemCard = ({ product }) => {
   const score = calculateScore();
 
   // Log the final score for debugging
-  if (product.type === 'gpu') {
-    console.log('Final GPU Score:', score);
+  if (product.type === 'gpu' || product.type === 'prebuild') {
+    console.log(`Final ${product.type.toUpperCase()} Score:`, score);
   }
 
   return (
@@ -112,7 +115,7 @@ const ItemCard = ({ product }) => {
         {score && !isNaN(score) && (
           <div className="my-2">
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-800">
-              <span className="text-sm font-semibold">Score: {score}</span>
+              <span className="text-sm font-semibold">Score: {score.toFixed(2)}</span>
             </div>
           </div>
         )}
