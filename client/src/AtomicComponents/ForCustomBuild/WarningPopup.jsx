@@ -1,49 +1,77 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ClearIcon from '@mui/icons-material/Clear';
+import WarningIcon from '@mui/icons-material/Warning';
+import InfoIcon from '@mui/icons-material/Info';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
-const WarningPopup = ({ onClose, messages }) => {
+const WarningPopup = ({ onClose, messages, type = 'warning' }) => {
+  // Define styles based on message type
+  const typeStyles = {
+    warning: {
+      icon: <WarningIcon className="text-red-500" fontSize="large" />,
+      bgColor: 'bg-red-50',
+      borderColor: 'border-red-200',
+      textColor: 'text-red-800',
+      title: 'Warning',
+    },
+    note: {
+      icon: <InfoIcon className="text-blue-500" fontSize="large" />,
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+      textColor: 'text-blue-800',
+      title: 'Note',
+    },
+    disclaimer: {
+      icon: <ErrorOutlineIcon className="text-gray-500" fontSize="large" />,
+      bgColor: 'bg-gray-50',
+      borderColor: 'border-gray-200',
+      textColor: 'text-gray-800',
+      title: 'Disclaimer',
+    },
+  };
+
+  const styles = typeStyles[type];
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-3xl mx-4 p-4 sm:p-6">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-purple-800 hover:text-purple-900"
-          aria-label="Close"
-        >
-          <ClearIcon fontSize="large" />
-        </button>
-       
+      <div className={`relative ${styles.bgColor} rounded-lg shadow-xl w-full max-w-3xl mx-4 p-6 border-2 ${styles.borderColor}`}>
         {/* Header */}
-        <div className="pt-8 sm:pt-10">
-          <h2 className="text-center text-red-600 font-bold text-2xl sm:text-3xl mb-6 sm:mb-8">
-            Critical Issues / Incompatibilities Detected!
-          </h2>
-         
-          {/* Warning content */}
-          <div className="flex flex-col sm:flex-row items-start mb-6 pb-6 px-4 sm:px-6">
-            {/* Label */}
-            <div className="min-w-[100px] mb-4 sm:mb-0">
-              <span className="font-bold text-red-600 text-xl">Warning:</span>
-            </div>
-            {/* Messages */}
-            <div className="text-gray-800 text-lg sm:text-xl">
-              {messages.map((message, index) => (
-                <div key={index}>{message}</div>
-              ))}
-            </div>
+        <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center space-x-3">
+            {styles.icon}
+            <h2 className={`text-2xl font-bold ${styles.textColor}`}>
+              {styles.title}
+            </h2>
           </div>
+        </div>
+        
+        {/* Content */}
+        <div className={`space-y-3 ${styles.textColor}`}>
+          {messages.map((message, index) => (
+            <div key={index} className="flex items-start space-x-3">
+              <p className="text-lg leading-relaxed">{message}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={onClose}
+            className={`px-6 py-2 rounded-md ${styles.textColor} ${styles.bgColor} hover:opacity-90 transition-opacity font-medium`}
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-// Prop types validation
 WarningPopup.propTypes = {
   onClose: PropTypes.func.isRequired,
   messages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  type: PropTypes.oneOf(['warning', 'note', 'disclaimer']),
 };
 
 export default WarningPopup;

@@ -2,20 +2,249 @@
  * Utility for checking PC part compatibility and generating warning messages
  */
 
+// Base messages that always appear
+const BASE_MESSAGES = [
+  { type: "note", text: "Choose components that are compatible with each other." },
+  { type: "disclaimer", text: "Prices are subject to change based on availability." },
+];
+
 /**
- * Performs compatibility checks between different PC components
+ * Component-specific compatibility checkers
+ */
+const compatibilityCheckers = {
+  // CPU and Motherboard compatibility
+  checkCpuMotherboard: (cpu, motherboard) => {
+    const warnings = [];
+    if (cpu.socketType !== motherboard.socketType) {
+      warnings.push({
+        type: "warning",
+        text: `CPU socket (${cpu.socketType}) is not compatible with motherboard socket (${motherboard.socketType}).`,
+      });
+    }
+    return warnings;
+  },
+
+  // CPU and Cooler compatibility
+  checkCpuCooler: (cpu, cooler) => {
+    const warnings = [];
+    
+    // Check socket compatibility
+    if (cooler.supportedSocket) {
+      const supportedSockets = Array.isArray(cooler.supportedSocket)
+        ? cooler.supportedSocket
+        : cooler.supportedSocket.split(',').map(s => s.trim());
+      
+      if (!supportedSockets.includes(cpu.socketType)) {
+        warnings.push({
+          type: "warning",
+          text: `CPU Cooler does not support CPU socket (${cpu.socketType}). Supported sockets: ${supportedSockets.join(', ')}.`,
+        });
+      }
+    } else {
+      warnings.push({
+        type: "warning",
+        text: `CPU Cooler is missing supported socket information. Cannot verify compatibility with CPU socket (${cpu.socketType}).`,
+      });
+    }
+
+    // Check TDP compatibility
+    if (parseInt(cooler.maxTdp) < parseInt(cpu.tdp)) {
+      warnings.push({
+        type: "warning",
+        text: `CPU Cooler max TDP (${cooler.maxTdp}W) is lower than CPU TDP (${cpu.tdp}W).`,
+      });
+    }
+
+    return warnings;
+  },
+
+  // Cooler and Case compatibility
+  checkCoolerCase: (cooler, pcCase) => {
+    const warnings = [];
+    if (parseInt(cooler.height) > parseInt(pcCase.maxCoolerHeight)) {
+      warnings.push({
+        type: "warning",
+        text: `CPU Cooler height (${cooler.height}mm) exceeds case's max cooler height (${pcCase.maxCoolerHeight}mm).`,
+      });
+    }
+    return warnings;
+  },
+
+  // RAM and Motherboard compatibility
+  checkRamMotherboard: (ram, motherboard) => {
+    const warnings = [];
+
+    // Check RAM type compatibility
+    if (!motherboard.supportedMemoryTypes.includes(ram.type)) {
+      warnings.push({
+        type: "warning",
+        text: `RAM type (${ram.type}) is not compatible with motherboard supported memory types (${motherboard.supportedMemoryTypes}).`,
+      });
+    }
+
+    // Check RAM speed compatibility
+    if (parseInt(ram.speed) > parseInt(motherboard.maxRamSpeed)) {
+      warnings.push({
+        type: "warning",
+        text: `RAM speed (${ram.speed}MHz) exceeds motherboard's max supported speed (${motherboard.maxRamSpeed}MHz). RAM will run at the lower speed.`,
+      });
+    }
+
+    // Check RAM capacity and slots
+    const ramModules = ram.memoryCapacity.split('+').length;
+    const totalRamCapacity = ram.memoryCapacity
+      .split('+')
+      .reduce((sum, cap) => sum + parseInt(cap), 0);
+
+    if (ramModules > parseInt(motherboard.ramSlots)) {
+      warnings.push({
+        type: "warning",
+        text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ramSlots}).`,
+      });
+    }
+
+    if (totalRamCapacity > parseInt(motherboard.maxRam)) {
+      warnings.push({
+        type: "warning",
+        text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
+      });
+    }
+
+    return warnings;
+  },
+
+  // GPU and Motherboard compatibility
+  checkGpuMotherboard: (gpu, motherboard) => {
+    const warnings = [];
+    const requiredPcieType = gpu.interfaceType;
+    const requiredPcieVersion = "4.0";
+    const hasCompatiblePcieSlot = motherboard.pcieSlots.some(
+      (slot) =>
+        slot.type === requiredPcieType &&
+        parseFloat(slot.version) >= parseFloat(requiredPcieVersion)
+    );
+
+    if (!hasCompatiblePcieSlot) {
+      warnings.push({
+        type: "warning",
+        text: `GPU interface (${gpu.interfaceType}) is not compatible with motherboard PCIe slots.`,
+      });
+    }
+    return warnings;
+  },
+
+  // GPU and Case compatibility
+  checkGpuCase: (gpu, pcCase) => {
+    const warnings = [];
+    if (parseInt(gpu.length) > parseInt(pcCase.maxGpuLength)) {
+      warnings.push({
+        type: "warning",
+        text: `GPU length (${gpu.length}mm) exceeds case's max GPU length (${pcCase.maxGpuLength}mm).`,
+      });
+    }
+    return warnings;
+  },
+
+  // GPU and Power Supply compatibility
+  checkGpuPowerSupply: (gpu, psu) => {
+    const warnings = [];
+    const requiredConnectors = gpu.powerConnectors.split('+');
+    const hasSufficientConnectors = requiredConnectors.every((connector) =>
+      psu.modularType === "Fully Modular" || psu.modularType.includes(connector)
+    );
+
+    if (!hasSufficientConnectors) {
+      warnings.push({
+        type: "warning",
+        text: `Power supply does not provide required power connectors for GPU (${gpu.powerConnectors}).`,
+      });
+    }
+    return warnings;
+  },
+
+  // Storage and Motherboard compatibility
+  checkStorageMotherboard: (storage, motherboard) => {
+    const warnings = [];
+    const requiredStorageType = storage.storageType;
+    const hasCompatibleStorageInterface = motherboard.storageInterfaces.some(
+      (intf) => intf.type === requiredStorageType && intf.count > 0
+    );
+
+    if (!hasCompatibleStorageInterface) {
+      warnings.push({
+        type: "warning",
+        text: `Storage type (${storage.storageType}) is not supported by motherboard storage interfaces.`,
+      });
+    }
+    return warnings;
+  },
+
+  // Expansion Network and Motherboard compatibility
+  checkExpansionMotherboard: (expansion, motherboard) => {
+    const warnings = [];
+    const requiredInterface = expansion.interfaceType;
+    const hasCompatiblePcieSlot = motherboard.pcieSlots.some(
+      (slot) => slot.type === requiredInterface
+    );
+
+    if (!hasCompatiblePcieSlot) {
+      warnings.push({
+        type: "warning",
+        text: `Expansion card interface (${expansion.interfaceType}) is not compatible with motherboard PCIe slots.`,
+      });
+    }
+    return warnings;
+  },
+
+  // Power Supply wattage check
+  checkPowerSupplyWattage: (psu, totalTdp) => {
+    const warnings = [];
+    const recommendedWattage = totalTdp * 1.3; // 30% overhead for system stability
+
+    if (parseInt(psu.wattage) < recommendedWattage) {
+      warnings.push({
+        type: "warning",
+        text: `Power supply (${psu.wattage}W) may be insufficient for system TDP (${totalTdp}W). Recommended: ${Math.ceil(recommendedWattage)}W.`,
+      });
+    }
+    return warnings;
+  },
+
+  // Case and Motherboard form factor compatibility
+  checkCaseMotherboard: (pcCase, motherboard) => {
+    const warnings = [];
+    const supportedFormFactors = pcCase.supportedMotherboardSizes.split(',');
+    
+    if (!supportedFormFactors.includes(motherboard.formFactor)) {
+      warnings.push({
+        type: "warning",
+        text: `Case does not support motherboard form factor (${motherboard.formFactor}). Supported: ${supportedFormFactors.join(', ')}.`,
+      });
+    }
+    return warnings;
+  },
+
+  // CPU integrated graphics check
+  checkCpuGraphics: (cpu) => {
+    const warnings = [];
+    if (!cpu.integratedGraphics) {
+      warnings.push({
+        type: "warning",
+        text: `CPU does not have integrated graphics. A dedicated GPU is required.`,
+      });
+    }
+    return warnings;
+  },
+};
+
+/**
+ * Main compatibility checking function
  * @param {Object} components - Object containing selected components
  * @returns {Object} - Contains compatibility warnings, total TDP, and issues flag
  */
 export const checkCompatibility = (components) => {
   let tdp = 0;
-  let compatibilityWarnings = [];
-
-  // Base messages that always appear
-  const baseMessages = [
-    { type: "note", text: "Choose components that are compatible with each other." },
-    { type: "disclaimer", text: "Prices are subject to change based on availability." },
-  ];
+  let compatibilityWarnings = [...BASE_MESSAGES];
 
   // Calculate total TDP
   Object.values(components).forEach((component) => {
@@ -24,239 +253,104 @@ export const checkCompatibility = (components) => {
     }
   });
 
-  // Check for CPU and motherboard socket compatibility
+  // Check CPU and Motherboard compatibility
   if (components.CPU && components.Motherboard) {
-    const cpu = components.CPU.originalData;
-    const motherboard = components.Motherboard.originalData;
-
-    if (cpu.socketType !== motherboard.socketType) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `CPU socket (${cpu.socketType}) is not compatible with motherboard socket (${motherboard.socketType}).`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkCpuMotherboard(
+      components.CPU.originalData,
+      components.Motherboard.originalData
+    ));
   }
 
-  // Check for CPU cooler compatibility
+  // Check CPU and Cooler compatibility
   if (components.CPU && components["CPU Cooler"]) {
-    const cpu = components.CPU.originalData;
-    const cooler = components["CPU Cooler"].originalData;
-
-    // Check socket compatibility
-    if (cooler.supportedSocket) {
-      const supportedSockets = Array.isArray(cooler.supportedSocket)
-        ? cooler.supportedSocket
-        : cooler.supportedSocket.split(',').map(s => s.trim());
-      if (!supportedSockets.includes(cpu.socketType)) {
-        compatibilityWarnings.push({
-          type: "warning",
-          text: `CPU Cooler does not support CPU socket (${cpu.socketType}). Supported sockets: ${supportedSockets.join(', ')}.`,
-        });
-      }
-    } else {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `CPU Cooler is missing supported socket information. Cannot verify compatibility with CPU socket (${cpu.socketType}).`,
-      });
-    }
-
-    // Check TDP compatibility
-    if (parseInt(cooler.maxTdp) < parseInt(cpu.tdp)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `CPU Cooler max TDP (${cooler.maxTdp}W) is lower than CPU TDP (${cpu.tdp}W).`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkCpuCooler(
+      components.CPU.originalData,
+      components["CPU Cooler"].originalData
+    ));
   }
 
-  // Check cooler height with case
+  // Check Cooler and Case compatibility
   if (components["CPU Cooler"] && components.Case) {
-    const cooler = components["CPU Cooler"].originalData;
-    const pcCase = components.Case.originalData;
-
-    if (parseInt(cooler.height) > parseInt(pcCase.maxCoolerHeight)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `CPU Cooler height (${cooler.height}mm) exceeds case's max cooler height (${pcCase.maxCoolerHeight}mm).`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkCoolerCase(
+      components["CPU Cooler"].originalData,
+      components.Case.originalData
+    ));
   }
 
-  // Check for RAM compatibility with motherboard
+  // Check RAM and Motherboard compatibility
   if (components.RAM && components.Motherboard) {
-    const ram = components.RAM.originalData;
-    const motherboard = components.Motherboard.originalData;
-
-    // Check RAM type compatibility
-    if (!motherboard.supportedMemoryTypes.includes(ram.type)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `RAM type (${ram.type}) is not compatible with motherboard supported memory types (${motherboard.supportedMemoryTypes}).`,
-      });
-    }
-
-    // Check RAM speed compatibility
-    if (parseInt(ram.speed) > parseInt(motherboard.maxRamSpeed)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `RAM speed (${ram.speed}MHz) exceeds motherboard's max supported speed (${motherboard.maxRamSpeed}MHz). RAM will run at the lower speed.`,
-      });
-    }
-
-    // Check RAM capacity and slots
-    const ramModules = ram.memoryCapacity.split('+').length; // E.g., "8GB+8GB" -> 2 modules
-    const totalRamCapacity = ram.memoryCapacity
-      .split('+')
-      .reduce((sum, cap) => sum + parseInt(cap), 0);
-
-    if (ramModules > parseInt(motherboard.ramSlots)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ramSlots}).`,
-      });
-    }
-
-    if (totalRamCapacity > parseInt(motherboard.maxRam)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkRamMotherboard(
+      components.RAM.originalData,
+      components.Motherboard.originalData
+    ));
   }
 
-  // Check for GPU compatibility
+  // Check GPU and Motherboard compatibility
   if (components.GPU && components.Motherboard) {
-    const gpu = components.GPU.originalData;
-    const motherboard = components.Motherboard.originalData;
-
-    // Check PCIe slot compatibility
-    const requiredPcieType = gpu.interfaceType; // E.g., "PCIe x16"
-    const requiredPcieVersion = "4.0"; // Assume minimum version; adjust based on data if available
-    const hasCompatiblePcieSlot = motherboard.pcieSlots.some(
-      (slot) =>
-        slot.type === requiredPcieType &&
-        parseFloat(slot.version) >= parseFloat(requiredPcieVersion)
-    );
-
-    if (!hasCompatiblePcieSlot) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `GPU interface (${gpu.interfaceType}) is not compatible with motherboard PCIe slots.`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkGpuMotherboard(
+      components.GPU.originalData,
+      components.Motherboard.originalData
+    ));
   }
 
-  // Check GPU length with case
+  // Check GPU and Case compatibility
   if (components.GPU && components.Case) {
-    const gpu = components.GPU.originalData;
-    const pcCase = components.Case.originalData;
-
-    if (parseInt(gpu.length) > parseInt(pcCase.maxGpuLength)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `GPU length (${gpu.length}mm) exceeds case's max GPU length (${pcCase.maxGpuLength}mm).`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkGpuCase(
+      components.GPU.originalData,
+      components.Case.originalData
+    ));
   }
 
-  // Check GPU power connectors with power supply
+  // Check GPU and Power Supply compatibility
   if (components.GPU && components["Power Supply"]) {
-    const gpu = components.GPU.originalData;
-    const psu = components["Power Supply"].originalData;
-
-    // Assuming powerConnectors is a string like "8-pin+6-pin"
-    const requiredConnectors = gpu.powerConnectors.split('+');
-    const hasSufficientConnectors = requiredConnectors.every((connector) =>
-      psu.modularType === "Fully Modular" || psu.modularType.includes(connector)
-    );
-
-    if (!hasSufficientConnectors) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `Power supply does not provide required power connectors for GPU (${gpu.powerConnectors}).`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkGpuPowerSupply(
+      components.GPU.originalData,
+      components["Power Supply"].originalData
+    ));
   }
 
-  // Check storage compatibility with motherboard
+  // Check Storage and Motherboard compatibility
   if (components.Storage && components.Motherboard) {
-    const storage = components.Storage.originalData;
-    const motherboard = components.Motherboard.originalData;
-
-    const requiredStorageType = storage.storageType; // E.g., "NVMe", "SATA"
-    const hasCompatibleStorageInterface = motherboard.storageInterfaces.some(
-      (intf) => intf.type === requiredStorageType && intf.count > 0
-    );
-
-    if (!hasCompatibleStorageInterface) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `Storage type (${storage.storageType}) is not supported by motherboard storage interfaces.`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkStorageMotherboard(
+      components.Storage.originalData,
+      components.Motherboard.originalData
+    ));
   }
 
-  // Check expansion network compatibility
+  // Check Expansion Network and Motherboard compatibility
   if (components["Expansion Network"] && components.Motherboard) {
-    const expansion = components["Expansion Network"].originalData;
-    const motherboard = components.Motherboard.originalData;
-
-    const requiredInterface = expansion.interfaceType; // E.g., "PCIe x1"
-    const hasCompatiblePcieSlot = motherboard.pcieSlots.some(
-      (slot) => slot.type === requiredInterface
-    );
-
-    if (!hasCompatiblePcieSlot) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `Expansion card interface (${expansion.interfaceType}) is not compatible with motherboard PCIe slots.`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkExpansionMotherboard(
+      components["Expansion Network"].originalData,
+      components.Motherboard.originalData
+    ));
   }
 
-  // Check power supply wattage sufficiency
+  // Check Power Supply wattage
   if (components["Power Supply"] && tdp > 0) {
-    const psu = components["Power Supply"].originalData;
-    const recommendedWattage = tdp * 1.3; // 30% overhead for system stability
-
-    if (parseInt(psu.wattage) < recommendedWattage) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `Power supply (${psu.wattage}W) may be insufficient for system TDP (${tdp}W). Recommended: ${Math.ceil(recommendedWattage)}W.`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkPowerSupplyWattage(
+      components["Power Supply"].originalData,
+      tdp
+    ));
   }
 
-  // Check case and motherboard form factor compatibility
+  // Check Case and Motherboard form factor compatibility
   if (components.Case && components.Motherboard) {
-    const pcCase = components.Case.originalData;
-    const motherboard = components.Motherboard.originalData;
-    const supportedFormFactors = pcCase.supportedMotherboardSizes.split(','); // E.g., "ATX,Micro-ATX"
-
-    if (!supportedFormFactors.includes(motherboard.formFactor)) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `Case does not support motherboard form factor (${motherboard.formFactor}). Supported: ${supportedFormFactors.join(', ')}.`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkCaseMotherboard(
+      components.Case.originalData,
+      components.Motherboard.originalData
+    ));
   }
 
-  // Check if GPU is required when CPU has no integrated graphics
+  // Check CPU integrated graphics
   if (components.CPU && !components.GPU) {
-    const cpu = components.CPU.originalData;
-
-    if (!cpu.integratedGraphics) {
-      compatibilityWarnings.push({
-        type: "warning",
-        text: `CPU does not have integrated graphics. A dedicated GPU is required.`,
-      });
-    }
+    compatibilityWarnings.push(...compatibilityCheckers.checkCpuGraphics(
+      components.CPU.originalData
+    ));
   }
 
-  // Return all relevant data
   return {
-    messages: [...baseMessages, ...compatibilityWarnings],
+    messages: compatibilityWarnings,
     totalTDP: `${tdp}W`,
-    hasCompatibilityIssues: compatibilityWarnings.length > 0,
+    hasCompatibilityIssues: compatibilityWarnings.some(msg => msg.type === "warning"),
   };
 };

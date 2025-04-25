@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import WarningPopup from './WarningPopup';
 
 const WarningMessage = ({ messages }) => {
-  const [showPopup, setShowPopup] = useState(false);
+  const [activePopup, setActivePopup] = useState(null);
+  const prevMessagesRef = useRef([]);
 
   // Group messages by their type
   const groupedMessages = messages.reduce((acc, message) => {
@@ -14,77 +15,125 @@ const WarningMessage = ({ messages }) => {
     return acc;
   }, {});
 
-  // Check if there are any "warning" messages
-  const hasWarnings = groupedMessages.warning && groupedMessages.warning.length > 0;
-
-  // Automatically show the popup if there are warnings
+  // Show warning popup automatically when new warnings are detected
   useEffect(() => {
-    if (hasWarnings) {
-      setShowPopup(true);
+    const currentWarnings = groupedMessages.warning || [];
+    const prevWarnings = prevMessagesRef.current.filter(m => m.type === 'warning').map(m => m.text);
+    
+    // Check if there are new warnings
+    const hasNewWarnings = currentWarnings.some(warning => !prevWarnings.includes(warning));
+    
+    if (hasNewWarnings && currentWarnings.length > 0) {
+      setActivePopup('warning');
     }
-  }, [hasWarnings]);
+    
+    // Update previous messages
+    prevMessagesRef.current = messages;
+  }, [messages]);
+
+  const handleSectionClick = (type) => {
+    setActivePopup(type);
+  };
+
+  const handleClosePopup = () => {
+    setActivePopup(null);
+  };
 
   // Define the styles for each message type
   const messageStyles = {
     warning: {
-      label: 'Warning:',
+      label: 'Warnings:',
       color: '#D91E18',
+      icon: '⚠️',
     },
     note: {
-      label: 'Note:',
+      label: 'Notes:',
       color: '#FF9400',
+      icon: 'ℹ️',
     },
     disclaimer: {
-      label: 'Disclaimer:',
+      label: 'Disclaimers:',
       color: '#2C87C3',
+      icon: 'ℹ️',
     },
   };
 
   return (
     <div>
-      {/* Render the WarningPopup if there are warnings */}
-      {hasWarnings && showPopup && (
+      {/* Render popups for each message type */}
+      {activePopup && groupedMessages[activePopup] && (
         <WarningPopup
-          onClose={() => setShowPopup(false)}
-          messages={groupedMessages.warning}
+          onClose={handleClosePopup}
+          messages={groupedMessages[activePopup]}
+          type={activePopup}
         />
       )}
 
       {/* Main WarningMessage content */}
-      <div className="border border-gray-300 rounded shadow-sm bg-white p-4 sm:p-6">
+      <div id="warning-message-section" className="border border-gray-300 rounded shadow-sm bg-white p-4 sm:p-6">
         {/* Heading */}
         <h2 className="font-roboto font-bold text-lg sm:text-xl leading-[27px] tracking-[0%] text-[#191B2A] mb-3 sm:mb-4">
           Potential Issues / Incompatibilities
         </h2>
 
-        {/* Messages */}
-        <div className="space-y-2 sm:space-y-3">
-          {Object.entries(groupedMessages).map(([type, texts]) => (
-            <div key={type} className="flex flex-col sm:flex-row items-baseline">
-              {/* Label */}
-              <div className="mr-2 min-w-[80px] mb-1 sm:mb-0">
-                <span
-                  className="font-roboto font-bold text-base sm:text-lg leading-[24px]"
-                  style={{ color: messageStyles[type].color }}
-                >
-                  {messageStyles[type].label}
-                </span>
-              </div>
-              {/* Messages */}
-              <div className="font-roboto text-sm sm:text-base leading-[21px] tracking-[0%] text-[#191B2A]">
-                {texts.map((text, index) => (
-                  <div key={index}>{text}</div>
+        {/* Messages grouped by type */}
+        <div className="space-y-4">
+          {/* Warning messages */}
+          {groupedMessages.warning && groupedMessages.warning.length > 0 && (
+            <div className="space-y-2">
+              <h3 
+                className="font-roboto font-bold text-base text-[#D91E18] cursor-pointer hover:underline"
+                onClick={() => handleSectionClick('warning')}
+              >
+                {messageStyles.warning.icon} Warnings:
+              </h3>
+              <ul className="list-disc pl-5 space-y-1">
+                {groupedMessages.warning.map((message, index) => (
+                  <li key={index} className="text-[#D91E18]">{message}</li>
                 ))}
-              </div>
+              </ul>
             </div>
-          ))}
+          )}
+
+          {/* Note messages */}
+          {groupedMessages.note && groupedMessages.note.length > 0 && (
+            <div className="space-y-2">
+              <h3 
+                className="font-roboto font-bold text-base text-[#FF9400] cursor-pointer hover:underline"
+                onClick={() => handleSectionClick('note')}
+              >
+                {messageStyles.note.icon} Notes:
+              </h3>
+              <ul className="list-disc pl-5 space-y-1">
+                {groupedMessages.note.map((message, index) => (
+                  <li key={index} className="text-[#FF9400]">{message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Disclaimer messages */}
+          {groupedMessages.disclaimer && groupedMessages.disclaimer.length > 0 && (
+            <div className="space-y-2">
+              <h3 
+                className="font-roboto font-bold text-base text-[#2C87C3] cursor-pointer hover:underline"
+                onClick={() => handleSectionClick('disclaimer')}
+              >
+                {messageStyles.disclaimer.icon} Disclaimers:
+              </h3>
+              <ul className="list-disc pl-5 space-y-1">
+                {groupedMessages.disclaimer.map((message, index) => (
+                  <li key={index} className="text-[#2C87C3]">{message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-// Prop types validation
 WarningMessage.propTypes = {
   messages: PropTypes.arrayOf(
     PropTypes.shape({

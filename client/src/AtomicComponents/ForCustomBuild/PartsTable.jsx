@@ -70,19 +70,19 @@ function PartsTable({ onComponentsChanged }) {
         <table className="min-w-full bg-white">
           <thead className="bg-white">
             <tr>
-              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A]">
+              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A] w-1/5">
                 Component
               </th>
-              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A]">
+              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A] w-2/5">
                 Selection
               </th>
-              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A]">
+              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A] w-1/5">
                 Availability
               </th>
-              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A]">
+              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A] w-1/5">
                 Price
               </th>
-              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A]">
+              <th className="px-4 sm:px-6 py-3 text-left uppercase tracking-wider font-roboto font-bold text-sm leading-4 text-[#191B2A] w-1/5">
                 Remove
               </th>
             </tr>
@@ -94,10 +94,10 @@ function PartsTable({ onComponentsChanged }) {
 
               return (
                 <tr key={row.component} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {row.component}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
                       selectedData ? (
                         <div className="flex items-center">
@@ -106,7 +106,9 @@ function PartsTable({ onComponentsChanged }) {
                             alt={selectedData.name}
                             className="w-[38px] h-[38px] mr-2"
                           />
-                          {selectedData.name}
+                          <span className="break-words whitespace-normal">
+                            {selectedData.name}
+                          </span>
                         </div>
                       ) : (
                         <AddButton
@@ -116,38 +118,32 @@ function PartsTable({ onComponentsChanged }) {
                       )
                     ) : (
                       <div className="flex flex-col gap-2">
-                        {/* Display selected expansion network components */}
-                        {expansionNetworkTypes.map(({ componentType, display }) => {
-                          const selectedExpansionData = selectedComponents[componentType];
-                          return selectedExpansionData ? (
+                        {expansionNetworkTypes.map(({ display, componentType }) => (
+                          selectedComponents[componentType] ? (
                             <div key={componentType} className="flex items-center">
                               <img
-                                src={selectedExpansionData.image}
-                                alt={selectedExpansionData.name}
+                                src={selectedComponents[componentType].image}
+                                alt={selectedComponents[componentType].name}
                                 className="w-[38px] h-[38px] mr-2"
                               />
-                              {selectedExpansionData.name}
-                            </div>
-                          ) : null;
-                        })}
-                        {/* Display clickable links for unselected expansion network types */}
-                        <div className="flex flex-wrap gap-2">
-                          {expansionNetworkTypes.map(({ display, componentType }) => (
-                            !selectedComponents[componentType] && (
-                              <span
-                                key={componentType}
-                                onClick={() => handleClickableTextClick({ type: 'expansion_network', componentType })}
-                                className="font-roboto font-bold text-xs leading-6 text-[#4D0AE6] opacity-100 rounded-none cursor-pointer mx-1"
-                              >
-                                {display}
+                              <span className="break-words whitespace-normal">
+                                {selectedComponents[componentType].name}
                               </span>
-                            )
-                          ))}
-                        </div>
+                            </div>
+                          ) : (
+                            <div
+                              key={componentType}
+                              className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                              onClick={() => handleClickableTextClick({ type: display, componentType })}
+                            >
+                              {display}
+                            </div>
+                          )
+                        ))}
                       </div>
                     )}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
                       selectedData ? selectedData.availability : '—'
                     ) : (
@@ -162,7 +158,7 @@ function PartsTable({ onComponentsChanged }) {
                       </div>
                     )}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
                       selectedData ? selectedData.price : '—'
                     ) : (
@@ -177,7 +173,7 @@ function PartsTable({ onComponentsChanged }) {
                       </div>
                     )}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
                       selectedData && (
                         <button

@@ -6,6 +6,13 @@ const CompatibilityWarningBanner = ({
   tdp = "",
   error = true, // Default to true to show the warning message
 }) => {
+  const handleScrollToWarnings = () => {
+    const warningSection = document.getElementById('warning-message-section');
+    if (warningSection) {
+      warningSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div
       className="w-full max-w-[1200px] h-auto rounded-b-[20px] overflow-hidden mx-auto flex flex-row items-stretch flex-wrap"
@@ -16,7 +23,21 @@ const CompatibilityWarningBanner = ({
       >
         <div className="flex items-center">
           <span className="font-medium mr-1">Compatibility:</span>
-          <span>{error ? warningText : "No issues detected. You are good to go!"}</span>
+          <span>
+            {error ? (
+              <>
+                Warning! These parts have potential issues or incompatibilities.{' '}
+                <button
+                  onClick={handleScrollToWarnings}
+                  className="underline hover:text-gray-200 transition-colors"
+                >
+                  See details below
+                </button>
+              </>
+            ) : (
+              "No issues detected. You are good to go!"
+            )}
+          </span>
         </div>
       </div>
 
