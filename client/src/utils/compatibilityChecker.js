@@ -117,48 +117,38 @@ const compatibilityCheckers = {
     const warnings = [];
 
     // RAM type compatibility
-    const ramType = ram.memory_type?.toLowerCase();
-    const motherboardTypes = motherboard.supported_memory_types?.map(type => type.toLowerCase()) || [];
+    const ramType = ram.memoryType?.toLowerCase().trim();
+    const motherboardType = motherboard.supportedMemoryTypes?.toLowerCase().trim();
 
-    if (!ramType || !motherboardTypes.length) {
+    if (!ramType || !motherboardType) {
       warnings.push({
         type: "warning",
         text: "Could not verify RAM type compatibility. Please check motherboard specifications.",
       });
-    } else if (!motherboardTypes.includes(ramType)) {
+    } else if (ramType !== motherboardType) {
       warnings.push({
         type: "warning",
-        text: `RAM type (${ram.memory_type}) is not compatible with motherboard. Supported types: ${motherboard.supported_memory_types.join(', ')}.`,
-      });
-    }
-
-    // RAM speed compatibility
-    const ramSpeed = parseInt(ram.memory_speed?.replace('MHz', '') || '0');
-    const maxMotherboardSpeed = parseInt(motherboard.max_ram_speed?.replace('MHz', '') || '0');
-    if (ramSpeed > maxMotherboardSpeed) {
-      warnings.push({
-        type: "warning",
-        text: `RAM speed (${ram.memory_speed}) exceeds motherboard's max supported speed (${motherboard.max_ram_speed}). RAM will run at the lower speed.`,
+        text: `RAM type (${ram.memoryType}) is not compatible with motherboard. Motherboard supports ${motherboard.supportedMemoryTypes}.`,
       });
     }
 
     // RAM capacity and slots
-    const ramModules = ram.memory_capacity?.split('+').length || 0;
-    const totalRamCapacity = ram.memory_capacity
+    const ramModules = ram.memoryCapacity?.split('+').length || 0;
+    const totalRamCapacity = ram.memoryCapacity
       ?.split('+')
-      .reduce((sum, cap) => sum + parseInt(cap), 0) || 0;
+      .reduce((sum, cap) => sum + parseInt(cap.replace(/[^0-9]/g, '')), 0) || 0;
 
-    if (ramModules > parseInt(motherboard.ram_slots || '0')) {
+    if (ramModules > parseInt(motherboard.ramSlots || '0')) {
       warnings.push({
         type: "warning",
-        text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ram_slots}).`,
+        text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ramSlots}).`,
       });
     }
 
-    if (totalRamCapacity > parseInt(motherboard.max_ram || '0')) {
+    if (totalRamCapacity > parseInt(motherboard.maxRam || '0')) {
       warnings.push({
         type: "warning",
-        text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.max_ram}GB).`,
+        text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
       });
     }
 
@@ -415,9 +405,11 @@ export const checkCompatibility = (components) => {
     ));
   }
 
-  if (components.RAM && components.Motherboard) {
+  // Handle both "Memory" and "RAM" keys for RAM components
+  const ramComponent = components.Memory || components.RAM;
+  if (ramComponent && components.Motherboard) {
     compatibilityWarnings.push(...compatibilityCheckers.checkRamMotherboard(
-      components.RAM,
+      ramComponent,
       components.Motherboard
     ));
   }
