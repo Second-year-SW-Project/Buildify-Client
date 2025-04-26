@@ -14,6 +14,8 @@ function OrderCard({
   imageUrl,
   itemCount,
   onDetailsClick,
+  onDelivered,
+  onLeaveReview,
 }) {
   return (
     <Card className="p-6 rounded-2xl shadow-2xl bg-white flex flex-col w-full max-w-3xl mb-6">
@@ -52,7 +54,7 @@ function OrderCard({
               className="w-24 h-24 rounded-lg object-cover"
             />
           </div>
-          <div className="text-right">
+          <div className="text-left">
             <p className="text-lg font-bold text-gray-900">
               Total: {totalAmount}
             </p>
@@ -60,6 +62,61 @@ function OrderCard({
             <h3 className="text-base font-bold text-gray-900">
               {itemCount} {itemCount === 1 ? "Item" : "Items"}
             </h3>
+          </div>
+          <div className="flex flex-col">
+            {status === "Delivered" ? (
+              <>
+                <Button
+                  variant="contained"
+                  onClick={onLeaveReview}
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                >
+                  Leave a Review
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                >
+                  Refund/Refuse
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  onClick={onDelivered}
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                >
+                  Mark as Delivered
+                </Button>
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                >
+                  Track Order
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </CardContent>
