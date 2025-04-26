@@ -117,10 +117,8 @@ const compatibilityCheckers = {
     const warnings = [];
 
     // RAM type compatibility
-    const ramType = ram.memoryType?.toLowerCase();
-    const motherboardTypes = Array.isArray(motherboard.supportedMemoryTypes)
-      ? motherboard.supportedMemoryTypes.map(type => type.toLowerCase())
-      : motherboard.supportedMemoryTypes?.toLowerCase().split(',').map(type => type.trim()) || [];
+    const ramType = ram.memory_type?.toLowerCase();
+    const motherboardTypes = motherboard.supported_memory_types?.map(type => type.toLowerCase()) || [];
 
     if (!ramType || !motherboardTypes.length) {
       warnings.push({
@@ -130,37 +128,37 @@ const compatibilityCheckers = {
     } else if (!motherboardTypes.includes(ramType)) {
       warnings.push({
         type: "warning",
-        text: `RAM type (${ram.memoryType}) is not compatible with motherboard. Supported types: ${motherboard.supportedMemoryTypes}.`,
+        text: `RAM type (${ram.memory_type}) is not compatible with motherboard. Supported types: ${motherboard.supported_memory_types.join(', ')}.`,
       });
     }
 
     // RAM speed compatibility
-    const ramSpeed = parseInt(ram.memorySpeed?.replace('MHz', '') || '0');
-    const maxMotherboardSpeed = parseInt(motherboard.maxRamSpeed?.replace('MHz', '') || '0');
+    const ramSpeed = parseInt(ram.memory_speed?.replace('MHz', '') || '0');
+    const maxMotherboardSpeed = parseInt(motherboard.max_ram_speed?.replace('MHz', '') || '0');
     if (ramSpeed > maxMotherboardSpeed) {
       warnings.push({
         type: "warning",
-        text: `RAM speed (${ram.memorySpeed}) exceeds motherboard's max supported speed (${motherboard.maxRamSpeed}). RAM will run at the lower speed.`,
+        text: `RAM speed (${ram.memory_speed}) exceeds motherboard's max supported speed (${motherboard.max_ram_speed}). RAM will run at the lower speed.`,
       });
     }
 
     // RAM capacity and slots
-    const ramModules = ram.memoryCapacity?.split('+').length || 0;
-    const totalRamCapacity = ram.memoryCapacity
+    const ramModules = ram.memory_capacity?.split('+').length || 0;
+    const totalRamCapacity = ram.memory_capacity
       ?.split('+')
       .reduce((sum, cap) => sum + parseInt(cap), 0) || 0;
 
-    if (ramModules > parseInt(motherboard.ramSlots || '0')) {
+    if (ramModules > parseInt(motherboard.ram_slots || '0')) {
       warnings.push({
         type: "warning",
-        text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ramSlots}).`,
+        text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ram_slots}).`,
       });
     }
 
-    if (totalRamCapacity > parseInt(motherboard.maxRam || '0')) {
+    if (totalRamCapacity > parseInt(motherboard.max_ram || '0')) {
       warnings.push({
         type: "warning",
-        text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
+        text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.max_ram}GB).`,
       });
     }
 
