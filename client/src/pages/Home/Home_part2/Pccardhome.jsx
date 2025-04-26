@@ -6,7 +6,7 @@ export default function PCcardhome({ product }) {
   const navigate = useNavigate();
 
   const handleShopClick = () => {
-    navigate(`/itempage/${product.id}`);
+    navigate(`/itempage/${product.id}`);     //shop click navigation
   };
 
   return (
