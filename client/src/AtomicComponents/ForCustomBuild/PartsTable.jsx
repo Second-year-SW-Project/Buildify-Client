@@ -37,7 +37,14 @@ function PartsTable({ onComponentsChanged }) {
     const key = typeof componentType === 'object' ? componentType.componentType : componentType;
     setSelectedComponents((prev) => ({
       ...prev,
-      [key]: selectedData,
+      [key]: {
+        ...selectedData.originalData, // Spread all the original data
+        name: selectedData.name,
+        image: selectedData.image,
+        availability: selectedData.availability,
+        price: selectedData.price,
+        tdp: selectedData.tdp
+      },
     }));
   };
 

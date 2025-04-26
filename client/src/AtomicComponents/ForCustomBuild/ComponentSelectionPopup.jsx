@@ -96,7 +96,12 @@ const ComponentSelectionPopup = ({
       availability: component.quantity > 0 ? 'In Stock' : 'Out of Stock',
       price: `LKR ${component.price.toFixed(2)}`,
       tdp: component.tdp || 0,
-      originalData: component
+      originalData: {
+        ...component, // Spread all component attributes
+        imgUrls: component.imgUrls, // Keep the original image URLs
+        quantity: component.quantity, // Keep the original quantity
+        price: component.price // Keep the original price
+      }
     };
     
     onComponentSelected(selectedData);

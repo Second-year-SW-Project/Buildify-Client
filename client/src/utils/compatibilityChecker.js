@@ -1,57 +1,88 @@
-/**
- * Utility for checking PC part compatibility and generating warning messages
- */
-
 // Base messages that always appear
 const BASE_MESSAGES = [
   { type: "note", text: "Choose components that are compatible with each other." },
   { type: "disclaimer", text: "Prices are subject to change based on availability." },
 ];
 
-/**
- * Component-specific compatibility checkers
- */
+//Component-specific compatibility checkers
+
 const compatibilityCheckers = {
   // CPU and Motherboard compatibility
   checkCpuMotherboard: (cpu, motherboard) => {
     const warnings = [];
+
+    // Socket compatibility
     if (cpu.socketType !== motherboard.socketType) {
       warnings.push({
         type: "warning",
         text: `CPU socket (${cpu.socketType}) is not compatible with motherboard socket (${motherboard.socketType}).`,
       });
     }
+
+    // Chipset compatibility
+    const cpuChipset = cpu.socketType.split('-')[0];
+    if (!motherboard.motherboardChipset.includes(cpuChipset)) {
+      warnings.push({
+        type: "warning",
+        text: `CPU chipset (${cpuChipset}) is not supported by motherboard chipset (${motherboard.motherboardChipset}).`,
+      });
+    }
+
+    // TDP compatibility with motherboard power delivery
+    if (cpu.tdp > 150 && !motherboard.powerDelivery.includes('High')) {
+      warnings.push({
+        type: "warning",
+        text: `High TDP CPU (${cpu.tdp}W) may require better motherboard power delivery.`,
+      });
+    }
+
+    // Check if CPU includes stock cooler
+    if (!cpu.includesCooler) {
+      warnings.push({
+        type: "warning",
+        text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
+      });
+    } else if (cpu.includesCooler && cpu.tdp > 65) {
+      warnings.push({
+        type: "note",
+        text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
+      });
+    }
+
     return warnings;
   },
 
   // CPU and Cooler compatibility
   checkCpuCooler: (cpu, cooler) => {
     const warnings = [];
-    
-    // Check socket compatibility
+
+    // Socket compatibility
     if (cooler.supportedSocket) {
       const supportedSockets = Array.isArray(cooler.supportedSocket)
         ? cooler.supportedSocket
         : cooler.supportedSocket.split(',').map(s => s.trim());
-      
+
       if (!supportedSockets.includes(cpu.socketType)) {
         warnings.push({
           type: "warning",
           text: `CPU Cooler does not support CPU socket (${cpu.socketType}). Supported sockets: ${supportedSockets.join(', ')}.`,
         });
       }
-    } else {
-      warnings.push({
-        type: "warning",
-        text: `CPU Cooler is missing supported socket information. Cannot verify compatibility with CPU socket (${cpu.socketType}).`,
-      });
     }
 
-    // Check TDP compatibility
+    // TDP compatibility
     if (parseInt(cooler.maxTdp) < parseInt(cpu.tdp)) {
       warnings.push({
         type: "warning",
-        text: `CPU Cooler max TDP (${cooler.maxTdp}W) is lower than CPU TDP (${cpu.tdp}W).`,
+        text: `CPU Cooler max TDP (${cooler.maxTdp}W) is lower than CPU TDP (${cpu.tdp}W). Consider a more powerful cooler.`,
+      });
+    }
+
+    // Check if CPU includes cooler
+    if (!cpu.includesCooler && !cooler) {
+      warnings.push({
+        type: "warning",
+        text: "CPU does not include a cooler. A CPU cooler must be selected.",
       });
     }
 
@@ -61,12 +92,23 @@ const compatibilityCheckers = {
   // Cooler and Case compatibility
   checkCoolerCase: (cooler, pcCase) => {
     const warnings = [];
+
+    // Height compatibility
     if (parseInt(cooler.height) > parseInt(pcCase.maxCoolerHeight)) {
       warnings.push({
         type: "warning",
         text: `CPU Cooler height (${cooler.height}mm) exceeds case's max cooler height (${pcCase.maxCoolerHeight}mm).`,
       });
     }
+
+    // Airflow compatibility
+    if (cooler.coolerType === 'Air' && pcCase.airflowRating < 3) {
+      warnings.push({
+        type: "warning",
+        text: "Case has limited airflow which may affect air cooler performance.",
+      });
+    }
+
     return warnings;
   },
 
@@ -74,97 +116,70 @@ const compatibilityCheckers = {
   checkRamMotherboard: (ram, motherboard) => {
     const warnings = [];
 
-    // Check RAM type compatibility
-    if (!motherboard.supportedMemoryTypes.includes(ram.type)) {
+    // RAM type compatibility
+    const ramType = ram.memoryType?.toLowerCase();
+    const motherboardTypes = Array.isArray(motherboard.supportedMemoryTypes)
+      ? motherboard.supportedMemoryTypes.map(type => type.toLowerCase())
+      : motherboard.supportedMemoryTypes?.toLowerCase().split(',').map(type => type.trim()) || [];
+
+    if (!ramType || !motherboardTypes.length) {
       warnings.push({
         type: "warning",
-        text: `RAM type (${ram.type}) is not compatible with motherboard supported memory types (${motherboard.supportedMemoryTypes}).`,
+        text: "Could not verify RAM type compatibility. Please check motherboard specifications.",
+      });
+    } else if (!motherboardTypes.includes(ramType)) {
+      warnings.push({
+        type: "warning",
+        text: `RAM type (${ram.memoryType}) is not compatible with motherboard. Supported types: ${motherboard.supportedMemoryTypes}.`,
       });
     }
 
-    // Check RAM speed compatibility
-    if (parseInt(ram.speed) > parseInt(motherboard.maxRamSpeed)) {
+    // RAM speed compatibility
+    const ramSpeed = parseInt(ram.memorySpeed?.replace('MHz', '') || '0');
+    const maxMotherboardSpeed = parseInt(motherboard.maxRamSpeed?.replace('MHz', '') || '0');
+    if (ramSpeed > maxMotherboardSpeed) {
       warnings.push({
         type: "warning",
-        text: `RAM speed (${ram.speed}MHz) exceeds motherboard's max supported speed (${motherboard.maxRamSpeed}MHz). RAM will run at the lower speed.`,
+        text: `RAM speed (${ram.memorySpeed}) exceeds motherboard's max supported speed (${motherboard.maxRamSpeed}). RAM will run at the lower speed.`,
       });
     }
 
-    // Check RAM capacity and slots
-    const ramModules = ram.memoryCapacity.split('+').length;
+    // RAM capacity and slots
+    const ramModules = ram.memoryCapacity?.split('+').length || 0;
     const totalRamCapacity = ram.memoryCapacity
-      .split('+')
-      .reduce((sum, cap) => sum + parseInt(cap), 0);
+      ?.split('+')
+      .reduce((sum, cap) => sum + parseInt(cap), 0) || 0;
 
-    if (ramModules > parseInt(motherboard.ramSlots)) {
+    if (ramModules > parseInt(motherboard.ramSlots || '0')) {
       warnings.push({
         type: "warning",
         text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ramSlots}).`,
       });
     }
 
-    if (totalRamCapacity > parseInt(motherboard.maxRam)) {
+    if (totalRamCapacity > parseInt(motherboard.maxRam || '0')) {
       warnings.push({
         type: "warning",
         text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
       });
     }
 
-    return warnings;
-  },
-
-  // GPU and Motherboard compatibility
-  checkGpuMotherboard: (gpu, motherboard) => {
-    const warnings = [];
-    const requiredPcieType = gpu.interfaceType;
-    const requiredPcieVersion = "4.0";
-    const hasCompatiblePcieSlot = motherboard.pcieSlots.some(
-      (slot) =>
-        slot.type === requiredPcieType &&
-        parseFloat(slot.version) >= parseFloat(requiredPcieVersion)
-    );
-
-    if (!hasCompatiblePcieSlot) {
+    // RAM voltage compatibility
+    if (ram.voltage > 1.35 && !motherboard.highVoltageRamSupport) {
       warnings.push({
         type: "warning",
-        text: `GPU interface (${gpu.interfaceType}) is not compatible with motherboard PCIe slots.`,
+        text: "High voltage RAM may not be fully supported by the motherboard.",
       });
     }
-    return warnings;
-  },
 
-  // GPU and Case compatibility
-  checkGpuCase: (gpu, pcCase) => {
-    const warnings = [];
-    if (parseInt(gpu.length) > parseInt(pcCase.maxGpuLength)) {
-      warnings.push({
-        type: "warning",
-        text: `GPU length (${gpu.length}mm) exceeds case's max GPU length (${pcCase.maxGpuLength}mm).`,
-      });
-    }
-    return warnings;
-  },
-
-  // GPU and Power Supply compatibility
-  checkGpuPowerSupply: (gpu, psu) => {
-    const warnings = [];
-    const requiredConnectors = gpu.powerConnectors.split('+');
-    const hasSufficientConnectors = requiredConnectors.every((connector) =>
-      psu.modularType === "Fully Modular" || psu.modularType.includes(connector)
-    );
-
-    if (!hasSufficientConnectors) {
-      warnings.push({
-        type: "warning",
-        text: `Power supply does not provide required power connectors for GPU (${gpu.powerConnectors}).`,
-      });
-    }
     return warnings;
   },
 
   // Storage and Motherboard compatibility
   checkStorageMotherboard: (storage, motherboard) => {
     const warnings = [];
+
+    // Storage interface compatibility
     const requiredStorageType = storage.storageType;
     const hasCompatibleStorageInterface = motherboard.storageInterfaces.some(
       (intf) => intf.type === requiredStorageType && intf.count > 0
@@ -176,23 +191,159 @@ const compatibilityCheckers = {
         text: `Storage type (${storage.storageType}) is not supported by motherboard storage interfaces.`,
       });
     }
+
+    // Check available storage interfaces
+    const usedInterfaces = motherboard.storageInterfaces.filter(intf => intf.count > 0).length;
+    if (usedInterfaces >= motherboard.storageInterfaces.length) {
+      warnings.push({
+        type: "warning",
+        text: "No more storage interfaces available on the motherboard.",
+      });
+    }
+
+    // NVMe speed compatibility
+    if (storage.storageType === 'NVMe' && storage.readSpeed > 3500 && !motherboard.nvmeGen4Support) {
+      warnings.push({
+        type: "note",
+        text: "NVMe drive may not reach full speed without PCIe 4.0 support.",
+      });
+    }
+
     return warnings;
   },
 
-  // Expansion Network and Motherboard compatibility
-  checkExpansionMotherboard: (expansion, motherboard) => {
+  // GPU and Motherboard compatibility
+  checkGpuMotherboard: (gpu, motherboard) => {
     const warnings = [];
-    const requiredInterface = expansion.interfaceType;
+
+    // PCIe slot compatibility
+    const requiredPcieVersion = gpu.pcieVersion || "4.0";
     const hasCompatiblePcieSlot = motherboard.pcieSlots.some(
-      (slot) => slot.type === requiredInterface
+      (slot) =>
+        slot.type === "x16" && // Must be x16 slot
+        parseFloat(slot.version) >= parseFloat(requiredPcieVersion)
     );
 
     if (!hasCompatiblePcieSlot) {
       warnings.push({
         type: "warning",
-        text: `Expansion card interface (${expansion.interfaceType}) is not compatible with motherboard PCIe slots.`,
+        text: `No compatible PCIe x16 slot found for GPU (requires PCIe ${requiredPcieVersion}).`,
+      });
+    } else if (parseFloat(requiredPcieVersion) > parseFloat(motherboard.pcieSlots[0].version)) {
+      warnings.push({
+        type: "note",
+        text: `GPU is PCIe ${requiredPcieVersion} but will run at PCIe ${motherboard.pcieSlots[0].version} speed.`,
       });
     }
+
+    return warnings;
+  },
+
+  // GPU and Case compatibility
+  checkGpuCase: (gpu, pcCase) => {
+    const warnings = [];
+
+    // Length compatibility
+    if (parseInt(gpu.length) > parseInt(pcCase.maxGpuLength)) {
+      warnings.push({
+        type: "warning",
+        text: `GPU length (${gpu.length}mm) exceeds case's max GPU length (${pcCase.maxGpuLength}mm).`,
+      });
+    }
+
+    // Cooling compatibility
+    if (gpu.coolingType === 'Open Air' && pcCase.airflowRating < 3) {
+      warnings.push({
+        type: "warning",
+        text: "Case has limited airflow which may affect open-air GPU cooling.",
+      });
+    }
+
+    return warnings;
+  },
+
+  // GPU and Power Supply compatibility
+  checkGpuPowerSupply: (gpu, psu) => {
+    const warnings = [];
+
+    // Power connector compatibility
+    const requiredConnectors = gpu.powerConnectors.split('+');
+    const hasSufficientConnectors = requiredConnectors.every((connector) =>
+      psu.modularType === "Fully Modular" || psu.modularType.includes(connector)
+    );
+
+    if (!hasSufficientConnectors) {
+      warnings.push({
+        type: "warning",
+        text: `Power supply does not provide required power connectors for GPU (${gpu.powerConnectors}).`,
+      });
+    }
+
+    // Power efficiency
+    if (gpu.tdp > 300 && psu.efficiencyRating < 'Gold') {
+      warnings.push({
+        type: "note",
+        text: "Consider a higher efficiency power supply for high-power GPU.",
+      });
+    }
+
+    return warnings;
+  },
+
+  // Case and Motherboard form factor compatibility
+  checkCaseMotherboard: (pcCase, motherboard) => {
+    const warnings = [];
+    const supportedFormFactors = pcCase.supportedMotherboardSizes.split(',');
+
+    // Form factor compatibility
+    if (!supportedFormFactors.includes(motherboard.formFactor)) {
+      warnings.push({
+        type: "warning",
+        text: `Case does not support motherboard form factor (${motherboard.formFactor}). Supported: ${supportedFormFactors.join(', ')}.`,
+      });
+    }
+
+    // Cooling compatibility
+    if (motherboard.vrmCooling === 'High' && pcCase.airflowRating < 3) {
+      warnings.push({
+        type: "warning",
+        text: "Case may have insufficient airflow for motherboard VRM cooling.",
+      });
+    }
+
+    return warnings;
+  },
+
+  // CPU integrated graphics and cooler check
+  checkCpuGraphics: (cpu) => {
+    const warnings = [];
+
+    // Check integrated graphics
+    if (!cpu.integratedGraphics) {
+      warnings.push({
+        type: "warning",
+        text: `CPU does not have integrated graphics. A dedicated GPU is required.`,
+      });
+    } else if (cpu.integratedGraphics && cpu.graphicsModel) {
+      warnings.push({
+        type: "note",
+        text: `CPU includes integrated ${cpu.graphicsModel} graphics.`,
+      });
+    }
+
+    // Check stock cooler
+    if (!cpu.includesCooler) {
+      warnings.push({
+        type: "warning",
+        text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
+      });
+    } else if (cpu.includesCooler && cpu.tdp > 65) {
+      warnings.push({
+        type: "note",
+        text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
+      });
+    }
+
     return warnings;
   },
 
@@ -207,32 +358,23 @@ const compatibilityCheckers = {
         text: `Power supply (${psu.wattage}W) may be insufficient for system TDP (${totalTdp}W). Recommended: ${Math.ceil(recommendedWattage)}W.`,
       });
     }
-    return warnings;
-  },
 
-  // Case and Motherboard form factor compatibility
-  checkCaseMotherboard: (pcCase, motherboard) => {
-    const warnings = [];
-    const supportedFormFactors = pcCase.supportedMotherboardSizes.split(',');
-    
-    if (!supportedFormFactors.includes(motherboard.formFactor)) {
+    // Efficiency rating check
+    if (totalTdp > 500 && psu.efficiencyRating < 'Gold') {
       warnings.push({
-        type: "warning",
-        text: `Case does not support motherboard form factor (${motherboard.formFactor}). Supported: ${supportedFormFactors.join(', ')}.`,
+        type: "note",
+        text: "Consider a higher efficiency power supply for high-power systems.",
       });
     }
-    return warnings;
-  },
 
-  // CPU integrated graphics check
-  checkCpuGraphics: (cpu) => {
-    const warnings = [];
-    if (!cpu.integratedGraphics) {
+    // Modular type check
+    if (psu.modularType === 'Non-Modular' && totalTdp > 400) {
       warnings.push({
-        type: "warning",
-        text: `CPU does not have integrated graphics. A dedicated GPU is required.`,
+        type: "note",
+        text: "Consider a modular power supply for better cable management in high-power systems.",
       });
     }
+
     return warnings;
   },
 };
@@ -253,98 +395,80 @@ export const checkCompatibility = (components) => {
     }
   });
 
-  // Check CPU and Motherboard compatibility
+  // Perform all compatibility checks
   if (components.CPU && components.Motherboard) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCpuMotherboard(
-      components.CPU.originalData,
-      components.Motherboard.originalData
+      components.CPU,
+      components.Motherboard
     ));
   }
 
-  // Check CPU and Cooler compatibility
   if (components.CPU && components["CPU Cooler"]) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCpuCooler(
-      components.CPU.originalData,
-      components["CPU Cooler"].originalData
+      components.CPU,
+      components["CPU Cooler"]
     ));
   }
 
-  // Check Cooler and Case compatibility
   if (components["CPU Cooler"] && components.Case) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCoolerCase(
-      components["CPU Cooler"].originalData,
-      components.Case.originalData
+      components["CPU Cooler"],
+      components.Case
     ));
   }
 
-  // Check RAM and Motherboard compatibility
   if (components.RAM && components.Motherboard) {
     compatibilityWarnings.push(...compatibilityCheckers.checkRamMotherboard(
-      components.RAM.originalData,
-      components.Motherboard.originalData
+      components.RAM,
+      components.Motherboard
     ));
   }
 
-  // Check GPU and Motherboard compatibility
   if (components.GPU && components.Motherboard) {
     compatibilityWarnings.push(...compatibilityCheckers.checkGpuMotherboard(
-      components.GPU.originalData,
-      components.Motherboard.originalData
+      components.GPU,
+      components.Motherboard
     ));
   }
 
-  // Check GPU and Case compatibility
   if (components.GPU && components.Case) {
     compatibilityWarnings.push(...compatibilityCheckers.checkGpuCase(
-      components.GPU.originalData,
-      components.Case.originalData
+      components.GPU,
+      components.Case
     ));
   }
 
-  // Check GPU and Power Supply compatibility
   if (components.GPU && components["Power Supply"]) {
     compatibilityWarnings.push(...compatibilityCheckers.checkGpuPowerSupply(
-      components.GPU.originalData,
-      components["Power Supply"].originalData
+      components.GPU,
+      components["Power Supply"]
     ));
   }
 
-  // Check Storage and Motherboard compatibility
   if (components.Storage && components.Motherboard) {
     compatibilityWarnings.push(...compatibilityCheckers.checkStorageMotherboard(
-      components.Storage.originalData,
-      components.Motherboard.originalData
+      components.Storage,
+      components.Motherboard
     ));
   }
 
-  // Check Expansion Network and Motherboard compatibility
-  if (components["Expansion Network"] && components.Motherboard) {
-    compatibilityWarnings.push(...compatibilityCheckers.checkExpansionMotherboard(
-      components["Expansion Network"].originalData,
-      components.Motherboard.originalData
-    ));
-  }
-
-  // Check Power Supply wattage
   if (components["Power Supply"] && tdp > 0) {
     compatibilityWarnings.push(...compatibilityCheckers.checkPowerSupplyWattage(
-      components["Power Supply"].originalData,
+      components["Power Supply"],
       tdp
     ));
   }
 
-  // Check Case and Motherboard form factor compatibility
   if (components.Case && components.Motherboard) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCaseMotherboard(
-      components.Case.originalData,
-      components.Motherboard.originalData
+      components.Case,
+      components.Motherboard
     ));
   }
 
-  // Check CPU integrated graphics
   if (components.CPU && !components.GPU) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCpuGraphics(
-      components.CPU.originalData
+      components.CPU
     ));
   }
 
