@@ -35,17 +35,48 @@ function PartsTable({ onComponentsChanged }) {
   // Handle component selection from the popup
   const handleComponentSelected = (componentType, selectedData) => {
     const key = typeof componentType === 'object' ? componentType.componentType : componentType;
-    setSelectedComponents((prev) => ({
-      ...prev,
-      [key]: {
-        ...selectedData.originalData, // Spread all the original data
-        name: selectedData.name,
-        image: selectedData.image,
-        availability: selectedData.availability,
-        price: selectedData.price,
-        tdp: selectedData.tdp
-      },
-    }));
+    
+    // Special handling for RAM to allow multiple modules
+    if (key === 'Memory') {
+      setSelectedComponents((prev) => {
+        const existingRam = prev[key] || [];
+        const newRam = {
+          ...selectedData.originalData,
+          name: selectedData.name,
+          image: selectedData.image,
+          availability: selectedData.availability,
+          price: selectedData.price,
+          tdp: selectedData.tdp
+        };
+        
+        // If it's the first RAM module, create an array
+        if (!Array.isArray(existingRam)) {
+          return {
+            ...prev,
+            [key]: [newRam]
+          };
+        }
+        
+        // Add to existing RAM array
+        return {
+          ...prev,
+          [key]: [...existingRam, newRam]
+        };
+      });
+    } else {
+      // Normal handling for other components
+      setSelectedComponents((prev) => ({
+        ...prev,
+        [key]: {
+          ...selectedData.originalData,
+          name: selectedData.name,
+          image: selectedData.image,
+          availability: selectedData.availability,
+          price: selectedData.price,
+          tdp: selectedData.tdp
+        },
+      }));
+    }
   };
 
   // Handle click on the 9th row's clickable texts
@@ -56,10 +87,25 @@ function PartsTable({ onComponentsChanged }) {
   };
 
   // Handle removing a component
-  const handleRemoveComponent = (componentKey) => {
+  const handleRemoveComponent = (componentKey, index = null) => {
     setSelectedComponents((prev) => {
       const newComponents = { ...prev };
-      delete newComponents[componentKey];
+      
+      // Special handling for RAM to remove specific module
+      if (componentKey === 'Memory' && index !== null) {
+        const existingRam = newComponents[componentKey];
+        if (Array.isArray(existingRam)) {
+          existingRam.splice(index, 1);
+          if (existingRam.length === 0) {
+            delete newComponents[componentKey];
+          } else {
+            newComponents[componentKey] = existingRam;
+          }
+        }
+      } else {
+        delete newComponents[componentKey];
+      }
+      
       return newComponents;
     });
   };
@@ -107,16 +153,67 @@ function PartsTable({ onComponentsChanged }) {
                   <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
                       selectedData ? (
-                        <div className="flex items-center">
-                          <img
-                            src={selectedData.image}
-                            alt={selectedData.name}
-                            className="w-[38px] h-[38px] mr-2"
-                          />
-                          <span className="break-words whitespace-normal">
-                            {selectedData.name}
-                          </span>
-                        </div>
+                        row.component === 'Memory' ? (
+                          <div className="flex flex-col gap-2">
+                            {Array.isArray(selectedData) ? (
+                              selectedData.map((ram, idx) => (
+                                <div key={idx} className="flex items-center justify-between">
+                                  <div className="flex items-center">
+                                    <img
+                                      src={ram.image}
+                                      alt={ram.name}
+                                      className="w-[38px] h-[38px] mr-2"
+                                    />
+                                    <span className="break-words whitespace-normal">
+                                      {ram.name}
+                                    </span>
+                                  </div>
+                                  <button
+                                    onClick={() => handleRemoveComponent(row.component, idx)}
+                                    className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
+                                  >
+                                    <ClearIcon className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <img
+                                    src={selectedData.image}
+                                    alt={selectedData.name}
+                                    className="w-[38px] h-[38px] mr-2"
+                                  />
+                                  <span className="break-words whitespace-normal">
+                                    {selectedData.name}
+                                  </span>
+                                </div>
+                                <button
+                                  onClick={() => handleRemoveComponent(row.component)}
+                                  className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
+                                >
+                                  <ClearIcon className="w-5 h-5" />
+                                </button>
+                              </div>
+                            )}
+                            <AddButton
+                              text="Add More RAM"
+                              onClick={() => handleSelectComponent(row.component)}
+                              className="mt-2"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex items-center">
+                            <img
+                              src={selectedData.image}
+                              alt={selectedData.name}
+                              className="w-[38px] h-[38px] mr-2"
+                            />
+                            <span className="break-words whitespace-normal">
+                              {selectedData.name}
+                            </span>
+                          </div>
+                        )
                       ) : (
                         <AddButton
                           text={`Choose ${row.component}`}

@@ -116,49 +116,67 @@ const compatibilityCheckers = {
   checkRamMotherboard: (ram, motherboard) => {
     const warnings = [];
 
-    // RAM type compatibility
-    const ramType = ram.memoryType?.toLowerCase().trim();
-    const motherboardType = motherboard.supportedMemoryTypes?.toLowerCase().trim();
+    // Handle both single RAM and array of RAM modules
+    const ramModules = Array.isArray(ram) ? ram : [ram];
 
-    if (!ramType || !motherboardType) {
+    // Check total number of RAM modules against available slots
+    if (ramModules.length > parseInt(motherboard.ramSlots || '0')) {
       warnings.push({
         type: "warning",
-        text: "Could not verify RAM type compatibility. Please check motherboard specifications.",
-      });
-    } else if (ramType !== motherboardType) {
-      warnings.push({
-        type: "warning",
-        text: `RAM type (${ram.memoryType}) is not compatible with motherboard. Motherboard supports ${motherboard.supportedMemoryTypes}.`,
+        text: `Number of RAM modules (${ramModules.length}) exceeds motherboard's available RAM slots (${motherboard.ramSlots}).`,
       });
     }
 
-    // RAM capacity and slots
-    const ramModules = ram.memoryCapacity?.split('+').length || 0;
-    const totalRamCapacity = ram.memoryCapacity
-      ?.split('+')
-      .reduce((sum, cap) => sum + parseInt(cap.replace(/[^0-9]/g, '')), 0) || 0;
+    // Check each RAM module
+    ramModules.forEach((ramModule, index) => {
+      // RAM type compatibility
+      const ramType = ramModule.memoryType?.toLowerCase().trim();
+      const motherboardType = motherboard.supportedMemoryTypes?.toLowerCase().trim();
 
-    if (ramModules > parseInt(motherboard.ramSlots || '0')) {
-      warnings.push({
-        type: "warning",
-        text: `Number of RAM modules (${ramModules}) exceeds motherboard's available RAM slots (${motherboard.ramSlots}).`,
-      });
-    }
+      if (!ramType || !motherboardType) {
+        warnings.push({
+          type: "warning",
+          text: "Could not verify RAM type compatibility. Please check motherboard specifications.",
+        });
+      } else if (ramType !== motherboardType) {
+        warnings.push({
+          type: "warning",
+          text: `RAM module ${index + 1} type (${ramModule.memoryType}) is not compatible with motherboard. Motherboard supports ${motherboard.supportedMemoryTypes}.`,
+        });
+      }
 
-    if (totalRamCapacity > parseInt(motherboard.maxRam || '0')) {
-      warnings.push({
-        type: "warning",
-        text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
-      });
-    }
+      // RAM speed compatibility
+      const ramSpeed = parseInt(ramModule.memorySpeed?.replace(/[^0-9]/g, '') || '0');
+      const maxMotherboardSpeed = parseInt(motherboard.maxRamSpeed?.replace(/[^0-9]/g, '') || '0');
+      
+      if (ramSpeed > maxMotherboardSpeed) {
+        warnings.push({
+          type: "warning",
+          text: `RAM module ${index + 1} speed (${ramModule.memorySpeed}) exceeds motherboard's max supported speed (${motherboard.maxRamSpeed}). RAM will run at the lower speed.`,
+        });
+      }
 
-    // RAM voltage compatibility
-    if (ram.voltage > 1.35 && !motherboard.highVoltageRamSupport) {
-      warnings.push({
-        type: "warning",
-        text: "High voltage RAM may not be fully supported by the motherboard.",
-      });
-    }
+      // RAM capacity
+      const ramCapacity = parseInt(ramModule.memoryCapacity?.replace(/[^0-9]/g, '') || '0');
+      const totalRamCapacity = ramModules.reduce((sum, module) => 
+        sum + parseInt(module.memoryCapacity?.replace(/[^0-9]/g, '') || '0'), 0
+      );
+
+      if (totalRamCapacity > parseInt(motherboard.maxRam || '0')) {
+        warnings.push({
+          type: "warning",
+          text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
+        });
+      }
+
+      // RAM voltage compatibility
+      if (ramModule.voltage > 1.35 && !motherboard.highVoltageRamSupport) {
+        warnings.push({
+          type: "warning",
+          text: `RAM module ${index + 1} voltage may not be fully supported by the motherboard.`,
+        });
+      }
+    });
 
     return warnings;
   },
