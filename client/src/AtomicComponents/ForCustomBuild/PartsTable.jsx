@@ -36,11 +36,11 @@ function PartsTable({ onComponentsChanged }) {
   const handleComponentSelected = (componentType, selectedData) => {
     const key = typeof componentType === 'object' ? componentType.componentType : componentType;
     
-    // Special handling for RAM to allow multiple modules
-    if (key === 'Memory') {
+    // Special handling for RAM and Storage to allow multiple modules
+    if (key === 'Memory' || key === 'Storage') {
       setSelectedComponents((prev) => {
-        const existingRam = prev[key] || [];
-        const newRam = {
+        const existingComponents = prev[key] || [];
+        const newComponent = {
           ...selectedData.originalData,
           name: selectedData.name,
           image: selectedData.image,
@@ -49,18 +49,18 @@ function PartsTable({ onComponentsChanged }) {
           tdp: selectedData.tdp
         };
         
-        // If it's the first RAM module, create an array
-        if (!Array.isArray(existingRam)) {
+        // If it's the first component, create an array
+        if (!Array.isArray(existingComponents)) {
           return {
             ...prev,
-            [key]: [newRam]
+            [key]: [newComponent]
           };
         }
         
-        // Add to existing RAM array
+        // Add to existing array
         return {
           ...prev,
-          [key]: [...existingRam, newRam]
+          [key]: [...existingComponents, newComponent]
         };
       });
     } else {
@@ -91,15 +91,15 @@ function PartsTable({ onComponentsChanged }) {
     setSelectedComponents((prev) => {
       const newComponents = { ...prev };
       
-      // Special handling for RAM to remove specific module
-      if (componentKey === 'Memory' && index !== null) {
-        const existingRam = newComponents[componentKey];
-        if (Array.isArray(existingRam)) {
-          existingRam.splice(index, 1);
-          if (existingRam.length === 0) {
+      // Special handling for RAM and Storage to remove specific module
+      if ((componentKey === 'Memory' || componentKey === 'Storage') && index !== null) {
+        const existingComponents = newComponents[componentKey];
+        if (Array.isArray(existingComponents)) {
+          existingComponents.splice(index, 1);
+          if (existingComponents.length === 0) {
             delete newComponents[componentKey];
           } else {
-            newComponents[componentKey] = existingRam;
+            newComponents[componentKey] = existingComponents;
           }
         }
       } else {
@@ -153,19 +153,19 @@ function PartsTable({ onComponentsChanged }) {
                   <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
                       selectedData ? (
-                        row.component === 'Memory' ? (
+                        row.component === 'Memory' || row.component === 'Storage' ? (
                           <div className="flex flex-col gap-2">
                             {Array.isArray(selectedData) ? (
-                              selectedData.map((ram, idx) => (
+                              selectedData.map((component, idx) => (
                                 <div key={idx} className="flex items-center justify-between">
                                   <div className="flex items-center">
                                     <img
-                                      src={ram.image}
-                                      alt={ram.name}
+                                      src={component.image}
+                                      alt={component.name}
                                       className="w-[38px] h-[38px] mr-2"
                                     />
                                     <span className="break-words whitespace-normal">
-                                      {ram.name}
+                                      {component.name}
                                     </span>
                                   </div>
                                   <button
@@ -197,7 +197,7 @@ function PartsTable({ onComponentsChanged }) {
                               </div>
                             )}
                             <AddButton
-                              text="Add More RAM"
+                              text={`Add More ${row.component}`}
                               onClick={() => handleSelectComponent(row.component)}
                               className="mt-2"
                             />
@@ -225,14 +225,16 @@ function PartsTable({ onComponentsChanged }) {
                         {expansionNetworkTypes.map(({ display, componentType }) => (
                           selectedComponents[componentType] ? (
                             <div key={componentType} className="flex items-center">
-                              <img
-                                src={selectedComponents[componentType].image}
-                                alt={selectedComponents[componentType].name}
-                                className="w-[38px] h-[38px] mr-2"
-                              />
-                              <span className="break-words whitespace-normal">
-                                {selectedComponents[componentType].name}
-                              </span>
+                              <div className="flex items-center">
+                                <img
+                                  src={selectedComponents[componentType].image}
+                                  alt={selectedComponents[componentType].name}
+                                  className="w-[38px] h-[38px] mr-2"
+                                />
+                                <span className="break-words whitespace-normal">
+                                  {selectedComponents[componentType].name}
+                                </span>
+                              </div>
                             </div>
                           ) : (
                             <div
@@ -254,10 +256,14 @@ function PartsTable({ onComponentsChanged }) {
                       <div className="flex flex-col gap-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
                           selectedComponents[componentType] ? (
-                            <div key={componentType}>
+                            <div key={componentType} className="h-[38px] flex items-center">
                               {selectedComponents[componentType].availability}
                             </div>
-                          ) : null
+                          ) : (
+                            <div key={componentType} className="h-[38px] flex items-center">
+                              —
+                            </div>
+                          )
                         ))}
                       </div>
                     )}
@@ -269,10 +275,14 @@ function PartsTable({ onComponentsChanged }) {
                       <div className="flex flex-col gap-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
                           selectedComponents[componentType] ? (
-                            <div key={componentType}>
+                            <div key={componentType} className="h-[38px] flex items-center">
                               {selectedComponents[componentType].price}
                             </div>
-                          ) : null
+                          ) : (
+                            <div key={componentType} className="h-[38px] flex items-center">
+                              —
+                            </div>
+                          )
                         ))}
                       </div>
                     )}
@@ -291,14 +301,19 @@ function PartsTable({ onComponentsChanged }) {
                       <div className="flex flex-col gap-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
                           selectedComponents[componentType] ? (
-                            <button
-                              key={componentType}
-                              onClick={() => handleRemoveComponent(componentType)}
-                              className="text-gray-500 hover:text-red-700 focus:outline-none"
-                            >
-                              <ClearIcon className="w-5 h-5" />
-                            </button>
-                          ) : null
+                            <div key={componentType} className="h-[38px] flex items-center">
+                              <button
+                                onClick={() => handleRemoveComponent(componentType)}
+                                className="text-gray-500 hover:text-red-700 focus:outline-none"
+                              >
+                                <ClearIcon className="w-5 h-5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div key={componentType} className="h-[38px] flex items-center">
+                              —
+                            </div>
+                          )
                         ))}
                       </div>
                     )}

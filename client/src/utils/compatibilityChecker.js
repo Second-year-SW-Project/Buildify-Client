@@ -185,35 +185,77 @@ const compatibilityCheckers = {
   checkStorageMotherboard: (storage, motherboard) => {
     const warnings = [];
 
-    // Storage interface compatibility
-    const requiredStorageType = storage.storageType;
-    const hasCompatibleStorageInterface = motherboard.storageInterfaces.some(
-      (intf) => intf.type === requiredStorageType && intf.count > 0
-    );
+    // Handle both single storage and array of storage devices
+    const storageDevices = Array.isArray(storage) ? storage : [storage];
 
-    if (!hasCompatibleStorageInterface) {
-      warnings.push({
-        type: "warning",
-        text: `Storage type (${storage.storageType}) is not supported by motherboard storage interfaces.`,
-      });
-    }
+    // Map storage types to motherboard interface types
+    const mapStorageTypeToInterface = (storageType) => {
+      switch (storageType?.toLowerCase().trim()) {
+        case 'nvme_m2':
+          return 'M.2';
+        case 'sata_ssd':
+        case 'sata_hdd':
+          return 'SATA';
+        default:
+          return storageType;
+      }
+    };
 
-    // Check available storage interfaces
-    const usedInterfaces = motherboard.storageInterfaces.filter(intf => intf.count > 0).length;
-    if (usedInterfaces >= motherboard.storageInterfaces.length) {
-      warnings.push({
-        type: "warning",
-        text: "No more storage interfaces available on the motherboard.",
-      });
-    }
+    // Track used slots
+    let usedM2Slots = 0;
+    let usedSataSlots = 0;
 
-    // NVMe speed compatibility
-    if (storage.storageType === 'NVMe' && storage.readSpeed > 3500 && !motherboard.nvmeGen4Support) {
-      warnings.push({
-        type: "note",
-        text: "NVMe drive may not reach full speed without PCIe 4.0 support.",
-      });
-    }
+    // Get available slots from motherboard
+    const m2Slots = motherboard.storageInterfaces?.find(intf => intf.type === 'M.2')?.count || 0;
+    const sataSlots = motherboard.storageInterfaces?.find(intf => intf.type === 'SATA')?.count || 0;
+
+    // Check each storage device
+    storageDevices.forEach((storageDevice, index) => {
+      // Storage type compatibility
+      const storageType = mapStorageTypeToInterface(storageDevice.storageType);
+      const motherboardStorageTypes = motherboard.storageInterfaces?.map(intf => 
+        intf.type?.trim()
+      ) || [];
+
+      if (!storageType || motherboardStorageTypes.length === 0) {
+        warnings.push({
+          type: "warning",
+          text: "Could not verify storage type compatibility. Please check motherboard specifications.",
+        });
+      } else if (!motherboardStorageTypes.includes(storageType)) {
+        warnings.push({
+          type: "warning",
+          text: `Storage device ${index + 1} type (${storageDevice.storageType}) is not compatible with motherboard. Motherboard supports: ${motherboard.storageInterfaces.map(intf => intf.type).join(', ')}.`,
+        });
+      }
+
+      // Track used slots
+      if (storageDevice.storageType === 'nvme_m2') {
+        usedM2Slots++;
+        if (usedM2Slots > m2Slots) {
+          warnings.push({
+            type: "warning",
+            text: `Number of M.2 drives (${usedM2Slots}) exceeds available M.2 slots (${m2Slots}).`,
+          });
+        }
+      } else if (storageDevice.storageType === 'sata_ssd' || storageDevice.storageType === 'sata_hdd') {
+        usedSataSlots++;
+        if (usedSataSlots > sataSlots) {
+          warnings.push({
+            type: "warning",
+            text: `Number of SATA drives (${usedSataSlots}) exceeds available SATA ports (${sataSlots}).`,
+          });
+        }
+      }
+
+      // NVMe speed compatibility
+      if (storageDevice.storageType === 'nvme_m2' && storageDevice.readSpeed > 3500 && !motherboard.nvmeGen4Support) {
+        warnings.push({
+          type: "note",
+          text: "NVMe drive may not reach full speed without PCIe 4.0 support.",
+        });
+      }
+    });
 
     return warnings;
   },

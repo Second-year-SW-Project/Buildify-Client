@@ -333,10 +333,7 @@ const storageAttributes = {
   storageTypes: [
     { value: "nvme_m2", label: "NVMe M.2" },
     { value: "sata_ssd", label: "SATA SSD" },
-    { value: "hdd", label: "HDD" },
-    { value: "m2_sata", label: "M.2 SATA" },
-    { value: "sas_hdd", label: "SAS HDD" },
-    { value: "pata_hdd", label: "PATA HDD" },
+    { value: "sata_hdd", label: "SATA HDD" },
   ],
   storageCapacities: [
     { value: "256", label: "256GB" },
