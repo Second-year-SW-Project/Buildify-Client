@@ -10,11 +10,13 @@ import {
   TextField,
   Box,
   Typography,
+  IconButton,
 } from "@mui/material";
 import {
-  Send as SendIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
+    Reply as ReplyIcon,
+    Delete as DeleteIcon,
+  } from "@mui/icons-material";
+  
 import { toast } from "sonner";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
@@ -24,6 +26,9 @@ const Comment = () => {
   const [response, setResponse] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [currentCommentId, setCurrentCommentId] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+const [commentToDelete, setCommentToDelete] = useState(null);
+
 
   useEffect(() => {
     fetchComments();
@@ -116,7 +121,7 @@ const Comment = () => {
           <PageTitle value="Comment Management" />
           <CustomBreadcrumbs
             paths={[
-              { label: "Feedback Manage", href: "/feedbackmanage/comment&reviews" },
+              { label: "Comments & Reviews", href: "/commentreview/comment" },
               { label: "Comments" },
             ]}
           />
@@ -146,6 +151,9 @@ const Comment = () => {
                       </p>
                       <p className="text-sm text-gray-500">{comment.userId?.email}</p>
                       <p className="text-sm text-gray-600">{comment.comment}</p>
+                      <p className="text-xs text-gray-400">
+  Commented on: {new Date(comment.createdAt).toLocaleString()}
+</p>
 
                       <Box display="flex" alignItems="center" gap={2}>
                         <img
@@ -170,26 +178,27 @@ const Comment = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex space-x-4 items-center">
-  <Button
-    variant="outlined"
-    color="primary"
+                  <div className="flex space-x-1">
+  <IconButton
     onClick={() => handleDialogOpen(comment._id)}
-    startIcon={<SendIcon />}
-    className="hover:bg-purple-200 transition duration-300"
+    color="gray"
+    aria-label="respond"
   >
-    Respond
-  </Button>
-  <Button
-    variant="outlined"
+    <ReplyIcon style={{ fontSize: "30px", color: "grey" }} />
+  </IconButton>
+  <IconButton
+    onClick={() => {
+        setCommentToDelete(comment._id);
+        setDeleteDialogOpen(true);
+      }}
+      
     color="error"
-    onClick={() => handleDeleteComment(comment._id)}
-    startIcon={<DeleteIcon />}
-    className="hover:bg-red-200 transition duration-300"
+    aria-label="delete"
   >
-    Delete
-  </Button>
+    <DeleteIcon style={{ fontSize: "30px", color: "red" }}  />
+  </IconButton>
 </div>
+
 
                 </div>
               </div>
@@ -198,7 +207,7 @@ const Comment = () => {
         </div>
 
         {/* Dialog for Admin Response */}
-        <Dialog open={openDialog} onClose={handleDialogClose} fullWidth maxWidth="sm">
+        <Dialog open={openDialog} onClose={handleDialogClose} fullWidth maxWidth="sm" sx={{ '& .MuiDialog-paper': { padding: 2, borderRadius: '16px', boxShadow: 24, width: '500px' } }}>
           <DialogTitle>Respond to Comment</DialogTitle>
           <DialogContent>
             <TextField
@@ -214,16 +223,60 @@ const Comment = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleDialogClose}>Cancel</Button>
+            <Button onClick={handleDialogClose} className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
+            sx={{
+              textTransform: "none",
+              padding: "14px 18px",
+              width: "180px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              borderRadius: "10px"
+            }}>Cancel</Button>
             <Button
               onClick={() => handleResponseSubmit(currentCommentId)}
               variant="contained"
+      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+      sx={{
+        textTransform: "none",
+        padding: "14px 18px",
+        width: "180px",
+        fontSize: "16px",
+        fontWeight: "bold",
+        borderRadius: "10px"
+      }}
               color="primary"
             >
               Submit
             </Button>
           </DialogActions>
         </Dialog>
+
+        <Dialog
+  open={deleteDialogOpen}
+  onClose={() => setDeleteDialogOpen(false)}
+  fullWidth
+  maxWidth="xs"
+>
+  <DialogTitle>Confirm Delete</DialogTitle>
+  <DialogContent>
+    <Typography>Are you sure you want to delete this comment?</Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setDeleteDialogOpen(false)} color="secondary">Cancel</Button>
+    <Button
+      onClick={async () => {
+        await handleDeleteComment(commentToDelete);
+        setDeleteDialogOpen(false);
+        setCommentToDelete(null);
+      }}
+      color="primary"
+      variant="contained"
+    >
+      Delete
+    </Button>
+  </DialogActions>
+</Dialog>
+
       </div>
     </div>
   );

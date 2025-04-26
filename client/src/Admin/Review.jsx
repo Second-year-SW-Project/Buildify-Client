@@ -175,11 +175,11 @@ const Review = () => {
     <div className="p-8 bg-gradient-to-br from-gray-50 to-purple-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="mt-3 mb-5">
-          <PageTitle value="Comments & Reviews" />
+          <PageTitle value="Review Management" />
           <CustomBreadcrumbs
             paths={[
-              { label: 'Feedback Manage', href: "/feedbackmanage/comment&reviews" },
-              { label: 'Comment & Reviews' },
+              { label: 'Comments & Reviews', href: "/commentreview/review" },
+              { label: 'Reviews' },
             ]}
           />
         </div>
