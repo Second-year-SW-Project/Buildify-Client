@@ -28,7 +28,7 @@ function OrderList() {
     //fetch all the orders
     const fetchOrders = async (searchTerm = "") => {
         try {
-            const response = await axios.get("http://localhost:8000/api/checkout", {
+            const response = await axios.get("http://localhost:8000/api/checkout/payment", {
                 params: searchTerm ? { search: searchTerm } : {}
             });
 
