@@ -138,7 +138,7 @@ function ManageGames() {
                             isBold={1}
                             buttonSize="medium"
                             fontSize="16px"
-                            onClick={() => navigate('/games/creategame')}
+                            onClick={() => navigate('/adminpanel/games/creategame')}
                         />
                     </div>
 
