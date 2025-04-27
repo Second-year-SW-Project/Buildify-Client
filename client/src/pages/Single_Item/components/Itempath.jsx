@@ -62,7 +62,7 @@ export default function Itempath() {
 
 
   return (
-    <nav className="text-gray-600  text-sm sm:text-xs md:text-sm flex flex-wrap items-center gap-2 mt-10 ml-14">
+    <nav className="text-gray-700  text-sm sm:text-xs md:text-sm flex flex-wrap items-center gap-2 mt-10 ml-14">
       {myArray.map((path, index) => (
         <span key={index} className="flex items-center">
           {index !== 0  && <span className="mx-1">{">"}</span>}
@@ -71,7 +71,7 @@ export default function Itempath() {
               href={path.href}
               className="hover:underline hover:text-purple-700" 
             >
-              {path.label}
+              {path.label.toUpperCase()}
             </a>
           ) : (
             <span className="text-black text-[15px]">{path.label}</span>

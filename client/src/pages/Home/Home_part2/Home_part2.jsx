@@ -1,6 +1,3 @@
-//http://localhost:5000/api/products
-
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PCcardhome from "./Pccardhome";

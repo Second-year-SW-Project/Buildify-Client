@@ -29,22 +29,92 @@ export default function Product_item_grid({ filters, allProducts, setAllProducts
 
     // Brand filter
     if (filters.brand && filters.brand.length > 0) {
-      filtered = filtered.filter(product =>
+      filtered = filtered.filter((product) =>
         filters.brand.includes(product.manufacturer?.toUpperCase())
       );
     }
 
-    //size filter/capacity filter
+
+
+
+
+//  ----- FOR VGAS ---------
+
+
+
+    //size filter/capacity filter for VGAs
     if (filters.capacity && filters.capacity.length > 0) {
-      filtered = filtered.filter(product =>
+      filtered = filtered.filter((product) =>
         filters.capacity.includes(product.vram)
       );
     }
 
+
+    // VGA PCI Type filter
+if (filters.pciType && filters.pciType.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.pciType.includes(product.interfaceType?.toUpperCase())
+  );
+}
+
+
+
+//  ----- FOR RAMS ---------
+
+// RAM Memory Capacity filter
+if (filters.memoryCapacity && filters.memoryCapacity.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.memoryCapacity.includes(product.memoryCapacity?.toUpperCase())
+  );
+}
+
+// RAM Memory Speed filter
+if (filters.memorySpeed && filters.memorySpeed.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.memorySpeed.includes(product.memorySpeed?.toUpperCase())
+  );
+}
+
+
+
+//  ----- FOR PROCCESSORS ---------
+
+// Processor Core Count filter
+if (filters.coreCount && filters.coreCount.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.coreCount.includes(product.coreCount)
+  );
+}
+
+// Processor Threads filter
+if (filters.threadCount && filters.threadCount.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.threadCount.includes(product.threadCount)
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Price range filter
     if (filters.priceRange && filters.priceRange.length === 2) {
       const [min, max] = filters.priceRange;
-      filtered = filtered.filter(product => {
+      filtered = filtered.filter((product) => {
         const price = parseFloat(product.price);
         return price >= min && price <= max;
       });

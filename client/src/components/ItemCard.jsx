@@ -8,6 +8,8 @@ import { calculateCPUScore, calculateGPUScore, calculateRAMScore, calculatePrebu
 const ItemCard = ({ product }) => {
   const dispatch = useDispatch();
 
+  //add to cart function
+
   const handleAddToCart = (e) => {
     e.stopPropagation(); // 
     e.preventDefault();  //
@@ -104,6 +106,8 @@ const ItemCard = ({ product }) => {
           <img src={product.imgUrls?.[0]?.url} className="w-[90%] md:w-[85%] sm:w-[80%] h-auto transition-all" alt={product.name} />
         </div>
 
+        
+
         {/* Item Name Section */}
         <div className="bg-[#d9a8ff1C] text-black -mx-4 my-2 p-2">
           <h2 className="text-xl md:text-lg sm:text-sm font-semibold leading-tight">
@@ -126,7 +130,6 @@ const ItemCard = ({ product }) => {
         </p>
       </Link>
 
-      {/* Add to Cart Button OUTSIDE the Link */}
       <div>
         <button
           className="bg-[#7315E5] hover:bg-[#5A0DB2] text-white font-bold py-3 px-4 rounded text-lg md:text-md sm:text-sm mt-2"

@@ -31,6 +31,7 @@ import CreateGames from "./Admin/CreateGames.jsx";
 import ManageGames from "./Admin/ManageGames.jsx";
 import OrderList from "./Admin/OrderList.jsx";
 import ReceivedOrders from "./Admin/ReceivedOrders.jsx";
+import Comment from "./Admin/Comment.jsx";
 //Login pages
 import Signup from "./Login/Signup.jsx";
 import Login from "./Login/Login.jsx";
@@ -120,7 +121,8 @@ const router = createBrowserRouter([
                     { path: "feedbackmanage", element: <Complaints /> },
                     { path: "feedbackmanage/complaints", element: <Complaints /> },
                     { path: "feedbackmanage/rma", element: <RMA /> },
-                    { path: "feedbackmanage/comments&reviews", element: <Review /> },
+                    { path: "commentreview/comment", element: <Comment /> },
+                    { path: "commentreview/review", element: <Review /> },
                     { path: "invoice", element: <InvoiceList /> },
                     { path: "invoice/invoicelist", element: <InvoiceList /> },
                     { path: "invoice/invoicecreate", element: <InvoiceCreate /> },

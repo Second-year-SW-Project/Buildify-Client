@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, increaseQuantity, decreaseQuantity } from "../../redux/cartSlice";
 import { Button, IconButton } from "@mui/material";
@@ -11,18 +11,62 @@ import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer"
 
 
 
-
 const CartPage = () => {
+
+    const [users, setUsers] = useState([]);  //this is for check the user has logged in or not
+    const [loading, setLoading] = useState(true);
+
+
   const cartItems = useSelector((state) => state.cart.cartItems);
   const totalPrice = useSelector((state) => state.cart.totalPrice);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate(`/paymentgateway`); // Redirect to ItemPage
-  };
+    useEffect(() => {
+      const token  = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      if (!token || !userId) {
+        setLoading(false);
+        return;
+      }
+  
+      const fetchUsers = async () => {
+        try {
+          const response = await axios.get("http://localhost:8000/api/v1/users", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          setUsers(response.data);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchUsers();
+    }, []);
 
+    const userId = localStorage.getItem("userId");
+    const currentUserArray = users.filter((u) => u._id === userId);
+    const currentUser = currentUserArray.length > 0 ? currentUserArray[0] : null;
+
+
+
+
+
+
+
+  const handleClick = () => {
+    if (!userId) {         
+      alert("Please log in to the site to continue the transaction.");  //checking the user has logged in
+    } else {
+      navigate(`/paymentgateway`);   // Redirect to ItemPage
+    }
+  };
 
   return (
 

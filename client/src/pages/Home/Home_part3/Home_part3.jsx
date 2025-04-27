@@ -5,7 +5,7 @@ export default function PCBuilderBanners() {
   const navigate = useNavigate();
 
   const backgroundStyle = {
-    backgroundImage: "url('../../../../public/modeposter.png')",
+    backgroundImage: "url('https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421097/modeposter_hq2tll.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -41,7 +41,7 @@ export default function PCBuilderBanners() {
           </div>
           <div className="w-full lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">
             <img
-              src="https://content.ibuypower.com/cdn-cgi/image/width=750,format=auto,quality=75/https://content.ibuypower.com//Images/en-US/Lobby/custom_main_1200x688.png?v=d06c6502df2519b6df5c0969713974d01c085129"
+              src="https://res.cloudinary.com/ddstqdrhm/image/upload/v1745693961/custom_main_1200x688_u53mls.avif"
               alt="Advanced Builder"
               className="max-w-full h-64 md:h-72 lg:h-80 object-contain"
             />
@@ -67,7 +67,7 @@ export default function PCBuilderBanners() {
           </div>
           <div className="w-full lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">
             <img
-              src="https://content.ibuypower.com/cdn-cgi/image/width=750,format=auto,quality=75/https://content.ibuypower.com//Images/en-US/Lobby/ezb_main_nocut.png?v=d06c6502df2519b6df5c0969713974d01c085129"
+              src="https://res.cloudinary.com/ddstqdrhm/image/upload/v1745694053/ezb_main_nocut_yevysk.avif"
               alt="Easy Builder"
               className=" max-w-full h-64 md:h-72 lg:h-80 object-contain"
             />

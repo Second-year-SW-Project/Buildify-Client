@@ -8,7 +8,6 @@ import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector
 import {
     main,
     subCategories,
-    manufacture,
     coolerAttributes,
     cpuCores,
     cpuThreads,
@@ -58,27 +57,27 @@ const CreateProducts = () => {
     // Handle change in Main Category
     const handleMainCategoryChange = (selectedValue) => {
         dispatch(setSelectedMainCategory(selectedValue));
-        dispatch(setSelectedSubCategory("")); // Reset Sub Category when Main Category changes
-        dispatch(setSelectedManufacture("")); // Reset manufacture when Main Category changes
-        setProduct((prev) => ({ ...prev, type: '' })); // Reset product type
-
+        dispatch(setSelectedSubCategory(''));
+        dispatch(setSelectedManufacture(''));
+        setProduct((prev) => ({ ...prev, type: '' }));
     };
 
     // Handle change in Sub Category
     const handleSubCategoryChange = (selectedValue) => {
         dispatch(setSelectedSubCategory(selectedValue));
-        dispatch(setSelectedManufacture("")); // Reset manufacture when Sub Category changes
-
+        dispatch(setSelectedManufacture(''));
     };
+
     // Handle change in Manufacture
     const handleManufactureChange = (selectedValue) => {
         dispatch(setSelectedManufacture(selectedValue));
-        setProduct((prev) => ({ ...prev, socketType: '' })); // Reset socket type when manufacture changes
+        setProduct((prev) => ({ ...prev, socketType: '' }));
     };
 
     // coolerAttributes
     const coolerSupportedSockets = coolerAttributes.supportedSocket;
     const coolerTypes = coolerAttributes.coolerType;
+    const coolerMaxTdp = coolerAttributes.maxTdp;
     //ramAttributes
     const ramTypeOptions = ramAttributes.type;
     const ramSpeedOptions = ramAttributes.speed;
@@ -93,13 +92,13 @@ const CreateProducts = () => {
     const motherboardPcieSlotType = motherboardAttributes.pcieSlotType;
     const motherboardPcieVersion = motherboardAttributes.pcieVersion;
     const motherboardStorageTypes = motherboardAttributes.storageType;
-    const motherboardExpansionSlots = motherboardAttributes.expansionSlots;
     //gpuAttributes
     const gpuInterfaceTypes = gpuAttributes.interfaceType;
-    const gpuChipsetOptions = gpuAttributes.gpuChipset
     const gpuPowerConnectors = gpuAttributes.powerConnectors;
     const gpuVramOptions = gpuAttributes.gpuVram;
     const gpuSeriesOptions = gpuAttributes.gpuSeries;
+    const gpuChipsetOptions = gpuAttributes.gpuChipset;
+    const gpuCores = gpuAttributes.gpuCores;
     //storageAttributes
     const storageTypes = storageAttributes.storageTypes;
     const storageCapacities = storageAttributes.storageCapacities;
@@ -107,7 +106,6 @@ const CreateProducts = () => {
     const casingFormFactors = casingAttributes.formFactor;
     const casingSupportedMotherboardSizes = casingAttributes.supportedMotherboardSizes;
     //keyboardAttributes
-    const keyboardManufacturerOptions = keyboardAttributes.manufacturer;
     const keyboardTypeOptions = keyboardAttributes.type;
     //mouseAttributes
     const mouseTypeOptions = mouseAttributes.type;
@@ -127,103 +125,98 @@ const CreateProducts = () => {
     const laptopGraphicCardOptions = laptopAttributes.graphicCard;
     //desktopAttributes
     const desktopCpuOptions = desktopAttributes.cpu;
-    const desktopGpuOptions = desktopAttributes.graphicCard;
+    const desktopGpuOptions = desktopAttributes.gpu;
     const desktopRamOptions = desktopAttributes.ram;
     const desktopStorageOptions = desktopAttributes.storage;
     const desktopTypeOptions = desktopAttributes.desktopType;
-    // New attribute options for expansion_network
+    //expansionNetworkAttributes
     const expansionComponentTypes = expansionNetworkAttributes.componentType;
     const expansionInterfaceTypes = expansionNetworkAttributes.interfaceType;
     const soundCardChannels = expansionNetworkAttributes.soundCardChannels;
     const wiredNetworkSpeeds = expansionNetworkAttributes.wiredNetworkSpeed;
     const wifiStandards = expansionNetworkAttributes.wifiStandard;
-    // power supply attributes
+    //power supply attributes
     const powerWattageOptions = powerAttributes.wattage;
     const powerEfficiencyOptions = powerAttributes.efficiencyRating;
     const powerModularTypeOptions = powerAttributes.modularType;
 
-
     const initialProductState = {
-        type: "",
-        name: "",
-        description: "",
+        type: '',
+        name: '',
+        description: '',
         imgUrls: [],
-        manufacturer: "",
-        productCode: "",
-        quantity: "",
-        stockPrice: "",
-        price: "",
+        manufacturer: '',
+        quantity: '',
+        price: '',
         //cpu
-        socketType: "",
-        tdp: "",
-        coreCount: "",
-        threadCount: "",
-        baseClock: "",
-        boostClock: "",
-        integratedGraphics: "",
-        includesCooler: "",
+        socketType: '',
+        tdp: '',
+        coreCount: '',
+        threadCount: '',
+        baseClock: '',
+        boostClock: '',
+        integratedGraphics: false,
+        includesCooler: false,
         //memory
-        memoryType: "",
-        memoryCapacity: "",
-        memorySpeed: "",
+        memoryType: '',
+        memoryCapacity: '',
+        memorySpeed: '',
         //motherboard
         motherboardChipset: '',
-        formFactor: "",
-        ramSlots: "",
-        maxRam: "",
-        supportedMemoryTypes: [],
+        formFactor: '',
+        ramSlots: '',
+        maxRam: '',
+        //laptop
+        displaySize: '',
+        resolution: '',
+        laptopType: '',
+        cpu: '',
+        ram: '',
+        storage: '',
+        graphicCard: '',
+        desktopType: '',
+        //gpu
+        interfaceType: '',
+        length: '',
+        powerConnectors: '',
+        vram: '',
+        series: '',
+        cudaCores: '',
+        //prebuild
+        cpuCores: '',
+        cpuThreads: '',
+        cpuBaseClock: '',
+        cpuBoostClock: '',
+        gpuSeries: '',
+        gpuVramGB: '',
+        gpuBoostClockMHz: '',
+        gpuCores: '',
+        ramSizeGB: '',
+        ramSpeedMHz: '',
+        ramType: '',
+        //expansion_network fields
+        componentType: '',
+        soundCardChannels: '',
+        networkSpeed: '',
+        wifiStandard: '',
+        //Storage
+        storageType: '',
+        storageCapacity: '',
+        supportedMotherboardSizes: '',
+        wattage: '',
+        maxTdp: '',
+        height: '',
+
+        supportedMemoryTypes: '',
         pcieSlots: [],
         storageInterfaces: [],
-        //gpu
-        interfaceType: "",
-        length: "",
-        powerConnectors: "",
-        vram: "",
-        series: "",
-        gpuChipset: "",
-        cudaCores: "",
-        //laptop & prebuild
-        displaySize: "",
-        resolution: "",
-        laptopType: "",
-        cpu: "",
-        ram: "",
-        storage: "",
-        graphicCard: "",
-        desktopType: "",
-        //prebuild additional fields
-        cpuCores: "",
-        cpuThreads: "",
-        cpuBaseClock: "",
-        cpuBoostClock: "",
-        gpuSeries: "",
-        gpuVramGB: "",
-        gpuBoostClockMHz: "",
-        gpuCores: "",
-        ramSizeGB: "",
-        ramSpeedMHz: "",
-        ramType: "",
-        //expansion_network fields
-        componentType: "",
-        soundCardChannels: "",
-        networkSpeed: "",
-        wifiStandard: "",
-        //storage fields
-        storageType: "",
-        storageCapacity: "",
-        //cooler fields
-        coolerType: "",
-        supportedSocket: "",
-        maxTdp: "",
-        height: "",
-        //casing fields
+        gpuChipset: '',
+        gpuVram: '',
+
         maxGpuLength: '',
         maxCoolerHeight: '',
-        supportedMotherboardSizes: [],
-        //power field
         efficiencyRating: '',
         modularType: '',
-        wattage: '',
     };
 
     const [product, setProduct] = useState(initialProductState);
