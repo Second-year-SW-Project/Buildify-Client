@@ -59,6 +59,7 @@ import ItemPage from "./pages/Single_Item/Itempage.jsx";
 import SearchResults from "./pages/Searchbar/SearchResults.jsx";
 import LaptopCategoryPage from "./pages/Laptop_category/Laptopcategorypage.jsx";
 import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx";
+import ErrorStatus from "./Login/Errorstatus.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -158,6 +159,7 @@ const router = createBrowserRouter([
             { path: "user/orderHistory", element: <OrderHistory /> },
             { path: "user/savedBuilds", element: <SavedBuilds /> },
             { path: "user/settings", element: <Settings /> },
+            { path: "user/errorstatus", element: <ErrorStatus /> },
         ],
     },
 ]);
