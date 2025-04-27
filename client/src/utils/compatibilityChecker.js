@@ -241,12 +241,50 @@ const compatibilityCheckers = {
   checkGpuCase: (gpu, pcCase) => {
     const warnings = [];
 
-    // Length compatibility
-    if (gpu.length > pcCase.maxGpuLength) {
+    // Debug logs
+    console.log('GPU Data:', {
+      type: gpu?.type,
+      name: gpu?.name,
+      length: gpu?.length,
+      fullData: gpu
+    });
+    console.log('Case Data:', {
+      type: pcCase?.type,
+      name: pcCase?.name,
+      maxGpuLength: pcCase?.maxGpuLength,
+      fullData: pcCase
+    });
+
+    // Get length values using camelCase property names
+    const gpuLength = gpu?.length;
+    const caseMaxLength = pcCase?.maxGpuLength;
+
+    // Debug logs for length values
+    console.log('Length Values:', {
+      gpuLength,
+      caseMaxLength,
+      comparison: gpuLength > caseMaxLength
+    });
+
+    // Check if we have valid length values
+    if (gpuLength === undefined || gpuLength === null || caseMaxLength === undefined || caseMaxLength === null) {
+      console.log('Invalid length values detected');
       warnings.push({
         type: "warning",
-        text: `GPU length (${gpu.length}mm) exceeds case's max GPU length (${pcCase.maxGpuLength}mm).`,
+        text: "Could not verify GPU length compatibility. Please check case specifications.",
       });
+      return warnings;
+    }
+
+    // Length compatibility check
+    if (gpuLength > caseMaxLength) {
+      console.log('GPU length exceeds case max length');
+      warnings.push({
+        type: "warning",
+        text: `GPU length (${gpuLength}mm) exceeds case's max GPU length (${caseMaxLength}mm).`,
+      });
+    } else {
+      console.log('GPU length is compatible with case');
     }
 
     return warnings;
@@ -374,6 +412,8 @@ const compatibilityCheckers = {
  * @returns {Object} - Contains compatibility warnings, total TDP, and issues flag
  */
 export const checkCompatibility = (components) => {
+  console.log('checkCompatibility called with components:', components);
+  
   let tdp = 0;
   let compatibilityWarnings = [...BASE_MESSAGES];
 
@@ -415,16 +455,19 @@ export const checkCompatibility = (components) => {
     ));
   }
 
-  if (components.GPU && components.Motherboard) {
+  // Handle both "GPU" and "Video Card" keys for GPU components
+  const gpuComponent = components.GPU || components["Video Card"];
+  if (gpuComponent && components.Motherboard) {
     compatibilityWarnings.push(...compatibilityCheckers.checkGpuMotherboard(
-      components.GPU,
+      gpuComponent,
       components.Motherboard
     ));
   }
 
-  if (components.GPU && components.Case) {
+  if (gpuComponent && components.Case) {
+    console.log('Checking GPU and Case compatibility');
     compatibilityWarnings.push(...compatibilityCheckers.checkGpuCase(
-      components.GPU,
+      gpuComponent,
       components.Case
     ));
   }
@@ -450,12 +493,13 @@ export const checkCompatibility = (components) => {
     ));
   }
 
-  if (components.CPU && !components.GPU) {
+  if (components.CPU && !gpuComponent) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCpuGraphics(
       components.CPU
     ));
   }
 
+  console.log('Final compatibility warnings:', compatibilityWarnings);
   return {
     messages: compatibilityWarnings,
     totalTDP: `${tdp}W`,
