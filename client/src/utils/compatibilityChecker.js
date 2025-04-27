@@ -1,6 +1,7 @@
 // Base messages that always appear
 const BASE_MESSAGES = [
-  { type: "note", text: "Choose components that are compatible with each other." },
+  { type: "note", text: "Most of our motherboards have sound and networking capabilities. Please contact us if you need to add sound or network cards to in your build." },
+  { type: "note", text: "Multiple GPU builds are not allowed in online mode. You have to visit the store physically for such configurations." },
   { type: "disclaimer", text: "Prices are subject to change based on availability." },
 ];
 
@@ -241,7 +242,7 @@ const compatibilityCheckers = {
     const warnings = [];
 
     // Length compatibility
-    if (parseInt(gpu.length) > parseInt(pcCase.maxGpuLength)) {
+    if (gpu.length > pcCase.maxGpuLength) {
       warnings.push({
         type: "warning",
         text: `GPU length (${gpu.length}mm) exceeds case's max GPU length (${pcCase.maxGpuLength}mm).`,
