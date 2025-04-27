@@ -256,7 +256,7 @@ const compatibilityCheckers = {
 
       warnings.push({
         type: "warning",
-        text: `GPU requires PCIe ${formattedGpuVersion} ${gpuSlotType.toUpperCase()} slot, but motherboard only has: ${availableSlots}.`,
+        text: `GPU requires PCIe (${formattedGpuVersion} ${gpuSlotType.toUpperCase()}) slot, but motherboard only has (${availableSlots}).`,
       });
     } else {
       // Check if GPU will run at lower speed

@@ -32,6 +32,16 @@ const WarningPopup = ({ onClose, messages, type = 'warning' }) => {
 
   const styles = typeStyles[type];
 
+  // Filter out duplicate messages
+  const uniqueMessages = React.useMemo(() => {
+    const seen = new Set();
+    return messages.filter(message => {
+      const duplicate = seen.has(message);
+      seen.add(message);
+      return !duplicate;
+    });
+  }, [messages]);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className={`relative ${styles.bgColor} rounded-lg shadow-xl w-full max-w-3xl mx-4 p-6 border-2 ${styles.borderColor} max-h-[80vh] flex flex-col`}>
@@ -46,13 +56,17 @@ const WarningPopup = ({ onClose, messages, type = 'warning' }) => {
         </div>
         
         {/* Content */}
-        <div className={`flex-1 overflow-y-auto ${styles.textColor} space-y-4 pr-2`}>
-          {messages.map((message, index) => (
-            <div key={index} className="flex items-start space-x-3">
-              <span className="mt-1">•</span>
-              <p className="text-lg leading-relaxed">{message}</p>
-            </div>
-          ))}
+        <div className={`flex-1 overflow-y-auto ${styles.textColor} pr-2`}>
+          <div className="space-y-4">
+            {uniqueMessages.map((message, index) => (
+              <div key={index} className="flex items-start space-x-4 p-3 rounded-md bg-white bg-opacity-50">
+                <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-opacity-20 bg-current text-sm font-semibold">
+                  {index + 1}
+                </span>
+                <p className="text-base leading-relaxed">{message}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Footer */}
