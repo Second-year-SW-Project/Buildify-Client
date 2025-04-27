@@ -14,7 +14,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
-import { setAuthUser } from "../Store/authSlice.js";
+import { setAuthUser } from "../store/authSlice.js";
 
 export default function AdminSettings() {
   const user = useSelector((state) => state.auth.user);
