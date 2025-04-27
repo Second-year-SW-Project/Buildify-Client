@@ -41,6 +41,8 @@ const ItemCard = ({ product }) => {
           <img src={product.imgUrls?.[0]?.url} className="w-[90%] md:w-[85%] sm:w-[80%] h-auto transition-all" alt={product.name} />
         </div>
 
+        
+
         {/* Item Name Section */}
         <div className="bg-[#d9a8ff1C] text-black -mx-4 my-2 p-2">
           <h2 className="text-xl md:text-lg sm:text-sm font-semibold leading-tight">
