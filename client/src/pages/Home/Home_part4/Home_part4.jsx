@@ -11,7 +11,7 @@ export default function Home_part4() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/review/admin"); 
+        const response = await axios.get("http://localhost:8000/api/review/admin/all"); 
         setReviews(response.data.slice(0, 6)); //show only 6 reviews
       } catch (error) {
         console.error("Error fetching reviews:", error);

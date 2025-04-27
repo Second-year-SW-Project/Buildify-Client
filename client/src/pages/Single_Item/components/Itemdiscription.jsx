@@ -48,7 +48,7 @@ export default function ProductTabs() {
   return (
 
 
-    <div className="max-w-6xl mx-auto p-8 bg-white shadow-lg rounded-lg border-2 border-gray-400">
+    <div className="max-w-6xl mx-auto p-8 bg-white shadow-md rounded-md border-2 border-gray-200">
 
 
       {/* Tab Headers (Centered) */}
@@ -81,29 +81,23 @@ export default function ProductTabs() {
       </div>
 
       {/* Tab Content */}
-      <div className="p-8 text-gray-700">
+      <div className="p-8 ">
         {activeTab === "specification" ? (
           <div>
-            <p className="text-sm text-gray-600 mb-8">
-            {product.description}
+            <p className="text-justify text-gray-800 mb-8">
+            The TEAM T-FORCE DELTAα RGB 32GB (2x16GB)  DDR5 5600MHz RAM is a high-performance memory kit designed for gamers and power users seeking speed, stability, and visual appeal. With a sleek black design and vibrant RGB lighting, it enhances any build while delivering exceptional performance through its 5600MHz speed and low 1.2V operating voltage. Featuring a 288-pin DIMM form factor, CAS latency of 38, and a first word latency of 13.571ns, this non-ECC, unbuffered memory ensures smooth multitasking and fast data access. Backed by a 4-year warranty and equipped with a reliable heat spreader for optimal thermal performance, this kit is in stock and ready to power your next-gen system.
             </p>
 
             {/*<h3 className="text-xl font-semibold mb-4">{product.description}</h3>*/}
-            <p className="text-sm text-gray-600 mb-8">
-            {product.description}
-            </p>
+      
 
-            <p className="text-sm text-gray-600 mb-8">
-            {product.description}
-            </p>
-
-            <p className="mt-6 text-sm text-gray-500">
-              <span className="font-semibold">Categories:</span> {product.type}
+            <p className="mt-6 text-sm text-gray-700">
+              <span className="font-bold">Category:</span> {product.type}
             </p>
           </div>
         ) : (
-          <div>
-            <h3 className="text-xl font-semibold mb-4">{product.description}</h3>
+          <div className='text-gray-800'>
+            <h3 className="text-xl font-semibold mb-4 ">{product.description}</h3>
             <p className="mb-4">
               ⭐⭐⭐⭐⭐ - {product.description} -{" "}
               <span className="text-gray-500">John D.</span>
