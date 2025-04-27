@@ -427,7 +427,6 @@ const compatibilityCheckers = {
 export const checkCompatibility = (components) => {
   let tdp = 0;
   let compatibilityWarnings = [...BASE_MESSAGES];
-  console.log('Initial base messages:', compatibilityWarnings.length);
 
   // Calculate total TDP
   Object.values(components).forEach((component) => {
@@ -514,7 +513,6 @@ export const checkCompatibility = (components) => {
     compatibilityWarnings.push(...filteredWarnings);
   }
 
-  console.log('Total warnings after all checks:', compatibilityWarnings.length);
   return {
     messages: compatibilityWarnings,
     totalTDP: `${tdp}W`,

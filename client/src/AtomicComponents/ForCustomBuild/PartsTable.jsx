@@ -311,7 +311,6 @@ function PartsTable({ onComponentsChanged }) {
                             </div>
                           ) : (
                             <div key={componentType} className="h-[38px] flex items-center">
-                              —
                             </div>
                           )
                         ))}
