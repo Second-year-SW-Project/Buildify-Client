@@ -214,10 +214,6 @@ const compatibilityCheckers = {
   checkGpuMotherboard: (gpu, motherboard) => {
     const warnings = [];
 
-    // Debug logs
-    console.log('GPU Interface Type:', gpu?.interfaceType);
-    console.log('Motherboard PCIe Slots:', motherboard?.pcieSlots);
-
     // Check if motherboard has PCIe slots
     if (!motherboard.pcieSlots || motherboard.pcieSlots.length === 0) {
       warnings.push({
@@ -229,7 +225,9 @@ const compatibilityCheckers = {
 
     // Extract PCIe version and slot type from GPU interface
     const gpuInterface = gpu?.interfaceType?.toLowerCase();
-    const [_, gpuVersion, gpuSlotType] = gpuInterface?.match(/pcie_(\d+_\d+)_(x\d+)/) || [];
+    const match = gpuInterface?.match(/pcie_(\d+_\d+)_(x\d+)/);
+    const gpuVersion = match?.[1];
+    const gpuSlotType = match?.[2];
 
     if (!gpuVersion || !gpuSlotType) {
       warnings.push({
@@ -281,34 +279,12 @@ const compatibilityCheckers = {
   checkGpuCase: (gpu, pcCase) => {
     const warnings = [];
 
-    // Debug logs
-    console.log('GPU Data:', {
-      type: gpu?.type,
-      name: gpu?.name,
-      length: gpu?.length,
-      fullData: gpu
-    });
-    console.log('Case Data:', {
-      type: pcCase?.type,
-      name: pcCase?.name,
-      maxGpuLength: pcCase?.maxGpuLength,
-      fullData: pcCase
-    });
-
     // Get length values using camelCase property names
     const gpuLength = gpu?.length;
     const caseMaxLength = pcCase?.maxGpuLength;
 
-    // Debug logs for length values
-    console.log('Length Values:', {
-      gpuLength,
-      caseMaxLength,
-      comparison: gpuLength > caseMaxLength
-    });
-
     // Check if we have valid length values
     if (gpuLength === undefined || gpuLength === null || caseMaxLength === undefined || caseMaxLength === null) {
-      console.log('Invalid length values detected');
       warnings.push({
         type: "warning",
         text: "Could not verify GPU length compatibility. Please check case specifications.",
@@ -318,13 +294,10 @@ const compatibilityCheckers = {
 
     // Length compatibility check
     if (gpuLength > caseMaxLength) {
-      console.log('GPU length exceeds case max length');
       warnings.push({
         type: "warning",
         text: `GPU length (${gpuLength}mm) exceeds case's max GPU length (${caseMaxLength}mm).`,
       });
-    } else {
-      console.log('GPU length is compatible with case');
     }
 
     return warnings;
@@ -366,7 +339,7 @@ const compatibilityCheckers = {
     if (!cpu.integratedGraphics) {
       warnings.push({
         type: "warning",
-        text: `CPU does not have integrated graphics. A dedicated GPU is required.`,
+        text: "CPU does not have integrated graphics. A dedicated GPU is required.",
       });
     } else if (cpu.integratedGraphics && cpu.graphicsModel) {
       warnings.push({
@@ -452,10 +425,9 @@ const compatibilityCheckers = {
  * @returns {Object} - Contains compatibility warnings, total TDP, and issues flag
  */
 export const checkCompatibility = (components) => {
-  console.log('checkCompatibility called with components:', components);
-  
   let tdp = 0;
   let compatibilityWarnings = [...BASE_MESSAGES];
+  console.log('Initial base messages:', compatibilityWarnings.length);
 
   // Calculate total TDP
   Object.values(components).forEach((component) => {
@@ -505,7 +477,6 @@ export const checkCompatibility = (components) => {
   }
 
   if (gpuComponent && components.Case) {
-    console.log('Checking GPU and Case compatibility');
     compatibilityWarnings.push(...compatibilityCheckers.checkGpuCase(
       gpuComponent,
       components.Case
@@ -533,13 +504,17 @@ export const checkCompatibility = (components) => {
     ));
   }
 
-  if (components.CPU && !gpuComponent) {
-    compatibilityWarnings.push(...compatibilityCheckers.checkCpuGraphics(
-      components.CPU
-    ));
+  // Always check CPU graphics, but only show integrated graphics warning if no GPU
+  if (components.CPU) {
+    const cpuGraphicsWarnings = compatibilityCheckers.checkCpuGraphics(components.CPU);
+    // Only add the integrated graphics warning if no GPU is present
+    const filteredWarnings = cpuGraphicsWarnings.filter(warning => 
+      !gpuComponent || !warning.text.includes("integrated graphics")
+    );
+    compatibilityWarnings.push(...filteredWarnings);
   }
 
-  console.log('Final compatibility warnings:', compatibilityWarnings);
+  console.log('Total warnings after all checks:', compatibilityWarnings.length);
   return {
     messages: compatibilityWarnings,
     totalTDP: `${tdp}W`,
