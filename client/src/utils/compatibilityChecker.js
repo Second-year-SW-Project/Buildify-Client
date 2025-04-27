@@ -19,14 +19,7 @@ const compatibilityCheckers = {
       });
     }
 
-    // Chipset compatibility
-    const cpuChipset = cpu.socketType.split('-')[0];
-    if (!motherboard.motherboardChipset.includes(cpuChipset)) {
-      warnings.push({
-        type: "warning",
-        text: `CPU chipset (${cpuChipset}) is not supported by motherboard chipset (${motherboard.motherboardChipset}).`,
-      });
-    }
+
 
     // TDP compatibility with motherboard power delivery
     if (cpu.tdp > 150 && !motherboard.powerDelivery.includes('High')) {
@@ -59,13 +52,18 @@ const compatibilityCheckers = {
     // Socket compatibility
     if (cooler.supportedSocket) {
       const supportedSockets = Array.isArray(cooler.supportedSocket)
-        ? cooler.supportedSocket
-        : cooler.supportedSocket.split(',').map(s => s.trim());
+        ? cooler.supportedSocket.map(s => s.toLowerCase().trim())
+        : cooler.supportedSocket.split(',').map(s => s.toLowerCase().trim());
 
-      if (!supportedSockets.includes(cpu.socketType)) {
+      // Check if CPU socket is supported by the cooler
+      if (!supportedSockets.includes(cpu.socketType.toLowerCase())) {
+        // Get the manufacturer from the socket type (Intel or AMD)
+        const isIntelSocket = cpu.socketType.toLowerCase().startsWith('lga');
+        const manufacturer = isIntelSocket ? 'Intel' : 'AMD';
+        
         warnings.push({
           type: "warning",
-          text: `CPU Cooler does not support CPU socket (${cpu.socketType}). Supported sockets: ${supportedSockets.join(', ')}.`,
+          text: `CPU Cooler does not support ${manufacturer} socket (${cpu.socketType}). This cooler supports (${supportedSockets.join(', ')}).`,
         });
       }
     }
@@ -148,7 +146,7 @@ const compatibilityCheckers = {
       // RAM speed compatibility
       const ramSpeed = parseInt(ramModule.memorySpeed?.replace(/[^0-9]/g, '') || '0');
       const maxMotherboardSpeed = parseInt(motherboard.maxRamSpeed?.replace(/[^0-9]/g, '') || '0');
-      
+
       if (ramSpeed > maxMotherboardSpeed) {
         warnings.push({
           type: "warning",
@@ -158,7 +156,7 @@ const compatibilityCheckers = {
 
       // RAM capacity
       const ramCapacity = parseInt(ramModule.memoryCapacity?.replace(/[^0-9]/g, '') || '0');
-      const totalRamCapacity = ramModules.reduce((sum, module) => 
+      const totalRamCapacity = ramModules.reduce((sum, module) =>
         sum + parseInt(module.memoryCapacity?.replace(/[^0-9]/g, '') || '0'), 0
       );
 
@@ -213,7 +211,7 @@ const compatibilityCheckers = {
     storageDevices.forEach((storageDevice, index) => {
       // Storage type compatibility
       const storageType = mapStorageTypeToInterface(storageDevice.storageType);
-      const motherboardStorageTypes = motherboard.storageInterfaces?.map(intf => 
+      const motherboardStorageTypes = motherboard.storageInterfaces?.map(intf =>
         intf.type?.trim()
       ) || [];
 
