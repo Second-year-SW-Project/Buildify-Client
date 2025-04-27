@@ -1,25 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Avatar,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-  TextField,
-  Box,
-  Typography,
-  IconButton,
-} from "@mui/material";
-import {
-    Reply as ReplyIcon,
-    Delete as DeleteIcon,
-  } from "@mui/icons-material";
-  
+import { Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Box, Typography, IconButton } from "@mui/material";
+import { Reply as ReplyIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { toast } from "sonner";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
+import { debounce } from "lodash";
 
 const Comment = () => {
   const [comments, setComments] = useState([]);
@@ -27,8 +13,11 @@ const Comment = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [currentCommentId, setCurrentCommentId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-const [commentToDelete, setCommentToDelete] = useState(null);
+  const [commentToDelete, setCommentToDelete] = useState(null);
 
+  // State for search filters
+  const [productNameFilter, setProductNameFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
     fetchComments();
@@ -37,14 +26,11 @@ const [commentToDelete, setCommentToDelete] = useState(null);
   const fetchComments = async () => {
     try {
       const token = localStorage.getItem("token");
-      const { data } = await axios.get(
-        `http://localhost:8000/api/comment/admin`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.get(`http://localhost:8000/api/comment/admin`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setComments(data);
     } catch (error) {
       toast.error("Failed to fetch comments.");
@@ -75,7 +61,7 @@ const [commentToDelete, setCommentToDelete] = useState(null);
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:8000/api/comment/admin/respond/${commentId}`,
+        `http://localhost:8000/api/comment/admin/${commentId}/response`,
         { adminResponse: response[commentId] },
         {
           headers: {
@@ -98,7 +84,7 @@ const [commentToDelete, setCommentToDelete] = useState(null);
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `http://localhost:8000/api/comment/admin/${commentId}`,
+        `http://localhost:8000/api/comment/admin/admin/${commentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -114,6 +100,19 @@ const [commentToDelete, setCommentToDelete] = useState(null);
     }
   };
 
+  // Filter function for comments based on name and category
+  // Filter function for comments based on name and category
+  const filteredComments = comments.filter((comment) => {
+    const productName = comment.productId?.name || ''; // default to empty string if name is undefined
+    const productCategory = comment.productId?.type || ''; // default to empty string if category is undefined
+  
+    const productNameMatch = productName.toLowerCase().includes(productNameFilter.toLowerCase());
+    const categoryMatch = productCategory.toLowerCase().includes(categoryFilter.toLowerCase());
+  
+    return productNameMatch && categoryMatch;
+  });
+  
+
   return (
     <div className="p-8 bg-gradient-to-br from-gray-50 to-purple-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -127,17 +126,32 @@ const [commentToDelete, setCommentToDelete] = useState(null);
           />
         </div>
 
+        {/* Filter Inputs */}
+        <div className="flex space-x-4 mb-4">
+          <TextField
+            label="Search Product Name"
+            variant="outlined"
+            value={productNameFilter}
+            onChange={(e) => setProductNameFilter(e.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Search Category"
+            variant="outlined"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            fullWidth
+          />
+        </div>
+
         {/* Comments List */}
         <div className="space-y-8">
-          {comments.map((comment) => {
+          {filteredComments.map((comment) => {
             const productImage =
               comment.productId?.imgUrls?.[0]?.url || "https://via.placeholder.com/60";
 
             return (
-              <div
-                key={comment._id}
-                className="bg-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transition duration-300 space-y-5 border border-gray-100"
-              >
+              <div key={comment._id} className="bg-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transition duration-300 space-y-5 border border-gray-100">
                 <div className="flex justify-between items-start">
                   <div className="flex items-start space-x-6">
                     <Avatar
@@ -152,8 +166,8 @@ const [commentToDelete, setCommentToDelete] = useState(null);
                       <p className="text-sm text-gray-500">{comment.userId?.email}</p>
                       <p className="text-sm text-gray-600">{comment.comment}</p>
                       <p className="text-xs text-gray-400">
-  Commented on: {new Date(comment.createdAt).toLocaleString()}
-</p>
+                        Commented on: {new Date(comment.createdAt).toLocaleString()}
+                      </p>
 
                       <Box display="flex" alignItems="center" gap={2}>
                         <img
@@ -179,27 +193,20 @@ const [commentToDelete, setCommentToDelete] = useState(null);
 
                   {/* Actions */}
                   <div className="flex space-x-1">
-  <IconButton
-    onClick={() => handleDialogOpen(comment._id)}
-    color="gray"
-    aria-label="respond"
-  >
-    <ReplyIcon style={{ fontSize: "30px", color: "grey" }} />
-  </IconButton>
-  <IconButton
-    onClick={() => {
-        setCommentToDelete(comment._id);
-        setDeleteDialogOpen(true);
-      }}
-      
-    color="error"
-    aria-label="delete"
-  >
-    <DeleteIcon style={{ fontSize: "30px", color: "red" }}  />
-  </IconButton>
-</div>
-
-
+                    <IconButton onClick={() => handleDialogOpen(comment._id)} color="gray" aria-label="respond">
+                      <ReplyIcon style={{ fontSize: "30px", color: "grey" }} />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => {
+                        setCommentToDelete(comment._id);
+                        setDeleteDialogOpen(true);
+                      }}
+                      color="error"
+                      aria-label="delete"
+                    >
+                      <DeleteIcon style={{ fontSize: "30px", color: "red" }} />
+                    </IconButton>
+                  </div>
                 </div>
               </div>
             );
@@ -224,59 +231,34 @@ const [commentToDelete, setCommentToDelete] = useState(null);
           </DialogContent>
           <DialogActions>
             <Button onClick={handleDialogClose} className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
-            sx={{
-              textTransform: "none",
-              padding: "14px 18px",
-              width: "180px",
-              fontSize: "16px",
-              fontWeight: "bold",
-              borderRadius: "10px"
-            }}>Cancel</Button>
-            <Button
-              onClick={() => handleResponseSubmit(currentCommentId)}
-              variant="contained"
-      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-      sx={{
-        textTransform: "none",
-        padding: "14px 18px",
-        width: "180px",
-        fontSize: "16px",
-        fontWeight: "bold",
-        borderRadius: "10px"
-      }}
-              color="primary"
-            >
+            sx={{ textTransform: "none", padding: "14px 18px", width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px" }}>Cancel</Button>
+            <Button onClick={() => handleResponseSubmit(currentCommentId)} variant="contained" className="bg-purple-700 hover:bg-purple-800 text-white font-bold" sx={{ textTransform: "none", padding: "14px 18px", width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px" }} color="primary">
               Submit
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog
-  open={deleteDialogOpen}
-  onClose={() => setDeleteDialogOpen(false)}
-  fullWidth
-  maxWidth="xs"
->
-  <DialogTitle>Confirm Delete</DialogTitle>
-  <DialogContent>
-    <Typography>Are you sure you want to delete this comment?</Typography>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={() => setDeleteDialogOpen(false)} color="secondary">Cancel</Button>
-    <Button
-      onClick={async () => {
-        await handleDeleteComment(commentToDelete);
-        setDeleteDialogOpen(false);
-        setCommentToDelete(null);
-      }}
-      color="primary"
-      variant="contained"
-    >
-      Delete
-    </Button>
-  </DialogActions>
-</Dialog>
-
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)} fullWidth maxWidth="xs">
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <Typography>Are you sure you want to delete this comment?</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialogOpen(false)} color="secondary">Cancel</Button>
+            <Button
+              onClick={async () => {
+                await handleDeleteComment(commentToDelete);
+                setDeleteDialogOpen(false);
+                setCommentToDelete(null);
+              }}
+              color="primary"
+              variant="contained"
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );
