@@ -292,9 +292,10 @@ const motherboardAttributes = {
   ],
   formFactor: [
     { value: "atx", label: "ATX" },
-    { value: "micro_atx", label: "Micro ATX" },
-    { value: "mini_itx", label: "Mini ITX" },
+    { value: "micro_atx", label: "Micro-ATX" },
+    { value: "mini_itx", label: "Mini-ITX" },
     { value: "e_atx", label: "E-ATX" },
+    { value: "xl_atx", label: "XL-ATX" },
   ],
   ramSlots: [
     { value: "2", label: "2 Slots" },

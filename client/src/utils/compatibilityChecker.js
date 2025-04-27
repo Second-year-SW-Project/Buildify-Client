@@ -254,13 +254,25 @@ const compatibilityCheckers = {
   // Case and Motherboard form factor compatibility
   checkCaseMotherboard: (pcCase, motherboard) => {
     const warnings = [];
-    const supportedFormFactors = pcCase.supportedMotherboardSizes.split(',');
 
-    // Form factor compatibility
-    if (!supportedFormFactors.includes(motherboard.formFactor)) {
+    // Form factor sizes in order from smallest to largest
+    const formFactorSizes = {
+      'mini_itx': 1,
+      'micro_atx': 2,
+      'atx': 3,
+      'e_atx': 4,
+      'xl_atx': 5
+    };
+
+    // Get the size ranking for both case and motherboard
+    const caseSize = formFactorSizes[pcCase.supportedMotherboardSizes.toLowerCase()] || 0;
+    const motherboardSize = formFactorSizes[motherboard.formFactor.toLowerCase()] || 0;
+
+    // Check if motherboard is larger than case
+    if (motherboardSize > caseSize) {
       warnings.push({
         type: "warning",
-        text: `Case does not support motherboard form factor (${motherboard.formFactor}). Supported: ${supportedFormFactors.join(', ')}.`,
+        text: `Case form factor (${pcCase.supportedMotherboardSizes}) is too small for motherboard (${motherboard.formFactor}).`,
       });
     }
 
@@ -305,26 +317,49 @@ const compatibilityCheckers = {
     const warnings = [];
     const recommendedWattage = totalTdp * 1.3; // 30% overhead for system stability
 
+    // Power supply efficiency ratings in order from lowest to highest
+    const efficiencyRatings = {
+      '80_plus_white': 1,
+      '80_plus_bronze': 2,
+      '80_plus_silver': 3,
+      '80_plus_gold': 4,
+      '80_plus_platinum': 5,
+      '80_plus_titanium': 6
+    };
+
+    // Power supply modular types in order from least to most modular
+    const modularTypes = {
+      'non_modular': 1,
+      'semi_modular': 2,
+      'fully_modular': 3
+    };
+
     if (parseInt(psu.wattage) < recommendedWattage) {
       warnings.push({
         type: "warning",
-        text: `Power supply (${psu.wattage}W) may be insufficient for system TDP (${totalTdp}W). Recommended: ${Math.ceil(recommendedWattage)}W.`,
+        text: `Power supply (${psu.wattage}W) may be insufficient for system TDP (${totalTdp}W). Recommended (${Math.ceil(recommendedWattage)}W).`,
       });
     }
 
     // Efficiency rating check
-    if (totalTdp > 500 && psu.efficiencyRating < 'Gold') {
+    const currentEfficiency = efficiencyRatings[psu.efficiencyRating] || 0;
+    const goldEfficiency = efficiencyRatings['80_plus_gold'];
+
+    if (totalTdp > 500 && currentEfficiency < goldEfficiency) {
       warnings.push({
         type: "note",
-        text: "Consider a higher efficiency power supply for high-power systems.",
+        text: "Consider a higher efficiency power supply (80+ Gold or better) for high-power systems.",
       });
     }
 
     // Modular type check
-    if (psu.modularType === 'Non-Modular' && totalTdp > 400) {
+    const currentModularity = modularTypes[psu.modularType] || 0;
+    const nonModular = modularTypes['non_modular'];
+
+    if (currentModularity === nonModular && totalTdp > 400) {
       warnings.push({
         type: "note",
-        text: "Consider a modular power supply for better cable management in high-power systems.",
+        text: "Consider a semi-modular or fully-modular power supply for better cable management in high-power systems.",
       });
     }
 
