@@ -5,7 +5,6 @@ const BASE_MESSAGES = [
 ];
 
 //Component-specific compatibility checkers
-
 const compatibilityCheckers = {
   // CPU and Motherboard compatibility
   checkCpuMotherboard: (cpu, motherboard) => {
@@ -16,16 +15,6 @@ const compatibilityCheckers = {
       warnings.push({
         type: "warning",
         text: `CPU socket (${cpu.socketType}) is not compatible with motherboard socket (${motherboard.socketType}).`,
-      });
-    }
-
-
-
-    // TDP compatibility with motherboard power delivery
-    if (cpu.tdp > 150 && !motherboard.powerDelivery.includes('High')) {
-      warnings.push({
-        type: "warning",
-        text: `High TDP CPU (${cpu.tdp}W) may require better motherboard power delivery.`,
       });
     }
 
@@ -55,9 +44,7 @@ const compatibilityCheckers = {
         ? cooler.supportedSocket.map(s => s.toLowerCase().trim())
         : cooler.supportedSocket.split(',').map(s => s.toLowerCase().trim());
 
-      // Check if CPU socket is supported by the cooler
       if (!supportedSockets.includes(cpu.socketType.toLowerCase())) {
-        // Get the manufacturer from the socket type (Intel or AMD)
         const isIntelSocket = cpu.socketType.toLowerCase().startsWith('lga');
         const manufacturer = isIntelSocket ? 'Intel' : 'AMD';
         
@@ -99,14 +86,6 @@ const compatibilityCheckers = {
       });
     }
 
-    // Airflow compatibility
-    if (cooler.coolerType === 'Air' && pcCase.airflowRating < 3) {
-      warnings.push({
-        type: "warning",
-        text: "Case has limited airflow which may affect air cooler performance.",
-      });
-    }
-
     return warnings;
   },
 
@@ -139,23 +118,11 @@ const compatibilityCheckers = {
       } else if (ramType !== motherboardType) {
         warnings.push({
           type: "warning",
-          text: `RAM module ${index + 1} type (${ramModule.memoryType}) is not compatible with motherboard. Motherboard supports ${motherboard.supportedMemoryTypes}.`,
+          text: `RAM module ${index + 1} type (${ramModule.memoryType}) is not compatible with motherboard. Motherboard supports (${motherboard.supportedMemoryTypes}).`,
         });
       }
 
-      // RAM speed compatibility
-      const ramSpeed = parseInt(ramModule.memorySpeed?.replace(/[^0-9]/g, '') || '0');
-      const maxMotherboardSpeed = parseInt(motherboard.maxRamSpeed?.replace(/[^0-9]/g, '') || '0');
-
-      if (ramSpeed > maxMotherboardSpeed) {
-        warnings.push({
-          type: "warning",
-          text: `RAM module ${index + 1} speed (${ramModule.memorySpeed}) exceeds motherboard's max supported speed (${motherboard.maxRamSpeed}). RAM will run at the lower speed.`,
-        });
-      }
-
-      // RAM capacity
-      const ramCapacity = parseInt(ramModule.memoryCapacity?.replace(/[^0-9]/g, '') || '0');
+      // Calculate total RAM capacity
       const totalRamCapacity = ramModules.reduce((sum, module) =>
         sum + parseInt(module.memoryCapacity?.replace(/[^0-9]/g, '') || '0'), 0
       );
@@ -164,14 +131,6 @@ const compatibilityCheckers = {
         warnings.push({
           type: "warning",
           text: `Total RAM capacity (${totalRamCapacity}GB) exceeds motherboard's max supported capacity (${motherboard.maxRam}GB).`,
-        });
-      }
-
-      // RAM voltage compatibility
-      if (ramModule.voltage > 1.35 && !motherboard.highVoltageRamSupport) {
-        warnings.push({
-          type: "warning",
-          text: `RAM module ${index + 1} voltage may not be fully supported by the motherboard.`,
         });
       }
     });
@@ -245,14 +204,6 @@ const compatibilityCheckers = {
           });
         }
       }
-
-      // NVMe speed compatibility
-      if (storageDevice.storageType === 'nvme_m2' && storageDevice.readSpeed > 3500 && !motherboard.nvmeGen4Support) {
-        warnings.push({
-          type: "note",
-          text: "NVMe drive may not reach full speed without PCIe 4.0 support.",
-        });
-      }
     });
 
     return warnings;
@@ -297,42 +248,6 @@ const compatibilityCheckers = {
       });
     }
 
-    // Cooling compatibility
-    if (gpu.coolingType === 'Open Air' && pcCase.airflowRating < 3) {
-      warnings.push({
-        type: "warning",
-        text: "Case has limited airflow which may affect open-air GPU cooling.",
-      });
-    }
-
-    return warnings;
-  },
-
-  // GPU and Power Supply compatibility
-  checkGpuPowerSupply: (gpu, psu) => {
-    const warnings = [];
-
-    // Power connector compatibility
-    const requiredConnectors = gpu.powerConnectors.split('+');
-    const hasSufficientConnectors = requiredConnectors.every((connector) =>
-      psu.modularType === "Fully Modular" || psu.modularType.includes(connector)
-    );
-
-    if (!hasSufficientConnectors) {
-      warnings.push({
-        type: "warning",
-        text: `Power supply does not provide required power connectors for GPU (${gpu.powerConnectors}).`,
-      });
-    }
-
-    // Power efficiency
-    if (gpu.tdp > 300 && psu.efficiencyRating < 'Gold') {
-      warnings.push({
-        type: "note",
-        text: "Consider a higher efficiency power supply for high-power GPU.",
-      });
-    }
-
     return warnings;
   },
 
@@ -346,14 +261,6 @@ const compatibilityCheckers = {
       warnings.push({
         type: "warning",
         text: `Case does not support motherboard form factor (${motherboard.formFactor}). Supported: ${supportedFormFactors.join(', ')}.`,
-      });
-    }
-
-    // Cooling compatibility
-    if (motherboard.vrmCooling === 'High' && pcCase.airflowRating < 3) {
-      warnings.push({
-        type: "warning",
-        text: "Case may have insufficient airflow for motherboard VRM cooling.",
       });
     }
 
@@ -483,13 +390,6 @@ export const checkCompatibility = (components) => {
     compatibilityWarnings.push(...compatibilityCheckers.checkGpuCase(
       components.GPU,
       components.Case
-    ));
-  }
-
-  if (components.GPU && components["Power Supply"]) {
-    compatibilityWarnings.push(...compatibilityCheckers.checkGpuPowerSupply(
-      components.GPU,
-      components["Power Supply"]
     ));
   }
 
