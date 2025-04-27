@@ -348,12 +348,13 @@ const storageAttributes = {
 
 const gpuAttributes = {
   interfaceType: [
-    { value: "pcie_x16", label: "PCIe x16" },
-    { value: "pcie_x8", label: "PCIe x8" },
-    { value: "pcie_4_0", label: "PCIe 4.0" },
-    { value: "pcie_5_0", label: "PCIe 5.0" },
-    { value: "agp", label: "AGP" },
-    { value: "pci", label: "PCI" },
+    { value: "pcie_5_0_x16", label: "PCIe 5.0 x16" },
+    { value: "pcie_5_0_x8", label: "PCIe 5.0 x8" },
+    { value: "pcie_4_0_x16", label: "PCIe 4.0 x16" },
+    { value: "pcie_4_0_x8", label: "PCIe 4.0 x8" },
+    { value: "pcie_3_0_x16", label: "PCIe 3.0 x16" },
+    { value: "pcie_3_0_x8", label: "PCIe 3.0 x8" },
+
   ],
   powerConnectors: [
     { value: "6-pin", label: "6-pin" },

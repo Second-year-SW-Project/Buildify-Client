@@ -214,24 +214,64 @@ const compatibilityCheckers = {
   checkGpuMotherboard: (gpu, motherboard) => {
     const warnings = [];
 
-    // PCIe slot compatibility
-    const requiredPcieVersion = gpu.pcieVersion || "4.0";
-    const hasCompatiblePcieSlot = motherboard.pcieSlots.some(
-      (slot) =>
-        slot.type === "x16" && // Must be x16 slot
-        parseFloat(slot.version) >= parseFloat(requiredPcieVersion)
-    );
+    // Debug logs
+    console.log('GPU Interface Type:', gpu?.interfaceType);
+    console.log('Motherboard PCIe Slots:', motherboard?.pcieSlots);
 
-    if (!hasCompatiblePcieSlot) {
+    // Check if motherboard has PCIe slots
+    if (!motherboard.pcieSlots || motherboard.pcieSlots.length === 0) {
       warnings.push({
         type: "warning",
-        text: `No compatible PCIe x16 slot found for GPU (requires PCIe ${requiredPcieVersion}).`,
+        text: "Motherboard has no PCIe slots available for the GPU.",
       });
-    } else if (parseFloat(requiredPcieVersion) > parseFloat(motherboard.pcieSlots[0].version)) {
+      return warnings;
+    }
+
+    // Extract PCIe version and slot type from GPU interface
+    const gpuInterface = gpu?.interfaceType?.toLowerCase();
+    const [_, gpuVersion, gpuSlotType] = gpuInterface?.match(/pcie_(\d+_\d+)_(x\d+)/) || [];
+
+    if (!gpuVersion || !gpuSlotType) {
       warnings.push({
-        type: "note",
-        text: `GPU is PCIe ${requiredPcieVersion} but will run at PCIe ${motherboard.pcieSlots[0].version} speed.`,
+        type: "warning",
+        text: "Could not determine GPU's PCIe version and slot type.",
       });
+      return warnings;
+    }
+
+    // Convert GPU version format (e.g., "5_0" to "5.0")
+    const formattedGpuVersion = gpuVersion.replace('_', '.');
+
+    // Check compatibility with motherboard slots
+    const hasCompatibleSlot = motherboard.pcieSlots.some(slot => {
+      const slotVersion = parseFloat(slot.version);
+      const gpuVersionNum = parseFloat(formattedGpuVersion);
+      
+      // Check if slot type matches and version is compatible (GPU can work in lower version slots)
+      return slot.type.toLowerCase() === gpuSlotType && slotVersion >= gpuVersionNum;
+    });
+
+    if (!hasCompatibleSlot) {
+      const availableSlots = motherboard.pcieSlots.map(slot => 
+        `PCIe ${slot.version} ${slot.type}`
+      ).join(', ');
+
+      warnings.push({
+        type: "warning",
+        text: `GPU requires PCIe ${formattedGpuVersion} ${gpuSlotType.toUpperCase()} slot, but motherboard only has: ${availableSlots}.`,
+      });
+    } else {
+      // Check if GPU will run at lower speed
+      const matchingSlot = motherboard.pcieSlots.find(slot => 
+        slot.type.toLowerCase() === gpuSlotType
+      );
+      
+      if (matchingSlot && parseFloat(matchingSlot.version) < parseFloat(formattedGpuVersion)) {
+        warnings.push({
+          type: "note",
+          text: `GPU is PCIe ${formattedGpuVersion} but will run at PCIe ${matchingSlot.version} speed.`,
+        });
+      }
     }
 
     return warnings;
