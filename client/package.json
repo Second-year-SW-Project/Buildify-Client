@@ -24,6 +24,7 @@
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "@toolpad/core": "^0.8.1",
+    "animate.css": "^4.1.1",
     "axios": "^1.8.3",
     "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
