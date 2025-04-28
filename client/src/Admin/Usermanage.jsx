@@ -322,17 +322,69 @@ const Usermanage = () => {
         <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" ,fontWeight: "bold"}}>
           {user.email}
         </TableCell>
-        <TableCell>
-                  <span className={`px-3 py-1 rounded-full text-white text-sm ${
-                    user.status === 'active' ? 'bg-green-400' :
-                    user.status === 'blocked' ? 'bg-yellow-600' :
-                    user.status === 'banned' ? 'bg-red-600' :
-                    user.status === 'inactive' ? 'bg-gray-500' :
-                    user.status === 'suspended' ? 'bg-orange-500' :
-                    user.status === 'pending' ? 'bg-blue-400' : ''
-                  }`}>
-                    {user.status}
-                  </span>
+        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0",fontWeight: "bold" }}>
+        <Button
+  variant="contained"
+  sx={{
+    backgroundColor:
+      user.status === "active"
+        ? "#E8F5E9" // Green for active
+        : user.status === "blocked"
+        ? "#FFFAE3" // Yellow for blocked
+        : user.status === "banned"
+        ? "#FFCDD2" // Light red for banned
+        : user.status === "inactive"
+        ? "#F5F5F5" // Gray for inactive
+        : user.status === "suspended"
+        ? "#FFECB3" // Orange for suspended
+        : user.status === "pending"
+        ? "#E3F2FD" // Blue for pending
+        : "", // Default case
+    color:
+      user.status === "active"
+        ? "#1B5E20" // Dark green for active
+        : user.status === "blocked"
+        ? "#F57F17" // Dark yellow for blocked
+        : user.status === "banned"
+        ? "#C62828" // Dark red for banned
+        : user.status === "inactive"
+        ? "#757575" // Dark gray for inactive
+        : user.status === "suspended"
+        ? "#D32F2F" // Dark orange for suspended
+        : user.status === "pending"
+        ? "#0D47A1" // Dark blue for pending
+        : "", // Default case
+    fontWeight: "bold",
+    fontSize: "12px",
+    padding: "4px 12px",
+    minWidth: "auto",
+    borderRadius: "8px",
+    textTransform: "none",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    "&:hover": {
+      backgroundColor:
+        user.status === "active"
+          ? "#D0F8CE" // Darker green on hover for active
+          : user.status === "blocked"
+          ? "#FFF176" // Darker yellow on hover for blocked
+          : user.status === "banned"
+          ? "#FFEBEE" // Darker red on hover for banned
+          : user.status === "inactive"
+          ? "#EEEEEE" // Darker gray on hover for inactive
+          : user.status === "suspended"
+          ? "#FFD54F" // Darker orange on hover for suspended
+          : user.status === "pending"
+          ? "#D6EAF8" // Darker blue on hover for pending
+          : "", // Default case
+    },
+  }}
+>
+  {user.status}
+</Button>
+
+
                 </TableCell>
         <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0",fontWeight: "bold" }}>
           <Button
@@ -464,9 +516,16 @@ const Usermanage = () => {
     <Select
             label="Status"
             value={formData.status}
+              variant="outlined"
             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
             fullWidth
-            sx={{ mt: 2 , mb:2}}
+            sx={{ mt: 2 , mb:2,'& .MuiInputBase-root': {
+          borderRadius: '10px',
+          backgroundColor: '#F4E6FF',
+        },
+        '& .MuiFormLabel-root': {
+          fontWeight: 'bold',
+        }}}
           >
             <MenuItem value="active">Active</MenuItem>
             <MenuItem value="blocked">Blocked</MenuItem>
