@@ -13,7 +13,7 @@ const ItemCard = ({ product }) => {
   const handleAddToCart = (e) => {
     e.stopPropagation(); // 
     e.preventDefault();  //
-    dispatch(addToCart(product));
+    dispatch(addToCart({ ...product, quantity: 1 }));
     toast.success(`${product.name} added to cart`, {
       duration: 2000,
       style: {
