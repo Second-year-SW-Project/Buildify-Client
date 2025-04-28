@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import {
@@ -11,9 +12,9 @@ import {
   Button,
   Divider,
 } from "@mui/material";
+import { toast } from "sonner";
 
-const tagOptions = [
-  "Easy Customization",
+const productTagOptions = [
   "Fast Delivery",
   "Affordable Price",
   "Fast Replies",
@@ -21,6 +22,18 @@ const tagOptions = [
   "Quick service",
   "High-Quality",
   "Professional",
+];
+
+const pcBuildTagOptions = [
+  "Easy Customization",
+  "High Performance",
+  "Customizable Parts",
+  "Great Cooling",
+  "Affordable Price",
+  "Gaming Ready",
+  "Future-Proof",
+  "Fast Setup",
+  "Efficient",
 ];
 
 const ratingLabels = {
@@ -35,16 +48,60 @@ export default function ReviewSubmitPage() {
   const { orderId, productId } = useParams();
   const location = useLocation();
   const { type, itemName, imageUrl } = location.state || {};
+  const navigate = useNavigate();
 
   const [rating, setRating] = useState(4);
   const [reviewText, setReviewText] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
+  const [tagOptions, setTagOptions] = useState([]);
+
+  useEffect(() => {
+    if (type === "product") {
+      setTagOptions(productTagOptions);
+    } else if (type === "pc_build") {
+      setTagOptions(pcBuildTagOptions);
+    } else {
+      console.error("Invalid review type");
+    }
+  }, [type]);
 
   const handleTagClick = (tag) => {
-    if (!selectedTags.includes(tag)) {
+    if (selectedTags.includes(tag)) {
+      // Remove the tag from selectedTags
+      const newTags = selectedTags.filter((selectedTag) => selectedTag !== tag);
+      setSelectedTags(newTags);
+
+      // Remove the tag from reviewText
+      const updatedReviewText = reviewText
+        .split(", ")
+        .filter((text) => text.trim() !== tag)
+        .join(", ")
+        .trim();
+      setReviewText(updatedReviewText);
+    } else {
+      // Add the tag to selectedTags
       const newTags = [...selectedTags, tag];
       setSelectedTags(newTags);
+
+      // Add the tag to reviewText
       setReviewText((prev) => (prev ? `${prev}, ${tag}` : `${tag}`));
+    }
+  };
+
+  const markAsCompleted = async (orderId) => {
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/checkout/product-orders/${orderId}`,
+        { status: "Completed" },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log(`Order ${orderId} marked as Completed`);
+    } catch (error) {
+      console.error("Failed to update order status", error);
     }
   };
 
@@ -56,6 +113,10 @@ export default function ReviewSubmitPage() {
         return;
       }
 
+      // Decode the token to get the userId
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const userId = decodedToken.id;
+
       const response = await fetch("http://localhost:8000/api/review/", {
         method: "POST",
         headers: {
@@ -63,38 +124,35 @@ export default function ReviewSubmitPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          // type,
-          // itemId: productId,
-          // userId,
-          // rating,
-          // comment: reviewText,
           productId,
           orderId,
+          userId,
           rating,
           comment: reviewText,
         }),
       });
-      //for testing
+
+      // for testing
       if (type !== "product" && type !== "pc_build") {
         console.error("Invalid review type");
         return;
       }
-      console.log("Review Type: ", type); // Add this line to log the type value
 
       if (!response.ok) {
         const errorData = await response.json();
+        toast.error("Error submitting review", errorData);
         console.error("Error submitting review:", errorData);
         return;
       }
-      if (response.ok) {
-        const data = await response.json();
-        alert("Review submitted successfully!");
-        // or navigate('/somewhere');
-      }
 
       const data = await response.json();
+      toast.success("Review submitted successfully!");
       console.log("Review submitted:", data);
+      markAsCompleted(orderId);
+
+      navigate(`/user/orders`);
     } catch (err) {
+      toast.error("Submission failed:", err);
       console.error("Submission failed:", err);
     }
   };
@@ -137,14 +195,16 @@ export default function ReviewSubmitPage() {
                     }}
                   >
                     <Box sx={{ flex: 1, width: { xs: "100%", md: "auto" } }}>
-                      <Typography variant="h6">{itemName}</Typography>
+                      <Typography variant="h6">
+                        {itemName} {orderId}
+                      </Typography>
                       <img
                         src={imageUrl}
                         alt={itemName}
                         className="w-48 h-48 rounded-lg object-cover mb-4"
                       />
-                      <Typography>Order ID: {orderId}</Typography>
-                      <Typography>Type: {type}</Typography>
+                      {/* <Typography>Order ID: {orderId}</Typography>
+                      <Typography>Type: {type}</Typography> */}
                     </Box>
 
                     <Box sx={{ flex: 2, width: { xs: "100%", md: "auto" } }}>
@@ -173,9 +233,9 @@ export default function ReviewSubmitPage() {
                           mb: 2,
                         }}
                       >
-                        {tagOptions.map((tag) => (
+                        {tagOptions.map((tag, index) => (
                           <Chip
-                            key={tag}
+                            key={`${tag}-${index}`}
                             label={tag}
                             onClick={() => handleTagClick(tag)}
                             clickable

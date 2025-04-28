@@ -59,6 +59,7 @@ import ItemPage from "./pages/Single_Item/Itempage.jsx";
 import SearchResults from "./pages/Searchbar/SearchResults.jsx";
 import LaptopCategoryPage from "./pages/Laptop_category/Laptopcategorypage.jsx";
 import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx";
+import InvoiceEdit from "./Admin/InvoiceEdit.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -123,6 +124,7 @@ const router = createBrowserRouter([
           { path: "invoice", element: <InvoiceList /> },
           { path: "invoice/invoicelist", element: <InvoiceList /> },
           { path: "invoice/invoicecreate", element: <InvoiceCreate /> },
+          { path: "invoice/invoiceedit/:invoiceId", element: <InvoiceEdit /> },
         ],
       },
     ],

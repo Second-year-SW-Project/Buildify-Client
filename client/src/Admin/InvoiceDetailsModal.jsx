@@ -71,23 +71,25 @@ function InvoiceDetailsModal({ open, onClose, invoice }) {
           </Box>
         </Box>
         <Box display="flex" justifyContent="space-between" mb={3}>
-          {/* From */}
           <Box>
             <Typography color="primary" fontWeight="bold" mb={1}>
               Invoice From:
             </Typography>
             <Typography fontWeight="bold">{invoice.fromName}</Typography>
-            <Typography>{invoice.fromAddress}</Typography>
+            {invoice.fromAddress.split(",").map((line, index) => (
+              <Typography key={index}>{line.trim()}</Typography>
+            ))}
             <Typography>{invoice.fromContact}</Typography>
           </Box>
 
-          {/* To */}
           <Box>
             <Typography color="primary" fontWeight="bold" mb={1}>
               Invoice To:
             </Typography>
             <Typography fontWeight="bold">{invoice.toName}</Typography>
-            <Typography>{invoice.toAddress}</Typography>
+            {invoice.toAddress.split(",").map((line, index) => (
+              <Typography key={index}>{line.trim()}</Typography>
+            ))}
             <Typography>{invoice.toContact}</Typography>
           </Box>
 

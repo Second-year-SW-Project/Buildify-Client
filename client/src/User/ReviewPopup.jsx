@@ -23,11 +23,11 @@ export default function ReviewPopup({
   const navigate = useNavigate();
 
   const handleItemReviewClick = (item) => {
-    navigate(`review-submit/${orderId}/${item.productId}`, {
+    navigate(`review-submit/${orderId}/${item._id}`, {
       state: {
         type: item.type,
         itemName: item.name,
-        imageUrl: item.imageUrl,
+        imageUrl: item.product_image,
       },
     });
   };
@@ -67,7 +67,7 @@ export default function ReviewPopup({
           {items.map((item) => (
             <a href={`/product/${item.productId}`} key={item.productId}>
               <img
-                src={item.imageUrl || "https://picsum.photos/80"}
+                src={item.product_image}
                 alt={item.name}
                 className="w-20 h-20 rounded-lg object-cover"
               />
@@ -86,7 +86,7 @@ export default function ReviewPopup({
             <Card key={item.productId} className="p-4 rounded-xl">
               <CardContent className="flex items-center gap-4">
                 <img
-                  src={item.imageUrl || "https://picsum.photos/60"}
+                  src={item.product_image}
                   alt={item.name}
                   className="w-16 h-16 rounded-lg object-cover"
                 />

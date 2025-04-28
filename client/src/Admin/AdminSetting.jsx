@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector ,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
   Paper,
@@ -8,12 +8,12 @@ import {
   TextField,
   Button,
   Grid,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
-import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
-import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
+import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { setAuthUser } from "../Store/authSlice.js";
 
 export default function AdminSettings() {
@@ -23,44 +23,44 @@ export default function AdminSettings() {
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
   const [twoFAForm, setTwoFAForm] = useState({
-    token: ""
+    token: "",
   });
   const [qrCode, setQrCode] = useState("");
   const [loading, setLoading] = useState({
     password: false,
     twoFAEnable: false,
-    twoFADisable: false
+    twoFADisable: false,
   });
   const [errors, setErrors] = useState({
     password: {},
-    twoFA: {}
+    twoFA: {},
   });
 
   // Password Change Handlers
   const handlePasswordChange = (e) => {
     setPasswordForm({
       ...passwordForm,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
     setErrors({ ...errors, password: {} });
   };
 
   const validatePasswordForm = () => {
     const newErrors = {};
-    
+
     if (!passwordForm.currentPassword) {
       newErrors.currentPassword = "Current password is required";
     }
-    
+
     if (!passwordForm.newPassword) {
       newErrors.newPassword = "New password is required";
     } else if (passwordForm.newPassword.length < 8) {
       newErrors.newPassword = "Password must be at least 8 characters";
     }
-    
+
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
@@ -72,7 +72,7 @@ export default function AdminSettings() {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (!validatePasswordForm()) return;
-  
+
     setLoading({ ...loading, password: true });
     try {
       await axios.post(
@@ -80,11 +80,11 @@ export default function AdminSettings() {
         {
           currentPassword: passwordForm.currentPassword,
           newPassword: passwordForm.newPassword,
-          confirmPassword: passwordForm.confirmPassword
+          confirmPassword: passwordForm.confirmPassword,
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          withCredentials: true
+          withCredentials: true,
         }
       );
 
@@ -95,18 +95,18 @@ export default function AdminSettings() {
       setPasswordForm({
         currentPassword: "",
         newPassword: "",
-        confirmPassword: ""
+        confirmPassword: "",
       });
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Password change failed";
+      const errorMessage =
+        error.response?.data?.message || "Password change failed";
       const validationErrors = error.response?.data?.errors;
       if (validationErrors) {
         setErrors({ password: validationErrors });
       } else {
         toast.error(errorMessage);
       }
-    }
-    finally {
+    } finally {
       // Reset the loading state
       setLoading({ ...loading, password: false });
     }
@@ -119,24 +119,27 @@ export default function AdminSettings() {
       const response = await axios.post(
         "http://localhost:8000/api/v1/users/2fa/generate",
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
 
       // Verify the response structure
       console.log("2FA Generation Response:", response.data);
 
       const otpUrl = response.data?.otpauth_url || response.data?.qr;
-if (!otpUrl) {
-    toast.error("QR code generation failed. Try again.");
-    return;
-}
-
+      if (!otpUrl) {
+        toast.error("QR code generation failed. Try again.");
+        return;
+      }
 
       setQrCode(otpUrl);
       toast.success("Scan the QR code with your authenticator app");
     } catch (error) {
       console.error("2FA Generation Error:", error);
-      toast.error(error.response?.data?.message || "Failed to generate QR code");
+      toast.error(
+        error.response?.data?.message || "Failed to generate QR code"
+      );
     } finally {
       setLoading({ ...loading, twoFAEnable: false });
     }
@@ -157,19 +160,16 @@ if (!otpUrl) {
         { token: twoFAForm.token },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
-      
+
       toast.success("2FA enabled successfully");
       dispatch(setAuthUser({ ...user, is2FAEnabled: true }));
 
       setTwoFAForm({ token: "" });
       setQrCode("");
-
-     
-
     } catch (error) {
       const errorMessage = error.response?.data?.message || "2FA enable failed";
       toast.error(errorMessage);
@@ -187,8 +187,8 @@ if (!otpUrl) {
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       dispatch(setAuthUser({ ...user, is2FAEnabled: false }));
@@ -196,7 +196,8 @@ if (!otpUrl) {
       toast.success("2FA disabled successfully");
       setQrCode("");
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "2FA disable failed";
+      const errorMessage =
+        error.response?.data?.message || "2FA disable failed";
       toast.error(errorMessage);
     } finally {
       setLoading({ ...loading, twoFADisable: false });
@@ -205,20 +206,21 @@ if (!otpUrl) {
 
   return (
     <Box className="ml-7 mt-8">
-       <div className='mt-3 mb-5'>
-                              <PageTitle value="Admin Setting"></PageTitle>
-                              <CustomBreadcrumbs
-                                  paths={[
-                                      { label: 'Admin', href: "/admin/setting" },
-                                      { label: 'Setting' },
-                                  ]} />
-                          </div>
+      <div className="mt-3 mb-5">
+        <PageTitle value="Admin Setting"></PageTitle>
+        <CustomBreadcrumbs
+          paths={[
+            { label: "Admin", href: "/admin/setting" },
+            { label: "Setting" },
+          ]}
+        />
+      </div>
       {/* Password Change Section */}
       <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
         <Typography variant="h5" className="mb-8 font-bold pb-5">
           Change Password
         </Typography>
-        
+
         <form onSubmit={handlePasswordSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={10}>
@@ -275,7 +277,7 @@ if (!otpUrl) {
                   textTransform: "none",
                   fontSize: "16px",
                   borderRadius: "10px",
-                  fontWeight: "bold"
+                  fontWeight: "bold",
                 }}
               >
                 {loading.password ? (
@@ -294,7 +296,7 @@ if (!otpUrl) {
         <Typography variant="h5" className="mb-8 font-bold pb-5">
           Two-Factor Authentication
         </Typography>
-        
+
         {user?.is2FAEnabled ? (
           <Box>
             <Typography className="text-purple-600 mb-4 mt-4">
@@ -305,14 +307,14 @@ if (!otpUrl) {
               onClick={handle2FADisable}
               disabled={loading.twoFADisable}
               className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
+              style={{
+                padding: "14px 18px",
+                width: "180px",
+                textTransform: "none",
+                fontSize: "16px",
+                borderRadius: "10px",
+                fontWeight: "bold",
+              }}
             >
               {loading.twoFADisable ? (
                 <CircularProgress size={24} className="text-white" />
@@ -327,11 +329,19 @@ if (!otpUrl) {
               <form onSubmit={handle2FAEnable}>
                 <Grid container spacing={3} alignItems="center">
                   <Grid item xs={10} md={5}>
-                    <div className="qr-container" style={{ position: "relative" }}>
+                    <div
+                      className="qr-container"
+                      style={{ position: "relative" }}
+                    >
                       <img
                         src={qrCode}
                         alt="QR Code"
-                        style={{ display: "block", margin: "0 auto", border: "1px solid #eee", padding: 8 }}
+                        style={{
+                          display: "block",
+                          margin: "0 auto",
+                          border: "1px solid #eee",
+                          padding: 8,
+                        }}
                         width="256"
                         height="256"
                       />
@@ -346,7 +356,7 @@ if (!otpUrl) {
                             backgroundColor: "rgba(255,255,255,0.8)",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "center"
+                            justifyContent: "center",
                           }}
                         >
                           <CircularProgress />
@@ -372,15 +382,15 @@ if (!otpUrl) {
                       variant="contained"
                       disabled={loading.twoFAEnable}
                       className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    mt:2,
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
+                      style={{
+                        mt: 2,
+                        padding: "14px 18px",
+                        width: "180px",
+                        textTransform: "none",
+                        fontSize: "16px",
+                        borderRadius: "10px",
+                        fontWeight: "bold",
+                      }}
                     >
                       {loading.twoFAEnable ? (
                         <CircularProgress size={24} className="text-white" />
@@ -397,14 +407,14 @@ if (!otpUrl) {
                 onClick={generate2FASecret}
                 disabled={loading.twoFAEnable}
                 className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
+                style={{
+                  padding: "14px 18px",
+                  width: "180px",
+                  textTransform: "none",
+                  fontSize: "16px",
+                  borderRadius: "10px",
+                  fontWeight: "bold",
+                }}
               >
                 {loading.twoFAEnable ? (
                   <CircularProgress size={24} className="text-white" />

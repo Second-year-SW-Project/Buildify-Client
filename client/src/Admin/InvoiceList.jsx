@@ -42,8 +42,13 @@ function InvoiceList() {
       console.log("Selected Invoice: ", invoice);
       setOpenInvoiceModal(true);
     },
-    edit: (id) => {
-      //edit
+    edit: (invoiceId) => {
+      const invoice = allInvoices.find(
+        (inv) => inv.raw.invoiceNumber === invoiceId
+      );
+      if (invoice) {
+        navigate(`/adminpanel/invoice/invoiceedit/${invoice.raw._id}`);
+      }
     },
     delete: (id) => {},
   };

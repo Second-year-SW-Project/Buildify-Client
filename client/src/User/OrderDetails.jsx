@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
@@ -10,6 +10,11 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 export default function OrderDetails() {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
+  const navigate = useNavigate();
+
+  const handleRefundClick = () => {
+    navigate(`/user/rmaSupport?orderId=${orderId}`);
+  };
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -86,21 +91,17 @@ export default function OrderDetails() {
                       <div className="flex items-center mb-2">
                         <PlaceOutlinedIcon />
                         <span className="text-lg font-medium ml-2">
-                          {order?.shippingAddress?.recipient || "N/A"}
+                          {order.user_name || "N/A"}
                         </span>
                         <span className="ml-2 text-sm text-purple-600">
-                          {order?.shippingAddress?.phone || "+94 710354073"}
+                          {order.shippingAddress?.phone || "+94 710354073"}
                         </span>
                       </div>
                       <p className="text-sm">
                         {order?.shippingAddress?.addressLine ||
                           "Address not available"}
                       </p>
-                      <p className="text-sm mt-1">
-                        {order?.shippingAddress?.city},{" "}
-                        {order?.shippingAddress?.region},{" "}
-                        {order?.shippingAddress?.postalCode}
-                      </p>
+                      <p className="text-sm mt-1">{order.email} </p>
                     </div>
 
                     <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
@@ -153,9 +154,7 @@ export default function OrderDetails() {
                       <div className="flex items-start justify-between">
                         <div className="flex gap-4">
                           <img
-                            src={
-                              item.image || "https://via.placeholder.com/80x80"
-                            }
+                            src={item.product_image}
                             alt="Product"
                             className="w-20 h-20 object-cover rounded"
                           />
@@ -186,6 +185,7 @@ export default function OrderDetails() {
                           <Button
                             variant="outlined"
                             size="small"
+                            onClick={handleRefundClick}
                             sx={{
                               borderRadius: 999,
                               textTransform: "none",

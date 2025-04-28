@@ -7,7 +7,13 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import { Mail as MailIcon, Inbox as InboxIcon } from "@mui/icons-material";
+import AccountBoxOutlinedIcon from "@mui/icons-material/AccountBoxOutlined";
+import ConstructionOutlinedIcon from "@mui/icons-material/ConstructionOutlined";
+import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
+import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 
 export default function SideNav() {
   return (
@@ -16,7 +22,7 @@ export default function SideNav() {
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/user/profile" className="group">
             <ListItemIcon className="group-hover:text-purple-500">
-              <MailIcon />
+              <AccountBoxOutlinedIcon />
             </ListItemIcon>
             <ListItemText
               primary="Profile"
@@ -31,7 +37,7 @@ export default function SideNav() {
             className="group"
           >
             <ListItemIcon className="group-hover:text-purple-500">
-              <MailIcon />
+              <ConstructionOutlinedIcon />
             </ListItemIcon>
             <ListItemText
               primary="Saved Builds"
@@ -42,7 +48,7 @@ export default function SideNav() {
         <ListItem disablePadding>
           <ListItemButton component={Link} to="/user/orders" className="group">
             <ListItemIcon className="group-hover:text-purple-500">
-              <MailIcon />
+              <LocalOfferOutlinedIcon />
             </ListItemIcon>
             <ListItemText
               primary="My Orders"
@@ -57,7 +63,7 @@ export default function SideNav() {
             className="group"
           >
             <ListItemIcon className="group-hover:text-purple-500">
-              <MailIcon />
+              <DangerousOutlinedIcon />
             </ListItemIcon>
             <ListItemText
               primary="RMA Support"
@@ -72,7 +78,7 @@ export default function SideNav() {
             className="group"
           >
             <ListItemIcon className="group-hover:text-purple-500">
-              <MailIcon />
+              <HistoryOutlinedIcon />
             </ListItemIcon>
             <ListItemText
               primary="Order History"
@@ -87,7 +93,7 @@ export default function SideNav() {
             className="group"
           >
             <ListItemIcon className="group-hover:text-purple-500">
-              <InboxIcon />
+              <SettingsOutlinedIcon />
             </ListItemIcon>
             <ListItemText
               primary="Settings"
@@ -102,7 +108,7 @@ export default function SideNav() {
             className="group"
           >
             <ListItemIcon className="group-hover:text-purple-500">
-              <InboxIcon />
+              <HelpOutlineOutlinedIcon />
             </ListItemIcon>
             <ListItemText
               primary="Complaints"

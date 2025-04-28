@@ -13,6 +13,8 @@ import ReviewPopup from "./ReviewPopup";
 
 export default function MyOrders() {
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
+
   const [value, setValue] = useState("1");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ export default function MyOrders() {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8000/api/checkout/product-orders",
+          `http://localhost:8000/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -77,7 +79,7 @@ export default function MyOrders() {
               }),
               orderDate: new Date(order.createdAt).toDateString(),
               orderId: order._id,
-              imageUrl: "https://picsum.photos/100",
+              imageUrl: order.items[0]?.product_image,
               itemCount: itemCount,
             };
           });
@@ -101,12 +103,14 @@ export default function MyOrders() {
     };
   }, []);
 
-  const filteredOrders = orders.filter((order) => {
-    if (value === "1") return true;
-    if (value === "2") return order.type === "pc_build";
-    if (value === "3") return order.type === "product";
-    return false;
-  });
+  const filteredOrders = orders
+    .filter((order) => order.status !== "Completed")
+    .filter((order) => {
+      if (value === "1") return true;
+      if (value === "2") return order.type === "pc_build";
+      if (value === "3") return order.type === "product";
+      return false;
+    });
 
   return (
     <div>

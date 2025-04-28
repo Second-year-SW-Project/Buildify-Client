@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, Button, Divider } from "@mui/material";
 
 const handleCopy = (text) => {
@@ -17,6 +18,12 @@ function OrderCard({
   onDelivered,
   onLeaveReview,
 }) {
+  const navigate = useNavigate();
+
+  const handleRefundClick = () => {
+    navigate(`/user/rmaSupport?orderId=${orderId}`);
+  };
+
   return (
     <Card className="p-6 rounded-2xl shadow-2xl bg-white flex flex-col w-full max-w-3xl mb-6">
       <CardContent>
@@ -80,6 +87,34 @@ function OrderCard({
                 </Button>
                 <Button
                   variant="outlined"
+                  onClick={handleRefundClick}
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                >
+                  Refund/Refuse
+                </Button>
+              </>
+            ) : status === "Completed" ? (
+              <>
+                <Button
+                  variant="contained"
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                  onClick={() => navigate(`/user/reviews?orderId=${orderId}`)}
+                >
+                  Your Reviews
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={handleRefundClick}
                   sx={{
                     borderRadius: 900,
                     textTransform: "none",
