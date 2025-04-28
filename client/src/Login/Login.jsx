@@ -39,12 +39,23 @@ const Login = () => {
       );
 
       const user = response.data.data.user;
-      localStorage.setItem('userId', user._id);
-      toast.success("Login successful!");
-      dispatch(setAuthUser(user));
-      localStorage.setItem('token', response.data.token);
 
-      navigate(user.Role === "admin" ? '/adminpanel/dashboard' : '/user/profile');
+localStorage.setItem('userId', user._id);
+localStorage.setItem('token', response.data.token);
+dispatch(setAuthUser(user));
+
+if (user.status === "banned") {
+  toast.error("Your account has been banned!");
+  navigate('/user/errorstatus');
+} else {
+  toast.success("Login successful!");
+  if (user.Role === "admin") {
+    navigate('/adminpanel/dashboard');
+  } else {
+    navigate('/user/profile');
+  }
+}
+
 
     } catch (error) {
 

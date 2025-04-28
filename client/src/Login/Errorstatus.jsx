@@ -1,20 +1,39 @@
 import { Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import errorImage from "../assets/error.avif";
+import axios from "axios"; // <- import axios to call API
+import { toast } from "sonner"; // <- optional: show a toast on logout
 
 export default function ErrorStatus() {
   const navigate = useNavigate();
 
+  const handleLogoutAndReturnHome = async () => {
+    try {
+      // Call logout API
+      await axios.post("http://localhost:8000/api/v1/users/logout", {
+        withCredentials: true, // important if your API uses cookies
+      });
+
+      // Clear localStorage (optional but recommended after logout)
+      localStorage.removeItem("userId");
+      localStorage.removeItem("token");
+
+      toast.success("Logged out successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Failed to logout. Please try again.");
+    }
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      
       {/* Blurred Background */}
       <div
         className="absolute inset-0 bg-cover bg-center opacity-100"
-       
         style={{
           backgroundImage: `url(${errorImage})`,
-          boxShadow: "0 4px 20px rgba(255, 255, 255, 0.3)", 
+          boxShadow: "0 4px 20px rgba(255, 255, 255, 0.3)",
         }}
       ></div>
 
@@ -74,7 +93,7 @@ export default function ErrorStatus() {
 
           <Button
             variant="outlined"
-            onClick={() => navigate("/")}
+            onClick={handleLogoutAndReturnHome}
             sx={{
               color: "#ffffff",
               borderColor: "#ffffff",

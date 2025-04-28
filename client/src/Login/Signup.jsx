@@ -27,9 +27,64 @@ const Signup = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+  
+  const validatePassword = (password) => {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isValidLength = password.length >= 8;
+    return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength;
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
+    if (!formData.name.trim()) {
+      toast.error("Name is required");
+      setLoading(false);
+      return;
+    }
+  
+    if (formData.name.trim().length < 3) {
+      toast.error("Name must be at least 3 characters");
+      setLoading(false);
+      return;
+    }
+  
+    if (!formData.email.trim()) {
+      toast.error("Email is required");
+      setLoading(false);
+      return;
+    }
+  
+    if (!validateEmail(formData.email)) {
+      toast.error("Invalid email format");
+      setLoading(false);
+      return;
+    }
+  
+    if (!formData.password) {
+      toast.error("Password is required");
+      setLoading(false);
+      return;
+    }
+  
+    if (!validatePassword(formData.password)) {
+      toast.error("Password must be at least 8 characters and include uppercase, lowercase, number, and special character");
+      setLoading(false);
+      return;
+    }
+  
+    if (formData.password !== formData.passwordConfirm) {
+      toast.error("Passwords do not match");
+      setLoading(false);
+      return;
+    }
 
     if (!termsAccepted) {
       toast.error("Please accept the terms and conditions");
