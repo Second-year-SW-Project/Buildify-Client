@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { toast } from "sonner";
 
 function InvoiceDetailsModal({ open, onClose, invoice }) {
   if (!invoice) return null;
@@ -23,7 +24,7 @@ function InvoiceDetailsModal({ open, onClose, invoice }) {
     const invoiceElement = document.getElementById("invoice-content");
     const previousOverflow = invoiceElement.style.overflow;
 
-    // Disable overflow for full capture
+    // Disable overflow
     invoiceElement.style.overflow = "visible";
 
     html2canvas(invoiceElement, { scale: 2 }).then((canvas) => {
@@ -36,22 +37,19 @@ function InvoiceDetailsModal({ open, onClose, invoice }) {
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`Invoice-${invoice?.invoiceNumber}.pdf`);
-
-      // Reset overflow style
+      toast.success(
+        `Invoice ${invoice?.invoiceNumber} downloaded successfully!`
+      );
       invoiceElement.style.overflow = previousOverflow;
     });
   };
 
+  // Invoice status capitalization
   const formatInvoiceStatus = (status) => {
     if (!status) return "";
-
-    // Insert space before every capital letter
     const spaced = status.replace(/([A-Z])/g, " $1");
-
-    // Capitalize first letter
     return spaced.charAt(0).toUpperCase() + spaced.slice(1);
   };
-  console.log(invoice.invoiceStatus);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

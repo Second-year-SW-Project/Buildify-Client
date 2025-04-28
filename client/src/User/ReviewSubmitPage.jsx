@@ -109,7 +109,12 @@ export default function ReviewSubmitPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("User not authenticated.");
+        toast.error("User not authenticated.");
+        return;
+      }
+
+      if (!rating) {
+        toast.error("Please provide a star rating.");
         return;
       }
 
@@ -140,7 +145,7 @@ export default function ReviewSubmitPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        toast.error("Error submitting review", errorData);
+        toast.error(errorData.message || "Error submitting review.");
         console.error("Error submitting review:", errorData);
         return;
       }
@@ -152,7 +157,7 @@ export default function ReviewSubmitPage() {
 
       navigate(`/user/orders`);
     } catch (err) {
-      toast.error("Submission failed:", err);
+      toast.error("Submission failed:");
       console.error("Submission failed:", err);
     }
   };
@@ -195,9 +200,7 @@ export default function ReviewSubmitPage() {
                     }}
                   >
                     <Box sx={{ flex: 1, width: { xs: "100%", md: "auto" } }}>
-                      <Typography variant="h6">
-                        {itemName} {orderId}
-                      </Typography>
+                      <Typography variant="h6">{itemName}</Typography>
                       <img
                         src={imageUrl}
                         alt={itemName}
@@ -218,7 +221,7 @@ export default function ReviewSubmitPage() {
                           sx={{ mr: 2 }}
                         />
                         <Typography variant="body2">
-                          {rating ? ratingLabels[rating] : "Select a rating"}
+                          {rating ? ratingLabels[rating] : "Select a rating*"}
                         </Typography>
                       </Box>
 

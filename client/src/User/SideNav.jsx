@@ -14,6 +14,7 @@ import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import ReviewsOutlinedIcon from "@mui/icons-material/ReviewsOutlined";
 
 export default function SideNav() {
   return (
@@ -51,22 +52,18 @@ export default function SideNav() {
               <LocalOfferOutlinedIcon />
             </ListItemIcon>
             <ListItemText
-              primary="My Orders"
+              primary="Your Orders"
               className="group-hover:text-purple-500"
             />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton
-            component={Link}
-            to="/user/rmaSupport"
-            className="group"
-          >
+          <ListItemButton component={Link} to="/user/reviews" className="group">
             <ListItemIcon className="group-hover:text-purple-500">
-              <DangerousOutlinedIcon />
+              <ReviewsOutlinedIcon />
             </ListItemIcon>
             <ListItemText
-              primary="RMA Support"
+              primary="Your Reviews"
               className="group-hover:text-purple-500"
             />
           </ListItemButton>
@@ -86,6 +83,22 @@ export default function SideNav() {
             />
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
+            component={Link}
+            to="/user/rmaSupport"
+            className="group"
+          >
+            <ListItemIcon className="group-hover:text-purple-500">
+              <DangerousOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="RMA Support"
+              className="group-hover:text-purple-500"
+            />
+          </ListItemButton>
+        </ListItem>
+
         <ListItem disablePadding>
           <ListItemButton
             component={Link}

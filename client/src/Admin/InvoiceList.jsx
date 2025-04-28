@@ -9,9 +9,9 @@ import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
-import { StockType, main } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
+import { toast } from "sonner";
 
 function InvoiceList() {
   const navigate = useNavigate();
@@ -34,7 +34,6 @@ function InvoiceList() {
 
   const iconActions = {
     view: (invoiceId) => {
-      console.log("Invoice ID:", invoiceId);
       const invoice = allInvoices.find(
         (inv) => inv.raw.invoiceNumber === invoiceId
       );
@@ -50,7 +49,44 @@ function InvoiceList() {
         navigate(`/adminpanel/invoice/invoiceedit/${invoice.raw._id}`);
       }
     },
-    delete: (id) => {},
+    delete: (invoiceId) => {
+      const invoice = allInvoices.find(
+        (inv) => inv.raw.invoiceNumber === invoiceId
+      );
+      if (invoice) {
+        handleDeleteInvoice(invoice);
+      }
+    },
+  };
+
+  const handleDeleteInvoice = (invoice) => {
+    toast(
+      (t) => (
+        <div>
+          <p>Are you sure you want to delete this invoice?</p>
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => {
+                deleteInvoice(invoice.raw._id);
+                toast.dismiss(t);
+              }}
+              className="px-3 py-1 bg-red-500 text-white rounded"
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => toast.dismiss(t)}
+              className="px-3 py-1 bg-gray-300 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: 5000,
+      }
+    );
   };
 
   // Fetch invoices from backend
@@ -81,6 +117,33 @@ function InvoiceList() {
         console.error("Failed to fetch invoices", err);
       });
   }, []);
+
+  // Delete invoices
+  const deleteInvoice = async (invoiceId) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/api/invoices/delete/${invoiceId}`
+      );
+      console.log(response.data.message);
+
+      // Remove the deleted invoice from the state
+      const updatedInvoices = allInvoices.filter(
+        (inv) => inv.raw._id !== invoiceId
+      );
+
+      setAllInvoices(updatedInvoices);
+      setFilteredInvoices(updatedInvoices);
+    } catch (error) {
+      console.error(
+        "Error deleting invoice:",
+        error.response?.data?.error || error.message
+      );
+      toast.error(
+        "Error deleting invoice:",
+        error.response?.data?.error || error.message
+      );
+    }
+  };
 
   useEffect(() => {
     let filtered = allInvoices;

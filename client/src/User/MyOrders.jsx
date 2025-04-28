@@ -10,6 +10,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OrderCard from "../AtomicComponents/Cards/OrderDetailsCard";
 import ReviewPopup from "./ReviewPopup";
+import { toast } from "sonner";
 
 export default function MyOrders() {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ export default function MyOrders() {
       );
     } catch (error) {
       console.error("Failed to update order status", error);
+      toast.error("Failed to update order status", error);
     }
   };
 
@@ -90,6 +92,7 @@ export default function MyOrders() {
       } catch (err) {
         if (isMounted && err.name !== "AbortError") {
           console.error("Failed to fetch product orders", err);
+          toast.error("Failed to fetch product orders", err);
           setLoading(false);
         }
       }

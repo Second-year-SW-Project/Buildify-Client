@@ -44,6 +44,7 @@ import UserComplaints from "./User/UserComplaints.jsx";
 import UserProfile from "./User/UserProfile.jsx";
 import RMAsupport from "./User/RMAsupport.jsx";
 import MyOrders from "./User/MyOrders.jsx";
+import Reviews from "./User/Reviews.jsx";
 import OrderHistory from "./User/OrderHistory.jsx";
 import SavedBuilds from "./User/SavedBuilds.jsx";
 import Settings from "./User/Settings.jsx";
@@ -150,18 +151,24 @@ const router = createBrowserRouter([
       { path: "selectgame", element: <SelectGameAndBudgetpage /> },
 
       // User
-      { path: "user/complaint", element: <ComplaintSubmit /> },
-      { path: "user/complaintHistory", element: <UserComplaints /> },
-      { path: "user/profile", element: <UserProfile /> },
-      { path: "user/orders", element: <MyOrders /> },
-      { path: "user/orders/:orderId", element: <OrderDetails /> },
-      { path: "user/rmaSupport", element: <RMAsupport /> },
-      { path: "user/orderHistory", element: <OrderHistory /> },
-      { path: "user/savedBuilds", element: <SavedBuilds /> },
-      { path: "user/settings", element: <Settings /> },
       {
-        path: "user/orders/review-submit/:orderId/:productId",
-        element: <ReviewSubmitPage />,
+        path: "user",
+        children: [
+          { path: "complaint", element: <ComplaintSubmit /> },
+          { path: "complaintHistory", element: <UserComplaints /> },
+          { path: "profile", element: <UserProfile /> },
+          { path: "orders", element: <MyOrders /> },
+          { path: "orders/:orderId", element: <OrderDetails /> },
+          {
+            path: "orders/review-submit/:orderId/:productId",
+            element: <ReviewSubmitPage />,
+          },
+          { path: "reviews", element: <Reviews /> },
+          { path: "rmaSupport", element: <RMAsupport /> },
+          { path: "orderHistory", element: <OrderHistory /> },
+          { path: "savedBuilds", element: <SavedBuilds /> },
+          { path: "settings", element: <Settings /> },
+        ],
       },
     ],
   },

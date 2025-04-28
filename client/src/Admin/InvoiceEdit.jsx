@@ -5,24 +5,18 @@ import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
-import {
-  StockType,
-  InvoiceStatus,
-} from "../AtomicComponents/ForAdminForms/Category";
+import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
-import {
-  Divider,
-  IconButton,
-  TextField,
-  Button,
-  Autocomplete,
-} from "@mui/material";
+import { Divider, TextField, Button, Autocomplete } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
+import { toast } from "sonner";
 
 function InvoiceEdit() {
   const navigate = useNavigate();
   const { invoiceId } = useParams();
+
+  // State for form fields
   const [invoiceData, setInvoiceData] = useState(null);
   const [products, setProducts] = useState([]);
   const [items, setItems] = useState([]);
@@ -44,17 +38,16 @@ function InvoiceEdit() {
       try {
         const res = await axios.get(`${API_URL}/get/${invoiceId}`);
 
-        // Directly access the invoice object, as it's not wrapped in a 'data' field
         if (res.data) {
-          setInvoiceData(res.data); // Invoice object directly
-          setItems(res.data.items || []); // Ensure items is always an array
+          setInvoiceData(res.data);
+          setItems(res.data.items || []);
         } else {
           console.error("Invoice data not found:", res.data);
-          alert("Invoice data not found.");
+          toast.error("Invoice data not found.");
         }
       } catch (err) {
         console.error("Error fetching invoice data:", err);
-        alert("Error fetching invoice data.");
+        toast.error("Error fetching invoice data.");
       }
     };
 
@@ -71,6 +64,7 @@ function InvoiceEdit() {
         setProducts(res.data.data);
       } catch (err) {
         console.error("Error fetching products:", err);
+        toast.error("Error fetching products:", err);
       }
     };
 
@@ -116,6 +110,7 @@ function InvoiceEdit() {
     setItems(updatedItems);
   };
 
+  // Price calculations
   const calculateSubtotal = () => {
     return items.reduce((sum, item) => {
       const itemTotal =
@@ -128,6 +123,7 @@ function InvoiceEdit() {
   const total =
     subtotal + parseFloat(shippingCost || 0) - parseFloat(discount || 0);
 
+  //Update Invoice
   const handleSubmit = async () => {
     const invoiceDataToUpdate = {
       fromAddress,
@@ -154,12 +150,12 @@ function InvoiceEdit() {
         `${API_URL}/edit/${invoiceId}`,
         invoiceDataToUpdate
       );
-      alert(response.data.message);
+      toast.success(response.data.message);
       navigate("/adminpanel/invoice/invoicelist");
     } catch (error) {
       console.error("Invoice update failed:", error);
       console.log("Error details:", error.response?.data);
-      alert(`Error: ${error.response?.data?.error || error.message}`);
+      toast.error(`Error: ${error.response?.data?.error || error.message}`);
     }
   };
 
@@ -209,7 +205,7 @@ function InvoiceEdit() {
               <div>
                 <InputField
                   type="text"
-                  label="Invoice Number"
+                  label="Invoice Number*"
                   width="100%"
                   value={invoiceNumber}
                   onChange={setInvoiceNumber}
@@ -254,11 +250,7 @@ function InvoiceEdit() {
                       if (value) {
                         handleItemChange(index, "itemCode", value._id);
                         handleItemChange(index, "itemName", value.name);
-                        handleItemChange(
-                          index,
-                          "subCategory",
-                          value.subCategory
-                        );
+                        handleItemChange(index, "subCategory", value.type);
                         handleItemChange(index, "price", value.price);
                       }
                     }}
@@ -273,16 +265,16 @@ function InvoiceEdit() {
                     value={item.itemName}
                     onChange={(val) => handleItemChange(index, "itemName", val)}
                   />
-                  <InputField
-                    type="select"
+
+                  <TextField
                     label="Sub Category"
-                    options={StockType}
-                    width="100%"
                     value={item.subCategory}
-                    onChange={(val) =>
-                      handleItemChange(index, "subCategory", val)
-                    }
+                    fullWidth
+                    InputProps={{
+                      readOnly: true,
+                    }}
                   />
+
                   <InputField
                     type="number"
                     Auto={1}

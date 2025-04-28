@@ -1,83 +1,28 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, Button, Divider } from "@mui/material";
-import { toast } from "sonner";
+import { Card, CardContent, Button } from "@mui/material";
 
-const handleCopy = (text) => {
-  navigator.clipboard.writeText(text);
-  toast.success("Copied to clipboard!");
-};
-
-function OrderCard({
-  status,
-  totalAmount,
-  orderDate,
-  orderId,
-  imageUrl,
-  itemCount,
-  onDetailsClick,
-  onDelivered,
-  onLeaveReview,
-}) {
-  const navigate = useNavigate();
-
-  const handleRefundClick = () => {
-    toast.info("Redirecting to RMA support");
-    navigate(`/user/rmaSupport?orderId=${orderId}`);
-  };
-
+export default function Reviewcard() {
   return (
-    <Card className="p-6 rounded-2xl shadow-2xl bg-white flex flex-col w-full max-w-3xl mb-6">
+    <Card className="p-4 rounded-2xl shadow-2xl bg-white flex flex-col w-full max-w-3xl mb-6">
       <CardContent>
-        <div className="flex justify-between items-start">
-          <h2 className="text-2xl font-bold text-gray-900">{status}</h2>
-          <div className="flex items-center gap-4">
-            <div className="border-r-2 pr-4 text-right">
-              <p className="text-sm text-gray-700">Order date: {orderDate}</p>
-              <p className="text-sm text-gray-700">
-                Order ID: {orderId}{" "}
-                <button
-                  className="text-purple-500 hover:underline text-xs ml-1"
-                  onClick={() => handleCopy(orderId)}
-                >
-                  Copy
-                </button>
-              </p>
-            </div>
-            <p
-              className="text-purple-500 cursor-pointer"
-              onClick={onDetailsClick}
-            >
-              Order Details &gt;
-            </p>
-          </div>
-        </div>
-
-        <Divider className="my-6" />
-
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4 mt-2">
+          <div className="flex justify-between items-start">
             <img
-              src={imageUrl}
-              alt="Order items"
+              src="placeholder.png"
+              alt="product image"
               className="w-24 h-24 rounded-lg object-cover"
-            />
+            ></img>
           </div>
           <div className="text-left">
-            <p className="text-lg font-bold text-gray-900">
-              Total: {totalAmount}
-            </p>
+            <p className="text-lg font-bold text-gray-900">itemName</p>
 
-            <h3 className="text-base font-bold text-gray-900">
-              {itemCount} {itemCount === 1 ? "Item" : "Items"}
-            </h3>
+            <h3 className="text-base font-bold text-gray-900">Subcategory</h3>
           </div>
           <div className="flex flex-col">
             {status === "Delivered" ? (
               <>
                 <Button
                   variant="contained"
-                  onClick={onLeaveReview}
                   sx={{
                     borderRadius: 900,
                     textTransform: "none",
@@ -89,7 +34,6 @@ function OrderCard({
                 </Button>
                 <Button
                   variant="outlined"
-                  onClick={handleRefundClick}
                   sx={{
                     borderRadius: 900,
                     textTransform: "none",
@@ -110,13 +54,11 @@ function OrderCard({
                     px: 2,
                     mt: 2,
                   }}
-                  onClick={() => navigate(`/user/reviews?orderId=${orderId}`)}
                 >
                   Your Reviews
                 </Button>
                 <Button
                   variant="outlined"
-                  onClick={handleRefundClick}
                   sx={{
                     borderRadius: 900,
                     textTransform: "none",
@@ -131,7 +73,6 @@ function OrderCard({
               <>
                 <Button
                   variant="contained"
-                  onClick={onDelivered}
                   sx={{
                     borderRadius: 900,
                     textTransform: "none",
@@ -160,5 +101,3 @@ function OrderCard({
     </Card>
   );
 }
-
-export default OrderCard;

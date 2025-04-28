@@ -5,10 +5,7 @@ import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
-import {
-  StockType,
-  InvoiceStatus,
-} from "../AtomicComponents/ForAdminForms/Category";
+import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
 import {
   Divider,
@@ -19,13 +16,13 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
+import { toast } from "sonner";
 
 function InvoiceCreate() {
   const navigate = useNavigate();
 
   // State for fetched products
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   // State for from fields
   const [invoiceNumber, setInvoiceNumber] = useState("");
@@ -58,6 +55,7 @@ function InvoiceCreate() {
         setProducts(res.data.data);
       } catch (err) {
         console.error("Error fetching products:", err);
+        toast.error("Error fetching products:", err);
       }
     };
 
@@ -129,11 +127,11 @@ function InvoiceCreate() {
 
     try {
       const response = await axios.post(`${API_URL}/create`, invoiceData);
-      alert(response.data.message);
+      toast.success(response.data.message);
       navigate("/adminpanel/invoice/invoicelist");
     } catch (error) {
       console.error("Invoice creation failed:", error);
-      alert(`Error: ${error.response?.data?.error || error.message}`);
+      toast.error(`Error: ${error.response?.data?.error || error.message}`);
     }
   };
 
@@ -233,7 +231,7 @@ function InvoiceCreate() {
               <div>
                 <InputField
                   type="text"
-                  label="Invoice Number"
+                  label="Invoice Number*"
                   width="100%"
                   value={invoiceNumber}
                   onChange={setInvoiceNumber}
@@ -278,7 +276,7 @@ function InvoiceCreate() {
                       if (value) {
                         handleItemChange(index, "itemCode", value._id);
                         handleItemChange(index, "itemName", value.name);
-                        handleItemChange(index, "subCategory", value.category);
+                        handleItemChange(index, "subCategory", value.type);
                         handleItemChange(index, "price", value.price);
                       }
                     }}
@@ -286,14 +284,6 @@ function InvoiceCreate() {
                       <TextField {...params} label="Item Code" fullWidth />
                     )}
                   />
-                  {/* <InputField
-                    type="select"
-                    label="Item code"
-                    options={StockType}
-                    width="100%"
-                    value={item.itemCode}
-                    onChange={(val) => handleItemChange(index, "itemCode", val)}
-                  /> */}
 
                   <InputField
                     type="text"
@@ -302,17 +292,6 @@ function InvoiceCreate() {
                     value={item.itemName}
                     onChange={(val) => handleItemChange(index, "itemName", val)}
                   />
-
-                  {/* <InputField
-                    type="text"
-                    label="Sub Category"
-                    width="100%"
-                    value={item.subCategory}
-                    onChange={(val) =>
-                      handleItemChange(index, "subCategory", val)
-                    }
-
-                  /> */}
 
                   <TextField
                     label="Sub Category"

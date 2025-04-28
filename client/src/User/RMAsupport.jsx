@@ -111,7 +111,7 @@ export default function RMAsupport() {
                     <InputField
                       type="text"
                       variant="outlined"
-                      label="Subject"
+                      label="Subject*"
                       width="70%"
                       outlinedActive
                       name="subject"
@@ -122,7 +122,7 @@ export default function RMAsupport() {
                     <InputField
                       type="text"
                       variant="outlined"
-                      label="Order ID"
+                      label="Order ID*"
                       width="70%"
                       outlinedActive
                       name="orderId"
@@ -134,7 +134,7 @@ export default function RMAsupport() {
                   <div className="mb-6">
                     <InputField
                       type="select"
-                      label="Reason for Contact"
+                      label="Reason for Contact*"
                       width="86%"
                       name="reason"
                       value={formData.reason}
