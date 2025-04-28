@@ -292,9 +292,10 @@ const motherboardAttributes = {
   ],
   formFactor: [
     { value: "atx", label: "ATX" },
-    { value: "micro_atx", label: "Micro ATX" },
-    { value: "mini_itx", label: "Mini ITX" },
+    { value: "micro_atx", label: "Micro-ATX" },
+    { value: "mini_itx", label: "Mini-ITX" },
     { value: "e_atx", label: "E-ATX" },
+    { value: "xl_atx", label: "XL-ATX" },
   ],
   ramSlots: [
     { value: "2", label: "2 Slots" },
@@ -333,10 +334,7 @@ const storageAttributes = {
   storageTypes: [
     { value: "nvme_m2", label: "NVMe M.2" },
     { value: "sata_ssd", label: "SATA SSD" },
-    { value: "hdd", label: "HDD" },
-    { value: "m2_sata", label: "M.2 SATA" },
-    { value: "sas_hdd", label: "SAS HDD" },
-    { value: "pata_hdd", label: "PATA HDD" },
+    { value: "sata_hdd", label: "SATA HDD" },
   ],
   storageCapacities: [
     { value: "256", label: "256GB" },
@@ -350,12 +348,13 @@ const storageAttributes = {
 
 const gpuAttributes = {
   interfaceType: [
-    { value: "pcie_x16", label: "PCIe x16" },
-    { value: "pcie_x8", label: "PCIe x8" },
-    { value: "pcie_4_0", label: "PCIe 4.0" },
-    { value: "pcie_5_0", label: "PCIe 5.0" },
-    { value: "agp", label: "AGP" },
-    { value: "pci", label: "PCI" },
+    { value: "pcie_5_0_x16", label: "PCIe 5.0 x16" },
+    { value: "pcie_5_0_x8", label: "PCIe 5.0 x8" },
+    { value: "pcie_4_0_x16", label: "PCIe 4.0 x16" },
+    { value: "pcie_4_0_x8", label: "PCIe 4.0 x8" },
+    { value: "pcie_3_0_x16", label: "PCIe 3.0 x16" },
+    { value: "pcie_3_0_x8", label: "PCIe 3.0 x8" },
+
   ],
   powerConnectors: [
     { value: "6-pin", label: "6-pin" },

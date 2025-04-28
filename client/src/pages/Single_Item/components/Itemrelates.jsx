@@ -45,7 +45,7 @@ export default function Itemrelates({category}) {
               className="bg-white shadow-lg rounded-lg p-4 text-left border border-gray-200 
                 transition-transform transform duration-300 hover:scale-105 hover:shadow-xl"
             >
-              <Link to={`/itempage/${product._id}`}>
+              <a href={`/itempage/${product._id}`}>
               {/* Product Image */}
               <img
                 src={product?.imgUrls?.[0]?.url}
@@ -68,7 +68,7 @@ export default function Itemrelates({category}) {
                 {product.price} LKR
               </p>
 
-              </Link>
+              </a>
 
               
             </div>

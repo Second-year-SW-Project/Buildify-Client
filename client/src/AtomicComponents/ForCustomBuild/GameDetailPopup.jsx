@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 function GameDetailPopup({ game, onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-bold">{game.name}</h2>
+      <div className="bg-white rounded-2xl w-full max-w-3xl h-[85vh] overflow-y-auto shadow-2xl [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="p-8">
+          <div className="flex justify-between items-start mb-6">
+            <h2 className="text-3xl font-bold text-gray-800">{game.name}</h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -18,7 +18,7 @@ function GameDetailPopup({ game, onClose }) {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-6 h-6"
+                className="w-7 h-7"
               >
                 <path
                   strokeLinecap="round"
@@ -28,42 +28,42 @@ function GameDetailPopup({ game, onClose }) {
               </svg>
             </button>
           </div>
-          <div className="mb-4">
+          <div className="mb-8">
             <img
               src={game.image}
               alt={game.name}
-              className="w-2/3 h-auto rounded-lg mx-auto"
+              className="w-full max-w-2xl h-auto rounded-xl mx-auto shadow-md"
               loading="lazy"
             />
           </div>
-          <div className="mb-4">
-            <h3 className="text-lg font-medium mb-2">Description</h3>
-            <p className="text-gray-700">{game.description}</p>
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold mb-3 text-gray-800">Description</h3>
+            <p className="text-gray-700 leading-relaxed">{game.description}</p>
           </div>
-          <div className="mb-4">
-            <h3 className="text-lg font-medium mb-2">Total Performance Score</h3>
-            <p className="text-gray-700">
-              Score: {game.scores?.total ? game.scores.total.toFixed(2) : 'N/A'}
+          <div className="mb-8">
+            <h3 className="text-xl font-semibold mb-3 text-gray-800">Total Performance Score</h3>
+            <p className="text-2xl font-bold text-purple-700">
+              {game.scores?.total ? game.scores.total.toFixed(2) : 'N/A'}
             </p>
           </div>
           <div>
-            <h3 className="text-lg font-medium mb-2">Recommended Scores</h3>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-purple-50 p-3 rounded-lg">
-                <p className="text-sm text-purple-700">CPU Score</p>
-                <p className="font-medium">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">Recommended Scores</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-purple-50 p-4 rounded-xl shadow-sm">
+                <p className="text-sm text-purple-700 mb-1">CPU Score</p>
+                <p className="text-xl font-bold text-purple-800">
                   {game.scores?.cpu ? game.scores.cpu.toFixed(2) : 'N/A'}
                 </p>
               </div>
-              <div className="bg-purple-50 p-3 rounded-lg">
-                <p className="text-sm text-purple-700">GPU Score</p>
-                <p className="font-medium">
+              <div className="bg-purple-50 p-4 rounded-xl shadow-sm">
+                <p className="text-sm text-purple-700 mb-1">GPU Score</p>
+                <p className="text-xl font-bold text-purple-800">
                   {game.scores?.gpu ? game.scores.gpu.toFixed(2) : 'N/A'}
                 </p>
               </div>
-              <div className="bg-purple-50 p-3 rounded-lg">
-                <p className="text-sm text-purple-700">RAM Score</p>
-                <p className="font-medium">
+              <div className="bg-purple-50 p-4 rounded-xl shadow-sm">
+                <p className="text-sm text-purple-700 mb-1">RAM Score</p>
+                <p className="text-xl font-bold text-purple-800">
                   {game.scores?.ram ? game.scores.ram.toFixed(2) : 'N/A'}
                 </p>
               </div>

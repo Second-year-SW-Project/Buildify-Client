@@ -126,7 +126,7 @@ export default function Navbar() {
       {/* Bottom Categories */}
       <div className="w-full max-w-[1350px] flex justify-around text-sm font-medium pb-[10px] space-x-6 sm:space-x-4">
         <Link to="/home" className="hover:text-blue-400">Home</Link>
-        <Link to="#" className="hover:text-blue-400">Custom Build</Link>
+        <Link to="/modeselect" className="hover:text-blue-400">Custom Build</Link>
         <Link to="/productcategorypage/prebuild" className="hover:text-blue-400">Pre Build</Link>
         <Link to="/productcategorypage/laptop" className="hover:text-blue-400">Laptops</Link>
 
