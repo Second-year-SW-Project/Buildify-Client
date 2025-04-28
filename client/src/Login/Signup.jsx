@@ -109,7 +109,7 @@ const Signup = () => {
       const user = response.data.data.user;
       toast.success("Sign up successful!");
       dispatch(setAuthUser(user));
-      navigate('adminpanel/auth/verify');
+      navigate('/adminpanel/auth/verify');
 
     } catch (error) {
 

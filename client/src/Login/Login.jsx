@@ -31,32 +31,43 @@ const Login = () => {
     setLoading(true);
 
     try {
-
       const response = await axios.post(
         "http://localhost:8000/api/v1/users/login",
         formData,
         { withCredentials: true }
       );
-
+    
       const user = response.data.data.user;
-
-localStorage.setItem('userId', user._id);
-localStorage.setItem('token', response.data.token);
-dispatch(setAuthUser(user));
-
-if (user.status === "banned") {
-  toast.error("Your account has been banned!");
-  navigate('/user/errorstatus');
-} else {
-  toast.success("Login successful!");
-  if (user.Role === "admin") {
-    navigate('/adminpanel/dashboard');
-  } else {
-    navigate('/user/profile');
-  }
-}
-
-
+    
+      localStorage.setItem('userId', user._id);
+      localStorage.setItem('token', response.data.token);
+      dispatch(setAuthUser(user));
+    
+      // 1. Check if user is not verified
+      if (!user.isVerified) {
+        toast.error("Please verify your email before proceeding.");
+        navigate("/adminpanel/auth/verify", {
+          state: { email: user.email },
+        });
+        return; // STOP here if not verified
+      }
+    
+      // 2. Check if user is banned
+      if (user.status === "banned") {
+        toast.error("Your account has been banned!");
+        navigate('/user/errorstatus');
+        return; // STOP here if banned
+      }
+    
+      // 3. Now user is verified + active -> safe to show login success
+      toast.success("Login successful!");
+    
+      if (user.Role === "admin") {
+        navigate('/adminpanel/dashboard');
+      } else {
+        navigate('/user/profile');
+      }
+    
     } catch (error) {
 
       if (error.response) {
