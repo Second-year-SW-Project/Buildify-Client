@@ -1,21 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
-import {
-  StockType,
-  InvoiceStatus,
-} from "../AtomicComponents/ForAdminForms/Category";
+import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
-import { Divider, IconButton, TextField, Button } from "@mui/material";
+import {
+  Divider,
+  IconButton,
+  TextField,
+  Button,
+  Autocomplete,
+} from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
+import { toast } from "sonner";
 
 function InvoiceCreate() {
   const navigate = useNavigate();
+
+  // State for fetched products
+  const [products, setProducts] = useState([]);
 
   // State for from fields
   const [invoiceNumber, setInvoiceNumber] = useState("");
@@ -37,6 +44,23 @@ function InvoiceCreate() {
       price: "0",
     },
   ]);
+
+  // Fetch products for the dropdown
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8000/api/product/all`, {
+          params: { search: "" },
+        });
+        setProducts(res.data.data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        toast.error("Error fetching products:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Price calculations
   const calculateSubtotal = () => {
@@ -103,11 +127,11 @@ function InvoiceCreate() {
 
     try {
       const response = await axios.post(`${API_URL}/create`, invoiceData);
-      alert(response.data.message);
+      toast.success(response.data.message);
       navigate("/adminpanel/invoice/invoicelist");
     } catch (error) {
       console.error("Invoice creation failed:", error);
-      alert(`Error: ${error.response?.data?.error || error.message}`);
+      toast.error(`Error: ${error.response?.data?.error || error.message}`);
     }
   };
 
@@ -207,7 +231,7 @@ function InvoiceCreate() {
               <div>
                 <InputField
                   type="text"
-                  label="Invoice Number"
+                  label="Invoice Number*"
                   width="100%"
                   value={invoiceNumber}
                   onChange={setInvoiceNumber}
@@ -244,34 +268,40 @@ function InvoiceCreate() {
             <div>
               <p className="text-purple-600 font-semibold mb-1">Details:</p>
               {items.map((item, index) => (
-                <div key={index} className="flex gap-4 w-full items-end mb-4">
-                  <InputField
-                    type="select"
-                    label="Item code"
-                    options={StockType}
-                    width="100%"
-                    value={item.itemCode}
-                    onChange={(val) => handleItemChange(index, "itemCode", val)}
+                <div key={index} className="flex gap-4 w-full items-start mb-4">
+                  <Autocomplete
+                    options={products}
+                    getOptionLabel={(option) => option._id || option.name}
+                    onChange={(e, value) => {
+                      if (value) {
+                        handleItemChange(index, "itemCode", value._id);
+                        handleItemChange(index, "itemName", value.name);
+                        handleItemChange(index, "subCategory", value.type);
+                        handleItemChange(index, "price", value.price);
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Item Code" fullWidth />
+                    )}
                   />
 
                   <InputField
-                    type="textarea"
+                    type="text"
                     label="Item name"
                     width="100%"
                     value={item.itemName}
                     onChange={(val) => handleItemChange(index, "itemName", val)}
                   />
 
-                  <InputField
-                    type="select"
+                  <TextField
                     label="Sub Category"
-                    options={StockType}
-                    width="100%"
                     value={item.subCategory}
-                    onChange={(val) =>
-                      handleItemChange(index, "subCategory", val)
-                    }
+                    fullWidth
+                    InputProps={{
+                      readOnly: true,
+                    }}
                   />
+
                   <InputField
                     type="number"
                     Auto={1}
@@ -310,6 +340,8 @@ function InvoiceCreate() {
                 Add Item
               </Button>
             </div>
+
+            {/* Calculation section */}
             <div className="ml-auto w-1/3">
               <div className="grid grid-cols-2 gap-x-2 ">
                 <InputField

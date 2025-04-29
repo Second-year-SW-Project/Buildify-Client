@@ -9,15 +9,44 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OrderCard from "../AtomicComponents/Cards/OrderDetailsCard";
+import ReviewPopup from "./ReviewPopup";
+import { toast } from "sonner";
 
 export default function MyOrders() {
   const navigate = useNavigate();
+  const userId = localStorage.getItem("userId");
+
   const [value, setValue] = useState("1");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [openReview, setOpenReview] = useState(false);
+  const [selectedOrderId, setSeletcedOrderId] = useState(null);
+  const [selectedOrderItems, setSelectedOrderItems] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const markAsDelivered = async (orderId) => {
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/checkout/product-orders/${orderId}`,
+        { status: "Delivered" },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.orderId === orderId ? { ...order, status: "Delivered" } : order
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update order status", error);
+      toast.error("Failed to update order status", error);
+    }
   };
 
   useEffect(() => {
@@ -27,7 +56,7 @@ export default function MyOrders() {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:8000/api/checkout/product-orders",
+          `http://localhost:8000/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -44,7 +73,7 @@ export default function MyOrders() {
             );
             return {
               ...order,
-              type: "component",
+              type: "product",
               itemName: order.items[0]?.name || "Unknown",
               totalAmount: Number(order.total).toLocaleString("en-LK", {
                 style: "currency",
@@ -52,7 +81,7 @@ export default function MyOrders() {
               }),
               orderDate: new Date(order.createdAt).toDateString(),
               orderId: order._id,
-              imageUrl: "https://picsum.photos/100",
+              imageUrl: order.items[0]?.product_image,
               itemCount: itemCount,
             };
           });
@@ -63,6 +92,7 @@ export default function MyOrders() {
       } catch (err) {
         if (isMounted && err.name !== "AbortError") {
           console.error("Failed to fetch product orders", err);
+          toast.error("Failed to fetch product orders", err);
           setLoading(false);
         }
       }
@@ -76,12 +106,14 @@ export default function MyOrders() {
     };
   }, []);
 
-  const filteredOrders = orders.filter((order) => {
-    if (value === "1") return true;
-    if (value === "2") return order.type === "build";
-    if (value === "3") return order.type === "component";
-    return false;
-  });
+  const filteredOrders = orders
+    .filter((order) => order.status !== "Completed")
+    .filter((order) => {
+      if (value === "1") return true;
+      if (value === "2") return order.type === "pc_build";
+      if (value === "3") return order.type === "product";
+      return false;
+    });
 
   return (
     <div>
@@ -130,6 +162,17 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             itemCount={order.itemCount}
                             onDetailsClick={() => navigate(`${order.orderId}`)}
+                            onDelivered={() => markAsDelivered(order.orderId)}
+                            onLeaveReview={() => {
+                              setSeletcedOrderId(order.orderId);
+                              setOpenReview(true);
+                              setSelectedOrderItems(
+                                order.items.map((item) => ({
+                                  ...item,
+                                  type: order.type,
+                                }))
+                              );
+                            }}
                           />
                         ))
                       )}
@@ -148,6 +191,17 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             itemCount={order.itemCount}
                             onDetailsClick={() => navigate(`/${order.orderId}`)}
+                            onDelivered={() => markAsDelivered(order.orderId)}
+                            onLeaveReview={() => {
+                              setSeletcedOrderId(order.orderId);
+                              setOpenReview(true);
+                              setSelectedOrderItems(
+                                order.items.map((item) => ({
+                                  ...item,
+                                  type: order.type,
+                                }))
+                              );
+                            }}
                           />
                         ))
                       )}
@@ -166,11 +220,28 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             itemCount={order.itemCount}
                             onDetailsClick={() => navigate(`${order.orderId}`)}
+                            onDelivered={() => markAsDelivered(order.orderId)}
+                            onLeaveReview={() => {
+                              setSeletcedOrderId(order.orderId);
+                              setOpenReview(true);
+                              setSelectedOrderItems(
+                                order.items.map((item) => ({
+                                  ...item,
+                                  type: order.type,
+                                }))
+                              );
+                            }}
                           />
                         ))
                       )}
                     </TabPanel>
                   </TabContext>
+                  <ReviewPopup
+                    open={openReview}
+                    onClose={() => setOpenReview(false)}
+                    orderId={selectedOrderId}
+                    items={selectedOrderItems}
+                  />
                 </Box>
               </Box>
             </Box>

@@ -106,58 +106,6 @@ export default function ReviewPopup({
           ))}
         </Box>
       </DialogContent>
-
-      {/* <Rating
-          value={rating}
-          onChange={(e, newValue) => setRating(newValue)}
-          size="large"
-          sx={{ mb: 2 }}
-        />
-        <Typography variant="subtitle1" sx={{ mb: 2 }}>
-          Select most applicable
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 1,
-            justifyContent: "center",
-            mb: 2,
-          }}
-        >
-          {tagOptions.map((tag) => (
-            <Chip
-              key={tag}
-              label={tag}
-              onClick={() => handleTagClick(tag)}
-              clickable
-              variant={selectedTags.includes(tag) ? "filled" : "outlined"}
-              color="primary"
-            />
-          ))}
-        </Box>
-        <TextField
-          label="Your Review"
-          fullWidth
-          multiline
-          rows={3}
-          value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
-          sx={{ mb: 2 }}
-        />
-
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          sx={{
-            background: "linear-gradient(90deg, #9C27B0, #673AB7)",
-            borderRadius: 50,
-            px: 4,
-            textTransform: "none",
-          }}
-        >
-          Submit
-        </Button> */}
     </Dialog>
   );
 }
