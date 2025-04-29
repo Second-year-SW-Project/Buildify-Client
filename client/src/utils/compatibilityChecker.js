@@ -419,6 +419,19 @@ const compatibilityCheckers = {
   },
 };
 
+// Function to remove duplicate messages
+const removeDuplicateMessages = (messages) => {
+  const seen = new Set();
+  return messages.filter(message => {
+    const key = `${message.type}-${message.text}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+};
+
 /**
  * Main compatibility checking function
  * @param {Object} components - Object containing selected components
@@ -513,9 +526,17 @@ export const checkCompatibility = (components) => {
     compatibilityWarnings.push(...filteredWarnings);
   }
 
+  // Remove duplicate messages
+  compatibilityWarnings = removeDuplicateMessages(compatibilityWarnings);
+
+  // Check if there are any warning messages (excluding base messages)
+  const hasCompatibilityIssues = compatibilityWarnings.some(
+    message => message.type === 'warning'
+  );
+
   return {
     messages: compatibilityWarnings,
     totalTDP: `${tdp}W`,
-    hasCompatibilityIssues: compatibilityWarnings.some(msg => msg.type === "warning"),
+    hasCompatibilityIssues
   };
 };

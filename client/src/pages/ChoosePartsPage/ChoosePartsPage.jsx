@@ -6,9 +6,10 @@ import PartsTable from "../../AtomicComponents/ForCustomBuild/PartsTable";
 import WarningMessage from "../../AtomicComponents/ForCustomBuild/WarningMessage";
 import CompatibilityWarningBanner from "../../AtomicComponents/ForCustomBuild/CompatibilityWarningBanner";
 import FinishButton from "../../AtomicComponents/ForCustomBuild/FinishButton";
-import SelectedPartsSummaryPopup from "../../AtomicComponents/ForCustomBuild/SelectedPartsSummaryPopup";
+import BuildConfirmationPopup from "../../AtomicComponents/ForCustomBuild/BuildConfirmationPopup";
 import { checkCompatibility } from "../../utils/compatibilityChecker";
 import { toast } from 'sonner';
+import axios from 'axios';
 
 const ChooseParts = () => {
   // State for warnings/messages
@@ -26,8 +27,8 @@ const ChooseParts = () => {
   // State to track selected components
   const [selectedComponents, setSelectedComponents] = useState({});
 
-  // State to control the summary popup visibility
-  const [showSummaryPopup, setShowSummaryPopup] = useState(false);
+  // State for confirmation popup
+  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
 
   // Listen for changes in the PartsTable component
   const handleComponentsChanged = useCallback((components) => {
@@ -70,8 +71,80 @@ const ChooseParts = () => {
       return;
     }
 
-    // Show the summary popup
-    setShowSummaryPopup(true);
+    // Show confirmation popup
+    setShowConfirmationPopup(true);
+  };
+
+  // Function to handle build confirmation
+  const handleBuildConfirm = async (buildName) => {
+    try {
+      // Calculate total price
+      const totalPrice = Object.values(selectedComponents).reduce((sum, component) => {
+        if (Array.isArray(component)) {
+          return sum + component.reduce((subSum, item) => {
+            const price = parseFloat(item.price?.toString().replace(/[^0-9.]/g, '') || '0');
+            return subSum + price;
+          }, 0);
+        }
+        const price = parseFloat(component.price?.toString().replace(/[^0-9.]/g, '') || '0');
+        return sum + price;
+      }, 0);
+
+      // Prepare components array
+      const components = Object.entries(selectedComponents).map(([type, component]) => {
+        if (Array.isArray(component)) {
+          return component.map(item => ({
+            componentName: item.name,
+            type: type,
+            quantity: 1,
+            price: parseFloat(item.price?.toString().replace(/[^0-9.]/g, '') || '0'),
+            image: item.image,
+            _id: item._id
+          }));
+        }
+        return [{
+          componentName: component.name,
+          type: type,
+          quantity: 1,
+          price: parseFloat(component.price?.toString().replace(/[^0-9.]/g, '') || '0'),
+          image: component.image,
+          _id: component._id
+        }];
+      }).flat();
+
+      // Prepare build data
+      const buildData = {
+        name: buildName,
+        type: "custom",
+        image: selectedComponents.Case.image,
+        components: components,
+        totalPrice: totalPrice
+      };
+
+      // Save build to database
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/build/builds`, buildData);
+
+      if (response.data.success) {
+        toast.success("Build saved successfully!");
+        setShowConfirmationPopup(false);
+      } else {
+        throw new Error(response.data.message || "Failed to save build");
+      }
+    } catch (error) {
+      console.error("Error saving build:", error);
+      console.error("Error response:", error.response?.data);
+      
+      const errorMessage = error.response?.data?.message || "Failed to save build. Please try again.";
+      toast.error(errorMessage, {
+        duration: 5000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+    }
   };
 
   return (
@@ -120,15 +193,27 @@ const ChooseParts = () => {
 
         {/* Footer at the bottom */}
         <Footer />
-      </div>
 
-      {/* Selected Parts Summary Popup */}
-      {showSummaryPopup && (
-        <SelectedPartsSummaryPopup
-          onClose={() => setShowSummaryPopup(false)}
-          selectedComponents={selectedComponents}
-        />
-      )}
+        {/* Build Confirmation Popup */}
+        {showConfirmationPopup && (
+          <BuildConfirmationPopup
+            open={showConfirmationPopup}
+            onClose={() => setShowConfirmationPopup(false)}
+            selectedComponents={selectedComponents}
+            onConfirm={handleBuildConfirm}
+            totalPrice={Object.values(selectedComponents).reduce((sum, component) => {
+              if (Array.isArray(component)) {
+                return sum + component.reduce((subSum, item) => {
+                  const price = parseFloat(item.price?.toString().replace(/[^0-9.]/g, '') || '0');
+                  return subSum + price;
+                }, 0);
+              }
+              const price = parseFloat(component.price?.toString().replace(/[^0-9.]/g, '') || '0');
+              return sum + price;
+            }, 0)}
+          />
+        )}
+      </div>
     </div>
   );
 };
