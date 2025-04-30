@@ -11,23 +11,28 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function AdminSettings() {
 
+  //get user details from current state store redux
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
+  //states 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: ""
   });
+
   const [twoFAForm, setTwoFAForm] = useState({
     token: ""
   });
+
   const [qrCode, setQrCode] = useState("");
   const [loading, setLoading] = useState({
     password: false,
     twoFAEnable: false,
     twoFADisable: false
   });
+
   const [errors, setErrors] = useState({
     password: {},
     twoFA: {}
@@ -35,27 +40,34 @@ export default function AdminSettings() {
 
 
   const handlePasswordChange = (e) => {
+
     setPasswordForm({
       ...passwordForm,
       [e.target.name]: e.target.value
     });
     setErrors({ ...errors, password: {} });
+
   };
 
   const validatePasswordForm = () => {
+
     const newErrors = {};
     
     if (!passwordForm.currentPassword) {
+
       newErrors.currentPassword = "Current password is required";
     }
     
     if (!passwordForm.newPassword) {
+
       newErrors.newPassword = "New password is required";
     } else if (passwordForm.newPassword.length < 8) {
+
       newErrors.newPassword = "Password must be at least 8 characters";
     }
     
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+
       newErrors.confirmPassword = "Passwords do not match";
     }
 
@@ -64,11 +76,14 @@ export default function AdminSettings() {
   };
 
   const handlePasswordSubmit = async (e) => {
+
     e.preventDefault();
     if (!validatePasswordForm()) return;
   
     setLoading({ ...loading, password: true });
+
     try {
+
       await axios.post(
         `${backendUrl}/api/v1/users/change-password`,
         {
@@ -91,12 +106,16 @@ export default function AdminSettings() {
         newPassword: "",
         confirmPassword: ""
       });
+
     } catch (error) {
+
       const errorMessage = error.response?.data?.message || "Password change failed";
       const validationErrors = error.response?.data?.errors;
       if (validationErrors) {
         setErrors({ password: validationErrors });
+
       } else {
+        
         toast.error(errorMessage);
       }
     }
@@ -108,8 +127,11 @@ export default function AdminSettings() {
 
   // 2FA Handlers
   const generate2FASecret = async () => {
+
     setLoading({ ...loading, twoFAEnable: true });
+
     try {
+
       const response = await axios.post(
         `${backendUrl}/api/v1/users/2fa/generate`,
         {},
@@ -119,32 +141,41 @@ export default function AdminSettings() {
       console.log("2FA Generation Response:", response.data);
 
       const otpUrl = response.data?.otpauth_url || response.data?.qr;
-if (!otpUrl) {
-    toast.error("QR code generation failed. Try again.");
-    return;
-}
 
+      if (!otpUrl) {
+      toast.error("QR code generation failed. Try again.");
+      return;
+      }
 
       setQrCode(otpUrl);
       toast.success("Scan the QR code with your authenticator app");
+
     } catch (error) {
+
       console.error("2FA Generation Error:", error);
       toast.error(error.response?.data?.message || "Failed to generate QR code");
+
     } finally {
+
       setLoading({ ...loading, twoFAEnable: false });
+
     }
   };
 
   const handle2FAChange = (e) => {
+
     setTwoFAForm({ ...twoFAForm, [e.target.name]: e.target.value });
     setErrors({ ...errors, twoFA: {} });
+
   };
 
   const handle2FAEnable = async (e) => {
+
     e.preventDefault();
     setLoading({ ...loading, twoFAEnable: true });
 
     try {
+
       await axios.post(
         `${backendUrl}/api/v1/users/2fa/enable`,
         { token: twoFAForm.token },
@@ -164,17 +195,22 @@ if (!otpUrl) {
      
 
     } catch (error) {
+
       const errorMessage = error.response?.data?.message || "2FA enable failed";
       toast.error(errorMessage);
+
     } finally {
+
       setLoading({ ...loading, twoFAEnable: false });
     }
   };
 
   const handle2FADisable = async () => {
+
     setLoading({ ...loading, twoFADisable: true });
 
     try {
+
       await axios.post(
         `${backendUrl}/api/v1/users/2fa/disable`,
         {},
@@ -188,32 +224,45 @@ if (!otpUrl) {
 
       toast.success("2FA disabled successfully");
       setQrCode("");
+
     } catch (error) {
+
       const errorMessage = error.response?.data?.message || "2FA disable failed";
       toast.error(errorMessage);
+
     } finally {
+
       setLoading({ ...loading, twoFADisable: false });
     }
+
   };
 
   return (
+
     <Box className="ml-7 mt-8">
+
        <div className='mt-3 mb-5'>
+
                               <PageTitle value="Admin Setting"></PageTitle>
                               <CustomBreadcrumbs
                                   paths={[
                                       { label: 'Admin', href: "/admin/setting" },
                                       { label: 'Setting' },
                                   ]} />
+
                           </div>
+
       {/* Password Change Section */}
       <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+
         <Typography variant="h5" className="mb-8 font-bold pb-5">
           Change Password
         </Typography>
         
         <form onSubmit={handlePasswordSubmit}>
+
           <Grid container spacing={3}>
+
             <Grid item xs={10}>
               <TextField
                 fullWidth
@@ -277,50 +326,68 @@ if (!otpUrl) {
                   "Change Password"
                 )}
               </Button>
+
             </Grid>
+
           </Grid>
+
         </form>
+
       </Paper>
 
       {/* 2FA Section */}
+
       <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+
         <Typography variant="h5" className="mb-8 font-bold pb-5">
           Two-Factor Authentication
         </Typography>
         
         {user?.is2FAEnabled ? (
           <Box>
+
             <Typography className="text-purple-600 mb-4 mt-4">
               2FA is currently enabled for your account
             </Typography>
+
             <Button
               variant="contained"
               onClick={handle2FADisable}
               disabled={loading.twoFADisable}
               className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
+              style={{
+              padding: "14px 18px",
+              width: "180px",
+              textTransform: "none",
+              fontSize: "16px",
+              borderRadius: "10px",
+              fontWeight: "bold"
+               }}
             >
+
               {loading.twoFADisable ? (
+
                 <CircularProgress size={24} className="text-white" />
               ) : (
                 "Disable 2FA"
               )}
+
+
             </Button>
+
           </Box>
         ) : (
           <Box>
+
+
             {qrCode ? (
               <form onSubmit={handle2FAEnable}>
                 <Grid container spacing={3} alignItems="center">
+
                   <Grid item xs={10} md={5}>
+
                     <div className="qr-container" style={{ position: "relative" }}>
+
                       <img
                         src={qrCode}
                         alt="QR Code"
@@ -328,6 +395,7 @@ if (!otpUrl) {
                         width="256"
                         height="256"
                       />
+
                       {loading.twoFAEnable && (
                         <div
                           style={{
@@ -345,10 +413,13 @@ if (!otpUrl) {
                           <CircularProgress />
                         </div>
                       )}
+
                     </div>
+
                     <Typography variant="body2" className="mt-2 text-center">
                       Scan with authenticator app
                     </Typography>
+
                   </Grid>
 
                   <Grid item xs={10} md={5}>
@@ -360,55 +431,68 @@ if (!otpUrl) {
                       onChange={handle2FAChange}
                       className="h-14"
                     />
+
                     <Button
                       type="submit"
                       variant="contained"
                       disabled={loading.twoFAEnable}
                       className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    mt:2,
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
+                      style={{
+                      mt:2,
+                      padding: "14px 18px",
+                      width: "180px",
+                      textTransform: "none",
+                      fontSize: "16px",
+                      borderRadius: "10px",
+                      fontWeight: "bold"
+                      }}
                     >
+
                       {loading.twoFAEnable ? (
                         <CircularProgress size={24} className="text-white" />
                       ) : (
                         "Verify and Enable"
                       )}
+
                     </Button>
+
                   </Grid>
+
                 </Grid>
+
               </form>
+
             ) : (
+
               <Button
                 variant="contained"
                 onClick={generate2FASecret}
                 disabled={loading.twoFAEnable}
                 className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
+                 style={{
+                 padding: "14px 18px",
+                 width: "180px",
+                 textTransform: "none",
+                 fontSize: "16px",
+                 borderRadius: "10px",
+                 fontWeight: "bold"
+                 }}
               >
+
                 {loading.twoFAEnable ? (
                   <CircularProgress size={24} className="text-white" />
                 ) : (
                   "Set Up 2FA"
                 )}
               </Button>
+
             )}
           </Box>
+
         )}
       </Paper>
+
     </Box>
+    
   );
 }
