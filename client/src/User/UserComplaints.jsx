@@ -12,6 +12,8 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
 const UserComplaints = () => {
+  
+  //states
 
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,10 +57,12 @@ const UserComplaints = () => {
         });
 
         setComplaints(response.data);
-        
+
       } catch (err) {
+
         console.error('Failed to fetch complaints:', err);
       } finally {
+
         setLoading(false);
       }
     };
@@ -67,6 +71,7 @@ const UserComplaints = () => {
   }, [userId, token]);
 
   const getStatusChip = (status) => {
+
     const config = statusConfig[status.toLowerCase()] || {};
     return (
       <Chip
@@ -83,6 +88,7 @@ const UserComplaints = () => {
   };
 
   const labelStyle = {
+
     fontWeight: 'bold',
     color: '#A133FD', // dark purple
     mr: 1
@@ -105,7 +111,9 @@ const UserComplaints = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
+
       <div className="fixed top-0 left-0 w-full z-50">
+
         <Navbar />
       </div>
 
@@ -113,7 +121,9 @@ const UserComplaints = () => {
         <SideNav />
 
         <main className="flex-1 mt-36 p-6 pl-64">
+
           <div className="mt-3 mb-5">
+
             <Box
               sx={{
                 backgroundColor: 'white',
@@ -122,7 +132,9 @@ const UserComplaints = () => {
                 boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
               }}
             >
+
               <div className="mt-2 mb-5">
+                
                 <PageTitle value="Complaint History" />
                 <CustomBreadcrumbs
                   paths={[

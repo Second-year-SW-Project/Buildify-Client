@@ -1,29 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  CircularProgress,
-  TablePagination,
-  Avatar
+import {Box,Typography,TextField,Button,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,Select,MenuItem,
+  InputLabel,FormControl,IconButton,Dialog,DialogTitle,DialogContent,DialogActions,CircularProgress,TablePagination,Avatar
 } from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
@@ -35,6 +13,8 @@ import debounce from 'lodash.debounce';
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const RMA = () => {
+
+  //states
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -50,8 +30,12 @@ const RMA = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const fetchRequests = async () => {
+
     try {
+
       setLoading(true);
+
+      //fetch the rma
       const response = await axios.get(`${backendUrl}/api/rma/admin/requests`, {
         params: filters,
         headers: {
@@ -61,11 +45,15 @@ const RMA = () => {
 
       const data = Array.isArray(response?.data) ? response.data : [];
       setRequests(data);
+
     } catch (error) {
+
       console.error('Fetch Error:', error);
       toast.error('Failed to load requests');
       setRequests([]);
+
     } finally {
+
       setLoading(false);
     }
   };
@@ -76,18 +64,24 @@ const RMA = () => {
   }, [filters]);
 
   // Debounced search effect
-  const debouncedFetch = debounce(fetchRequests, 500); // 500ms debounce delay
+  const debouncedFetch = debounce(fetchRequests, 500); 
 
   useEffect(() => {
     debouncedFetch();
-    // Cleanup debounced function on component unmount
+    
     return () => {
       debouncedFetch.cancel();
     };
-  }, [filters]); // Depend on filters to trigger search when they change
+  }, [filters]); 
+
+
 
   const handleResponseSubmit = async () => {
+
+
     try {
+
+      //sending the rma response
       await axios.put(`${backendUrl}/api/rma/admin/respond/${selectedRequest?._id}`, {
         status: 'Resolved',
         response: responseText
@@ -96,23 +90,29 @@ const RMA = () => {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       });
+
       toast.success('Response submitted successfully');
       setOpenDialog(false);
       fetchRequests();
+
     } catch (error) {
+
       toast.error('Failed to submit response');
+
     }
   };
 
-  const statusColors = {
-    Processing: 'bg-blue-100 text-blue-800',
-    Resolved: 'bg-green-100 text-green-800',
-    Pending: 'bg-yellow-100 text-yellow-800'
-  };
+  // const statusColors = {
+  //   Processing: 'bg-blue-100 text-blue-800',
+  //   Resolved: 'bg-green-100 text-green-800',
+  //   Pending: 'bg-yellow-100 text-yellow-800'
+  // };
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -122,8 +122,11 @@ const RMA = () => {
   const paginatedRequests = requests.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
+
     <Box sx={{ p: 3 }}>
+
       <div className='mt-3 mb-5'>
+
         <PageTitle value="RMA & Support" />
         <CustomBreadcrumbs
           paths={[
@@ -131,11 +134,14 @@ const RMA = () => {
             { label: 'RMA & Support' },
           ]}
         />
+
       </div>
 
 <Box className="mb-10 border-2 border-black-200 rounded-md mt-6">
+
       {/* Filters */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, mt: 3, alignItems: 'center', ml:3 }}>
+
         <TextField
           label="Order ID"
           value={filters.orderId}
@@ -148,8 +154,11 @@ const RMA = () => {
             }
           }}
         />
+
         <FormControl>
+
           <InputLabel>Status</InputLabel>
+
           <Select
             value={filters.status}
             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
@@ -168,7 +177,9 @@ const RMA = () => {
             <MenuItem value="Processing">Processing</MenuItem>
             <MenuItem value="Resolved">Resolved</MenuItem>
             <MenuItem value="Pending">Pending</MenuItem>
+
           </Select>
+
         </FormControl>
 
        
@@ -176,9 +187,13 @@ const RMA = () => {
 
       {/* Table */}
       <TableContainer component={Paper}>
+
         <Table>
+
           <TableHead sx={{ bgcolor: '#f4e6ff' }}>
+
             <TableRow>
+
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Order ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Email</TableCell>
@@ -187,25 +202,42 @@ const RMA = () => {
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Status</TableCell>
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Created Date</TableCell>
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Action</TableCell>
+
             </TableRow>
+
           </TableHead>
+
           <TableBody>
+
             {loading ? (
               <TableRow>
+
                 <TableCell colSpan={8} align="center">
+
                   <CircularProgress />
                   <Typography variant="body2" sx={{ mt: 1 }}>Loading requests...</Typography>
+
                 </TableCell>
+
               </TableRow>
+
             ) : paginatedRequests.length === 0 ? (
+
               <TableRow>
+
                 <TableCell colSpan={8} align="center">
+
                   <Typography variant="body2" color="textSecondary">
+
                     No RMA requests found
                   </Typography>
+
                 </TableCell>
+
               </TableRow>
+
             ) : (
+
               paginatedRequests.map((request) => (
                 <TableRow key={request._id} hover>
                   <TableCell style={{fontWeight:"bold"}}>{request.orderId}</TableCell>
@@ -214,38 +246,41 @@ const RMA = () => {
                   <TableCell style={{fontWeight:"bold"}}>{request.subject}</TableCell>
                   <TableCell style={{fontWeight:"bold"}}>{request.reason}</TableCell>
                   <TableCell>
-  <Typography
-    variant="caption"
-    sx={{
-      px: 1.5,
-      py: 0.5,
-      borderRadius: '8px',
-      fontWeight: 600,
-      display: 'inline-block',
-      minWidth: 90,
-      textAlign: 'center',
-      color:
-        request.status === 'Resolved'
-          ? '#15803d'
-          : request.status === 'Processing'
-          ? '#92400e'
-          : '#b91c1c',
-      bgcolor:
-        request.status === 'Resolved'
-          ? '#dcfce7'
-          : request.status === 'Processing'
-          ? '#fef3c7'
-          : '#fee2e2',
-    }}
-  >
-    {request.status}
-  </Typography>
-</TableCell>
+
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: '8px',
+                        fontWeight: 600,
+                        display: 'inline-block',
+                        minWidth: 90,
+                        textAlign: 'center',
+                        color:
+                          request.status === 'Resolved'
+                            ? '#15803d'
+                            : request.status === 'Processing'
+                            ? '#92400e'
+                            : '#b91c1c',
+                        bgcolor:
+                          request.status === 'Resolved'
+                            ? '#dcfce7'
+                            : request.status === 'Processing'
+                            ? '#fef3c7'
+                            : '#fee2e2',
+                      }}
+                    >
+                      {request.status}
+                    </Typography>
+              </TableCell>
 
                   <TableCell style={{fontWeight:"bold"}}>
                     {format(new Date(request.createdAt), 'MMM dd, yyyy HH:mm')}
                   </TableCell>
+
                   <TableCell>
+
                     <IconButton
                       onClick={() => {
                         setSelectedRequest(request);
@@ -255,11 +290,15 @@ const RMA = () => {
                     >
                       <ReplyIcon />
                     </IconButton>
+
                   </TableCell>
+
                 </TableRow>
               ))
             )}
+
           </TableBody>
+
         </Table>
 
         {/* Pagination */}
@@ -272,28 +311,40 @@ const RMA = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25]}
         />
+
       </TableContainer>
 
       </Box>
+
+
       {/* Response Dialog */}
+
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md"
   sx={{ '& .MuiDialog-paper': { padding: 4, borderRadius: '16px', boxShadow: 24, width: '900px' } }}>
+
   <DialogTitle sx={{
     bgcolor: '#f4e6ff', fontWeight: '600', fontSize: '22px', borderBottom: '2px solid #d0b4f2',
     color: '#4b0082', py: 2.5, px: 4, letterSpacing: '0.5px', borderRadius: '16px', marginBottom: '10px'
   }}>
+
     Manage RMA Request - {selectedRequest?.orderId}
+
   </DialogTitle>
+
 
   <DialogContent sx={{
     py: 2, px: 2, bgcolor: '#faf5ff', borderRadius: '12px', overflow: 'hidden'
   }}>
+
     {selectedRequest && (
+
       <Box sx={{
         display: 'flex', flexDirection: 'column', gap: 3, backgroundColor: '#ffffff',
         borderRadius: '12px', boxShadow: '0 6px 15px rgba(0, 0, 0, 0.1)', p: 2, marginTop: '5px'
       }}>
+
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+
           <Avatar
             src={selectedRequest.userId?.profilePicture}
             sx={{
@@ -303,14 +354,19 @@ const RMA = () => {
           >
             {selectedRequest.userId?.name?.charAt(0).toUpperCase()}
           </Avatar>
+
           <Box>
+
             <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#6b21a8' }}>
               {selectedRequest.userId?.name || 'Unknown User'}
             </Typography>
+
             <Typography sx={{ fontSize: '14px', color: '#666' }}>
               {selectedRequest.userId?.email || 'No Email'}
             </Typography>
+
           </Box>
+
         </Box>
 
         <Typography><strong>Subject:</strong> {selectedRequest.subject}</Typography>
@@ -336,11 +392,15 @@ const RMA = () => {
             },
           }}
         />
+
       </Box>
+
     )}
+
   </DialogContent>
 
   <DialogActions sx={{ px: 2, py: 1 , marginTop: '10px'}}>
+
     <Button onClick={() => setOpenDialog(false)}
       className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
       sx={{
@@ -349,6 +409,7 @@ const RMA = () => {
       }}>
       Cancel
     </Button>
+
     <Button variant="contained" onClick={handleResponseSubmit}
       className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
       sx={{
@@ -357,10 +418,14 @@ const RMA = () => {
       }}>
       Submit Response
     </Button>
+
   </DialogActions>
+
 </Dialog>
 
+
     </Box>
+    
   );
 };
 
