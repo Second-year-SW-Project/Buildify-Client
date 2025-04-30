@@ -266,7 +266,7 @@ export default function Itempage() {
       
             x = product.manufacturer.toUpperCase();
             y = product.ram + " GB";
-            z = product.graphicCard.toUpperCase().replace(/_/g, ' ');
+            z = product.graphicCard.toUpperCase();
 
             
             p = product.storage + "GB";
@@ -286,10 +286,10 @@ export default function Itempage() {
        
              x = product.manufacturer.toUpperCase();
              y = product.ram + " GB";
-             z = product.graphicCard.toUpperCase().replace(/_/g, ' ');;
+             z = product.graphicCard.toUpperCase();
              
              p = product.storage+" GB HDD";
-             q = product.cpu.toUpperCase().replace(/_/g, ' ');
+             q = product.cpu.toUpperCase();
              r = product.warranty;
   
              break;
