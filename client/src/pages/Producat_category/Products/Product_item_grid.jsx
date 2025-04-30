@@ -95,7 +95,134 @@ if (filters.threadCount && filters.threadCount.length > 0) {
 
 
 
+// -----FOR MOTHERBOARDS-----
 
+
+//chipset
+if (filters.chipset && filters.chipset.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.chipset.includes(product.motherboardChipset)
+  );
+}
+
+//socket
+if (filters.socketType && filters.socketType.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.socketType.includes(product.socketType)
+  );
+}
+
+
+// ----for power supplies----
+
+//wattage
+if (filters.wattage && filters.wattage.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.wattage.includes(product.wattage)
+  );
+}
+
+//efficiency
+if (filters.efficiency && filters.efficiency.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.efficiency.includes(product.efficiencyRating)
+  );
+}
+
+
+
+
+// ----for storages----
+
+//capacity
+if (filters.storageCapacity && filters.storageCapacity.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.storageCapacity.includes(product.storageCapacity)
+  );
+}
+
+//type
+if (filters.storageType && filters.storageType.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.storageType.includes(product.storageType)
+  );
+}
+
+
+
+// ----for casings----
+
+if (filters.supportedMotherboard && filters.supportedMotherboard.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.supportedMotherboard.includes(product.supportedMotherboardSizes)
+  );
+  
+}
+
+
+
+// ----for Laptops----
+
+
+//lapram
+
+if (filters.laptopRamCapacity && filters.laptopRamCapacity.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.laptopRamCapacity.includes(product.ram)
+  );
+}
+
+
+//lapgpu
+
+if (filters.laptopGraphicCard && filters.laptopGraphicCard.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.laptopGraphicCard.includes(product.graphicCard)
+  );
+}
+
+//lapstorage
+
+if (filters.laptopStorage && filters.laptopStorage.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.laptopStorage.includes(product.storage)
+  );
+}
+
+
+
+
+
+// ----for PREBUILDS----
+
+
+//pcpram
+if (filters.prebuildRamCapacity && filters.prebuildRamCapacity.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.prebuildRamCapacity.includes(product.ram)
+  );
+}
+
+
+
+
+
+//pcgpu
+if (filters.prebuildGpu && filters.prebuildGpu.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.prebuildGpu.includes(product.graphicCard)
+  );
+}
+
+
+
+//pcstorage
+
+if (filters.prebuildStorage && filters.prebuildStorage.length > 0) {
+  filtered = filtered.filter(product =>
+    filters.prebuildStorage.includes(product.storage)
+  );
+}
 
 
 
