@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { TextField, Button, CircularProgress, Box, Typography, Divider } from "@mui/material";
+import { TextField, Button, CircularProgress, Box, Typography } from "@mui/material";
 import { toast } from 'sonner';
-import { useDispatch, useSelector } from "react-redux"; 
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { setAuthUser } from "../Store/authSlice";
 import logo from "../assets/logo.png";
 import pcImage from "../assets/images/pc3.jpg";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Verify = () => {
 
@@ -15,19 +17,22 @@ const Verify = () => {
 
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
+  //use to get the input one by one as an array
   const inputRefs = useRef([]);
-  const hiddenInputRef = useRef(null);
-  const user = useSelector((state) => state.auth.user); 
 
+  const user = useSelector((state) => state.auth.user);
+
+
+  //if the user not there then it navigate to signup page
   useEffect(() => {
-
     if (!user) {
-      navigate("/auth/signup", { replace: true });
+      navigate("/adminpanel/auth/signup", { replace: true });
     }
   }, [user, navigate]);
 
-  const handleChange = (index, event) => {
 
+  const handleChange = (index, event) => {
     const { value } = event.target;
     if (/^\d{0,1}$/.test(value)) {
       const newOtp = [...otp];
@@ -41,62 +46,64 @@ const Verify = () => {
   };
 
   const handleKeyDown = (index, event) => {
-
-    const { key } = event;
-    if (key === "Backspace" && !otp[index] && index > 0) {
+    if (event.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  const handlePaste = (e) => {
+  const handlePaste = (e, startIndex) => {
+    e.preventDefault();
+    const paste = e.clipboardData.getData("text").replace(/\D/g, "");
+    if (!paste) return;
 
-    const pasteData = e.clipboardData.getData("text").slice(0, 6);
-    if (/^\d+$/.test(pasteData)) {
-      const newOtp = pasteData.split("").concat(Array(6 - pasteData.length).fill(""));
-      setOtp(newOtp);
+    const newOtp = [...otp];
+    for (let i = 0; i < 6 - startIndex; i++) {
+      if (i >= paste.length) break;
+      newOtp[startIndex + i] = paste[i];
+    }
 
-      const focusIndex = Math.min(pasteData.length - 1, 5);
-      inputRefs.current[focusIndex]?.focus();
+    setOtp(newOtp);
+
+    const nextIndex = startIndex + paste.length;
+    if (nextIndex <= 5) {
+      inputRefs.current[nextIndex]?.focus();
     }
   };
 
-  const handleSubmit = async () => {
 
+  //get the otp value through verify
+  const handleSubmit = async () => {
     setLoading(true);
     try {
-
       const otpValue = otp.join("");
 
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/verify",
+        `${backendUrl}/api/v1/users/verify`,
         { otp: otpValue },
         { withCredentials: true }
       );
 
       dispatch(setAuthUser(response.data.data.user));
       toast.success("Verification successful!");
-      navigate("/auth/login");
-
+      navigate("/adminpanel/auth/login");
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   };
 
+  //request to resend otp
   const handleResendOtp = async () => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:8000/api/v1/users/resend-otp", null, {
+      await axios.post(`${backendUrl}/api/v1/users/resend-otp`, null, {
         withCredentials: true,
       });
       toast.success("New OTP sent to your email");
-    } 
-    catch (error) {
+    } catch (error) {
       toast.error(error.response?.data?.message || "Resend failed");
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -110,11 +117,10 @@ const Verify = () => {
         backgroundPosition: "center",
       }}
     >
-      
       <Box className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
 
       <Box className="relative z-10 w-full max-w-4xl h-[630px] flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
-        {/* Left side part */}
+        {/* Left side */}
         <Box className="hidden md:flex flex-col justify-center items-center p-10 text-white w-1/2">
           <img src={logo} alt="Buildify Logo" className="h-18 mb-4" />
           <Typography variant="h6" className="text-center font-light">
@@ -122,7 +128,7 @@ const Verify = () => {
           </Typography>
         </Box>
 
-        {/* Right side part*/}
+        {/* Right side */}
         <Box className="w-full md:w-1/2 p-8">
           <Box className="flex flex-col items-center mb-6">
             <img src={logo} alt="Logo" className="w-16 mb-2 md:hidden" />
@@ -142,12 +148,12 @@ const Verify = () => {
                 value={digit}
                 onChange={(e) => handleChange(index, e)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={(e) => handlePaste(e, index)}
                 inputRef={(el) => (inputRefs.current[index] = el)}
-                onFocus={() => hiddenInputRef.current?.focus()}
                 type="text"
                 inputProps={{
                   maxLength: 1,
-                  className: "!text-center !text-xl",
+                  style: { textAlign: "center", fontSize: "1.25rem" },
                 }}
                 className="!bg-white !rounded"
                 sx={{
@@ -159,17 +165,6 @@ const Verify = () => {
               />
             ))}
           </Box>
-
-          
-          <TextField
-            inputRef={hiddenInputRef}
-            style={{
-              opacity: 0,
-              position: "absolute",
-              pointerEvents: "none",
-            }}
-            onPaste={handlePaste}
-          />
 
           <Box className="flex flex-col space-y-4">
             <Button

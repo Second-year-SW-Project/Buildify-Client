@@ -1,28 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  Chip,
-  Stack,
-  Skeleton,
-  useTheme,
-  Box
-} from '@mui/material';
-import {
-  CheckCircle,
-  Error,
-  HourglassTop
-} from '@mui/icons-material';
-
+import {Container,Typography,Card,CardContent,Chip,Stack,Skeleton,useTheme,Box} from '@mui/material';
+import { CheckCircle, Error,HourglassTop} from '@mui/icons-material';
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import SideNav from './SideNav';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
 const UserComplaints = () => {
+
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem('userId') || null;
@@ -31,36 +21,41 @@ const UserComplaints = () => {
 
   const statusConfig = {
     pending: {
-      color: '#FFA000', // dark yellow
+      color: '#FFA000', 
       bg: '#FFF8E1',
       icon: <HourglassTop />
     },
     resolved: {
-      color: '#2E7D32', // dark green
+      color: '#2E7D32', 
       bg: '#E8F5E9',
       icon: <CheckCircle />
     },
     rejected: {
-      color: '#C62828', // dark red
+      color: '#C62828', 
       bg: '#FFEBEE',
       icon: <Error />
     },
     'in progress': {
-      color: '#1565C0', // dark blue
+      color: '#1565C0', 
       bg: '#E3F2FD',
       icon: <HourglassTop />
     }
   };
 
   useEffect(() => {
+
+    //get the complaints if not then null
     const fetchComplaints = async () => {
       if (!userId) return;
 
       try {
-        const response = await axios.get(`http://localhost:8000/api/complaints/user/${userId}`, {
+
+        const response = await axios.get(`${backendUrl}/api/complaints/user/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+
         setComplaints(response.data);
+        
       } catch (err) {
         console.error('Failed to fetch complaints:', err);
       } finally {

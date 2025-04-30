@@ -1,25 +1,33 @@
 import { Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import errorImage from "../assets/error.avif";
-import axios from "axios"; // <- import axios to call API
-import { toast } from "sonner"; // <- optional: show a toast on logout
+import axios from "axios";
+import { toast } from "sonner"; 
+
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 
 export default function ErrorStatus() {
   const navigate = useNavigate();
 
   const handleLogoutAndReturnHome = async () => {
     try {
-      // Call logout API
-      await axios.post("http://localhost:8000/api/v1/users/logout", {
-        withCredentials: true, // important if your API uses cookies
+
+      // Call logout api
+      await axios.post(`${backendUrl}/api/v1/users/logout`, {
+        withCredentials: true, 
       });
 
-      // Clear localStorage (optional but recommended after logout)
+      
       localStorage.removeItem("userId");
       localStorage.removeItem("token");
 
       toast.success("Logged out successfully!");
+      
+      //return to home
       navigate("/");
+
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("Failed to logout. Please try again.");
@@ -28,7 +36,7 @@ export default function ErrorStatus() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Blurred Background */}
+    
       <div
         className="absolute inset-0 bg-cover bg-center opacity-100"
         style={{
@@ -37,10 +45,10 @@ export default function ErrorStatus() {
         }}
       ></div>
 
-      {/* Main Content Card */}
+  
       <div className="relative z-10 bg-gray-900/70 backdrop-blur-md rounded-2xl p-10 max-w-md w-full text-center animate-fadeIn shadow-2xl border border-gray-700">
         
-        {/* Error Icon */}
+      
         <div className="flex justify-center mb-6">
           <div className="bg-red-600/20 p-3 rounded-full">
             <svg
@@ -59,19 +67,19 @@ export default function ErrorStatus() {
           </div>
         </div>
 
-        {/* Main Title */}
+        
         <Typography variant="h4" className="text-red-400 font-bold mb-4 tracking-wider">
           System Blocked
         </Typography>
 
-        {/* Sub Title */}
+    
         <Typography variant="body1" className="text-gray-300 mb-6">
           Oops! Your PC Builder account has been <span className="text-red-400 font-semibold">suspended</span> due to policy violation.
           <br />
           Please reach out to support.
         </Typography>
 
-        {/* Buttons */}
+    
         <div className="flex flex-col gap-4 mt-4">
           <Button
             variant="contained"

@@ -1,22 +1,16 @@
 import React, { useState } from "react";
 import { useSelector ,useDispatch } from "react-redux";
-import {
-  Box,
-  Paper,
-  Divider,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  CircularProgress
-} from "@mui/material";
+import {Box,Paper,Divider,Typography,TextField,Button,Grid,CircularProgress} from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
-import { setAuthUser } from "../store/authSlice.js";
+import { setAuthUser } from "../Store/authSlice.js";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function AdminSettings() {
+
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
@@ -39,7 +33,7 @@ export default function AdminSettings() {
     twoFA: {}
   });
 
-  // Password Change Handlers
+
   const handlePasswordChange = (e) => {
     setPasswordForm({
       ...passwordForm,
@@ -76,7 +70,7 @@ export default function AdminSettings() {
     setLoading({ ...loading, password: true });
     try {
       await axios.post(
-        `http://localhost:8000/api/v1/users/change-password`,
+        `${backendUrl}/api/v1/users/change-password`,
         {
           currentPassword: passwordForm.currentPassword,
           newPassword: passwordForm.newPassword,
@@ -88,10 +82,10 @@ export default function AdminSettings() {
         }
       );
 
-      // Show success toast
+  
       toast.success("Password changed successfully!");
 
-      // Clear the form fields
+      
       setPasswordForm({
         currentPassword: "",
         newPassword: "",
@@ -107,7 +101,7 @@ export default function AdminSettings() {
       }
     }
     finally {
-      // Reset the loading state
+  
       setLoading({ ...loading, password: false });
     }
   };
@@ -117,12 +111,11 @@ export default function AdminSettings() {
     setLoading({ ...loading, twoFAEnable: true });
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/2fa/generate",
+        `${backendUrl}/api/v1/users/2fa/generate`,
         {},
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
-      // Verify the response structure
       console.log("2FA Generation Response:", response.data);
 
       const otpUrl = response.data?.otpauth_url || response.data?.qr;
@@ -153,7 +146,7 @@ if (!otpUrl) {
 
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/users/2fa/enable",
+        `${backendUrl}/api/v1/users/2fa/enable`,
         { token: twoFAForm.token },
         {
           headers: {
@@ -183,7 +176,7 @@ if (!otpUrl) {
 
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/users/2fa/disable",
+        `${backendUrl}/api/v1/users/2fa/disable`,
         {},
         {
           headers: {

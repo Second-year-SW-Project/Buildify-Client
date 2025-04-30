@@ -12,6 +12,9 @@ import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import debounce from 'lodash.debounce';
 
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Usermanage = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -50,7 +53,7 @@ const Usermanage = () => {
   
 
   const fetchUsers = () => {
-    axios.get("http://localhost:8000/api/v1/users")
+    axios.get(`${backendUrl}/api/v1/users`)
       .then((res) => {
         setUsers(res.data);
         setFilteredUsers(res.data);
@@ -75,7 +78,7 @@ const Usermanage = () => {
 
   const deleteUser = () => {
     if (userToDelete) {
-      axios.delete(`http://localhost:8000/api/v1/users/${userToDelete._id}`)
+      axios.delete(`${backendUrl}/api/v1/users/${userToDelete._id}`)
         .then(() => {
           setUsers(users.filter(user => user._id !== userToDelete._id));
           setFilteredUsers(filteredUsers.filter(user => user._id !== userToDelete._id));
@@ -98,7 +101,7 @@ const Usermanage = () => {
 
   const saveUser = () => {
     if (isEditing) {
-      axios.put(`http://localhost:8000/api/v1/users/${editingUser}`, formData)
+      axios.put(`${backendUrl}/api/v1/users/${editingUser}`, formData)
         .then(() => {
           toast.success("User updated successfully");
           fetchUsers();
@@ -106,7 +109,7 @@ const Usermanage = () => {
         })
         .catch(() => toast.error("Error updating user"));
     } else {
-      axios.post("http://localhost:8000/api/v1/users/new", formData)
+      axios.post(`${backendUrl}/api/v1/users/new`, formData)
         .then(() => {
           toast.success("User added successfully");
           fetchUsers();

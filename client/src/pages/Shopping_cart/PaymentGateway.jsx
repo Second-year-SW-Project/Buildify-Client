@@ -67,7 +67,7 @@ const PaymentGateway = () => {
     try {
       const sanitizedCartItems = cartItems.map((item) => ({
         _id: item._id || item.id,
-        product_image: item.imgUrls?.[0]?.url || null,
+        product_image: item.imgUrls?.[0]?.url || item.image || null,
         name: item.name,
         category: item.type,
         quantity: item.quantity,

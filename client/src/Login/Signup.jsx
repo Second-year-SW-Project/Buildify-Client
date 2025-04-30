@@ -9,7 +9,10 @@ import { setAuthUser } from "../Store/authSlice";
 import logo from '../assets/logo.png';
 import pcImage from "../assets/images/pc3.jpg";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Signup = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,27 +26,37 @@ const Signup = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleChange = (e) => {
+
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
   };
 
   const validateEmail = (email) => {
+
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
+
   };
   
   const validatePassword = (password) => {
+
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     const isValidLength = password.length >= 8;
+
     return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength;
+
   };
 
+  // Frontend Validation of signup
   const submitHandler = async (e) => {
+
     e.preventDefault();
     setLoading(true);
+
     if (!formData.name.trim()) {
       toast.error("Name is required");
       setLoading(false);
@@ -100,15 +113,19 @@ const Signup = () => {
 
     try {
 
+      //Sending the response to backend via api to respond after the validation of frontend
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/signup",
+        `${backendUrl}/api/v1/users/signup`,
         formData,
         { withCredentials: true }
       );
 
       const user = response.data.data.user;
+
       toast.success("Sign up successful!");
+
       dispatch(setAuthUser(user));
+
       navigate('/adminpanel/auth/verify');
 
     } catch (error) {
@@ -125,8 +142,9 @@ const Signup = () => {
     }
   };
 
+  //Google login curretly in progress
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = `${backendUrl}/auth/google`;
   };
 
   return (

@@ -27,6 +27,8 @@ import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import debounce from 'lodash.debounce';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Review = () => {
   const [reviews, setReviews] = useState([]);
   const [filter, setFilter] = useState({
@@ -62,7 +64,7 @@ const Review = () => {
       const queryParams = new URLSearchParams(filteredParams).toString();
       
       const { data } = await axios.get(
-        `http://localhost:8000/api/review/admin/all?${queryParams}`, 
+        `${backendUrl}/api/review/admin/all?${queryParams}`, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,7 +108,7 @@ const Review = () => {
       const token = localStorage.getItem("token"); // or whatever key you're using
   
       await axios.put(
-        `http://localhost:8000/api/review/admin/respond/${reviewId}`,
+        `${backendUrl}/api/review/admin/respond/${reviewId}`,
         { adminResponse: response[reviewId] },
         {
           headers: {
@@ -156,7 +158,7 @@ const Review = () => {
 
 
       await axios.delete(
-        `http://localhost:8000/api/review/admin/${reviewId}`,
+        `${backendUrl}/api/review/admin/${reviewId}`,
         {
           headers: {
             Authorization: `Bearer ${token}` // Include the JWT token in the Authorization header

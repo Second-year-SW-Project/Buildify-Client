@@ -30,6 +30,8 @@ import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import debounce from 'lodash.debounce';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,7 +51,7 @@ const Complaints = () => {
 
   const fetchComplaints = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/complaints/admin', {
+      const response = await axios.get(`${backendUrl}/api/complaints/admin`, {
         params: { search: searchTerm, status: statusFilter }
       });
       setComplaints(response.data);
@@ -73,7 +75,7 @@ const Complaints = () => {
 
   const handleRespond = async () => {
     try {
-      await axios.put(`http://localhost:8000/api/complaints/admin/respond/${selectedComplaint._id}`, {
+      await axios.put(`${backendUrl}/api/complaints/admin/respond/${selectedComplaint._id}`, {
         status,
         response: responseText
       });

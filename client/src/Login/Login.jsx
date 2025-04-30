@@ -9,6 +9,8 @@ import { setAuthUser } from "../Store/authSlice";
 import logo from '../assets/logo.png';
 import pcImage from "../assets/images/pc3.jpg";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Login = () => {
 
   const dispatch = useDispatch();
@@ -31,8 +33,9 @@ const Login = () => {
     setLoading(true);
 
     try {
+      //get user email and password for login
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/login",
+        `${backendUrl}/api/v1/users/login`,
         formData,
         { withCredentials: true }
       );
@@ -43,23 +46,26 @@ const Login = () => {
       localStorage.setItem('token', response.data.token);
       dispatch(setAuthUser(user));
     
-      // 1. Check if user is not verified
+      //  Check if user is not verified
       if (!user.isVerified) {
+
         toast.error("Please verify your email before proceeding.");
         navigate("/adminpanel/auth/verify", {
           state: { email: user.email },
         });
-        return; // STOP here if not verified
+        return;
+
       }
     
-      // 2. Check if user is banned
+      // Check if user is banned
       if (user.status === "banned") {
+
         toast.error("Your account has been banned!");
         navigate('/user/errorstatus');
-        return; // STOP here if banned
+        return; 
+
       }
     
-      // 3. Now user is verified + active -> safe to show login success
       toast.success("Login successful!");
     
       if (user.Role === "admin") {
@@ -84,7 +90,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.open("http://localhost:8000/auth/google", "_self");
+    window.open(`${backendUrl}/auth/google`, "_self");
   };
 
   return (
