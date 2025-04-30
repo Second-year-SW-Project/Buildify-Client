@@ -10,12 +10,12 @@ import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useParams, useNavigate } from "react-router-dom";
-import Iconset from "../AtomicComponents/Icons/Iconset";
-import { DashboardLayout } from "@toolpad/core";
-
-
 
 const CreateGames = () => {
+
+    //Backend URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     const { id } = useParams();
     const isEditMode = !!id;
 
@@ -60,7 +60,7 @@ const CreateGames = () => {
         if (isEditMode) {
             const fetchGame = async () => {
                 try {
-                    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/game/games/${id}`);
+                    const res = await axios.get(`${backendUrl}/api/game/games/${id}`);
                     if (res.data.success) {
                         const fetchedGame = res.data.game;
                         console.log("Fetched Game====================================", fetchedGame);
@@ -170,8 +170,8 @@ const CreateGames = () => {
             formData.append("ram", JSON.stringify(gameData.ram));
 
             const endpoint = isEditMode
-                ? `http://localhost:8000/api/game/games/${id}`
-                : `http://localhost:8000/api/game/games`;
+                ? `${backendUrl}/api/game/games/${id}`
+                : `${backendUrl}/api/game/games`;
 
             const response = isEditMode
                 ? await axios.put(endpoint, formData, {

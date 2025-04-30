@@ -14,15 +14,22 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ComplaintSubmit = () => {
 
+
   const navigate = useNavigate();
+
+  //state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [complaintType, setComplaintType] = useState('');
+
+
   const userId = localStorage.getItem('userId');
+
 
   const history = () => {
     navigate('/user/complaintHistory');
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,35 +40,49 @@ const ComplaintSubmit = () => {
     }
 
     try {
+
       //submit the complaint
       await axios.post(`${backendUrl}/api/complaints/submit`, { 
         title, description, complaintType, userId 
       });
+
       toast.success('Complaint submitted successfully!');
       navigate('/user/complaintHistory');
+
     } catch (err) {
+
       toast.error('Failed to submit complaint');
+
     }
   };
 
   return (
+
     <div className="flex flex-col min-h-screen">
       <div className="fixed top-0 left-0 w-full z-50">
+
         <Navbar />
+
       </div>
 
       <div className="flex flex-1">
+
         <SideNav />
 
         <main className="flex-1 mt-36 p-6 pl-64">
+
           <div className='mt-3 mb-5'>
+
             <Box sx={{ 
               backgroundColor: 'white',
               padding : '2.5rem',
               borderRadius: '16px',
               boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
             }}>
+
+
               <div className='mt-3 mb-5'>
+
                 <PageTitle value="User Complaints" />
                 <CustomBreadcrumbs
                   paths={[
@@ -89,6 +110,7 @@ const ComplaintSubmit = () => {
               </Button>
 
               <form onSubmit={handleSubmit}>
+                
                 {/* Title and Type Side by Side */}
                 <Box sx={{ display: 'flex', gap: '2rem', marginBottom: '3rem' }}>
                   <TextField

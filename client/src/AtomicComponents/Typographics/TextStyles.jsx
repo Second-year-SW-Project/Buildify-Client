@@ -10,6 +10,12 @@ export function PageTitle({ value }) {
     );
 }
 
+export function Required() {
+    return (
+        <Typography fontWeight="bold" color="error" sx={{ fontSize: '18px', marginRight: '.2rem' }}>*</Typography>
+    );
+}
+
 
 
 

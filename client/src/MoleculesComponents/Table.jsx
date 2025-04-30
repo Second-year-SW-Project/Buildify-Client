@@ -150,6 +150,7 @@ export function OrderTable({
     setExpandedRowId((prev) => (prev === orderId ? null : orderId));
   };
 
+
   const isRowOpen = (rowId) => expandedRowId === rowId;
 
   const statusColorMap = {
@@ -157,7 +158,6 @@ export function OrderTable({
     Pending: "warning",
     Refunded: "info",
     Canceled: "error",
-    Completed: "success",
     Shipped: "primary",
   };
 
@@ -216,6 +216,7 @@ export function OrderTable({
                     >
                       <TableCell sx={{ fontWeight: "bold" }}>
                         {`#${order._id.slice(-4).toUpperCase()}`}
+                        {order._id ? `#${order._id.slice(-4).toUpperCase()}` : "#----"}
                       </TableCell>
                       <TableCell>
                         <UserCard
@@ -232,17 +233,18 @@ export function OrderTable({
                           {format(new Date(order.createdAt), "p")}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold" }}>
-                        {order.items.length}
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: "bold" }}>
-                        {order.total.toLocaleString()} LKR
+                      <TableCell sx={{ fontWeight: "bold", textAlign: "center", textAlign: "center", }}>{order.items.length}</TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>{(order.total !== undefined ? order.total.toLocaleString() : "0")} LKR
                       </TableCell>
                       <TableCell>
                         <Chip
                           label={order.status}
                           color={statusColorMap[order.status] || "default"}
                           size="small"
+                          sx={{
+                            padding: "5px",
+                            height: "30px",
+                          }}
                         />
                       </TableCell>
                       {iconTypes.length > 0 && (
@@ -255,7 +257,7 @@ export function OrderTable({
                                 type === "toggle"
                                   ? toggleRow(order._id)
                                   : iconActions[type] &&
-                                    iconActions[type](order._id)
+                                  iconActions[type](order._id)
                               }
                               translate="3s"
                               sx={{
@@ -279,35 +281,60 @@ export function OrderTable({
                       )}
                     </TableRow>
                     <TableRow>
-                      <TableCell
-                        style={{ paddingBottom: 0, paddingTop: 0 }}
-                        colSpan={7}
-                      >
+                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
                         <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                          <Box
-                            margin={2}
-                            bgcolor="#f8e9ff"
-                            borderRadius={2}
-                            p={2}
-                          >
+                          <Box margin={1} p={1}>
                             {order.items.map((item, i) => (
                               <Stack
                                 key={item._id}
                                 direction="row"
+                                alignItems="center"
                                 justifyContent="space-between"
-                                mb={2}
+                                bgcolor="#f8e9ff"
+                                borderRadius={2}
+                                width="100%"
+                                mb={1}
+                                p={1}
                               >
-                                <OrderItemCard
-                                  name={item.name}
-                                  productId={"6005"}
-                                  src={item.product_image}
-                                />
-                                <Typography flex={1}>
-                                  x{item.quantity}
-                                </Typography>
-                                <Typography flex={1}>
-                                  {item.price.toLocaleString()} LKR
-                                </Typography>
+                                {/* <Box
+                                  
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  textAlign="left"
+                                  marginLeft={1}
+                                  marginRight={2}
+                                >
+                                  <Typography color="primary" flex={1}>{`#${item._id?.slice(-4).toUpperCase() || "----"}`}</Typography>
+                                </Box> */}
+                                <Box flex={3} display="flex" alignItems="center">
+                                  <OrderItemCard
+                                    name={item.name}
+                                    type={item.category}
+                                    src={item.product_image}
+                                  />
+                                </Box>
+                                <Box
+                                  flex={1}
+                                  display="flex"
+                                  flexDirection="column"
+                                  justifyContent="flex-end"
+                                  textAlign="right"
+                                >
+                                  <Typography fontWeight="bold" flex={1}>x {item.quantity}</Typography>
+                                  <Typography fontSize={14} flex={1} color="black500">Unit Price -{item.price}</Typography>
+                                </Box>
+                                <Box
+                                  flex={1}
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  textAlign="right"
+                                  marginRight={2}
+                                >
+                                  <Typography fontWeight="bold" flex={1}>
+                                    {item.price * item.quantity} LKR
+                                  </Typography>
+                                </Box>
                               </Stack>
                             ))}
                           </Box>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Paper, Divider, Typography, TextField, Button, Grid } from "@mui/material";
+import { Box, Paper, Typography, TextField, Button, Grid } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useSelector, useDispatch } from "react-redux";
 import { setAuthUser } from "../Store/authSlice.js";
@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
-import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -17,10 +16,15 @@ const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 
 
 export default function AdminProfile() {
+
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
+  //get the user the details from redux state store
   const user = useSelector((state) => state.auth.user);
 
+
+  //difining states
   const [editable, setEditable] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,6 +37,8 @@ export default function AdminProfile() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+
 
   useEffect(() => {
 
@@ -48,12 +54,16 @@ export default function AdminProfile() {
     }
   }, [user]);
 
+
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
+
+  //image uploading to cloudinary
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -65,6 +75,8 @@ export default function AdminProfile() {
 
     try {
       setUploading(true);
+
+      //get the response as link to store in database
       const response = await axios.post(
         CLOUDINARY_UPLOAD_URL,
         formData
@@ -74,11 +86,15 @@ export default function AdminProfile() {
         ...prev,
         profilePicture: response.data.secure_url
       }));
+
       toast.success("Profile picture updated successfully");
     } catch (error) {
+
       toast.error("Image upload failed");
       console.error("Cloudinary upload error:", error);
+
     } finally {
+
       setUploading(false);
     }
   };
@@ -98,7 +114,7 @@ export default function AdminProfile() {
     setEditable(!editable);
   };
 
-  
+  //submitting updates
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
@@ -284,30 +300,30 @@ const handleSubmit = async (e) => {
 
           <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
           <Button
-  variant="contained"
-  disabled={loading.profile}
-  onClick={toggleEditable}
-  className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-  style={{
-    padding: "14px 18px",
-    width: "180px",
-    textTransform: "none",
-    fontSize: "16px",
-    borderRadius: "10px",
-    fontWeight: "bold"
-  }}
->
-  {editable ? "Cancel" : "Edit Profile"}
-</Button>
+           variant="contained"
+           disabled={loading.profile}
+           onClick={toggleEditable}
+           className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+           style={{
+           padding: "14px 18px",
+           width: "180px",
+           textTransform: "none",
+           fontSize: "16px",
+           borderRadius: "10px",
+           fontWeight: "bold"
+           }}
+         >
+      {editable ? "Cancel" : "Edit Profile"}
 
-
+        </Button>
 
 
             {editable && (
              <Button
              variant="contained"
              type="submit"
-             className={`text-white font-bold ${loading || uploading ? 'bg-gray-500 hover:bg-gray-600' : 'bg-purple-700 hover:bg-purple-800'}`}
+             className={`text-white font-bold 
+              ${loading || uploading ? 'bg-gray-500 hover:bg-gray-600' : 'bg-purple-700 hover:bg-purple-800'}`}
              disabled={loading || uploading}
              style={{
                padding: "14px 18px",

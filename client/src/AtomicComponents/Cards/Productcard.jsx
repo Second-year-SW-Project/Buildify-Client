@@ -2,7 +2,7 @@ import React from "react";
 import { Typography } from "@mui/material";
 
 
-export default function ProductCard({ name, type, src }) {
+export default function ProductCard({ name, type, src, id }) {
     return (
         <div className="flex items-center space-x-3">
             <div>

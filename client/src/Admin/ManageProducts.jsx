@@ -14,12 +14,13 @@ import { InputField } from "../AtomicComponents/Inputs/Input";
 import { StockType, main, subCategories } from '../AtomicComponents/ForAdminForms/Category';
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
-import { useSelector, useDispatch } from "react-redux";
-import { setSelectedMainCategory, setSelectedSubCategory } from "../Store/formSlice";
 import StatusCard from "../AtomicComponents/Cards/StatusCard";
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 
 function ManageProducts() {
+
+    //Backend URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
@@ -30,38 +31,48 @@ function ManageProducts() {
     const [selectedProductId, setSelectedProductId] = useState(null);
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
 
-    const {
-        subCategoryOptions,
-        selectedMainCategory,
-        selectedSubCategory,
-        // selectedFilteredMainCategory,
-        // selectedFilteredSubCategory
-    } = useSelector((state) => state.form);
+    //Set initial state for selected categories and options
+    const [selectedMainCategory, setSelectedMainCategory] = useState('');
+    const [selectedSubCategory, setSelectedSubCategory] = useState('');
+    const [subCategoryOptions, setSubCategoryOptions] = useState([]);
 
-    const handleMainCategoryChange = (selectedValue) => {
-        dispatch(setSelectedMainCategory(selectedValue));
-        dispatch(setSelectedSubCategory(''));
+    //Clear filters function
+    const clearFilters = () => {
+        setStatusFilter('');
+        setSelectedDate(null);
+        setSelectedMainCategory('');
+        setSelectedSubCategory('');
+        setSubCategoryOptions([]);
+        setSearchTerm('');
+        fetchProducts();
     };
 
-    const handleSubCategoryChange = (selectedValue) => {
-        dispatch(setSelectedSubCategory(selectedValue));
-        applyFilters(products, selectedValue);
+    //Set up state for selected images
+    const handleMainCategoryChange = (value) => {
+        setSelectedMainCategory(value);
+        setSubCategoryOptions(subCategories[value] || []);
+        setSelectedSubCategory('');
     };
 
+    //Set up state for selected subcategory and manufacture
+    const handleSubCategoryChange = (value) => {
+        setSelectedSubCategory(value);
+    };
 
+    //Handle input changes for filters
     const handleInputChange = (field, value) => {
         if (field === 'statusFilter') {
             setStatusFilter(value);
         }
-        // Add more fields if needed
+        // Add more 
     };
 
     useEffect(() => {
         fetchProducts();
     }, []);
 
+    //Fetch products using filters
     useEffect(() => {
         applyFilters();
     }, [statusFilter, selectedSubCategory, products, selectedDate]);
@@ -69,7 +80,7 @@ function ManageProducts() {
     //fetch all the products
     const fetchProducts = async (searchTerm = "") => {
         try {
-            const response = await axios.get("http://localhost:8000/api/product/all", {
+            const response = await axios.get(`${backendUrl}/api/product/all`, {
                 params: searchTerm ? { search: searchTerm } : {}
             });
 
@@ -114,7 +125,7 @@ function ManageProducts() {
         // Filter by Date
         if (selectedDate) {
             filtered = filtered.filter(product => {
-                const productDate = new Date(product.createdAt).toLocaleDateString();
+                const productDate = new Date(product.updatedAt).toLocaleDateString();
                 const selectedFormatted = new Date(selectedDate).toLocaleDateString();
                 return productDate === selectedFormatted;
             });
@@ -123,14 +134,15 @@ function ManageProducts() {
         setFilteredProducts(filtered);
     };
 
+    //Handle edit product function
     const handleEdit = (id) => {
         navigate(`/adminpanel/products/createproduct/${id}`);
     };
 
+    //Delete product function
     const handleDelete = async () => {
         try {
-            console.log("funtion=================", selectedProductId)
-            const response = await axios.delete(`http://localhost:8000/api/product/${selectedProductId}`);
+            const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/product/${selectedProductId}`);
             if (response.data.Success) {
                 toast.success("Product deleted successfully", selectedProductId);
                 fetchProducts();
@@ -143,6 +155,7 @@ function ManageProducts() {
         setOpenDialog(false);
     };
 
+    //Open delete dialog function
     const openDeleteDialog = (_id) => {
         console.log("Delete product ID:", _id);
         setSelectedProductId(_id);
@@ -151,13 +164,15 @@ function ManageProducts() {
 
     //Table Columns
     const productColumns = [
+        { id: "Id", label: "ID" },
         { id: "productCard", label: "Product" },
-        { id: "date", label: "Created at" },
+        { id: "date", label: "Updated at" },
         { id: "availability", label: "Stock Availability" },
         { id: "quantity", label: "Quantity" },
         { id: "stock", label: "Stock Value" },
     ];
 
+    //Get the category label from the subcategories
     const getCategoryLabel = (type) => {
         for (const category in subCategories) {
             const found = subCategories[category].find(item => item.value === type);
@@ -169,8 +184,9 @@ function ManageProducts() {
     const productData = Array.isArray(filteredProducts)
         ? filteredProducts.map(product => ({
             id: product._id,
+            Id: `#${product._id?.slice(-4).toUpperCase() || "----"}`,
             productCard: <ProductCard name={product.name} type={getCategoryLabel(product.type)} src={product.imgUrls?.[0]?.url} />,
-            date: <TimeCard date={new Date(product.createdAt).toLocaleDateString()} time={new Date(product.createdAt).toLocaleTimeString()} />,
+            date: <TimeCard date={new Date(product.updatedAt).toLocaleDateString()} time={new Date(product.updatedAt).toLocaleTimeString()} />,
             availability: <StatusCard Status={product.quantity > 5 ? "In Stock" : product.quantity <= 5 && product.quantity > 0 ? "Low Stock" : "Out of Stock"} />,
             quantity: < QuantityCard quantity={product.quantity} unitprice={`Unit Price - ${product.price}`} />,
             stock: `${product.quantity * product.price} LKR`,
@@ -220,6 +236,7 @@ function ManageProducts() {
                 <div className='filterForm grid gap-4 grid-cols-1 flex flex-row p-4'>
                     <div className='filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4 flex flex-row'>
                         <div>
+                            {/* Filter by Status */}
                             <InputField
                                 type='select'
                                 label="Stock"
@@ -230,14 +247,17 @@ function ManageProducts() {
                             />
                         </div>
                         <div>
+                            {/* Filter by Date */}
                             <SetDate
                                 width="100%"
                                 label="Date"
+                                value={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
                             >
                             </SetDate>
                         </div>
                         <div>
+                            {/* Filter by Main Category */}
                             <InputField
                                 type='select'
                                 label="Main Category"
@@ -248,19 +268,20 @@ function ManageProducts() {
                             />
                         </div>
                         <div>
+                            {/* Filter by Sub Category */}
                             <InputField
                                 type='select'
                                 label="Sub Category"
                                 options={subCategoryOptions}
                                 disabled={!selectedMainCategory}
-                                //reset when main category is changed
                                 resetOnChange={handleMainCategoryChange}
                                 value={selectedSubCategory}
                                 onChange={(value) => handleSubCategoryChange(value)}
                                 width='100%'
                             />
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-2 flex gap-4 items-end">
+                            {/* Search Bar */}
                             <SearchBar
                                 placeholder="Search"
                                 width="100%"
@@ -271,6 +292,15 @@ function ManageProducts() {
                                 }}
                             >
                             </SearchBar>
+                        </div>
+                        <div className="col-span-2 flex justify">
+                            <PrimaryButton
+                                name="Clear"
+                                buttonSize="medium"
+                                fontSize={"16px"}
+                                onClick={clearFilters}
+                                color={"primary"}
+                            />
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, forwardRef, useImperativeHandle } from 'react'
 import Iconset from '../../AtomicComponents/Icons/Iconset';
 import { Typography } from '@mui/material';
+import { toast } from 'sonner';
 
 // Use forwardRef to allow the parent to access internal methods
 const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
@@ -20,20 +21,106 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
-        const newImages = Array.from(files)
-            .filter((file) => file.type.startsWith('image/'))
-            .filter((file) => !images.some((e) => e.name === file.name)) // Avoid duplicates
-            .map((file) => ({
-                name: file.name,
-                src: URL.createObjectURL(file),
-                file: file,
-            }));
+        //Image validation limits
+        const maxSize = 1 * 1024 * 1024;
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        const maxWidth = 1600;
+        const maxHeight = 1600;
 
-        const updatedImages = [...images, ...newImages].slice(0, 4);
-        setImages(updatedImages);
+        const validationPromises = Array.from(files).map((file) => {
+            return new Promise((resolve) => {
+                const isValidType = allowedTypes.includes(file.type);
+                const isValidSize = file.size <= maxSize;
 
-        onImagesSelect(updatedImages.map((img) => img.file));
+                //Validate Type
+                if (!isValidType) {
+                    toast.error(`${file.name} is not a supported image type.`, {
+                        style: {
+                            background: '#fe0132',
+                            color: '#fff',
+                        },
+                    });
+                    return resolve(null);
+                }
+
+                //Validate Size
+                if (!isValidSize) {
+                    toast.error(`${file.name} is larger than 1MB.`, {
+                        style: {
+                            background: '#fe0132',
+                            color: '#fff',
+                        },
+                    });
+                    return resolve(null);
+                }
+
+                //Check image dimensions
+                const img = new Image();
+                const objectUrl = URL.createObjectURL(file);
+                img.src = objectUrl;
+
+                //Image dimention Validation
+                img.onload = () => {
+                    if (img.width > maxWidth || img.height > maxHeight) {
+                        toast.error(`${file.name} exceeds ${maxWidth}x${maxHeight}px.`, {
+                            style: {
+                                background: '#fe0132',
+                                color: '#fff',
+                            },
+                        });
+                        URL.revokeObjectURL(objectUrl);
+                        return resolve(null);
+                    }
+
+                    resolve({
+                        name: file.name,
+                        src: objectUrl,
+                        file: file,
+                    });
+                };
+
+                //Image Load Validation
+                img.onerror = () => {
+                    toast.error(`Could not load ${file.name}.`, {
+                        style: {
+                            background: '#fe0132',
+                            color: '#fff',
+                        },
+                    });
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(null);
+                };
+            });
+        });
+
+        Promise.all(validationPromises).then((validImages) => {
+            const filtered = validImages
+                .filter((img) => {
+                    //Filter out null values
+                    if (img === null) {
+                        return false;
+                    }
+                    //Check if image already exists
+                    if (images.some((e) => e.name === img.name)) {
+                        toast.error(`${img.name} is already added.`, {
+                            style: {
+                                background: '#fe0132',
+                                color: '#fff',
+                            },
+                        });
+                        return false;
+                    }
+                    return true;
+                });
+
+            //Set Image Limit
+            const updatedImages = [...images, ...filtered].slice(0, 4);
+            //Update State
+            setImages(updatedImages);
+            onImagesSelect(updatedImages.map((img) => img.file));
+        });
     }
+
     function deleteImage(index) {
         const updatedImages = images.filter((_, i) => i !== index);
         setImages(updatedImages);
