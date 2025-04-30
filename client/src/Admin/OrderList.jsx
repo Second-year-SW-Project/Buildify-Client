@@ -9,14 +9,17 @@ import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 import SetDate from '../AtomicComponents/Inputs/date';
 import { SearchBar } from '../AtomicComponents/Inputs/Searchbar';
+import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 
 
 function OrderList() {
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    //Backend URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     const [SelectedOrderId, setSelectedOrderId] = useState(null);
-    const [selectedDate, setSelectedDate] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
+
 
     const [searchTerm, setSearchTerm] = useState('');
     const [orders, setOrders] = useState([]);
@@ -41,16 +44,34 @@ function OrderList() {
             } else {
                 console.error("Expected an array but got:", response.data);
                 setOrders([]);
-                // setFilteredProducts([]);
+                // setFilteredOrders([]);
             }
         } catch (error) {
             console.error("Error fetching products:", error);
             setOrders([]);
-            // setFilteredProducts([]);
+            // setFilteredOrders([]);
             toast.error("Failed to fetch products");
         }
     };
 
+
+    //Delete product function
+    const handleDelete = async () => {
+        try {
+            const response = await axios.delete(`${backendUrl}/api/checkout/order/${SelectedOrderId}`);
+            if (response.data.Success) {
+                toast.success("Order deleted successfully", SelectedOrderId);
+                fetchOrders();
+            } else {
+                toast.error(response.data.message);
+            }
+        } catch (error) {
+            toast.error("Failed to delete Order");
+        }
+        setOpenDialog(false);
+    };
+
+    //Open delete dialog function
     const openDeleteDialog = (_id) => {
         console.log("Delete Order ID:", _id);
         setSelectedOrderId(_id);
@@ -104,7 +125,7 @@ function OrderList() {
                                 value={searchTerm}
                                 onChange={(e) => {
                                     setSearchTerm(e.target.value);
-                                    fetchProducts(e.target.value);
+                                    fetchOrders(e.target.value);
                                 }}
                             >
                             </SearchBar>
@@ -120,12 +141,18 @@ function OrderList() {
                         iconActions={iconActions}
                     />
                 </div>
-
-
-
             </div>
-
-
+            {/* Alert Message */}
+            <DialogAlert
+                name="Delete Order"
+                Title="Confirm Deletion"
+                message="Are you sure you want to delete this Order? This action cannot be undone."
+                Disagree="Cancel"
+                Agree="Delete"
+                open={openDialog}
+                handleClose={() => setOpenDialog(false)}
+                handleAgree={handleDelete}
+            />
         </div>
     )
 }

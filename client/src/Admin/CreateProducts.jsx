@@ -5,8 +5,11 @@ import { Typography } from '@mui/material';
 import theme from '../AtomicComponents/theme';
 import { InputField } from '../AtomicComponents/Inputs/Input';
 import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector';
+import { Required } from '../AtomicComponents/Typographics/TextStyles';
 import {
     main,
+    manufacture,
+    socketTypes,
     subCategories,
     coolerAttributes,
     cpuCores,
@@ -24,57 +27,58 @@ import {
     expansionNetworkAttributes,
     powerAttributes,
 } from '../AtomicComponents/ForAdminForms/Category';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-    setSelectedMainCategory,
-    setSelectedSubCategory,
-    setSelectedManufacture,
-    resetForm,
-} from '../Store/formSlice';
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const CreateProducts = () => {
+
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     const { id } = useParams();
     const isEditMode = !!id;
-
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    //Set up a ref for the image selector component
     const imageSelectorRef = useRef();
 
-    // Get state from Redux store
-    const {
-        selectedMainCategory,
-        selectedSubCategory,
-        selectedManufacture,
-        subCategoryOptions,
-        manufactureOptions,
-        socketTypeOptions,
-    } = useSelector((state) => state.form);
+    //Set up state for form submission
+    const [formValidation, setformValidation] = useState(false);
 
-    // Handle change in Main Category
-    const handleMainCategoryChange = (selectedValue) => {
-        dispatch(setSelectedMainCategory(selectedValue));
-        dispatch(setSelectedSubCategory(''));
-        dispatch(setSelectedManufacture(''));
+    //Set initial state for selected categories and options
+    const [selectedMainCategory, setSelectedMainCategory] = useState('');
+    const [selectedSubCategory, setSelectedSubCategory] = useState('');
+    const [selectedManufacture, setSelectedManufacture] = useState('');
+    const [subCategoryOptions, setSubCategoryOptions] = useState([]);
+    const [manufactureOptions, setManufactureOptions] = useState([]);
+    const [socketTypeOptions, setSocketTypeOptions] = useState([]);
+
+    const handleMainCategoryChange = (value) => {
+        setSelectedMainCategory(value);
+        setSubCategoryOptions(subCategories[value] || []);
+        setSelectedSubCategory('');
+        setSelectedManufacture('');
+        setManufactureOptions([]);
+        setSocketTypeOptions([]);
         setProduct((prev) => ({ ...prev, type: '' }));
     };
 
-    // Handle change in Sub Category
-    const handleSubCategoryChange = (selectedValue) => {
-        dispatch(setSelectedSubCategory(selectedValue));
-        dispatch(setSelectedManufacture(''));
+    const handleSubCategoryChange = (value) => {
+        setSelectedSubCategory(value);
+        setManufactureOptions(manufacture[value] || []);
+        setSelectedManufacture('');
+        setSocketTypeOptions([]);
+        setProduct((prev) => ({ ...prev, quantity: '' }));
     };
 
-    // Handle change in Manufacture
-    const handleManufactureChange = (selectedValue) => {
-        dispatch(setSelectedManufacture(selectedValue));
+    const handleManufactureChange = (value) => {
+        setSelectedManufacture(value);
+        setSocketTypeOptions(socketTypes[value] || []);
         setProduct((prev) => ({ ...prev, socketType: '' }));
     };
 
-    // coolerAttributes
+    //coolerAttributes
     const coolerSupportedSockets = coolerAttributes.supportedSocket;
     const coolerTypes = coolerAttributes.coolerType;
     const coolerMaxTdp = coolerAttributes.maxTdp;
@@ -107,8 +111,10 @@ const CreateProducts = () => {
     const casingSupportedMotherboardSizes = casingAttributes.supportedMotherboardSizes;
     //keyboardAttributes
     const keyboardTypeOptions = keyboardAttributes.type;
+    const keyboardConnectivityOptions = keyboardAttributes.connectivity;
     //mouseAttributes
     const mouseTypeOptions = mouseAttributes.type;
+    const mouseConnectivityOptions = mouseAttributes.connectivity;
     //monitorAttributes
     const displaySizeOptions = monitorAttributes.displaySize;
     const resolutionOptions = monitorAttributes.resolution;
@@ -117,7 +123,7 @@ const CreateProducts = () => {
     const monitorTypeOptions = monitorAttributes.monitorType;
     //laptopAttributes
     const laptopDisplaySizeOptions = laptopAttributes.displaySize;
-    const laptopResolutionOptions = laptopAttributes.resolution;
+    const laptopRefreshRateOptions = laptopAttributes.refreshRate;
     const laptopCpuOptions = laptopAttributes.cpu;
     const laptopRamOptions = laptopAttributes.ram;
     const laptopStorageOptions = laptopAttributes.storage;
@@ -166,122 +172,137 @@ const CreateProducts = () => {
         formFactor: '',
         ramSlots: '',
         maxRam: '',
-        //laptop
-        displaySize: '',
-        resolution: '',
-        laptopType: '',
-        cpu: '',
-        ram: '',
-        storage: '',
-        graphicCard: '',
-        desktopType: '',
+        supportedMemoryTypes: '',
+        pcieSlots: [],
+        storageInterfaces: [],
+        //Storage
+        storageType: '',
+        storageCapacity: '',
         //gpu
         interfaceType: '',
         length: '',
         powerConnectors: '',
         vram: '',
-        series: '',
         cudaCores: '',
+        gpuChipset: '',
+        //laptop
+        displaySize: '',
+        refreshRate: '',
+        laptopType: '',
+        cpu: '',
+        ram: '',
+        storage: '',
+        graphicCard: '',
+        //monitors
+        panelType: '',
+        monitorType: '',
+        //cooling
+        coolerType: '',
+        supportedSocket: '',
+        maxTdp: '',
+        height: '',
         //prebuild
         cpuCores: '',
         cpuThreads: '',
         cpuBaseClock: '',
         cpuBoostClock: '',
         gpuSeries: '',
-        gpuVramGB: '',
-        gpuBoostClockMHz: '',
+        gpuVram: '',
+        gpuBoostClock: '',
         gpuCores: '',
-        ramSizeGB: '',
-        ramSpeedMHz: '',
+        ramSize: '',
+        ramSpeed: '',
         ramType: '',
+        desktopType: '',
         //expansion_network fields
         componentType: '',
         soundCardChannels: '',
         networkSpeed: '',
         wifiStandard: '',
-        //Storage
-        storageType: '',
-        storageCapacity: '',
+        //casing
         supportedMotherboardSizes: '',
-        wattage: '',
-        maxTdp: '',
-        height: '',
-
-        supportedMemoryTypes: '',
-        pcieSlots: [],
-        storageInterfaces: [],
-        gpuChipset: '',
-        gpuVram: '',
-
         maxGpuLength: '',
         maxCoolerHeight: '',
+        //power supply
+        wattage: '',
         efficiencyRating: '',
         modularType: '',
+        //keyboard & mouse
+        keyboardType: '',
+        connectivity: '',
     };
 
+    //Set initialstate for product data
     const [product, setProduct] = useState(initialProductState);
-    // State to hold selected images
+
+    //hold selected images
     const [selectedImages, setSelectedImages] = useState([]);
 
-    // Fetch product data if in edit mode
+    //Fetch product data if in edit mode
     useEffect(() => {
         if (isEditMode) {
             const fetchProduct = async () => {
                 try {
-                    const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`);
+                    const res = await axios.get(`${backendUrl}/api/product/${id}`);
                     if (res.data.Success) {
 
                         const fetchedProduct = res.data;
-                        console.log("=====================fetched Product", fetchedProduct);
+
                         const { _id, ...productFields } = fetchedProduct;
 
                         setProduct({
                             ...initialProductState,
                             ...productFields,
                             imgUrls: productFields.imgUrls || [],
-                            //     powerConnectors: productFields.powerConnectors || [],
-                            //     supportedMemoryTypes: productFields.supportedMemoryTypes || [],
-                            //     pcieSlots: productFields.pcieSlots || [],
-                            //     storageInterfaces: productFields.storageInterfaces || [],
-                            //     supportedMotherboardSizes: productFields.supportedMotherboardSizes || [],
-                        }); //to be comment(NEED TO CHECK)
-                        setSelectedImages(productFields.imgUrls || []); //to be comment(NEED TO CHECK)
 
-                        //Set main category
+                        });
+                        setSelectedImages(productFields.imgUrls || []);
+
+                        //Get main category for Edit mode
                         let foundMainCategory = null;
 
                         for (const [key, categoryList] of Object.entries(subCategories)) {
                             if (categoryList.some((item) => item.value === productFields.type)) {
-                                foundMainCategory = key;// "Necessary", "Optional", or "Common"
+                                foundMainCategory = key; // "Necessary", "Optional", or "Common"
                                 break;
                             }
                         }
-                        // Map category
+
+                        //Map category
                         const mainCategoryLabelMap = {
                             Necessary: 'Necessary',
                             Optional: 'Optional',
                             Common: 'Common',
                         };
+                        //Set main category label
                         const mainCategoryLabel = mainCategoryLabelMap[foundMainCategory];
                         if (mainCategoryLabel) {
-                            dispatch(setSelectedMainCategory(mainCategoryLabel));
+                            setSelectedMainCategory(mainCategoryLabel);
+                            setSubCategoryOptions(subCategories[mainCategoryLabel] || []);
                         }
-                        dispatch(setSelectedSubCategory(productFields.type));
-                        dispatch(setSelectedManufacture(productFields.manufacturer));
+                        //Set manufacture based on subcategory
+                        setSelectedSubCategory(productFields.type);
+                        setManufactureOptions(manufacture[productFields.type] || []);
+
+                        //Set socket type based on manufacture
+                        setSelectedManufacture(productFields.manufacturer);
+                        setSocketTypeOptions(socketTypes[productFields.manufacturer] || []);
+
                     } else {
                         toast.error('Failed to load product');
-                        // navigate('/products/manageproduct');
+                        navigate('/adminpanel/products/manageproduct');
                     }
                 } catch (error) {
                     console.error('Error fetching product:', error);
                     toast.error('Failed to load product data');
-                    // navigate('/products/manageproduct');
+                    navigate('/adminpanel/products/manageproduct');
                 }
             };
             fetchProduct();
         }
-    }, [id, dispatch, isEditMode, navigate]);
+    }, [id, , isEditMode, navigate]);
 
+    //Update product state when selected subcategory or manufacture changes
     useEffect(() => {
         setProduct((prevProduct) => ({
             ...prevProduct,
@@ -290,6 +311,7 @@ const CreateProducts = () => {
         }));
     }, [selectedSubCategory, selectedManufacture]);
 
+    //Update product state when selected main category changes
     const handleInputChange = (field, value) => {
         setProduct((prevProduct) => ({
             ...prevProduct,
@@ -297,6 +319,7 @@ const CreateProducts = () => {
         }));
     };
 
+    //Update product state when selected socket type changes
     const handleArrayChange = (field, value) => {
         setProduct((prevProduct) => ({
             ...prevProduct,
@@ -304,61 +327,8 @@ const CreateProducts = () => {
         }));
     };
 
-    const onSubmitHandler = async (e) => {
-        e.preventDefault();
-        try {
-            const formData = new FormData();
-            // Only append new image files, not URLs
-            selectedImages.forEach((image, index) => {
-                if (typeof image !== 'string') {
-                    formData.append(`image${index + 1}`, image);
-                }
-            });
-
-            if (product.type === 'processor') {
-                if (!product.includesCooler) product.includesCooler = false;
-                if (!product.integratedGraphics) product.integratedGraphics = false;
-            }
-
-            //validation function for reqired fields
-            validateRequiredFields(product, isEditMode);
-
-            // Exclude _id from product payload
-            const { _id, ...productData } = product;
-            formData.append('product', JSON.stringify(productData));
-
-            const endpoint = isEditMode
-                ? `${import.meta.env.VITE_BACKEND_URL}/api/product/${id}`
-                : `${import.meta.env.VITE_BACKEND_URL}/api/product/add`;
-
-            const response = isEditMode
-                ? await axios.put(endpoint, formData)
-                : await axios.post(endpoint, formData);
-
-            if (response.data.Success) {
-                toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
-                if (!isEditMode) {
-                    setProduct({ ...initialProductState });
-                    //Reset Redux States
-                    setSelectedImages([]);
-                    dispatch(resetForm());
-                    if (imageSelectorRef.current) {
-                        imageSelectorRef.current.deleteAllImages();
-                    }
-                } else {
-                    navigate('/products/manageproduct');
-                }
-
-            } else {
-                toast.error(isEditMode ? 'Error in updating' : 'Error creating product. Please try again.');
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error(error.message);
-        }
-    };
-
-    const validateRequiredFields = (product, isEditMode = false) => {
+    //validation function for reqired fields
+    const validateRequiredFields = (product, isEditMode = false, shouldThrow = false) => {
         const allRequiredFields = {
             processor: [
                 'name',
@@ -385,10 +355,10 @@ const CreateProducts = () => {
                 'type',
                 'manufacturer',
                 'quantity',
+                'coolerType',
                 'supportedSocket',
                 'maxTdp',
                 'height',
-                'coolerType',
                 'tdp',
             ],
             gpu: [
@@ -400,11 +370,13 @@ const CreateProducts = () => {
                 'manufacturer',
                 'quantity',
                 'interfaceType',
-                'tdp',
                 'length',
                 'powerConnectors',
                 'vram',
+                'tdp',
                 'gpuChipset',
+                'gpuCores',
+
             ],
             ram: [
                 'name',
@@ -474,6 +446,27 @@ const CreateProducts = () => {
                 'efficiencyRating',
                 'modularType',
             ],
+            keyboard: [
+                'name',
+                'price',
+                'description',
+                'imgUrls',
+                'type',
+                'manufacturer',
+                'quantity',
+                'keyboardType',
+                'connectivity',
+            ],
+            mouse: [
+                'name',
+                'price',
+                'description',
+                'imgUrls',
+                'type',
+                'manufacturer',
+                'quantity',
+                'connectivity',
+            ],
             laptop: [
                 'name',
                 'price',
@@ -483,11 +476,26 @@ const CreateProducts = () => {
                 'manufacturer',
                 'quantity',
                 'displaySize',
-                'resolution',
+                'refreshRate',
+                'laptopType',
                 'cpu',
                 'ram',
                 'storage',
                 'graphicCard',
+            ],
+            monitor: [
+                'name',
+                'price',
+                'description',
+                'imgUrls',
+                'type',
+                'manufacturer',
+                'quantity',
+                'displaySize',
+                'resolution',
+                'refreshRate',
+                'panelType',
+                'monitorType',
             ],
             prebuild: [
                 'name',
@@ -504,11 +512,11 @@ const CreateProducts = () => {
                 'cpuBoostClock',
                 'graphicCard',
                 'gpuSeries',
-                'gpuVramGB',
-                'gpuBoostClockMHz',
+                'gpuVram',
+                'gpuBoostClock',
                 'gpuCores',
-                'ramSizeGB',
-                'ramSpeedMHz',
+                'ramSize',
+                'ramSpeed',
                 'ramType',
                 'storage',
                 'desktopType',
@@ -537,24 +545,103 @@ const CreateProducts = () => {
             }
         }
 
+        //Check if the product type is in the required fields list
         const requiredFields = allRequiredFields[product.type] || allRequiredFields['default'];
         const missingFields = requiredFields.filter((field) => {
             if (field === 'imgUrls' && isEditMode) return false;
             if (field === 'imgUrls') return product.imgUrls.length === 0;
             if (field === 'supportedMemoryTypes' || field === 'pcieSlots' || field === 'storageInterfaces' || field === 'supportedMotherboardSizes' || field === 'powerConnectors') {
                 return !product[field] || product[field].length === 0;
-            } //(NEED TO CHECK)
+            }
             return product[field] === null || product[field] === '' || product[field] === undefined;
         });
 
         if (missingFields.length > 0) {
-            throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}.`);
+            if (shouldThrow) {
+                toast.error(`Please fill in all required fields: ${missingFields.join(', ')}.`);
+            }
+            return false;
         }
+        return true;
+
     };
 
-    // Override manufactureOptions for expansion_network
-    const getManufactureOptions = () => {
-        return manufactureOptions;
+    //Handle form submission
+    const onSubmitHandler = async (e) => {
+        e.preventDefault();
+
+        try {
+            //Check the validation of required fields
+            const isValid = validateRequiredFields(product, isEditMode, true);
+
+            //If validation fails, set the submitted flag and stop
+            if (!isValid) {
+                setformValidation(true);
+                return;
+            } else {
+                setformValidation(false);
+            }
+
+
+            const formData = new FormData();
+
+            // Only append new image files, not URLs
+            selectedImages.forEach((image, index) => {
+                if (typeof image !== 'string') {
+                    formData.append(`image${index + 1}`, image);
+                }
+            });
+
+            // Append existing image URLs if in edit mode
+            if (selectedImages.some((img) => typeof img === 'string')) {
+                formData.append('existingImgUrls', JSON.stringify(selectedImages.filter((img) => typeof img === 'string')));
+            }
+
+            //Remove processor-specific fields if not a processor
+            if (product.type === 'processor') {
+                product.integratedGraphics = product.integratedGraphics ?? false;
+                product.includesCooler = product.includesCooler ?? false;
+            } else {
+                delete product.integratedGraphics;
+                delete product.includesCooler;
+            }
+
+
+            //Exclude _id from product payload
+            formData.append('product', JSON.stringify(product));
+
+            const endpoint = isEditMode
+                ? `${backendUrl}/api/product/${id}`
+                : `${backendUrl}/api/product/add`;
+
+            const response = isEditMode
+                ? await axios.put(endpoint, formData)
+                : await axios.post(endpoint, formData);
+
+            if (response.data.Success) {
+                toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
+                console.log("sent product=============", response.data);
+
+                if (!isEditMode) {
+                    setProduct({ ...initialProductState });
+                    setSelectedImages([]);
+                    if (imageSelectorRef.current) {
+                        imageSelectorRef.current.deleteAllImages();
+                    }
+                    setSelectedMainCategory('');
+                    setSelectedSubCategory('');
+                    setSelectedManufacture('');
+                } else {
+                    navigate('/adminpanel/products/manageproduct');
+                }
+
+            } else {
+                toast.error(isEditMode ? 'Error in updating' : 'Error creating product. Please try again.');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message);
+        }
     };
 
     return (
@@ -589,20 +676,22 @@ const CreateProducts = () => {
                             <hr />
                             <div className="DetailsBody ml-3 mr-3">
                                 <div className="formTitle1 mt-2 mb-4">
-                                    <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px' }}>
-                                        Title
+                                    <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px', display: "flex" }}>
+                                        <Required></Required>Title
                                     </Typography>
+
                                     <InputField
                                         onChange={(value) => handleInputChange('name', value)}
                                         value={product.name}
                                         type="text"
                                         label="Product Name"
                                         width="100%"
+                                        showRequiredHelper={formValidation}
                                     />
                                 </div>
                                 <div className="formTitle2 mt-4 mb-4">
-                                    <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px' }}>
-                                        Content
+                                    <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px', display: "flex" }}>
+                                        <Required></Required>Content
                                     </Typography>
                                     <InputField
                                         onChange={(value) => handleInputChange('description', value)}
@@ -611,11 +700,12 @@ const CreateProducts = () => {
                                         label="Description"
                                         width="100%"
                                         rows={12}
+                                        showRequiredHelper={formValidation}
                                     />
                                 </div>
                                 <div className="formTitle3 mt-4 mb-4">
-                                    <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px' }}>
-                                        Images
+                                    <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px', display: "flex" }}>
+                                        {!isEditMode && (<Required></Required>)}Images
                                     </Typography>
                                     <ImageSelector
                                         ref={imageSelectorRef}
@@ -641,12 +731,15 @@ const CreateProducts = () => {
                                     fontWeight="bold"
                                     style={{ color: theme.palette.black700.main }}
                                 >
-                                    Additional function and attributes
+                                    Basic Propoties and Attributes
                                 </Typography>
                             </div>
                             <hr />
                             <div className="PropertiesBody ml-3 mr-3">
-                                <div className="formProperty1 grid gap-4 grid-cols-2 flex flex-row mt-4 mb-4">
+                                <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px', marginTop: "6px", display: "flex" }}>
+                                    <Required></Required>Product Propoties
+                                </Typography>
+                                <div className="formProperty1 grid gap-4 grid-cols-4 flex flex-row mt-4 mb-4">
                                     <div>
                                         <InputField
                                             type="select"
@@ -655,6 +748,8 @@ const CreateProducts = () => {
                                             value={selectedMainCategory}
                                             onChange={handleMainCategoryChange}
                                             width="100%"
+                                            disabled={isEditMode}
+                                            showRequiredHelper={formValidation}
                                         />
                                     </div>
                                     <div>
@@ -664,19 +759,9 @@ const CreateProducts = () => {
                                             options={subCategoryOptions}
                                             value={selectedSubCategory}
                                             onChange={handleSubCategoryChange}
-                                            disabled={!selectedMainCategory}
+                                            disabled={!selectedMainCategory || isEditMode}
                                             width="100%"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="formProperty2 grid gap-4 grid-cols-3 flex flex-row mt-4 mb-4">
-                                    <div>
-                                        <InputField
-                                            type="text"
-                                            label="Product Code"
-                                            width="100%"
-                                            value={product.productCode || ''}
-                                            onChange={(value) => handleInputChange('productCode', value)}
+                                            showRequiredHelper={formValidation}
                                         />
                                     </div>
                                     <div>
@@ -684,26 +769,28 @@ const CreateProducts = () => {
                                             type="select"
                                             label="Manufacturer"
                                             width="100%"
-                                            options={getManufactureOptions()}
+                                            options={manufactureOptions}
                                             value={selectedManufacture}
                                             onChange={handleManufactureChange}
                                             disabled={!selectedSubCategory}
+                                            showRequiredHelper={formValidation}
                                         />
                                     </div>
                                     <div>
                                         <InputField
+                                            // key={`quantity-${product.type}`} // Force re-render on type change
                                             type="number"
-                                            Auto={1}
                                             label="Quantity"
                                             width="100%"
-                                            value={product.quantity}
+                                            value={product.quantity || ''}
                                             onChange={(value) => handleInputChange('quantity', value)}
+                                            showRequiredHelper={formValidation}
                                         />
                                     </div>
                                 </div>
                                 {selectedSubCategory === 'processor' && (
-                                    <div className='cpuProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4'>
-                                        <div className='subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'>
+                                    <div className="cpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                        <div className="subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
                                                     type="select"
@@ -713,16 +800,18 @@ const CreateProducts = () => {
                                                     disabled={!product.manufacturer}
                                                     value={product.socketType}
                                                     onChange={(value) => handleInputChange('socketType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
                                                     onChange={(value) => handleInputChange('tdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -733,6 +822,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.coreCount}
                                                     onChange={(value) => handleInputChange('coreCount', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -743,113 +833,59 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.threadCount}
                                                     onChange={(value) => handleInputChange('threadCount', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 3.2 GHz"
+                                                    Placeholder="GHz"
                                                     label="Base Clock"
                                                     width="100%"
                                                     value={product.baseClock}
                                                     onChange={(value) => handleInputChange('baseClock', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 4.6 GHz"
+                                                    Placeholder="GHz"
                                                     label="Boost Clock"
                                                     width="100%"
                                                     value={product.boostClock}
                                                     onChange={(value) => handleInputChange('boostClock', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                         <div className='subCpuProperty2 grid gap-4 grid-cols-4 flex flex-row'>
                                             <div>
                                                 <InputField
-                                                    type="checkbox"
+                                                    type='checkbox'
                                                     label="Integrated Graphics"
-                                                    width="100%"
-                                                    checked={product.integratedGraphics}
+                                                    width='100%'
+                                                    value={product.integratedGraphics}
                                                     onChange={(value) => handleInputChange('integratedGraphics', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
-                                                    type="checkbox"
+                                                    type='checkbox'
                                                     label="Includes Cooler"
-                                                    width="100%"
-                                                    checked={product.includesCooler}
+                                                    width='100%'
+                                                    value={product.includesCooler}
                                                     onChange={(value) => handleInputChange('includesCooler', value)}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                {selectedSubCategory === 'cooling' && (
-                                    <div className="coolingProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
-                                        <div className="subCoolingProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
-
-                                            {/* <div className='subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row'> */}
-                                            <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="Cooler Type"
-                                                    options={coolerTypes}
-                                                    width="100%"
-                                                    value={product.coolerType}
-                                                    onChange={(value) => handleInputChange('coolerType', value)}
-                                                />
-                                            </div>
-                                            <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="Supported Sockets"
-                                                    options={coolerSupportedSockets}
-                                                    width="100%"
-                                                    value={product.supportedSocket}
-                                                    onChange={(value) => handleArrayChange('supportedSocket', value)}
-                                                    multiple
-                                                />
-                                            </div>
-                                            <div>
-                                                <InputField
-                                                    type="text"
-                                                    placeholder="Watts"
-                                                    label="Max TDP"
-                                                    width="100%"
-                                                    value={product.maxTdp}
-                                                    onChange={(value) => handleInputChange('maxTdp', value)}
-                                                />
-                                            </div>
-                                            <div>
-                                                <InputField
-                                                    type="text"
-                                                    placeholder="mm"
-                                                    label="Height"
-                                                    width="100%"
-                                                    value={product.height}
-                                                    onChange={(value) => handleInputChange('height', value)}
-                                                />
-                                            </div>
-                                            <div>
-                                                <InputField
-                                                    type="text"
-                                                    placeholder="Watts"
-                                                    label="TDP"
-                                                    width="100%"
-                                                    value={product.tdp}
-                                                    onChange={(value) => handleInputChange('tdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'motherboard' && (
-                                    <div className='motherboardProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-6'>
-                                        <div className='subMotherboardProperty1 grid gap-y-4 gap-x-4 grid-cols-4 flex flex-row'>
+                                    <div className="motherboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                        <div className="subMotherboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
                                                     type="select"
@@ -858,6 +894,7 @@ const CreateProducts = () => {
                                                     value={product.motherboardChipset}
                                                     onChange={(value) => handleInputChange('motherboardChipset', value)}
                                                     width="100%"
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -868,6 +905,7 @@ const CreateProducts = () => {
                                                     value={product.socketType}
                                                     onChange={(value) => handleInputChange('socketType', value)}
                                                     width="100%"
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -878,6 +916,7 @@ const CreateProducts = () => {
                                                     value={product.formFactor}
                                                     onChange={(value) => handleInputChange('formFactor', value)}
                                                     width="100%"
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -888,6 +927,7 @@ const CreateProducts = () => {
                                                     value={product.ramSlots}
                                                     onChange={(value) => handleInputChange('ramSlots', value)}
                                                     width="100%"
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -898,84 +938,164 @@ const CreateProducts = () => {
                                                     value={product.maxRam}
                                                     onChange={(value) => handleInputChange('maxRam', value)}
                                                     width="100%"
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="Memory Types"
+                                                    label="Supported Memory Type"
                                                     options={motherboardMemoryTypes}
                                                     value={product.supportedMemoryTypes}
-                                                    onChange={(value) => handleArrayChange('supportedMemoryTypes', value)}
+                                                    onChange={(value) => handleInputChange('supportedMemoryTypes', value)}
                                                     width="100%"
-                                                    multiple
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
                                                     onChange={(value) => handleInputChange('tdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
-                                        <div className="subMotherboardProperty2 grid gap-y-2 gap-x-4 grid-cols-3 flex flex-row">
+                                        <div className="subMotherboardProperty2 grid gap-y-2 gap-x-4 grid-cols-2 flex flex-row">
                                             <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="PCIe Slots"
-                                                    options={motherboardPcieSlotType}
-                                                    value={product.pcieSlots.map((slot) => slot.type)}
-                                                    onChange={(value) =>
-                                                        handleArrayChange(
-                                                            'pcieSlots',
-                                                            value.map((v) => ({ type: v, version: '4.0' }))
-                                                        )
-                                                    }
-                                                    width="100%"
-                                                    multiple
+                                                <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px' }}>
+                                                    PCIe Slots
+                                                </Typography>
+                                                {product.pcieSlots.map((slot, index) => (
+                                                    <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
+                                                        <InputField
+                                                            type="select"
+                                                            label={`Slot ${index + 1} Type`}
+                                                            options={motherboardPcieSlotType}
+                                                            value={slot.type}
+                                                            onChange={(value) => {
+                                                                const updatedPcieSlots = [...product.pcieSlots];
+                                                                updatedPcieSlots[index] = { ...updatedPcieSlots[index], type: value };
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            width="33%"
+                                                        />
+                                                        <InputField
+                                                            type="select"
+                                                            label={`Slot ${index + 1} Version`}
+                                                            options={motherboardPcieVersion}
+                                                            value={slot.version}
+                                                            onChange={(value) => {
+                                                                const updatedPcieSlots = [...product.pcieSlots];
+                                                                updatedPcieSlots[index] = { ...updatedPcieSlots[index], version: value };
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            width="33%"
+                                                        />
+                                                        <InputField
+                                                            type="number"
+                                                            label={`Count`}
+                                                            value={slot.count}
+                                                            onChange={(value) => {
+                                                                const updatedPcieSlots = [...product.pcieSlots];
+                                                                updatedPcieSlots[index] = {
+                                                                    ...updatedPcieSlots[index],
+                                                                    count: parseInt(value) || 1,
+                                                                };
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            width="20%"
+                                                            min={1}
+                                                        />
+                                                        <PrimaryButton
+                                                            name="Remove"
+                                                            onClick={() => {
+                                                                const updatedPcieSlots = product.pcieSlots.filter((_, i) => i !== index);
+                                                                handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                            }}
+                                                            buttonSize="small"
+                                                            isBold={0}
+                                                        />
+                                                    </div>
+                                                ))}
+                                                <PrimaryButton
+                                                    name="Add PCIe Slot"
+                                                    onClick={() => {
+                                                        const updatedPcieSlots = [
+                                                            ...product.pcieSlots,
+                                                            { type: motherboardPcieSlotType[0]?.value || 'x16', version: '4.0', count: 1 },
+                                                        ];
+                                                        handleArrayChange('pcieSlots', updatedPcieSlots);
+                                                    }}
+                                                    buttonSize="medium"
+                                                    isBold={1}
                                                 />
                                             </div>
                                             <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="PCIe Version"
-                                                    options={motherboardPcieVersion}
-                                                    value={product.pcieSlots.map((slot) => slot.version)}
-                                                    onChange={(value) =>
-                                                        handleArrayChange(
-                                                            'pcieSlots',
-                                                            value.map((v) => ({ type: product.pcieSlots[0]?.type || 'x16', version: v }))
-                                                        )
-                                                    }
-                                                    width="100%"
-                                                    multiple
-                                                />
-                                            </div>
-                                            <div>
-                                                <InputField
-                                                    type="select"
-                                                    label="Storage Interfaces"
-                                                    options={motherboardStorageTypes}
-                                                    value={product.storageInterfaces.map((intf) => intf.type)}
-                                                    onChange={(value) =>
-                                                        handleArrayChange(
-                                                            'storageInterfaces',
-                                                            value.map((v) => ({ type: v, count: 1 }))
-                                                        )
-                                                    }
-                                                    width="100%"
-                                                    multiple
+                                                <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px' }}>
+                                                    Storage Interfaces
+                                                </Typography>
+                                                {product.storageInterfaces.map((intf, index) => (
+                                                    <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
+                                                        <InputField
+                                                            type="select"
+                                                            label={`Interface ${index + 1} Type`}
+                                                            options={motherboardStorageTypes}
+                                                            value={intf.type}
+                                                            onChange={(value) => {
+                                                                const updatedStorageInterfaces = [...product.storageInterfaces];
+                                                                updatedStorageInterfaces[index] = { ...updatedStorageInterfaces[index], type: value };
+                                                                handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                            }}
+                                                            width="50%"
+                                                        />
+                                                        <InputField
+                                                            type="number"
+                                                            label={`Count`}
+                                                            value={intf.count}
+                                                            onChange={(value) => {
+                                                                const updatedStorageInterfaces = [...product.storageInterfaces];
+                                                                updatedStorageInterfaces[index] = {
+                                                                    ...updatedStorageInterfaces[index],
+                                                                    count: parseInt(value) || 1,
+                                                                };
+                                                                handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                            }}
+                                                            width="30%"
+                                                            min={1}
+                                                        />
+                                                        <PrimaryButton
+                                                            name="Remove"
+                                                            onClick={() => {
+                                                                const updatedStorageInterfaces = product.storageInterfaces.filter((_, i) => i !== index);
+                                                                handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                            }}
+                                                            buttonSize="small"
+                                                            isBold={0}
+                                                        />
+                                                    </div>
+                                                ))}
+                                                <PrimaryButton
+                                                    name="Add Storage Interface"
+                                                    onClick={() => {
+                                                        const updatedStorageInterfaces = [
+                                                            ...product.storageInterfaces,
+                                                            { type: motherboardStorageTypes[0]?.value || 'SATA', count: 1 },
+                                                        ];
+                                                        handleArrayChange('storageInterfaces', updatedStorageInterfaces);
+                                                    }}
+                                                    buttonSize="medium"
+                                                    isBold={1}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'ram' && (
-                                    <div className="ramProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="ramProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subRamProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -985,6 +1105,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.memoryType}
                                                     onChange={(value) => handleInputChange('memoryType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -995,6 +1116,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.memoryCapacity}
                                                     onChange={(value) => handleInputChange('memoryCapacity', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1005,23 +1127,25 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.memorySpeed}
                                                     onChange={(value) => handleInputChange('memorySpeed', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
                                                     onChange={(value) => handleInputChange('tdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'storage' && (
-                                    <div className="storageProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="storageProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subStorageProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1031,6 +1155,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.storageType}
                                                     onChange={(value) => handleInputChange('storageType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1041,23 +1166,25 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.storageCapacity}
                                                     onChange={(value) => handleInputChange('storageCapacity', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
                                                     onChange={(value) => handleInputChange('tdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'gpu' && (
-                                    <div className="gpuProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="gpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subGpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1067,16 +1194,18 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.interfaceType}
                                                     onChange={(value) => handleInputChange('interfaceType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="mm"
+                                                    Placeholder="mm"
                                                     label="Length"
                                                     width="100%"
                                                     value={product.length}
                                                     onChange={(value) => handleInputChange('length', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1086,8 +1215,8 @@ const CreateProducts = () => {
                                                     options={gpuPowerConnectors}
                                                     width="100%"
                                                     value={product.powerConnectors}
-                                                    onChange={(value) => handleArrayChange('powerConnectors', value)}
-                                                    multiple
+                                                    onChange={(value) => handleInputChange('powerConnectors', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1098,16 +1227,18 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.vram}
                                                     onChange={(value) => handleInputChange('vram', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="Watts"
+                                                    Placeholder="Watts"
                                                     label="TDP"
                                                     width="100%"
                                                     value={product.tdp}
                                                     onChange={(value) => handleInputChange('tdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1118,13 +1249,25 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.gpuChipset}
                                                     onChange={(value) => handleInputChange('gpuChipset', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type="number"
+                                                    label="GPU Cores"
+                                                    options={gpuCores}
+                                                    width="100%"
+                                                    value={product.gpuCores}
+                                                    onChange={(value) => handleInputChange('gpuCores', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'casing' && (
-                                    <div className="casingProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="casingProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subCasingProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1134,44 +1277,48 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.formFactor}
                                                     onChange={(value) => handleInputChange('formFactor', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="Supported Motherboard Sizes"
+                                                    label="Support Motherboard Sizes"
                                                     options={casingSupportedMotherboardSizes}
                                                     width="100%"
                                                     value={product.supportedMotherboardSizes}
-                                                    onChange={(value) => handleArrayChange('supportedMotherboardSizes', value)}
-                                                    multiple
+                                                    onChange={(value) => handleInputChange('supportedMotherboardSizes', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="mm"
+                                                    Placeholder="mm"
                                                     label="Max GPU Length"
                                                     width="100%"
                                                     value={product.maxGpuLength}
                                                     onChange={(value) => handleInputChange('maxGpuLength', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="mm"
+                                                    Placeholder="mm"
                                                     label="Max Cooler Height"
                                                     width="100%"
                                                     value={product.maxCoolerHeight}
                                                     onChange={(value) => handleInputChange('maxCoolerHeight', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'power' && (
-                                    <div className="powerProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-6">
+                                    <div className="powerProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subPowerProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1181,6 +1328,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.wattage}
                                                     onChange={(value) => handleInputChange('wattage', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1191,6 +1339,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.efficiencyRating}
                                                     onChange={(value) => handleInputChange('efficiencyRating', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1201,13 +1350,75 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.modularType}
                                                     onChange={(value) => handleInputChange('modularType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                {selectedSubCategory === 'cooling' && (
+                                    <div className="coolingProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                        <div className="subCoolingProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
+                                            <div>
+                                                <InputField
+                                                    type="select"
+                                                    label="Cooler Type"
+                                                    options={coolerTypes}
+                                                    width="100%"
+                                                    value={product.coolerType}
+                                                    onChange={(value) => handleInputChange('coolerType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type="select"
+                                                    label="Supported Sockets"
+                                                    options={coolerSupportedSockets}
+                                                    width="100%"
+                                                    value={product.supportedSocket}
+                                                    onChange={(value) => handleInputChange('supportedSocket', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type="select"
+                                                    label="Max TDP"
+                                                    options={coolerMaxTdp}
+                                                    width="100%"
+                                                    value={product.maxTdp}
+                                                    onChange={(value) => handleInputChange('maxTdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type="text"
+                                                    Placeholder="mm"
+                                                    label="Height"
+                                                    width="100%"
+                                                    value={product.height}
+                                                    onChange={(value) => handleInputChange('height', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type="text"
+                                                    Placeholder="Watts"
+                                                    label="TDP"
+                                                    width="100%"
+                                                    value={product.tdp}
+                                                    onChange={(value) => handleInputChange('tdp', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'keyboard' && (
-                                    <div className="keyboardProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="keyboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subKeyboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1217,29 +1428,42 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.keyboardType}
                                                     onChange={(value) => handleInputChange('keyboardType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
+                                                />
+                                            </div>
+                                            <div>
+                                                <InputField
+                                                    type="select"
+                                                    label="Connectivity"
+                                                    options={keyboardConnectivityOptions}
+                                                    width="100%"
+                                                    value={product.connectivity}
+                                                    onChange={(value) => handleInputChange('connectivity', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'mouse' && (
-                                    <div className="mouseProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="mouseProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subMouseProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="Mouse Type"
-                                                    options={mouseTypeOptions}
+                                                    label="Connectivity"
+                                                    options={mouseConnectivityOptions}
                                                     width="100%"
-                                                    value={product.mouseType}
-                                                    onChange={(value) => handleInputChange('mouseType', value)}
+                                                    value={product.connectivity}
+                                                    onChange={(value) => handleInputChange('connectivity', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'monitor' && (
-                                    <div className="monitorProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="monitorProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subMonitorProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1249,6 +1473,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.displaySize}
                                                     onChange={(value) => handleInputChange('displaySize', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1259,6 +1484,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.resolution}
                                                     onChange={(value) => handleInputChange('resolution', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1269,6 +1495,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.refreshRate}
                                                     onChange={(value) => handleInputChange('refreshRate', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1279,6 +1506,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.panelType}
                                                     onChange={(value) => handleInputChange('panelType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1289,13 +1517,14 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.monitorType}
                                                     onChange={(value) => handleInputChange('monitorType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'laptop' && (
-                                    <div className="laptopProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="laptopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subLaptopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1305,16 +1534,18 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.displaySize}
                                                     onChange={(value) => handleInputChange('displaySize', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="Resolution"
-                                                    options={laptopResolutionOptions}
+                                                    label="Refresh Rate"
+                                                    options={laptopRefreshRateOptions}
                                                     width="100%"
-                                                    value={product.resolution}
-                                                    onChange={(value) => handleInputChange('resolution', value)}
+                                                    value={product.refreshRate}
+                                                    onChange={(value) => handleInputChange('refreshRate', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1325,6 +1556,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.cpu}
                                                     onChange={(value) => handleInputChange('cpu', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1335,6 +1567,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.ram}
                                                     onChange={(value) => handleInputChange('ram', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1345,6 +1578,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.storage}
                                                     onChange={(value) => handleInputChange('storage', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1355,6 +1589,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.laptopType}
                                                     onChange={(value) => handleInputChange('laptopType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1365,13 +1600,14 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.graphicCard}
                                                     onChange={(value) => handleInputChange('graphicCard', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'prebuild' && (
-                                    <div className="desktopProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="desktopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subDesktopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1381,6 +1617,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.cpu}
                                                     onChange={(value) => handleInputChange('cpu', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1391,6 +1628,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.cpuCores}
                                                     onChange={(value) => handleInputChange('cpuCores', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1401,36 +1639,40 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.cpuThreads}
                                                     onChange={(value) => handleInputChange('cpuThreads', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 3.2 GHz"
+                                                    Placeholder="GHz"
                                                     label="CPU Base Clock"
                                                     width="100%"
                                                     value={product.cpuBaseClock}
                                                     onChange={(value) => handleInputChange('cpuBaseClock', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 4.6 GHz"
+                                                    Placeholder="GHz"
                                                     label="CPU Boost Clock"
                                                     width="100%"
                                                     value={product.cpuBoostClock}
                                                     onChange={(value) => handleInputChange('cpuBoostClock', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="GPU"
+                                                    label="Graphic Card"
                                                     options={desktopGpuOptions}
                                                     width="100%"
                                                     value={product.graphicCard}
                                                     onChange={(value) => handleInputChange('graphicCard', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1441,45 +1683,50 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.gpuSeries}
                                                     onChange={(value) => handleInputChange('gpuSeries', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="VRAM (GB)"
+                                                    label="VRAM"
                                                     options={gpuVramOptions}
                                                     width="100%"
-                                                    value={product.gpuVramGB}
-                                                    onChange={(value) => handleInputChange('gpuVramGB', value)}
+                                                    value={product.gpuVram}
+                                                    onChange={(value) => handleInputChange('gpuVram', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="text"
-                                                    placeholder="e.g., 2520 MHz"
-                                                    label="GPU Boost Clock (MHz)"
+                                                    Placeholder="MHz"
+                                                    label="GPU Boost Clock"
                                                     width="100%"
-                                                    value={product.gpuBoostClockMHz}
-                                                    onChange={(value) => handleInputChange('gpuBoostClockMHz', value)}
+                                                    value={product.gpuBoostClock}
+                                                    onChange={(value) => handleInputChange('gpuBoostClock', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
-                                                    type="text"
+                                                    type="number"
                                                     label="GPU Cores"
                                                     width="100%"
                                                     value={product.gpuCores}
                                                     onChange={(value) => handleInputChange('gpuCores', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="RAM Size (GB)"
+                                                    label="RAM Capacity"
                                                     options={desktopRamOptions}
                                                     width="100%"
-                                                    value={product.ramSizeGB}
-                                                    onChange={(value) => handleInputChange('ramSizeGB', value)}
+                                                    value={product.ramSize}
+                                                    onChange={(value) => handleInputChange('ramSize', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1490,26 +1737,29 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.ramType}
                                                     onChange={(value) => handleInputChange('ramType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="RAM Speed (MHz)"
+                                                    label="RAM Speed"
                                                     options={ramSpeedOptions}
                                                     width="100%"
-                                                    value={product.ramSpeedMHz}
-                                                    onChange={(value) => handleInputChange('ramSpeedMHz', value)}
+                                                    value={product.ramSpeed}
+                                                    onChange={(value) => handleInputChange('ramSpeed', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
                                                 <InputField
                                                     type="select"
-                                                    label="Storage"
+                                                    label="Storage Capacity"
                                                     options={desktopStorageOptions}
                                                     width="100%"
                                                     value={product.storage}
                                                     onChange={(value) => handleInputChange('storage', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1520,13 +1770,14 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.desktopType}
                                                     onChange={(value) => handleInputChange('desktopType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 )}
                                 {selectedSubCategory === 'expansion_network' && (
-                                    <div className="expansionNetworkProperty grid gap-y-2 gap-x-4 grid-cols-1 flex flex-row mt-4 mb-4">
+                                    <div className="expansionNetworkProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subExpansionNetworkProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
                                                 <InputField
@@ -1536,6 +1787,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.componentType}
                                                     onChange={(value) => handleInputChange('componentType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             <div>
@@ -1546,6 +1798,7 @@ const CreateProducts = () => {
                                                     width="100%"
                                                     value={product.interfaceType}
                                                     onChange={(value) => handleInputChange('interfaceType', value)}
+                                                    showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
                                             {product.componentType === 'sound_card' && (
@@ -1557,6 +1810,7 @@ const CreateProducts = () => {
                                                         width="100%"
                                                         value={product.soundCardChannels}
                                                         onChange={(value) => handleInputChange('soundCardChannels', value)}
+                                                        showRequiredHelper={!isEditMode ? formValidation : false}
                                                     />
                                                 </div>
                                             )}
@@ -1569,6 +1823,7 @@ const CreateProducts = () => {
                                                         width="100%"
                                                         value={product.networkSpeed}
                                                         onChange={(value) => handleInputChange('networkSpeed', value)}
+                                                        showRequiredHelper={!isEditMode ? formValidation : false}
                                                     />
                                                 </div>
                                             )}
@@ -1581,6 +1836,7 @@ const CreateProducts = () => {
                                                         width="100%"
                                                         value={product.wifiStandard}
                                                         onChange={(value) => handleInputChange('wifiStandard', value)}
+                                                        showRequiredHelper={!isEditMode ? formValidation : false}
                                                     />
                                                 </div>
                                             )}
@@ -1589,29 +1845,26 @@ const CreateProducts = () => {
                                 )}
                             </div>
                         </div>
+
                         <div className='Pricing border-2 border-gray-100 rounded-lg drop-shadow-2xl pt-4 pb-4'>
                             <div className='PricingHeader ml-3 mr-3 h-fit mb-4'>
                                 <Typography variant='h5' fontWeight="bold">Pricing</Typography>
-                                <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>Buy and Sale Prices</Typography>
+                                <Typography variant='body1' fontWeight="bold" style={{ color: theme.palette.black700.main }}>Product Price</Typography>
                             </div>
                             <hr></hr>
                             <div className='PricingDetails ml-3 mr-3 grid gap-2 mt-4'>
+                                <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px', display: "flex" }}>
+                                    <Required></Required>Sell Price
+                                </Typography>
                                 <div>
                                     <InputField
                                         type='text'
                                         Placeholder="LKR"
-                                        label="Stock Price"
-                                        width='100%'
-                                    />
-                                </div>
-                                <div>
-                                    <InputField
-                                        type='text'
-                                        Placeholder="LKR"
-                                        label="Selling Price"
+                                        label="Price"
                                         width='100%'
                                         value={product.price}
                                         onChange={(value) => handleInputChange('price', value)}
+                                        showRequiredHelper={formValidation}
                                     />
                                 </div>
                             </div>
@@ -1627,7 +1880,7 @@ const CreateProducts = () => {
                                         color={"ternaryDark"}
                                         padding="50px"
                                         type="button"
-                                        onClick={() => navigate('/products/manageproduct')}
+                                        onClick={() => navigate('/adminpanel/products/manageproduct')}
                                     />
                                 )}
                                 <PrimaryButton
@@ -1640,10 +1893,9 @@ const CreateProducts = () => {
                             </div>
                         </div>
                     </div>
-
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

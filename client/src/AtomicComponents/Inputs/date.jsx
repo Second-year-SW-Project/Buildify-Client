@@ -4,12 +4,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 
-export default function SetDate({ width, label, onChange }) {
+export default function SetDate({ width, label, onChange, value }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         label={label}
         onChange={onChange}
+        value={value}
         sx={{
           minWidth: { width },
           "& .MuiInputBase-root": {
