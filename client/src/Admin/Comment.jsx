@@ -7,6 +7,8 @@ import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { debounce } from "lodash";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Comment = () => {
   const [comments, setComments] = useState([]);
   const [response, setResponse] = useState({});
@@ -26,7 +28,7 @@ const Comment = () => {
   const fetchComments = async () => {
     try {
       const token = localStorage.getItem("token");
-      const { data } = await axios.get(`http://localhost:8000/api/comment/admin`, {
+      const { data } = await axios.get(`${backendUrl}/api/comment/admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -61,7 +63,7 @@ const Comment = () => {
       const token = localStorage.getItem("token");
 
       await axios.put(
-        `http://localhost:8000/api/comment/admin/${commentId}/response`,
+        `${backendUrl}/api/comment/admin/${commentId}/response`,
         { adminResponse: response[commentId] },
         {
           headers: {
@@ -84,7 +86,7 @@ const Comment = () => {
       const token = localStorage.getItem("token");
 
       await axios.delete(
-        `http://localhost:8000/api/comment/admin/admin/${commentId}`,
+        `${backendUrl}/api/comment/admin/admin/${commentId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

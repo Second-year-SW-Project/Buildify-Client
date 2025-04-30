@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField, Box, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Button, TextField, Box, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import SideNav from './SideNav';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
+
 const ComplaintSubmit = () => {
+
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -28,7 +33,8 @@ const ComplaintSubmit = () => {
     }
 
     try {
-      await axios.post('http://localhost:8000/api/complaints/submit', { 
+      //submit the complaint
+      await axios.post(`${backendUrl}/api/complaints/submit`, { 
         title, description, complaintType, userId 
       });
       toast.success('Complaint submitted successfully!');

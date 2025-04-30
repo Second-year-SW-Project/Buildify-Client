@@ -32,6 +32,8 @@ import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import debounce from 'lodash.debounce';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const RMA = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ const RMA = () => {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/rma/admin/requests', {
+      const response = await axios.get(`${backendUrl}/api/rma/admin/requests`, {
         params: filters,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
@@ -86,7 +88,7 @@ const RMA = () => {
 
   const handleResponseSubmit = async () => {
     try {
-      await axios.put(`http://localhost:8000/api/rma/admin/respond/${selectedRequest?._id}`, {
+      await axios.put(`${backendUrl}/api/rma/admin/respond/${selectedRequest?._id}`, {
         status: 'Resolved',
         response: responseText
       }, {

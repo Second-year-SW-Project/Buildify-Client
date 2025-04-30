@@ -8,6 +8,8 @@ import { setAuthUser } from "../Store/authSlice";
 import pcImage from "../assets/images/pc3.jpg";
 import logo from '../assets/logo.png';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const ResetPassword = () => {
 
   const [otp, setOtp] = useState("");
@@ -20,6 +22,7 @@ const ResetPassword = () => {
 
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,14 +37,18 @@ const ResetPassword = () => {
 
     setLoading(true);
     try {
+
+      //get password reset
       const { data } = await axios.post(
-        "http://localhost:8000/api/v1/users/reset-password",
+        `${backendUrl}/api/v1/users/reset-password`,
         { email, otp, password, passwordConfirm },
         { withCredentials: true }
       );
+
       dispatch(setAuthUser(data.data.user));
       toast.success("Password reset successfully");
       navigate('/adminpanel/auth/login');
+
     } catch (error) {
       toast.error(error.response?.data?.message || "Password reset failed");
     } finally {
