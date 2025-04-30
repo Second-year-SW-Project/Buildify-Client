@@ -157,15 +157,19 @@ const theme = createTheme({
     },
     error: {
       main: "#D91E18",
+      contrastText: "#ffd6d6",
     },
     success: {
       main: "#4caf50",
+      contrastText: "#dbf6e5",
     },
     warning: {
       main: "#FF9400",
+      contrastText: "#fff1d6",
     },
     info: {
       main: "#2C87C3",
+      contrastText: "#edeff1",
     },
     delete: {
       main: '#ff5630',
