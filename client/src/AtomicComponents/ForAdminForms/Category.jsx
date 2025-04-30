@@ -39,7 +39,7 @@ const subCategories = {
     { value: "mouse", label: "Mouse" },
     { value: "monitor", label: "Monitor" },
     { value: "ups", label: "UPS" },
-    { value: "expansion_network", label: "Expansion Card & Networking" },
+    { value: "expansion_network", label: "Expansion & Networking" },
     { value: "gamepad", label: "Gamepad" },
   ],
   Common: [
@@ -452,14 +452,17 @@ const keyboardAttributes = {
     { value: "membrane", label: "Membrane" },
     { value: "hybrid", label: "Hybrid" },
   ],
+  connectivity: [
+    { value: "wired", label: "Wired" },
+    { value: "wireless", label: "Wireless" }
+  ]
 };
 
 const mouseAttributes = {
-  type: [
+  connectivity: [
     { value: "wired", label: "Wired" },
-    { value: "wireless", label: "Wireless" },
-    { value: "bluetooth", label: "Bluetooth" },
-  ],
+    { value: "wireless", label: "Wireless" }
+  ]
 };
 
 const monitorAttributes = {
@@ -485,6 +488,7 @@ const monitorAttributes = {
     { value: 120, label: "120Hz" },
     { value: 144, label: "144Hz" },
     { value: 240, label: "240Hz" },
+    { value: 300, label: "360Hz" },
   ],
   panelType: [
     { value: "tn", label: "TN (Twisted Nematic)" },
@@ -508,11 +512,12 @@ const laptopAttributes = {
     { value: 16, label: "16 inches" },
     { value: 17, label: "17 inches" },
   ],
-  resolution: [
-    { value: "1920x1080", label: "1920x1080 (Full HD)" },
-    { value: "2560x1600", label: "2560x1600 (WQXGA)" },
-    { value: "2880x1800", label: "2880x1800 (2.8K)" },
-    { value: "3840x2160", label: "3840x2160 (4K UHD)" },
+  refreshRate: [
+    { value: 60, label: "60Hz" },
+    { value: 75, label: "75Hz" },
+    { value: 120, label: "120Hz" },
+    { value: 144, label: "144Hz" },
+    { value: 165, label: "165Hz" },
   ],
   cpu: [
     { value: "intel_core_i3", label: "Intel Core i3" },

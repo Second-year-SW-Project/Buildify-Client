@@ -35,6 +35,7 @@ export function InputField({
   options = [],
   labelPlacement = "end",
   disabled = false,
+  showRequiredHelper = false,
 }) {
   if (type === "text") {
     return (
@@ -50,7 +51,11 @@ export function InputField({
         rows={rows}
         width={width}
         disabled={disabled}
-        helperText={helperText}
+        helperText={
+          showRequiredHelper && !value
+            ? <span style={{ color: "red", fontWeight: 500, fontStyle: 'italic' }}>*Required</span>
+            : helperText
+        }
         error={!!error}
         onChange={(e) => {
           if (onChange) onChange(e.target.value);
@@ -118,7 +123,7 @@ export function InputField({
         type={type}
         label={label}
         fontSize={fontSize}
-        value={value}
+        value={value ?? ""}
         variant={variant}
         color={color}
         width={width}
@@ -134,7 +139,11 @@ export function InputField({
           },
         }}
         disabled={disabled}
-        helperText={helperText}
+        helperText={
+          showRequiredHelper && (value === "" || value === undefined)
+            ? <span style={{ color: "red", fontWeight: 500, fontStyle: 'italic' }}>*Required</span>
+            : helperText
+        }
         sx={{
           width: width,
           marginBottom: "10px",
@@ -166,7 +175,11 @@ export function InputField({
         value={value}
         disabled={disabled}
         error={!!error}
-        helperText={helperText}
+        helperText={
+          showRequiredHelper && !value
+            ? <span style={{ color: "red", fontWeight: 500, fontStyle: 'italic' }}>*Required</span>
+            : helperText
+        }
         onChange={(e) => {
           if (onChange) onChange(e.target.value);
         }}
