@@ -107,15 +107,6 @@ export default function UserProfile() {
         throw new Error("Invalid email format");
       }
 
-      // Send only allowed fields
-      // const updateData = {
-      //   name: formData.name.trim(),
-      //   email: formData.email.trim(),
-      //   firstName: formData.firstName.trim(),
-      //   lastName: formData.lastName.trim(),
-      //   address: formData.address.trim(),
-      //   profilePicture: formData.profilePicture || user.profilePicture,
-      // };
       const updateData = {
         name: formData.name?.trim() || "",
         email: formData.email?.trim() || "",
@@ -321,7 +312,7 @@ export default function UserProfile() {
                     />
                   </div>
 
-                  <Paper elevation={3} sx={{ padding: 3, width: "86%" }}>
+                  {/* <Paper elevation={3} sx={{ padding: 3, width: "86%" }}>
                     <h2 className="text-2xl font-semibold text-gray-600">
                       Two Factor Authentication (2FA)
                     </h2>
@@ -333,16 +324,12 @@ export default function UserProfile() {
                       // onClick={handleToggle}
                       disabled={!editable}
                     />
-                  </Paper>
+                  </Paper> */}
 
-                  <InputField
-                    type="checkbox"
-                    label="Sign up for emails to get updates"
-                    disabled={!editable}
-                  />
+                  {/* 
                   <p className="text-purple-600 font-medium mt-4">
                     Change password
-                  </p>
+                  </p> */}
                   <Button
                     type="submit"
                     variant="contained"

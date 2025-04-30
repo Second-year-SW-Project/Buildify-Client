@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
@@ -7,45 +7,54 @@ import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
-import {
-  Divider,
-  IconButton,
-  TextField,
-  Button,
-  Autocomplete,
-} from "@mui/material";
+import { Divider, TextField, Button, Autocomplete } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
 import { toast } from "sonner";
 
-function InvoiceCreate() {
+function InvoiceEdit() {
   const navigate = useNavigate();
+  const { invoiceId } = useParams();
 
-  // State for fetched products
+  // State for form fields
+  const [invoiceData, setInvoiceData] = useState(null);
   const [products, setProducts] = useState([]);
-
-  // State for from fields
-  const [invoiceNumber, setInvoiceNumber] = useState("");
-  const [invoiceStatus, setInvoiceStatus] = useState("draft");
-  const [dateCreated, setDateCreated] = useState(new Date());
-  const [dueDate, setDueDate] = useState(new Date());
+  const [items, setItems] = useState([]);
   const [shippingCost, setShippingCost] = useState(0);
   const [discount, setDiscount] = useState(0);
-  const [fromEdit, setFromEdit] = useState(false);
-  const [toEdit, setToEdit] = useState(false);
   const [fromAddress, setFromAddress] = useState("");
   const [toAddress, setToAddress] = useState("");
-  const [items, setItems] = useState([
-    {
-      itemCode: "",
-      itemName: "",
-      subCategory: "",
-      quantity: 1,
-      price: "0",
-    },
-  ]);
+  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [invoiceStatus, setInvoiceStatus] = useState("");
+  const [dateCreated, setDateCreated] = useState(new Date());
+  const [dueDate, setDueDate] = useState(new Date());
 
-  // Fetch products for the dropdown
+  // API Configuration
+  const API_URL = "http://localhost:8000/api/invoices";
+
+  // Fetch invoice data for editing
+  useEffect(() => {
+    const fetchInvoice = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/get/${invoiceId}`);
+
+        if (res.data) {
+          setInvoiceData(res.data);
+          setItems(res.data.items || []);
+        } else {
+          console.error("Invoice data not found:", res.data);
+          toast.error("Invoice data not found.");
+        }
+      } catch (err) {
+        console.error("Error fetching invoice data:", err);
+        toast.error("Error fetching invoice data.");
+      }
+    };
+
+    fetchInvoice();
+  }, [invoiceId]);
+
+  // Fetch products for dropdown
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -62,20 +71,20 @@ function InvoiceCreate() {
     fetchProducts();
   }, []);
 
-  // Price calculations
-  const calculateSubtotal = () => {
-    return items.reduce((sum, item) => {
-      const itemTotal =
-        parseFloat(item.price || 0) * parseFloat(item.quantity || 0);
-      return sum + itemTotal;
-    }, 0);
-  };
+  // Update states based on fetched invoice data
+  useEffect(() => {
+    if (invoiceData) {
+      setInvoiceNumber(invoiceData.invoiceNumber);
+      setInvoiceStatus(invoiceData.invoiceStatus);
+      setDateCreated(new Date(invoiceData.dateCreated));
+      setDueDate(new Date(invoiceData.dueDate));
+      setShippingCost(invoiceData.shippingCost);
+      setDiscount(invoiceData.discount);
+      setFromAddress(invoiceData.fromAddress);
+      setToAddress(invoiceData.toAddress);
+    }
+  }, [invoiceData]);
 
-  const subtotal = calculateSubtotal();
-  const total =
-    subtotal + parseFloat(shippingCost || 0) - parseFloat(discount || 0);
-
-  // Item management
   const handleItemChange = (index, key, value) => {
     const updatedItems = [...items];
     updatedItems[index][key] = value;
@@ -101,11 +110,22 @@ function InvoiceCreate() {
     setItems(updatedItems);
   };
 
-  // API Configuration
-  const API_URL = "http://localhost:8000/api/invoices";
+  // Price calculations
+  const calculateSubtotal = () => {
+    return items.reduce((sum, item) => {
+      const itemTotal =
+        parseFloat(item.price || 0) * parseFloat(item.quantity || 0);
+      return sum + itemTotal;
+    }, 0);
+  };
 
-  const handleSubmit = async (isDraft = false) => {
-    const invoiceData = {
+  const subtotal = calculateSubtotal();
+  const total =
+    subtotal + parseFloat(shippingCost || 0) - parseFloat(discount || 0);
+
+  //Update Invoice
+  const handleSubmit = async () => {
+    const invoiceDataToUpdate = {
       fromAddress,
       toAddress,
       items: items.map((item) => ({
@@ -120,30 +140,36 @@ function InvoiceCreate() {
       subtotal,
       total,
       invoiceNumber,
-      invoiceStatus: isDraft ? "draft" : invoiceStatus,
+      invoiceStatus,
       dateCreated,
       dueDate,
     };
 
     try {
-      const response = await axios.post(`${API_URL}/create`, invoiceData);
+      const response = await axios.put(
+        `${API_URL}/edit/${invoiceId}`,
+        invoiceDataToUpdate
+      );
       toast.success(response.data.message);
       navigate("/adminpanel/invoice/invoicelist");
     } catch (error) {
-      console.error("Invoice creation failed:", error);
+      console.error("Invoice update failed:", error);
+      console.log("Error details:", error.response?.data);
       toast.error(`Error: ${error.response?.data?.error || error.message}`);
     }
   };
+
+  if (!invoiceData) return <div>Loading...</div>;
 
   return (
     <div>
       <div className="pl-6 grid grid-rows">
         <div className="mt-3 mb-6">
-          <PageTitle value="Create Invoice" />
+          <PageTitle value="Edit Invoice" />
           <CustomBreadcrumbs
             paths={[
-              { label: "Invoice", href: "/invoice/invoicecreate" },
-              { label: "Create Invoice" },
+              { label: "Invoice", href: "/invoice/invoiceedit" },
+              { label: "Edit Invoice" },
             ]}
           />
         </div>
@@ -152,34 +178,8 @@ function InvoiceCreate() {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <p className="text-purple-600 font-semibold mb-1">From:</p>
-                <IconButton onClick={() => setFromEdit(!fromEdit)} size="small">
-                  <Add fontSize="small" />
-                </IconButton>
               </div>
-              {fromEdit ? (
-                <div className="space-y-2">
-                  <InputField
-                    type="text"
-                    label="From"
-                    variant="outlined"
-                    width="100%"
-                    row="8"
-                    onChange={setFromAddress}
-                    value={fromAddress}
-                  />
-                  <AddButton
-                    name="Save"
-                    isBold={1}
-                    buttonSize="medium"
-                    fontSize="16px"
-                    onClick={() => setFromEdit(false)}
-                  />
-                </div>
-              ) : fromAddress ? (
-                <p className="text-gray-800">{fromAddress}</p>
-              ) : (
-                <p className="text-gray-400 italic">No address added.</p>
-              )}
+              <p className="text-gray-800">{fromAddress}</p>
             </div>
 
             <Divider
@@ -195,34 +195,8 @@ function InvoiceCreate() {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <p className="text-purple-600 font-semibold mb-1">To:</p>
-                <IconButton onClick={() => setToEdit(!toEdit)} size="small">
-                  <Add fontSize="small" />
-                </IconButton>
               </div>
-              {toEdit ? (
-                <div className="space-y-2">
-                  <InputField
-                    type="text"
-                    label="To"
-                    variant="outlined"
-                    width="100%"
-                    row="8"
-                    onChange={setToAddress}
-                    value={toAddress}
-                  />
-                  <AddButton
-                    name="Save"
-                    isBold={1}
-                    buttonSize="medium"
-                    fontSize="16px"
-                    onClick={() => setToEdit(false)}
-                  />
-                </div>
-              ) : toAddress ? (
-                <p className="text-gray-800">{toAddress}</p>
-              ) : (
-                <p className="text-gray-400 italic">No address added.</p>
-              )}
+              <p className="text-gray-800">{toAddress}</p>
             </div>
           </div>
 
@@ -284,7 +258,6 @@ function InvoiceCreate() {
                       <TextField {...params} label="Item Code" fullWidth />
                     )}
                   />
-
                   <InputField
                     type="text"
                     label="Item name"
@@ -350,7 +323,7 @@ function InvoiceCreate() {
                   label="Shipping Cost"
                   width="100%"
                   value={shippingCost}
-                  onChange={(val) => setShippingCost(val)}
+                  onChange={setShippingCost}
                 />
                 <InputField
                   type="text"
@@ -358,7 +331,7 @@ function InvoiceCreate() {
                   label="Discount"
                   width="100%"
                   value={discount}
-                  onChange={(val) => setDiscount(val)}
+                  onChange={setDiscount}
                 />
               </div>
               <div className="float-right">
@@ -383,19 +356,12 @@ function InvoiceCreate() {
           <div className="float-right">
             <div className="flex gap-2">
               <AddButton
-                name="Create Invoice"
+                name="Save Changes"
                 isBold={1}
                 buttonSize="medium"
                 fontSize="16px"
-                onClick={() => handleSubmit(false)}
+                onClick={handleSubmit}
               />
-              <Button
-                variant="outlined"
-                size="medium"
-                onClick={() => handleSubmit(true)}
-              >
-                Save Draft
-              </Button>
             </div>
           </div>
         </div>
@@ -404,4 +370,4 @@ function InvoiceCreate() {
   );
 }
 
-export default InvoiceCreate;
+export default InvoiceEdit;

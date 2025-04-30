@@ -157,7 +157,7 @@ function PartsTable({ onComponentsChanged }) {
                           <div className="flex flex-col gap-2">
                             {Array.isArray(selectedData) ? (
                               selectedData.map((component, idx) => (
-                                <div key={idx} className="flex items-center justify-between">
+                                <div key={idx} className="flex items-center justify-between h-[38px]">
                                   <div className="flex items-center">
                                     <img
                                       src={component.image}
@@ -177,7 +177,7 @@ function PartsTable({ onComponentsChanged }) {
                                 </div>
                               ))
                             ) : (
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between h-[38px]">
                                 <div className="flex items-center">
                                   <img
                                     src={selectedData.image}
@@ -196,35 +196,46 @@ function PartsTable({ onComponentsChanged }) {
                                 </button>
                               </div>
                             )}
-                            <AddButton
-                              text={`Add More ${row.component}`}
-                              onClick={() => handleSelectComponent(row.component)}
-                              className="mt-2"
-                            />
+                            <div className="h-[38px] flex items-center">
+                              <AddButton
+                                text={`Add More ${row.component}`}
+                                onClick={() => handleSelectComponent(row.component)}
+                              />
+                            </div>
                           </div>
                         ) : (
-                          <div className="flex items-center">
-                            <img
-                              src={selectedData.image}
-                              alt={selectedData.name}
-                              className="w-[38px] h-[38px] mr-2"
-                            />
-                            <span className="break-words whitespace-normal">
-                              {selectedData.name}
-                            </span>
+                          <div className="flex items-center justify-between h-[38px]">
+                            <div className="flex items-center">
+                              <img
+                                src={selectedData.image}
+                                alt={selectedData.name}
+                                className="w-[38px] h-[38px] mr-2"
+                              />
+                              <span className="break-words whitespace-normal">
+                                {selectedData.name}
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => handleRemoveComponent(row.component)}
+                              className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
+                            >
+                              <ClearIcon className="w-5 h-5" />
+                            </button>
                           </div>
                         )
                       ) : (
-                        <AddButton
-                          text={`Choose ${row.component}`}
-                          onClick={() => handleSelectComponent(row.component)}
-                        />
+                        <div className="h-[38px] flex items-center">
+                          <AddButton
+                            text={`Choose ${row.component}`}
+                            onClick={() => handleSelectComponent(row.component)}
+                          />
+                        </div>
                       )
                     ) : (
                       <div className="flex flex-col gap-2">
                         {expansionNetworkTypes.map(({ display, componentType }) => (
                           selectedComponents[componentType] ? (
-                            <div key={componentType} className="flex items-center">
+                            <div key={componentType} className="flex items-center justify-between h-[38px]">
                               <div className="flex items-center">
                                 <img
                                   src={selectedComponents[componentType].image}
@@ -235,11 +246,17 @@ function PartsTable({ onComponentsChanged }) {
                                   {selectedComponents[componentType].name}
                                 </span>
                               </div>
+                              <button
+                                onClick={() => handleRemoveComponent(componentType)}
+                                className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
+                              >
+                                <ClearIcon className="w-5 h-5" />
+                              </button>
                             </div>
                           ) : (
                             <div
                               key={componentType}
-                              className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                              className="text-blue-600 hover:text-blue-800 cursor-pointer h-[38px] flex items-center"
                               onClick={() => handleClickableTextClick({ type: display, componentType })}
                             >
                               {display}
@@ -251,7 +268,29 @@ function PartsTable({ onComponentsChanged }) {
                   </td>
                   <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
-                      selectedData ? selectedData.availability : '—'
+                      selectedData ? (
+                        row.component === 'Memory' || row.component === 'Storage' ? (
+                          <div className="flex flex-col gap-2">
+                            {Array.isArray(selectedData) ? (
+                              selectedData.map((component, idx) => (
+                                <div key={idx} className="h-[38px] flex items-center">
+                                  {component.availability}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="h-[38px] flex items-center">
+                                {selectedData.availability}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="h-[38px] flex items-center">
+                            {selectedData.availability}
+                          </div>
+                        )
+                      ) : (
+                        <div className="h-[38px] flex items-center">—</div>
+                      )
                     ) : (
                       <div className="flex flex-col gap-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
@@ -260,9 +299,7 @@ function PartsTable({ onComponentsChanged }) {
                               {selectedComponents[componentType].availability}
                             </div>
                           ) : (
-                            <div key={componentType} className="h-[38px] flex items-center">
-                              —
-                            </div>
+                            <div key={componentType} className="h-[38px] flex items-center">—</div>
                           )
                         ))}
                       </div>
@@ -270,7 +307,29 @@ function PartsTable({ onComponentsChanged }) {
                   </td>
                   <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
                     {!isNinthRow ? (
-                      selectedData ? selectedData.price : '—'
+                      selectedData ? (
+                        row.component === 'Memory' || row.component === 'Storage' ? (
+                          <div className="flex flex-col gap-2">
+                            {Array.isArray(selectedData) ? (
+                              selectedData.map((component, idx) => (
+                                <div key={idx} className="h-[38px] flex items-center">
+                                  {component.price}
+                                </div>
+                              ))
+                            ) : (
+                              <div className="h-[38px] flex items-center">
+                                {selectedData.price}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="h-[38px] flex items-center">
+                            {selectedData.price}
+                          </div>
+                        )
+                      ) : (
+                        <div className="h-[38px] flex items-center">—</div>
+                      )
                     ) : (
                       <div className="flex flex-col gap-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
@@ -279,9 +338,7 @@ function PartsTable({ onComponentsChanged }) {
                               {selectedComponents[componentType].price}
                             </div>
                           ) : (
-                            <div key={componentType} className="h-[38px] flex items-center">
-                              —
-                            </div>
+                            <div key={componentType} className="h-[38px] flex items-center">—</div>
                           )
                         ))}
                       </div>

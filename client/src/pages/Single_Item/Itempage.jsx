@@ -37,6 +37,7 @@ export default function Itempage() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
   const dispatch = useDispatch();
 
@@ -84,11 +85,11 @@ export default function Itempage() {
         type: product.type,
         price: product.price,
         image:product.imgUrls?.[0]?.url,
-        quantity: 1, // Default quantity to 1
+        quantity: quantity,
       }
     ));
     //alert(`${product.name} added to cart`);
-    toast.success(`${product.name} added to cart`, {
+    toast.success(`${quantity}x ${product.name} added to cart`, {
       duration: 2000,
       style: {
         background: '#a036b2	',
@@ -360,8 +361,9 @@ export default function Itempage() {
               <div className="mt-4 flex items-center space-x-3">
                 <input
                   type="number"
-                  defaultValue="1"
+                  value={quantity}
                   min="1"
+                  onChange={(e) => setQuantity(Number(e.target.value))}
                   className="w-12 md:w-14 lg:w-16 h-8 md:h-9 border rounded-lg text-center"
                 />
                 <button

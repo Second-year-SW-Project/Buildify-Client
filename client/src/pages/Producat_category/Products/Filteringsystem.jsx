@@ -12,6 +12,25 @@ export default function Filteringsystem({ categoryName, setFilters, allProducts 
   const [pciTypeFilters, setPciTypeFilters] = useState([]);
   const [coreCountFilters, setCoreCountFilters] = useState([]);
   const [threadCountFilters, setThreadCountFilters] = useState([]);
+  const [chipsetFilters, setChipsetFilters] = useState([]);
+  const [socketTypeFilters, setSocketTypeFilters] = useState([]);
+  const [wattageFilters, setWattageFilters] = useState([]);
+  const [efficiencyFilters, setEfficiencyFilters] = useState([]);
+  const [storageCapacityFilters, setStorageCapacityFilters] = useState([]);
+  const [storageTypeFilters, setStorageTypeFilters] = useState([]);
+  const [supportedMotherboardFilters, setSupportedMotherboardFilters] = useState([]);
+  const [laptopRamCapacityFilters, setLaptopRamCapacityFilters] = useState([]);
+  const [laptopGraphicCardFilters, setLaptopGraphicCardFilters] = useState([]);
+  const [laptopStorageFilters, setLaptopStorageFilters] = useState([]);
+  const [prebuildRamCapacityFilters, setPrebuildRamCapacityFilters] = useState([]);
+  const [prebuildGpuFilters, setPrebuildGpuFilters] = useState([]);
+  const [prebuildStorageFilters, setPrebuildStorageFilters] = useState([]);
+
+
+
+
+
+
 
 
 
@@ -120,6 +139,163 @@ const handleThreadCountToggle = (threadCount) => {
 
 
 
+//-------- Motherboard conditons ------
+
+
+//chipset
+const handleChipsetToggle = (chipset) => {
+  setChipsetFilters(prev =>
+    prev.includes(chipset)
+      ? prev.filter(item => item !== chipset)
+      : [...prev, chipset]
+  );
+};
+
+//socket type
+const handleSocketTypeToggle = (socketType) => {
+  setSocketTypeFilters(prev =>
+    prev.includes(socketType)
+      ? prev.filter(item => item !== socketType)
+      : [...prev, socketType]
+  );
+};
+
+
+
+//-------- for power supplies -------
+
+//wattage
+const handleWattageToggle = (wattage) => {
+  setWattageFilters(prev =>
+    prev.includes(wattage)
+      ? prev.filter(item => item !== wattage)
+      : [...prev, wattage]
+  );
+};
+
+//efficiency
+
+const handleEfficiencyToggle = (efficiency) => {
+  setEfficiencyFilters(prev =>
+    prev.includes(efficiency)
+      ? prev.filter(item => item !== efficiency)
+      : [...prev, efficiency]
+  );
+};
+
+
+
+// ------ for storage ---------
+
+
+//size
+const handleStorageCapacityToggle = (capacity) => {
+  setStorageCapacityFilters(prev =>
+    prev.includes(capacity)
+      ? prev.filter(item => item !== capacity)
+      : [...prev, capacity]
+  );
+};
+
+//type
+const handleStorageTypeToggle = (type) => {
+  setStorageTypeFilters(prev =>
+    prev.includes(type)
+      ? prev.filter(item => item !== type)
+      : [...prev, type]
+  );
+};
+
+
+// --------- for Casings ----------
+
+const handleSupportedMotherboardToggle = (type) => {
+  setSupportedMotherboardFilters(prev =>
+    prev.includes(type)
+      ? prev.filter(item => item !== type)
+      : [...prev, type]
+  );
+};
+
+
+// ----------FOR LAPTOPS-----------
+
+
+//ram
+
+const handleLaptopRamCapacityToggle = (capacity) => {
+  setLaptopRamCapacityFilters(prev =>
+    prev.includes(capacity)
+      ? prev.filter(item => item !== capacity)
+      : [...prev, capacity]
+  );
+};
+
+//gpu
+const handleLaptopGraphicCardToggle = (gpu) => {
+  setLaptopGraphicCardFilters(prev =>
+    prev.includes(gpu)
+      ? prev.filter(item => item !== gpu)
+      : [...prev, gpu]
+  );
+};
+
+//storage
+const handleLaptopStorageToggle = (storage) => {
+  setLaptopStorageFilters(prev =>
+    prev.includes(storage)
+      ? prev.filter(item => item !== storage)
+      : [...prev, storage]
+  );
+};
+
+// ----------FOR PREBUILTS-----------
+
+
+//ram
+
+const handlePrebuildRamCapacityToggle = (capacity) => {
+  setPrebuildRamCapacityFilters(prev =>
+    prev.includes(capacity)
+      ? prev.filter(item => item !== capacity)
+      : [...prev, capacity]
+  );
+};
+
+//gpu
+
+const handlePrebuildGpuToggle = (gpu) => {
+  setPrebuildGpuFilters(prev =>
+    prev.includes(gpu)
+      ? prev.filter(item => item !== gpu)
+      : [...prev, gpu]
+  );
+};
+
+
+//storage
+
+const handlePrebuildStorageToggle = (storage) => {
+  setPrebuildStorageFilters(prev =>
+    prev.includes(storage)
+      ? prev.filter(item => item !== storage)
+      : [...prev, storage]
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -137,9 +313,32 @@ const handleThreadCountToggle = (threadCount) => {
       memorySpeed: speedFilters,                 // -- RAM memory speed
       pciType: pciTypeFilters,                    //vga pcie type
       coreCount: coreCountFilters,                 //proccessor cores
-      threadCount: threadCountFilters 
+      threadCount: threadCountFilters ,
+      chipset: chipsetFilters,
+      socketType: socketTypeFilters,
+      wattage: wattageFilters,
+      efficiency: efficiencyFilters,
+      storageCapacity: storageCapacityFilters,
+      storageType: storageTypeFilters,
+      supportedMotherboard: supportedMotherboardFilters,
+      laptopRamCapacity: laptopRamCapacityFilters,
+      laptopGraphicCard: laptopGraphicCardFilters,
+      laptopStorage: laptopStorageFilters,
+      prebuildGpu: prebuildGpuFilters,
+      prebuildStorage: prebuildStorageFilters
+
+
+
+
+
+
+
+
+
+
+
     });
-  }, [brandFilters, priceRange, capacityFilters, memoryCapacityFilters, speedFilters, setFilters, pciTypeFilters,coreCountFilters,threadCountFilters]);
+  }, [brandFilters, priceRange, capacityFilters, memoryCapacityFilters, speedFilters, setFilters, pciTypeFilters,coreCountFilters,threadCountFilters,chipsetFilters,socketTypeFilters,wattageFilters,efficiencyFilters,storageCapacityFilters,storageTypeFilters,supportedMotherboardFilters,laptopRamCapacityFilters,laptopGraphicCardFilters,laptopStorageFilters,prebuildGpuFilters,prebuildStorageFilters]);
   
 
 
@@ -307,7 +506,294 @@ const handleThreadCountToggle = (threadCount) => {
         );
 
 
+        case 'motherboard':   //........for motherboard category............
 
+
+        return (
+          <div className="mt-5">
+            {/* Chipset Filter */}
+            <h3 className="text-md font-semibold mb-2">Chipset</h3>
+            {Array.from(
+              new Set(allProducts.map((p) => p.motherboardChipset))
+            ).map((chipset, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={chipsetFilters.includes(chipset)}
+                    onChange={() => handleChipsetToggle(chipset)}
+                  />
+                }
+                label={chipset}
+                className="grid gap-4"
+              />
+            ))}
+
+            <div className="mt-5">
+              {/* Socket Type Filter */}
+              <h3 className="text-md font-semibold mb-2">Socket Type</h3>
+              {Array.from(new Set(allProducts.map((p) => p.socketType))).map(
+                (socketType, index) => (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={socketTypeFilters.includes(socketType)}
+                        onChange={() => handleSocketTypeToggle(socketType)}
+                      />
+                    }
+                    label={socketType}
+                    className="grid gap-4"
+                  />
+                )
+              )}
+            </div>
+          </div>
+        );
+
+        case 'power':   //........for Power category............
+
+
+        return (
+          <div className="mt-5">
+            <h3 className="text-md font-semibold mb-2">Wattage</h3>
+            {Array.from(new Set(allProducts.map((p) => p.wattage))).map(
+              (wattage, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      checked={wattageFilters.includes(wattage)}
+                      onChange={() => handleWattageToggle(wattage)}
+                    />
+                  }
+                  label={`${wattage}W`}
+                  className="grid gap-4"
+                />
+              )
+            )}
+
+            <div className="mt-5">
+              <h3 className="text-md font-semibold mb-2">Efficiency</h3>
+              {Array.from(new Set(allProducts.map((p) => p.efficiencyRating))).map(
+                (efficiency, index) => (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={efficiencyFilters.includes(efficiency)}
+                        onChange={() => handleEfficiencyToggle(efficiency)}
+                      />
+                    }
+                    label={efficiency}
+                    className="grid gap-4"
+                  />
+                )
+              )}
+            </div>
+          </div>
+        );
+
+
+        case 'storage':   //........for storage category............
+
+
+        return (
+          <div className="mt-5">
+            <h3 className="text-md font-semibold mb-2">Storage Capacity</h3>
+            {Array.from(new Set(allProducts.map((p) => p.storageCapacity))).map(
+              (capacity, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      checked={storageCapacityFilters.includes(capacity)}
+                      onChange={() => handleStorageCapacityToggle(capacity)}
+                    />
+                  }
+                  label={capacity + "GB"}
+                  className="grid gap-4"
+                />
+              )
+            )}
+
+            <div className="mt-5">
+              <h3 className="text-md font-semibold mb-2">Storage Type</h3>
+              {Array.from(new Set(allProducts.map((p) => p.storageType))).map(
+                (type, index) => (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={storageTypeFilters.includes(type)}
+                        onChange={() => handleStorageTypeToggle(type)}
+                      />
+                    }
+                    label={type}
+                    className="grid gap-4"
+                  />
+                )
+              )}
+            </div>
+          </div>
+        );
+
+        case 'casing':   //........for casing category............
+
+
+        return (
+          <div className="mt-5">
+            <h3 className="text-md font-semibold mb-2">
+              Supported Motherboard
+            </h3>
+            {Array.from(
+              new Set(allProducts.map((p) => p.supportedMotherboardSizes))
+            ).map((type, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    checked={supportedMotherboardFilters.includes(type)}
+                    onChange={() => handleSupportedMotherboardToggle(type)}
+                  />
+                }
+                label={type}
+                className="grid gap-4"
+              />
+            ))}
+          </div>
+        );
+
+        case 'laptop':   //........for lapto category............
+
+
+        return (
+          <div className="mt-5">
+            <h3 className="text-md font-semibold mb-2">RAM Capacity</h3>
+            {Array.from(new Set(allProducts.map((p) => p.ram))).map(
+              (capacity, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      checked={laptopRamCapacityFilters.includes(capacity)}
+                      onChange={() => handleLaptopRamCapacityToggle(capacity)}
+                    />
+                  }
+                  label={capacity}
+                  className="grid gap-4"
+                />
+              )
+            )}
+
+            <div className="mt-5">
+              <h3 className="text-md font-semibold mb-2">Graphic Card</h3>
+              {Array.from(new Set(allProducts.map((p) => p.graphicCard))).map(
+                (gpu, index) => (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={laptopGraphicCardFilters.includes(gpu)}
+                        onChange={() => handleLaptopGraphicCardToggle(gpu)}
+                      />
+                    }
+                    label={gpu}
+                    className="grid gap-4"
+                  />
+                )
+              )}
+            </div>
+
+            <div className="mt-5">
+              <h3 className="text-md font-semibold mb-2">Storage</h3>
+              {Array.from(new Set(allProducts.map((p) => p.storage))).map(
+                (storage, index) => (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={laptopStorageFilters.includes(storage)}
+                        onChange={() => handleLaptopStorageToggle(storage)}
+                      />
+                    }
+                    label={storage}
+                    className="grid gap-4"
+                  />
+                )
+              )}
+            </div>
+          </div>
+        );
+
+
+        case 'prebuild':   //........for prebuilt category............
+
+
+        return (
+          <div className="mt-5">
+            <h3 className="text-md font-semibold mb-2">RAM Capacity</h3>
+            {Array.from(new Set(allProducts.map((p) => p.ram))).map(
+              (capacity, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      checked={prebuildRamCapacityFilters.includes(capacity)}
+                      onChange={() => handlePrebuildRamCapacityToggle(capacity)}
+                    />
+                  }
+                  label={capacity + "GB"}
+                  className="grid gap-4"
+                />
+              )
+            )}
+
+            <div className="mt-5">
+              <h3 className="text-md font-semibold mb-2">Graphic Card</h3>
+              {Array.from(new Set(allProducts.map((p) => p.graphicCard))).map(
+                (gpu, index) => (
+                  <FormControlLabel
+                    key={index}
+                    control={
+                      <Checkbox
+                        checked={prebuildGpuFilters.includes(gpu)}
+                        onChange={() => handlePrebuildGpuToggle(gpu)}
+                      />
+                    }
+                    label={gpu
+                      .replace(/nvidia_/i, '')
+                      .replace(/geforce_/i, '')
+                      .replace(/_/g, ' ')
+                      .toUpperCase()}
+                    className="grid gap-4 "
+                  />
+                )
+              )}
+            </div>
+
+            <div className="mt-5">
+              <h3 className="text-md font-semibold mb-2">
+                Storage
+              </h3>
+              {Array.from(
+                new Set(allProducts.map((p) => p.storage))
+              ).map((storage, index) => (
+                <FormControlLabel
+                  key={index}
+                  control={
+                    <Checkbox
+                      checked={prebuildStorageFilters.includes(storage)}
+                      onChange={() => handlePrebuildStorageToggle(storage)}
+                    />
+                  }
+                  label={storage+" GB"}
+                  className="grid gap-4"
+                />
+              ))}
+            </div>
+          </div>
+        );
 
 
 
