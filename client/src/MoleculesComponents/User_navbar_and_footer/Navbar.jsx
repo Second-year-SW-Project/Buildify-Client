@@ -69,7 +69,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex-shrink-0 mt-[16px] ml-[-10px] mr-[75px]">
           <Link to="/home">
-            <img src="../../../../src/assets/images/Logos/logo-gray.png" alt="Logo" />
+            <img src="https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421085/logo_wfxxqe.png" alt="Logo" />
           </Link>
         </div>
 

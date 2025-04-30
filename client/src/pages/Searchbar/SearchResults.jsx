@@ -10,13 +10,16 @@ export default function SearchResults() {
   const query = new URLSearchParams(location.search).get("query");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   
   const [error, setError] = useState(null);
   //fetch products for the query
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response1 = await axios.get(`http://localhost:8000/api/product/search?query=${query}`);
+        const response1 = await axios.get(`${backendUrl}/api/product/search?query=${query}`);
         setProducts(response1.data);
         
 
@@ -30,7 +33,19 @@ export default function SearchResults() {
     if (query) fetchProducts();
   }, [query]);
 
-  if (loading) return <p>Loading results...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#1a1c1e] text-white">
+        <Navbar />
+        <div className="flex flex-col items-center justify-center flex-grow">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-6"></div>
+          <p className="text-xl font-semibold">Loading search results...</p>
+        </div>
+        
+      </div>
+    );
+  }
+  
   if (error) return <p>{error}</p>;
 
   return (

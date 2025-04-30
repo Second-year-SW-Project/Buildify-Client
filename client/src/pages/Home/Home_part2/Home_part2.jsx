@@ -4,12 +4,13 @@ import PCcardhome from "./Pccardhome";
 
 export default function Home_part2() {
   const [pcs, setPcs] = useState([]);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     const fetchPCs = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/api/product/filter?attribute=type&value=prebuild'); // Axios fetch
-        setPcs(response.data.slice(0, 8)); // Select only the first 8 items
+        const response = await axios.get(`${backendUrl}/api/product/filter?attribute=type&value=prebuild`); // Axios fetch
+        setPcs(response.data.slice(0, 8)); // select only  8 items
       } catch (error) {
         console.error("Error fetching products:", error);
       }
