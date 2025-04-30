@@ -1,83 +1,71 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const OrdersPage = () => {
-  const [orders, setOrders] = useState([]);
+export default function UserProfile() {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const token  = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    if (!token || !userId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/checkout"); // Replace with your backend URL
-        if (!response.ok) {
-          throw new Error("Failed to fetch orders");
-        }
-        const data = await response.json();
-        setOrders(data);
+        const response = await axios.get("http://localhost:8000/api/v1/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setUsers(response.data);
       } catch (error) {
-        console.error("Error fetching orders:", error);
-        setError(error.message);
+        console.error("Error fetching users:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrders();
+    fetchUsers();
   }, []);
 
-  if (loading) {
-    return <p>Loading orders...</p>;
+  if (loading) return <div>Loading user info…</div>;
+
+  // **Extract the current user once here:**
+  const userId = localStorage.getItem("userId");
+  const currentUserArray = users.filter((u) => u._id === userId);
+  const currentUser = currentUserArray.length > 0 ? currentUserArray[0] : null;
+
+  if (!currentUser) {
+    return <div>User not found.</div>;
   }
 
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
 
+
+
+
+
+
+
+
+
+  // Now you can use currentUser.name, currentUser.email, currentUser.image, etc.
   return (
-    <div>
-    
-      <div className="w-full max-w-7xl mx-auto mb-40 p-6 bg-white shadow-lg rounded-lg">
-        <h2 className="text-center text-xl font-bold bg-black text-white py-3 rounded-md">
-          All Orders
-        </h2>
-        {orders.length === 0 ? (
-          <p className="text-center text-gray-600 mt-5">No orders found</p>
-        ) : (
-          <table className="w-full mt-6 border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="border border-gray-300 px-4 py-2">Order ID</th>
-                <th className="border border-gray-300 px-4 py-2">Customer Name</th>
-                <th className="border border-gray-300 px-4 py-2">Total</th>
-                <th className="border border-gray-300 px-4 py-2">Items</th>
-                <th className="border border-gray-300 px-4 py-2">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order._id} className="text-center">
-                  <td className="border border-gray-300 px-4 py-2">{order._id}</td>
-                  <td className="border border-gray-300 px-4 py-2">{order.customerName}</td>
-                  <td className="border border-gray-300 px-4 py-2">{order.total} LKR</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {order.items.map((item) => (
-                      <p key={item._id}>
-                        {item.name} (x{item.quantity})
-                      </p>
-                    ))}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-2">Hello, {currentUser.name}</h2>
+      <h2 className="text-2xl font-bold mb-2">Hello, {userId}</h2>
+      <p className="text-gray-600 mb-1">Email: {currentUser.email}</p>
       
+        <img
+          src={currentUser.profilePicture}
+          alt={currentUser.username}
+          className="w-24 h-24 rounded-full mt-2"
+        />
+      
+      {/* render any other fields */}
     </div>
   );
-};
-
-export default OrdersPage;
+}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function SearchBar() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("");    //query that go to backend
   const navigate = useNavigate();
 
   const handleSearch = (e) => {

@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import logo from '../assets/logo.png';
 import pcImage from "../assets/images/pc3.jpg";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const ForgetPassword = () => {
   
   const [email, setEmail] = useState("");
@@ -18,8 +20,9 @@ const ForgetPassword = () => {
 
     try {
 
+      //get email for reset password
       await axios.post(
-        "http://localhost:8000/api/v1/users/forget-password",
+        `${backendUrl}/api/v1/users/forget-password`,
         { email },
         { withCredentials: true }
       );

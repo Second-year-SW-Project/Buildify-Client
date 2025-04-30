@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box, Divider, Paper, Typography, Button } from "@mui/material";
 import { InputField } from "../AtomicComponents/Inputs/Input";
+import { toast } from "sonner";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function RMAsupport() {
+  const location = useLocation();
+
   const [formData, setFormData] = useState({
     subject: "",
     orderId: "",
@@ -16,6 +21,15 @@ export default function RMAsupport() {
 
   const [rmaRequests, setRmaRequests] = useState([]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const orderIdFromQuery = params.get("orderId");
+
+    if (orderIdFromQuery) {
+      setFormData((prev) => ({ ...prev, orderId: orderIdFromQuery }));
+    }
+  }, [location.search]);
+
   // Get userId on mount
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -23,7 +37,6 @@ export default function RMAsupport() {
     fetchRMARequests(storedUserId);
   }, []);
 
-  // Handle input changes
   const handleChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -35,14 +48,14 @@ export default function RMAsupport() {
   const handleSubmit = async () => {
     const { subject, orderId, reason, message, userId } = formData;
 
-    if (!subject || !orderId || !reason || !message) {
-      alert("Please fill in all fields.");
+    if (!subject || !orderId || !reason) {
+      toast.info("Please fill in Subject, Order ID, and Reason.");
       return;
     }
 
     try {
-      await axios.post("http://localhost:8000/api/rma", formData);
-      alert("RMA request submitted successfully!");
+      await axios.post(`${backendUrl}/api/rma`, formData);
+      toast.success("RMA request submitted successfully!");
       setFormData({
         subject: "",
         orderId: "",
@@ -53,19 +66,18 @@ export default function RMAsupport() {
       fetchRMARequests(userId);
     } catch (error) {
       console.error("Error submitting RMA:", error);
-      alert("Failed to submit RMA request.");
+      toast.error("Failed to submit RMA request.");
     }
   };
 
   // Fetch RMA requests
   const fetchRMARequests = async (userId) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/rma/user/${userId}`
-      );
+      const response = await axios.get(`${backendUrl}/api/rma/user/${userId}`);
       setRmaRequests(response.data);
     } catch (error) {
       console.error("Error fetching RMAs:", error);
+      toast.error("Error fetching RMAs");
     }
   };
 
@@ -99,7 +111,7 @@ export default function RMAsupport() {
                     <InputField
                       type="text"
                       variant="outlined"
-                      label="Subject"
+                      label="Subject*"
                       width="70%"
                       outlinedActive
                       name="subject"
@@ -110,7 +122,7 @@ export default function RMAsupport() {
                     <InputField
                       type="text"
                       variant="outlined"
-                      label="Order ID"
+                      label="Order ID*"
                       width="70%"
                       outlinedActive
                       name="orderId"
@@ -122,7 +134,7 @@ export default function RMAsupport() {
                   <div className="mb-6">
                     <InputField
                       type="select"
-                      label="Reason for Contact"
+                      label="Reason for Contact*"
                       width="86%"
                       name="reason"
                       value={formData.reason}
@@ -207,43 +219,72 @@ export default function RMAsupport() {
                         rmaRequests.map((rma) => (
                           <Paper
                             key={rma._id}
-                            className="mt-6 p-4 shadow-md rounded-lg flex justify-between items-center"
+                            className="mt-6 p-6 rounded-2xl flex flex-col gap-1 w-4/5 mx-auto bg-white"
+                            elevation={3}
                           >
-                            <div>
-                              <Typography variant="h6" className="font-bold">
+                            <div className="flex justify-between items-start mb-4">
+                              <p className="font-semibold text-gray-900 text-2xl">
                                 {rma.subject}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                className="text-gray-600"
-                              >
-                                {rma.message}
-                              </Typography>
+                              </p>
+
+                              <div className="text-right">
+                                <p className="text-gray-500"> Date created :</p>
+
+                                <p className="text-gray-700">
+                                  {new Date(rma.createdAt).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    }
+                                  )}
+                                </p>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                              <Typography
-                                variant="body2"
-                                className="text-gray-500"
-                              >
-                                Date:{" "}
-                                {new Date(rma.createdAt).toLocaleDateString()}
-                              </Typography>
+
+                            <div className="mb-2">
+                              <p className="text-gray-700">
+                                <span className="font-medium">Message: </span>
+                                {rma.message}
+                              </p>
+                            </div>
+
+                            <div className="mb-4">
+                              <p className="text-gray-700">
+                                <span className="font-medium">
+                                  Admin response:{" "}
+                                </span>
+                                {rma.response || (
+                                  <span className="italic text-gray-400">
+                                    Awaiting response...
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+
+                            <div className="flex justify-end gap-3">
                               <Button
                                 variant="contained"
-                                className="bg-gray-400"
+                                style={{
+                                  backgroundColor: "#e5e5e5",
+                                  color: "#000",
+                                  boxShadow: "none",
+                                  textTransform: "none",
+                                }}
                               >
-                                Open
+                                Respond
                               </Button>
                               <Button
                                 variant="contained"
                                 style={{
-                                  backgroundColor:
-                                    rma.status === "pending"
-                                      ? "#f59e0b"
-                                      : "#10b981",
+                                  textTransform: "none",
+                                  boxShadow: "none",
                                 }}
                               >
-                                {rma.status}
+                                {rma.status === "pending"
+                                  ? "Awaiting User"
+                                  : rma.status}
                               </Button>
                             </div>
                           </Paper>

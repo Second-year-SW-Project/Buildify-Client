@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/system";
 import SideNav from "./SideNav";
-import { Divider, Paper, Button, IconButton } from "@mui/material";
+import { Divider, Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../AtomicComponents/Buttons/Buttons";
@@ -13,8 +14,17 @@ import { setAuthUser } from "../Store/authSlice";
 
 export default function UserProfile() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
-  const [isEnabled, setIsEnabled] = useState(false);
+
+  // Redirect unauthenticated users
+  useEffect(() => {
+    if (!user) {
+      navigate("/adminpanel/auth/signup", { replace: true });
+    }
+  }, [user, navigate]);
+
+  // State management
   const [editable, setEditable] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -29,6 +39,7 @@ export default function UserProfile() {
     profilePicture: user?.profilePicture || "",
   });
 
+  // Form data updated when user data changes
   useEffect(() => {
     if (user) {
       setFormData({
@@ -52,6 +63,7 @@ export default function UserProfile() {
     });
   };
 
+  // Image upload handler
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -80,9 +92,9 @@ export default function UserProfile() {
     }
   };
 
+  // Conditional rendering of edit mode
   const toggleEditable = () => {
     if (editable) {
-      // Reset form data if canceling edits
       setFormData({
         name: user.name,
         email: user.email,
@@ -95,7 +107,7 @@ export default function UserProfile() {
     setEditable(!editable);
   };
 
-  // Updated handleSubmit function
+  // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -107,15 +119,6 @@ export default function UserProfile() {
         throw new Error("Invalid email format");
       }
 
-      // Send only allowed fields
-      // const updateData = {
-      //   name: formData.name.trim(),
-      //   email: formData.email.trim(),
-      //   firstName: formData.firstName.trim(),
-      //   lastName: formData.lastName.trim(),
-      //   address: formData.address.trim(),
-      //   profilePicture: formData.profilePicture || user.profilePicture,
-      // };
       const updateData = {
         name: formData.name?.trim() || "",
         email: formData.email?.trim() || "",
@@ -321,28 +324,6 @@ export default function UserProfile() {
                     />
                   </div>
 
-                  <Paper elevation={3} sx={{ padding: 3, width: "86%" }}>
-                    <h2 className="text-2xl font-semibold text-gray-600">
-                      Two Factor Authentication (2FA)
-                    </h2>
-                    <p className="text-gray-600 mt-2">
-                      Status: {isEnabled ? "Enabled" : "Disabled"}
-                    </p>
-                    <OutlinedButton
-                      name={isEnabled ? "Disable" : "Enable"}
-                      // onClick={handleToggle}
-                      disabled={!editable}
-                    />
-                  </Paper>
-
-                  <InputField
-                    type="checkbox"
-                    label="Sign up for emails to get updates"
-                    disabled={!editable}
-                  />
-                  <p className="text-purple-600 font-medium mt-4">
-                    Change password
-                  </p>
                   <Button
                     type="submit"
                     variant="contained"

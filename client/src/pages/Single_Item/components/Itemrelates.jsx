@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import axios from "axios";
@@ -8,6 +8,11 @@ import axios from "axios";
 export default function Itemrelates({category}) {
 
   const [pcs, setPcs] = useState([]);
+
+
+  
+  
+
 
   useEffect(() => {
     const fetchPCs = async () => {
@@ -33,10 +38,14 @@ export default function Itemrelates({category}) {
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 ">
           {pcs.map((product) => (
+            
             <div
               key={product._id}
-              className="bg-white  shadow-md rounded-lg text-center hover:shadow-xl transition duration-300"
+              
+              className="bg-white shadow-lg rounded-lg p-4 text-left border border-gray-200 
+                transition-transform transform duration-300 hover:scale-105 hover:shadow-xl"
             >
+              <a href={`/itempage/${product._id}`}>
               {/* Product Image */}
               <img
                 src={product?.imgUrls?.[0]?.url}
@@ -58,6 +67,8 @@ export default function Itemrelates({category}) {
               <p className="text-lg font-semibold text-gray-900 mt-2">
                 {product.price} LKR
               </p>
+
+              </a>
 
               
             </div>

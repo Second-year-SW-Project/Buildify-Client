@@ -1,21 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box, Button, Divider } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
+  const navigate = useNavigate();
 
+  const handleRefundClick = () => {
+    navigate(`/user/rmaSupport?orderId=${orderId}`);
+  };
+
+  // Fetch order details by order Id
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/checkout/order/${orderId}`,
+          `${backendUrl}/api/checkout/order/${orderId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -86,21 +93,16 @@ export default function OrderDetails() {
                       <div className="flex items-center mb-2">
                         <PlaceOutlinedIcon />
                         <span className="text-lg font-medium ml-2">
-                          {order?.shippingAddress?.recipient || "N/A"}
+                          {order.user_name || "N/A"}
                         </span>
                         <span className="ml-2 text-sm text-purple-600">
-                          {order?.shippingAddress?.phone || "+94 710354073"}
+                          {order.phone || "N/A"}
                         </span>
                       </div>
                       <p className="text-sm">
-                        {order?.shippingAddress?.addressLine ||
-                          "Address not available"}
+                        {order.addressLine || "Address not available"}
                       </p>
-                      <p className="text-sm mt-1">
-                        {order?.shippingAddress?.city},{" "}
-                        {order?.shippingAddress?.region},{" "}
-                        {order?.shippingAddress?.postalCode}
-                      </p>
+                      <p className="text-sm mt-1">{order.email} </p>
                     </div>
 
                     <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
@@ -120,23 +122,31 @@ export default function OrderDetails() {
 
                       <p className="text-sm mt-1">
                         <span className="font-medium">Order placed on:</span>{" "}
-                        {new Date(order.createdAt).toLocaleDateString()}
+                        {order.createdAt
+                          ? new Date(order.createdAt).toLocaleDateString()
+                          : "N/A"}
                       </p>
                       <p className="text-sm mt-1">
                         <span className="font-medium">
                           Payment completed on:
                         </span>{" "}
-                        Nov 12, 2024
+                        {order.paymentDate
+                          ? new Date(order.paymentDate).toLocaleDateString()
+                          : "N/A"}
                       </p>
                       <p className="text-sm mt-1">
                         <span className="font-medium">
                           Shipment completed on:
                         </span>{" "}
-                        Nov 13, 2024
+                        {order.shipmentDate
+                          ? new Date(order.shipmentDate).toLocaleDateString()
+                          : "N/A"}
                       </p>
                       <p className="text-sm mt-1">
                         <span className="font-medium">Order completed on:</span>{" "}
-                        Jan 27, 2025
+                        {order.completionDate
+                          ? new Date(order.completionDate).toLocaleDateString()
+                          : "N/A"}
                       </p>
                       <p className="text-sm mt-1">
                         <span className="font-medium">Payment method:</span>{" "}
@@ -153,9 +163,7 @@ export default function OrderDetails() {
                       <div className="flex items-start justify-between">
                         <div className="flex gap-4">
                           <img
-                            src={
-                              item.image || "https://via.placeholder.com/80x80"
-                            }
+                            src={item.product_image}
                             alt="Product"
                             className="w-20 h-20 object-cover rounded"
                           />
@@ -186,6 +194,7 @@ export default function OrderDetails() {
                           <Button
                             variant="outlined"
                             size="small"
+                            onClick={handleRefundClick}
                             sx={{
                               borderRadius: 999,
                               textTransform: "none",

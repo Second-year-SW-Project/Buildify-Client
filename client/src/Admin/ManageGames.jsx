@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { UserTable } from "../MoleculesComponents/Table";
+import { UserTable } from "../MoleculesComponents/GameTable";
 import ProductCard from "../AtomicComponents/Cards/Productcard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
@@ -142,7 +142,7 @@ function ManageGames() {
                             isBold={1}
                             buttonSize="medium"
                             fontSize="16px"
-                            onClick={() => navigate('/games/creategame')}
+                            onClick={() => navigate('/adminpanel/games/creategame')}
                         />
                     </div>
 

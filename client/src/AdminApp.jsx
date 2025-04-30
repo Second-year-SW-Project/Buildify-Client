@@ -137,7 +137,7 @@ const NAVIGATION = addBaseToSegments([
   },
   {
     kind: 'header',
-    title: 'Feedbacks',
+    title: 'Feedbacks & Comment and Reviews',
   },
   {
     segment: 'feedbackmanage',
@@ -150,14 +150,27 @@ const NAVIGATION = addBaseToSegments([
         icon: <Iconset type="complains" />,
       },
       {
-        segment: 'comments&reviews',
-        title: 'Comments & Reviews',
-        icon: <Iconset type="comments" />,
-      },
-      {
         segment: 'rma',
         title: 'RMA',
         icon: <Iconset type="RMA" />,
+      }
+    ],
+  },
+  {
+    segment: 'commentreview',
+    title: 'Comments & Reviews',
+    icon: <Iconset type="comments" />,
+    children: [
+      
+      {
+        segment: 'comment',
+        title: 'Comments',
+        icon: <Iconset type="comments" />,
+      },
+      {
+        segment: 'review',
+        title: 'Review',
+        icon: <Iconset type="comments" />,
       }
     ],
   },

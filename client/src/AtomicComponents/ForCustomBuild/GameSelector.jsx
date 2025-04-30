@@ -11,6 +11,11 @@ function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
   const [showGameDetail, setShowGameDetail] = useState(false);
   const searchRef = useRef(null);
 
+  // Calculate highest score
+  const highestScore = selectedGames.length > 0 
+    ? Math.max(...selectedGames.map(game => game.scores.total))
+    : 0;
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -54,7 +59,14 @@ function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
   return (
     <div className="bg-white rounded-xl shadow-md p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-medium">Selected Games</h2>
+        <div>
+          <h2 className="text-xl font-medium">Pick your favorite games</h2>
+          {selectedGames.length > 0 && (
+            <p className="text-sm text-gray-600 mt-1">
+              Highest Score: <span className="font-semibold">{highestScore}</span>
+            </p>
+          )}
+        </div>
         <div ref={searchRef}>
           <SearchBar
             isExpanded={isSearchExpanded}

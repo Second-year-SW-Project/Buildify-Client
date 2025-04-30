@@ -27,6 +27,8 @@ import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import debounce from 'lodash.debounce';
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Review = () => {
   const [reviews, setReviews] = useState([]);
   const [filter, setFilter] = useState({
@@ -62,7 +64,7 @@ const Review = () => {
       const queryParams = new URLSearchParams(filteredParams).toString();
       
       const { data } = await axios.get(
-        `http://localhost:8000/api/review/admin/all?${queryParams}`, 
+        `${backendUrl}/api/review/admin/all?${queryParams}`, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -106,7 +108,7 @@ const Review = () => {
       const token = localStorage.getItem("token"); // or whatever key you're using
   
       await axios.put(
-        `http://localhost:8000/api/review/admin/respond/${reviewId}`,
+        `${backendUrl}/api/review/admin/respond/${reviewId}`,
         { adminResponse: response[reviewId] },
         {
           headers: {
@@ -156,7 +158,7 @@ const Review = () => {
 
 
       await axios.delete(
-        `http://localhost:8000/api/review/admin/${reviewId}`,
+        `${backendUrl}/api/review/admin/${reviewId}`,
         {
           headers: {
             Authorization: `Bearer ${token}` // Include the JWT token in the Authorization header
@@ -175,11 +177,11 @@ const Review = () => {
     <div className="p-8 bg-gradient-to-br from-gray-50 to-purple-50 min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="mt-3 mb-5">
-          <PageTitle value="Comments & Reviews" />
+          <PageTitle value="Review Management" />
           <CustomBreadcrumbs
             paths={[
-              { label: 'Feedback Manage', href: "/feedbackmanage/comment&reviews" },
-              { label: 'Comment & Reviews' },
+              { label: 'Comments & Reviews', href: "/commentreview/review" },
+              { label: 'Reviews' },
             ]}
           />
         </div>

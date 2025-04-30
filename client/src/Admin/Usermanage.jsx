@@ -12,13 +12,16 @@ import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import debounce from 'lodash.debounce';
 
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const Usermanage = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "", Role: "user", password: "" });
-  const [filters, setFilters] = useState({ name: "", email: "", Role: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", Role: "user", password: "", status: "pending" });
+  const [filters, setFilters] = useState({ name: "", email: "", Role: "" , status:""});
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -31,9 +34,9 @@ const Usermanage = () => {
 
   useEffect(() => {
     const debounced = debounce(() => {
-      const { name, email, Role } = filters;
+      const { name, email, Role, status } = filters;
       const isFiltering =
-        name?.trim() !== '' || email?.trim() !== '' || Role?.trim() !== '';
+        name?.trim() !== '' || email?.trim() !== '' || Role?.trim() !== ''|| status?.trim() !== '' ;
 
       if (isFiltering) {
         handleSearch();
@@ -50,7 +53,7 @@ const Usermanage = () => {
   
 
   const fetchUsers = () => {
-    axios.get("http://localhost:8000/api/v1/users")
+    axios.get(`${backendUrl}/api/v1/users`)
       .then((res) => {
         setUsers(res.data);
         setFilteredUsers(res.data);
@@ -63,7 +66,8 @@ const Usermanage = () => {
       const nameMatch = user.name.toLowerCase().includes(filters.name.toLowerCase());
       const emailMatch = user.email.toLowerCase().includes(filters.email.toLowerCase());
       const roleMatch = filters.Role ? user.Role === filters.Role : true;
-      return nameMatch && emailMatch && roleMatch;
+      const statusMatch= filters.status ? user.status === filters.status : true;
+      return nameMatch && emailMatch && roleMatch && statusMatch;
     });
     setFilteredUsers(filtered);
   };
@@ -74,7 +78,7 @@ const Usermanage = () => {
 
   const deleteUser = () => {
     if (userToDelete) {
-      axios.delete(`http://localhost:8000/api/v1/users/${userToDelete._id}`)
+      axios.delete(`${backendUrl}/api/v1/users/${userToDelete._id}`)
         .then(() => {
           setUsers(users.filter(user => user._id !== userToDelete._id));
           setFilteredUsers(filteredUsers.filter(user => user._id !== userToDelete._id));
@@ -91,13 +95,13 @@ const Usermanage = () => {
   const startEditing = (user) => {
     setEditingUser(user._id);
     setIsEditing(true);
-    setFormData({ name: user.name, email: user.email, Role: user.Role, password: "", profilePicture: user.profilePicture });
+    setFormData({ name: user.name, email: user.email, Role: user.Role, password: "", profilePicture: user.profilePicture, status: user.status, });
     setOpenModal(true);
   };
 
   const saveUser = () => {
     if (isEditing) {
-      axios.put(`http://localhost:8000/api/v1/users/${editingUser}`, formData)
+      axios.put(`${backendUrl}/api/v1/users/${editingUser}`, formData)
         .then(() => {
           toast.success("User updated successfully");
           fetchUsers();
@@ -105,7 +109,7 @@ const Usermanage = () => {
         })
         .catch(() => toast.error("Error updating user"));
     } else {
-      axios.post("http://localhost:8000/api/v1/users/new", formData)
+      axios.post(`${backendUrl}/api/v1/users/new`, formData)
         .then(() => {
           toast.success("User added successfully");
           fetchUsers();
@@ -117,7 +121,7 @@ const Usermanage = () => {
 
   const handleAddNewUser = () => {
     setIsEditing(false);
-    setFormData({ name: "", email: "", Role: "user", password: "" });
+    setFormData({ name: "", email: "", Role: "user", password: "" , status: ""});
     setOpenModal(true);
   };
 
@@ -202,6 +206,22 @@ const Usermanage = () => {
               <MenuItem value="admin">Admin</MenuItem>
               <MenuItem value="user">User</MenuItem>
             </Select>
+
+            <Select
+          name="status"
+          value={filters.status}
+          onChange={handleFilterChange}
+          fullWidth
+          displayEmpty
+        >
+          <MenuItem value="">All Statuses</MenuItem>
+          <MenuItem value="active">Active</MenuItem>
+          <MenuItem value="blocked">Blocked</MenuItem>
+          <MenuItem value="banned">Banned</MenuItem>
+          <MenuItem value="inactive">Inactive</MenuItem>
+          <MenuItem value="suspended">Suspended</MenuItem>
+          <MenuItem value="pending">Pending</MenuItem>
+        </Select>
            
           </Box>
 
@@ -256,6 +276,18 @@ const Usermanage = () => {
             borderBottom: "1px solid #e0e0e0" // Light grey inner border
           }}
         >
+          Status
+        </TableCell>
+        <TableCell 
+          style={{ 
+            padding: "8px 16px", 
+            textAlign: "left", 
+            verticalAlign: "middle", 
+            color: "grey", 
+            fontWeight: "bold", 
+            borderBottom: "1px solid #e0e0e0" // Light grey inner border
+          }}
+        >
           Role
         </TableCell>
         <TableCell 
@@ -293,6 +325,70 @@ const Usermanage = () => {
         <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0" ,fontWeight: "bold"}}>
           {user.email}
         </TableCell>
+        <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0",fontWeight: "bold" }}>
+        <Button
+  variant="contained"
+  sx={{
+    backgroundColor:
+      user.status === "active"
+        ? "#E8F5E9" // Green for active
+        : user.status === "blocked"
+        ? "#FFFAE3" // Yellow for blocked
+        : user.status === "banned"
+        ? "#FFCDD2" // Light red for banned
+        : user.status === "inactive"
+        ? "#F5F5F5" // Gray for inactive
+        : user.status === "suspended"
+        ? "#FFECB3" // Orange for suspended
+        : user.status === "pending"
+        ? "#E3F2FD" // Blue for pending
+        : "", // Default case
+    color:
+      user.status === "active"
+        ? "#1B5E20" // Dark green for active
+        : user.status === "blocked"
+        ? "#F57F17" // Dark yellow for blocked
+        : user.status === "banned"
+        ? "#C62828" // Dark red for banned
+        : user.status === "inactive"
+        ? "#757575" // Dark gray for inactive
+        : user.status === "suspended"
+        ? "#D32F2F" // Dark orange for suspended
+        : user.status === "pending"
+        ? "#0D47A1" // Dark blue for pending
+        : "", // Default case
+    fontWeight: "bold",
+    fontSize: "12px",
+    padding: "4px 12px",
+    minWidth: "auto",
+    borderRadius: "8px",
+    textTransform: "none",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    "&:hover": {
+      backgroundColor:
+        user.status === "active"
+          ? "#D0F8CE" // Darker green on hover for active
+          : user.status === "blocked"
+          ? "#FFF176" // Darker yellow on hover for blocked
+          : user.status === "banned"
+          ? "#FFEBEE" // Darker red on hover for banned
+          : user.status === "inactive"
+          ? "#EEEEEE" // Darker gray on hover for inactive
+          : user.status === "suspended"
+          ? "#FFD54F" // Darker orange on hover for suspended
+          : user.status === "pending"
+          ? "#D6EAF8" // Darker blue on hover for pending
+          : "", // Default case
+    },
+  }}
+>
+  {user.status}
+</Button>
+
+
+                </TableCell>
         <TableCell style={{ padding: "8px", verticalAlign: "middle", borderBottom: "1px solid #e0e0e0",fontWeight: "bold" }}>
           <Button
             variant="contained"
@@ -420,6 +516,27 @@ const Usermanage = () => {
       <MenuItem value="user">User</MenuItem>
       <MenuItem value="admin">Admin</MenuItem>
     </Select>
+    <Select
+            label="Status"
+            value={formData.status}
+              variant="outlined"
+            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+            fullWidth
+            sx={{ mt: 2 , mb:2,'& .MuiInputBase-root': {
+          borderRadius: '10px',
+          backgroundColor: '#F4E6FF',
+        },
+        '& .MuiFormLabel-root': {
+          fontWeight: 'bold',
+        }}}
+          >
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="blocked">Blocked</MenuItem>
+            <MenuItem value="banned">Banned</MenuItem>
+            <MenuItem value="inactive">Inactive</MenuItem>
+            <MenuItem value="suspended">Suspended</MenuItem>
+            <MenuItem value="pending">Pending</MenuItem>
+          </Select>
     {!isEditing && (
       <TextField
         label="Password"

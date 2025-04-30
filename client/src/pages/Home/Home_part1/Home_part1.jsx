@@ -1,13 +1,13 @@
 import Button from "@mui/material/Button";
 
-export default function Home_part1() {
+export default function Home_part1({onShopNowClick}) {
   return (
     <div className="relative h-screen w-full ">
 
 
       {/*image */}
       <img
-        src="/Home1.jpg"
+        src="https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421086/Home1_qma1wq.jpg"
         alt="Gaming Setup"
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -27,8 +27,9 @@ export default function Home_part1() {
           Save big on gaming gear bundles and deck out your desk.
         </p>
 
-
+        {/* button that redirect to pcbuilds */}
         <Button
+          onClick={onShopNowClick}
           variant="contained"
           color="primary"
           className="!font-semibold !px-6 !py-3 !rounded-lg"

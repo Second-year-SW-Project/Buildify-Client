@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 import SelectPcHeader from '../../AtomicComponents/ForCustomBuild/SelectPcHeader';
 import GameSelector from '../../AtomicComponents/ForCustomBuild/GameSelector';
 import BudgetSelector from '../../AtomicComponents/ForCustomBuild/BudgetSelector';
@@ -31,7 +32,15 @@ function SelectGameAndBudgetPage() {
 
   const handleApply = async () => {
     if (selectedGames.length === 0) {
-      alert('Please select at least one game.');
+      toast.error('Please select at least one game.', {
+        duration: 3000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
       return;
     }
 

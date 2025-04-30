@@ -1,7 +1,7 @@
 import React from 'react'
 import Navbar from '../../MoleculesComponents/User_navbar_and_footer/Navbar'
 import Laptopgrid from './Laptop/Laptopgrid'
-import Laptopfiltering from './Laptop/laptopfitering'
+import Laptopfiltering from './Laptop/Laptopfitering'
 import Laptopcategoryposter from './Laptop/Laptopcategoryposter'
 
 

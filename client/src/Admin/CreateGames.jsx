@@ -158,7 +158,7 @@ const CreateGames = () => {
             // Validate fields
             validateRequiredFields(game, isEditMode);
 
-            // Prepare game data for submission (remove image field since it’s handled separately)
+            // Prepare game data for submission (remove image field since it's handled separately)
             const gameData = { ...game };
             delete gameData.image;
             delete gameData.imagePublicId;
@@ -190,7 +190,7 @@ const CreateGames = () => {
                         imageSelectorRef.current.deleteAllImages();
                     }
                 } else {
-                    navigate('/games/managegames');
+                    navigate('/adminpanel/games/managegames');
                 }
             } else {
                 toast.error(isEditMode ? "Error updating game" : "Error adding game. Please try again.");
@@ -411,7 +411,7 @@ const CreateGames = () => {
                                             color={"ternaryDark"}
                                             padding="50px"
                                             type="button"
-                                            onClick={() => navigate('/games/managegames')} // Adjust route as needed
+                                            onClick={() => navigate('/adminpanel/games/managegames')}
                                         />
                                     )}
                                     <PrimaryButton

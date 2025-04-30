@@ -10,6 +10,12 @@ import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
+
+
+
 export default function AdminProfile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,6 +35,7 @@ export default function AdminProfile() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+
     if (user) {
       setFormData({
         name: user.name,
@@ -59,7 +66,7 @@ export default function AdminProfile() {
     try {
       setUploading(true);
       const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/dfdjzbfjn/image/upload`,
+        CLOUDINARY_UPLOAD_URL,
         formData
       );
       
@@ -78,7 +85,7 @@ export default function AdminProfile() {
 
   const toggleEditable = () => {
     if (editable) {
-      // Reset form data if canceling edits
+    
       setFormData({
         name: user.name,
         email: user.email,
@@ -91,19 +98,19 @@ export default function AdminProfile() {
     setEditable(!editable);
   };
 
-  // Updated handleSubmit function
+  
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   setError(null);
 
   try {
-    // Validate required fields
+    
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
       throw new Error('Invalid email format');
     }
 
-    // Send only allowed fields
+    
     const updateData = {
       name: formData.name.trim(),
       email: formData.email.trim(),
@@ -113,7 +120,7 @@ const handleSubmit = async (e) => {
       profilePicture: formData.profilePicture || user.profilePicture
     };
     const response = await axios.post(
-      `http://localhost:8000/api/v1/users/update-profile`,
+      `${backendUrl}/api/v1/users/update-profile`,
       updateData,
       {
         headers: {
