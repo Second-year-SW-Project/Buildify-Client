@@ -6,6 +6,7 @@ import theme from '../AtomicComponents/theme';
 import { InputField } from '../AtomicComponents/Inputs/Input';
 import ImageSelector from '../MoleculesComponents/Admin_components/ImageSelector';
 import { Required } from '../AtomicComponents/Typographics/TextStyles';
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import {
     main,
     manufacture,
@@ -53,6 +54,8 @@ const CreateProducts = () => {
     const [subCategoryOptions, setSubCategoryOptions] = useState([]);
     const [manufactureOptions, setManufactureOptions] = useState([]);
     const [socketTypeOptions, setSocketTypeOptions] = useState([]);
+
+    const [loading, setLoading] = useState(false);
 
     const handleMainCategoryChange = (value) => {
         setSelectedMainCategory(value);
@@ -571,6 +574,7 @@ const CreateProducts = () => {
         e.preventDefault();
 
         try {
+            setLoading(true);
             //Check the validation of required fields
             const isValid = validateRequiredFields(product, isEditMode, true);
 
@@ -641,11 +645,14 @@ const CreateProducts = () => {
         } catch (error) {
             console.error(error);
             toast.error(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div>
+            <FullScreenLoader open={loading} message={isEditMode ? 'Updating...' : 'Creating...'} />
             <div className="mt-3 mb-5 ml-6 mr-6">
                 <div>
                     <PageTitle value={isEditMode ? 'Edit Products' : 'Create New Products'} />
@@ -1889,6 +1896,7 @@ const CreateProducts = () => {
                                     buttonSize="medium"
                                     isBold={1}
                                     type="submit"
+                                    loading={loading}
                                 />
                             </div>
                         </div>

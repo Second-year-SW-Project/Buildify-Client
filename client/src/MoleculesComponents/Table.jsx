@@ -215,7 +215,6 @@ export function OrderTable({
                       hover
                     >
                       <TableCell sx={{ fontWeight: "bold" }}>
-                        {`#${order._id.slice(-4).toUpperCase()}`}
                         {order._id ? `#${order._id.slice(-4).toUpperCase()}` : "#----"}
                       </TableCell>
                       <TableCell>

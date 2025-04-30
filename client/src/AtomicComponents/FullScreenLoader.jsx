@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 
@@ -13,7 +12,7 @@ const FullScreenLoader = ({ open, message = 'Loading...' }) => {
         left: 0,
         width: '100vw',
         height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         zIndex: 1300,
         display: 'flex',
         justifyContent: 'center',
@@ -21,8 +20,8 @@ const FullScreenLoader = ({ open, message = 'Loading...' }) => {
         flexDirection: 'column',
       }}
     >
-      <CircularProgress color="inherit" />
-      <Typography variant="h6" sx={{ mt: 2, color: '#fff' }}>
+      <CircularProgress sx={{ color: theme => theme.palette.primary700.main }} />
+      <Typography variant="h6" sx={{ mt: 2, color: theme => theme.palette.primary100.main }}>
         {message}
       </Typography>
     </Box>
