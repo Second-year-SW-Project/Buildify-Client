@@ -11,6 +11,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import OrderCard from "../AtomicComponents/Cards/OrderDetailsCard";
 import ReviewPopup from "./ReviewPopup";
 import { toast } from "sonner";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function MyOrders() {
   const navigate = useNavigate();
@@ -27,10 +28,11 @@ export default function MyOrders() {
     setValue(newValue);
   };
 
+  // Mark as Delivered
   const markAsDelivered = async (orderId) => {
     try {
       await axios.patch(
-        `http://localhost:8000/api/checkout/product-orders/${orderId}`,
+        `${backendUrl}/api/checkout/product-orders/${orderId}`,
         { status: "Delivered" },
         {
           headers: {
@@ -49,6 +51,7 @@ export default function MyOrders() {
     }
   };
 
+  // fetch user orders
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -56,7 +59,7 @@ export default function MyOrders() {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
+          `${backendUrl}/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

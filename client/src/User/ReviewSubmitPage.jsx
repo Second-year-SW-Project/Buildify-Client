@@ -13,6 +13,7 @@ import {
   Divider,
 } from "@mui/material";
 import { toast } from "sonner";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const productTagOptions = [
   "Fast Delivery",
@@ -55,6 +56,7 @@ export default function ReviewSubmitPage() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
 
+  // Set tag options based on the product type
   useEffect(() => {
     if (type === "product") {
       setTagOptions(productTagOptions);
@@ -88,10 +90,11 @@ export default function ReviewSubmitPage() {
     }
   };
 
+  // Update order status to complete upon review submission
   const markAsCompleted = async (orderId) => {
     try {
       await axios.patch(
-        `http://localhost:8000/api/checkout/product-orders/${orderId}`,
+        `${backendUrl}/api/checkout/product-orders/${orderId}`,
         { status: "Completed" },
         {
           headers: {
@@ -105,6 +108,7 @@ export default function ReviewSubmitPage() {
     }
   };
 
+  // Review submission
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -118,47 +122,36 @@ export default function ReviewSubmitPage() {
         return;
       }
 
-      // Decode the token to get the userId
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      const userId = decodedToken.id;
-
-      const response = await fetch("http://localhost:8000/api/review/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          productId,
-          orderId,
-          userId,
-          rating,
-          comment: reviewText,
-        }),
-      });
-
-      // for testing
       if (type !== "product" && type !== "pc_build") {
         console.error("Invalid review type");
         return;
       }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Error submitting review.");
-        console.error("Error submitting review:", errorData);
-        return;
-      }
+      const response = await axios.post(
+        `${backendUrl}/api/review/`,
+        {
+          productId,
+          orderId,
+          rating,
+          comment: reviewText,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      const data = await response.json();
       toast.success("Review submitted successfully!");
-      console.log("Review submitted:", data);
+      console.log("Review submitted:", response.data);
       markAsCompleted(orderId);
-
       navigate(`/user/orders`);
-    } catch (err) {
-      toast.error("Submission failed:");
-      console.error("Submission failed:", err);
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Error submitting review.";
+      toast.error(message);
+      console.error("Submission failed:", error);
     }
   };
 

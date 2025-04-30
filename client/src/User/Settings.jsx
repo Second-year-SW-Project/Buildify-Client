@@ -14,11 +14,13 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 import { setAuthUser } from "../Store/authSlice.js";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Settings() {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
+  // State management
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -47,6 +49,7 @@ export default function Settings() {
     setErrors({ ...errors, password: {} });
   };
 
+  // Password validation logic
   const validatePasswordForm = () => {
     const newErrors = {};
 
@@ -68,6 +71,7 @@ export default function Settings() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Password submission
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (!validatePasswordForm()) return;
@@ -75,7 +79,7 @@ export default function Settings() {
     setLoading({ ...loading, password: true });
     try {
       await axios.post(
-        `http://localhost:8000/api/v1/users/change-password`,
+        `${backendUrl}/api/v1/users/change-password`,
         {
           currentPassword: passwordForm.currentPassword,
           newPassword: passwordForm.newPassword,
@@ -87,7 +91,6 @@ export default function Settings() {
         }
       );
 
-      // Show success toast
       toast.success("Password changed successfully!");
 
       // Clear the form fields
@@ -106,7 +109,6 @@ export default function Settings() {
         toast.error(errorMessage);
       }
     } finally {
-      // Reset the loading state
       setLoading({ ...loading, password: false });
     }
   };
@@ -116,7 +118,7 @@ export default function Settings() {
     setLoading({ ...loading, twoFAEnable: true });
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/2fa/generate",
+        `${backendUrl}/api/v1/users/2fa/generate`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -149,13 +151,14 @@ export default function Settings() {
     setErrors({ ...errors, twoFA: {} });
   };
 
+  // Enable 2FA
   const handle2FAEnable = async (e) => {
     e.preventDefault();
     setLoading({ ...loading, twoFAEnable: true });
 
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/users/2fa/enable",
+        `${backendUrl}/api/v1/users/2fa/enable`,
         { token: twoFAForm.token },
         {
           headers: {
@@ -177,12 +180,13 @@ export default function Settings() {
     }
   };
 
+  // Disable 2FA
   const handle2FADisable = async () => {
     setLoading({ ...loading, twoFADisable: true });
 
     try {
       await axios.post(
-        "http://localhost:8000/api/v1/users/2fa/disable",
+        `${backendUrl}/api/v1/users/2fa/disable`,
         {},
         {
           headers: {

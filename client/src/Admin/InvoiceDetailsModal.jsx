@@ -20,6 +20,7 @@ import { toast } from "sonner";
 function InvoiceDetailsModal({ open, onClose, invoice }) {
   if (!invoice) return null;
 
+  // Download invoice as a PDF
   const downloadInvoicePdf = () => {
     const invoiceElement = document.getElementById("invoice-content");
     const previousOverflow = invoiceElement.style.overflow;
