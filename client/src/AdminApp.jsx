@@ -1,7 +1,12 @@
 import { AppProvider } from "@toolpad/core/react-router-dom";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Iconset from './AtomicComponents/Icons/Iconset';
 import theme from './AtomicComponents/theme';
+import React from 'react';
+import { Box } from '@mui/material';
+import { Account } from '@toolpad/core/Account';
+import CustomMenu from "./MoleculesComponents/Admin_components/AdminProfileDropdown";
+import AdminBranding from "./MoleculesComponents/Admin_components/AdminAppbar";
 
 const addBaseToSegments = (items, basePath) =>
   items.map((item) => {
@@ -15,7 +20,7 @@ const addBaseToSegments = (items, basePath) =>
           : undefined,
       };
     }
-    return item; // headers or dividers
+    return item;
   });
 
 const BASE_PATH = 'adminpanel';
@@ -184,11 +189,53 @@ const NAVIGATION = addBaseToSegments([
 ], BASE_PATH);
 
 
+
+
 function AdminApp() {
+
+  const [session, setSession] = React.useState({
+    user: {
+      name: 'Admin User',
+      email: 'admin@example.com',
+      image: 'https://avatars.githubusercontent.com/u/19550456',
+    },
+    org: {
+      name: 'MUI Inc.',
+      url: 'https://mui.com',
+      logo: 'https://mui.com/static/logo.svg',
+    },
+  });
+
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    setSession(null);
+    navigate('/adminpanel/auth/signup');
+  };
+
+  const authentication = React.useMemo(() => ({
+    signIn: () => {
+      setSession({
+        user: {
+          name: 'Admin User',
+          email: 'admin@example.com',
+          image: 'https://avatars.githubusercontent.com/u/19550456',
+        },
+      });
+    },
+    signOut: handleSignOut,
+
+  }), []);
 
   return (
     <AppProvider
+      session={session}
+      authentication={authentication}
       navigation={NAVIGATION}
+      // branding={{
+      //   logo: <AdminBranding />,
+      //   title: '',
+      // }}
       branding={{
         logo: (<img
           src='/src/assets/images/Logos/logo-white.png'
@@ -204,15 +251,15 @@ function AdminApp() {
         ),
         title: '',
       }}
+      slots={{
+        popoverContent: CustomMenu,
+      }}
       theme={theme}
+
     >
       <Outlet />
     </AppProvider>
-
   )
-
-
-
 }
 
 export default AdminApp;
