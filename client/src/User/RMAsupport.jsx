@@ -5,8 +5,8 @@ import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box, Divider, Paper, Typography, Button } from "@mui/material";
 import { InputField } from "../AtomicComponents/Inputs/Input";
-import { toast } from "sonner";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { toast } from "sonner";
 
 export default function RMAsupport() {
   const location = useLocation();
@@ -48,8 +48,8 @@ export default function RMAsupport() {
   const handleSubmit = async () => {
     const { subject, orderId, reason, message, userId } = formData;
 
-    if (!subject || !orderId || !reason) {
-      toast.info("Please fill in Subject, Order ID, and Reason.");
+    if (!subject || !orderId || !reason || !message) {
+      toast.error("Please fill all fields.");
       return;
     }
 
@@ -77,7 +77,7 @@ export default function RMAsupport() {
       setRmaRequests(response.data);
     } catch (error) {
       console.error("Error fetching RMAs:", error);
-      toast.error("Error fetching RMAs");
+      toast.error("Error fetching RMAs.");
     }
   };
 
