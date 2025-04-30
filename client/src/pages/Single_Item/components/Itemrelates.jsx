@@ -9,6 +9,8 @@ export default function Itemrelates({category}) {
 
   const [pcs, setPcs] = useState([]);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 
   
   
@@ -17,7 +19,7 @@ export default function Itemrelates({category}) {
   useEffect(() => {
     const fetchPCs = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/product/filter?attribute=type&value=${category}`); // Axios fetch
+        const response = await axios.get(`${backendUrl}/api/product/filter?attribute=type&value=${category}`); // Axios fetch
         setPcs(response.data.slice(0, 5)); // Select only the first 8 items
       } catch (error) {
         console.error("Error fetching products:", error);

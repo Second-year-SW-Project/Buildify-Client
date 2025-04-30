@@ -9,6 +9,11 @@ import Home_part4 from './Home_part4/Home_part4';
 import Home_part5 from './Home_part5/Home_part5';
 
 export default function Home() {
+
+
+
+
+  //scroll down
   const part2Ref = useRef(null);
 
   const scrollToPart2 = () => {
@@ -16,8 +21,8 @@ export default function Home() {
   };
 
 
-  //go to top when refreshing the page
 
+  //go to top when refreshing the page
   useEffect(() => {
 
 
@@ -41,9 +46,6 @@ export default function Home() {
       window.removeEventListener('beforeunload', onBeforeUnload);
     };
   }, []);
-
-
-
 
 
   

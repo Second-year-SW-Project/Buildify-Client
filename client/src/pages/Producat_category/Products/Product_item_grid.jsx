@@ -7,12 +7,15 @@ export default function Product_item_grid({ filters, allProducts, setAllProducts
   const { categoryName } = useParams();
   const [filteredProducts, setFilteredProducts] = useState([]);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
   // Fetch all products for the category once
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/product/filter?attribute=type&value=${categoryName}`
+          `${backendUrl}/api/product/filter?attribute=type&value=${categoryName}`
         );
         setAllProducts(response.data);
       } catch (error) {

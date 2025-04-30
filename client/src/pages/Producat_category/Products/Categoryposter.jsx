@@ -12,6 +12,9 @@ const Categoryposter = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
 
 
   // Fetch products by category
@@ -20,7 +23,7 @@ const Categoryposter = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/product/filter?attribute=type&value=${categoryName}`
+          `${backendUrl}/api/product/filter?attribute=type&value=${categoryName}`
         );
         setProducts(response.data);
         setLoading(false);
@@ -34,9 +37,18 @@ const Categoryposter = () => {
   }, [categoryName]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#1a1c1e] text-white">
+        
+        <div className="flex flex-col items-center justify-center flex-grow">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-6"></div>
+          <p className="text-xl font-semibold">Loading search results...</p>
+        </div>
+        
+      </div>
+    );
   }
-
+  
 
 
 
@@ -71,21 +83,18 @@ const Categoryposter = () => {
     case "motherboard":
       title = "MOTHERBOARDS";
       image ="https://res.cloudinary.com/ddstqdrhm/image/upload/v1745692893/564101_nlbcea.jpg";
-      //image = "https://getwallpapers.com/wallpaper/full/b/7/d/563146.jpg";
-      //image = "https://getwallpapers.com/wallpaper/full/c/3/6/563558.jpg";
+
       break;
 
     case "power":
       title = "POWER SUPPLYS";
       image = "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745693086/173624657469812_kusrs8.jpg";
-      //image = "../../../../public/powersupplybanner.jpg";
-      //image = "https://pctekreviews.com/Reviews/ROG_THOR_1200/35.jpg";
+
       break;
 
     case "storage":
       title = "STORAGE";
-      //image = "https://www.cyberpowerpc.com/template/2022/page/WD/Black/images/c1.jpg?v2";
-      //image = "https://www.techreviewer.com/virt/content/media/shared-graphics/tr-attr/ssd/1280x512-samsung-970-evo-ssd-m2-nvme_c9afca8c876d28d647914bb5eb7f5d40.webp/how-much-storage-for-gaming.webp";
+
       image = "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421094/storagebanner_o3wqxs.png";
 
       break;
@@ -93,7 +102,7 @@ const Categoryposter = () => {
     case "casing":
       title = "CASINGS";
       image = "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421087/casingbanner2_tqzioi.jpg";
-      //image = "../../../../public/casingbanner.jpg";
+
 
       break;
 
