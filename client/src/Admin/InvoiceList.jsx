@@ -12,10 +12,10 @@ import { InputField } from "../AtomicComponents/Inputs/Input";
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import { toast } from "sonner";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function InvoiceList() {
   const navigate = useNavigate();
-  const [invoiceData, setInvoiceData] = useState([]);
   const [allInvoices, setAllInvoices] = useState([]);
   const [filteredInvoices, setFilteredInvoices] = useState([]);
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
@@ -26,7 +26,7 @@ function InvoiceList() {
   const [endDate, setEndDate] = useState(null);
 
   const invoiceColumns = [
-    { id: "customerCard", label: "Customer" },
+    { id: "customerCard", label: "Invoice Id" },
     { id: "startdate", label: "Created" },
     { id: "enddate", label: "Due" },
     { id: "amount", label: "Amount" },
@@ -59,6 +59,7 @@ function InvoiceList() {
     },
   };
 
+  // Delete invoice toast
   const handleDeleteInvoice = (invoice) => {
     toast(
       (t) => (
@@ -89,21 +90,15 @@ function InvoiceList() {
     );
   };
 
-  // Fetch invoices from backend
+  // Fetch invoices
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/invoices/get")
+      .get(`${backendUrl}/api/invoices/get`)
       .then((res) => {
         const formattedInvoices = res.data.map((inv) => ({
           raw: inv,
           customerCard: (
-            <CustomerCard
-              name={inv.invoiceNumber}
-              type={inv.invoiceNumber}
-              src={
-                inv.customerImage || "https://via.placeholder.com/150" // placeholder image
-              }
-            />
+            <CustomerCard name={inv.invoiceNumber} status={inv.invoiceStatus} />
           ),
           startdate: <DateCard date={inv.dateCreated?.slice(0, 10)} />,
           enddate: <DateCard date={inv.dueDate?.slice(0, 10)} />,
@@ -115,6 +110,7 @@ function InvoiceList() {
       })
       .catch((err) => {
         console.error("Failed to fetch invoices", err);
+        toast.error("Failed to fetch invoices, please try again.");
       });
   }, []);
 
@@ -122,7 +118,7 @@ function InvoiceList() {
   const deleteInvoice = async (invoiceId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8000/api/invoices/delete/${invoiceId}`
+        `${backendUrl}/api/invoices/delete/${invoiceId}`
       );
       console.log(response.data.message);
 
@@ -133,6 +129,7 @@ function InvoiceList() {
 
       setAllInvoices(updatedInvoices);
       setFilteredInvoices(updatedInvoices);
+      toast.success("Invoice deleted successfully!");
     } catch (error) {
       console.error(
         "Error deleting invoice:",
@@ -145,6 +142,7 @@ function InvoiceList() {
     }
   };
 
+  // Filter logic
   useEffect(() => {
     let filtered = allInvoices;
 
@@ -229,14 +227,16 @@ function InvoiceList() {
               </div>
             </div>
           </div>
-          <div sx={{ width: "100%", borderRadius: "20px" }}>
-            <UserTable
-              columns={invoiceColumns}
-              data={filteredInvoices}
-              iconTypes={["view", "edit", "delete"]}
-              iconActions={iconActions}
-              idKey="raw.invoiceNumber"
-            />
+          <div>
+            <div style={{ width: "100%", borderRadius: "20px" }}>
+              <UserTable
+                columns={invoiceColumns}
+                data={filteredInvoices}
+                iconTypes={["view", "edit", "delete"]}
+                iconActions={iconActions}
+                idKey="raw.invoiceNumber"
+              />
+            </div>
           </div>
         </div>
       </div>

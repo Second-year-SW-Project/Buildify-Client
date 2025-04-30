@@ -9,6 +9,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import OrderCard from "../AtomicComponents/Cards/OrderDetailsCard";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function OrderHistory() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function OrderHistory() {
     setValue(newValue);
   };
 
+  // Fetch orders for the user, filter only 'Completed' status
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -29,7 +31,7 @@ export default function OrderHistory() {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
+          `${backendUrl}/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

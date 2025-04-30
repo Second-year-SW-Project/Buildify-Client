@@ -1,17 +1,16 @@
-import { React, useState } from "react";
+import { React } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   Typography,
-  Card,
-  CardContent,
   Box,
   IconButton,
 } from "@mui/material";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import ArrowForwardIosOutlinedIcon from "@mui/icons-material/ArrowForwardIosOutlined";
+import ReviewPopupcard from "../AtomicComponents/Cards/ReviewPopupcard";
 
 export default function ReviewPopup({
   open,
@@ -22,6 +21,7 @@ export default function ReviewPopup({
 }) {
   const navigate = useNavigate();
 
+  // Navigate to item review page with order and item-specific details
   const handleItemReviewClick = (item) => {
     navigate(`review-submit/${orderId}/${item._id}`, {
       state: {
@@ -55,6 +55,7 @@ export default function ReviewPopup({
       >
         <CloseOutlinedIcon />
       </IconButton>
+
       <DialogTitle sx={{ display: "flex", justifyContent: "center" }}>
         Leave a review
       </DialogTitle>
@@ -63,9 +64,13 @@ export default function ReviewPopup({
         <Typography variant="h6" sx={{ mb: 2 }}>
           Review all items
         </Typography>
+
         <Box sx={{ display: "flex", overflowX: "auto", gap: 2, mb: 3 }}>
-          {items.map((item) => (
-            <a href={`/product/${item.productId}`} key={item.productId}>
+          {items.map((item, index) => (
+            <a
+              href={`/product/${item.productId}`}
+              key={`${item.productId}-${index}`}
+            >
               <img
                 src={item.product_image}
                 alt={item.name}
@@ -81,28 +86,14 @@ export default function ReviewPopup({
         <Typography variant="h6" sx={{ mb: 2 }}>
           Choose an item to review
         </Typography>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {items.map((item) => (
-            <Card key={item.productId} className="p-4 rounded-xl">
-              <CardContent className="flex items-center gap-4">
-                <img
-                  src={item.product_image}
-                  alt={item.name}
-                  className="w-16 h-16 rounded-lg object-cover"
-                />
-                <Box className="flex-1 text-left">
-                  <Typography fontWeight="bold">{item.name}</Typography>
-                  <Typography variant="body2">x{item.quantity}</Typography>
-                </Box>
 
-                <IconButton
-                  variant="outlined"
-                  onClick={() => handleItemReviewClick(item)}
-                >
-                  <ArrowForwardIosOutlinedIcon sx={{ color: "black" }} />
-                </IconButton>
-              </CardContent>
-            </Card>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {items.map((item, index) => (
+            <ReviewPopupcard
+              key={`${item.productId}-${index}`}
+              item={item}
+              onReviewClick={handleItemReviewClick}
+            />
           ))}
         </Box>
       </DialogContent>

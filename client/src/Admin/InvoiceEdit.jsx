@@ -7,10 +7,17 @@ import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
-import { Divider, TextField, Button, Autocomplete } from "@mui/material";
+import {
+  Divider,
+  TextField,
+  Button,
+  Autocomplete,
+  Skeleton,
+} from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
 import { toast } from "sonner";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function InvoiceEdit() {
   const navigate = useNavigate();
@@ -29,14 +36,13 @@ function InvoiceEdit() {
   const [dateCreated, setDateCreated] = useState(new Date());
   const [dueDate, setDueDate] = useState(new Date());
 
-  // API Configuration
-  const API_URL = "http://localhost:8000/api/invoices";
-
   // Fetch invoice data for editing
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const res = await axios.get(`${API_URL}/get/${invoiceId}`);
+        const res = await axios.get(
+          `${backendUrl}/api/invoices/get/${invoiceId}`
+        );
 
         if (res.data) {
           setInvoiceData(res.data);
@@ -58,7 +64,7 @@ function InvoiceEdit() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/product/all`, {
+        const res = await axios.get(`${backendUrl}/api/product/all`, {
           params: { search: "" },
         });
         setProducts(res.data.data);
@@ -99,7 +105,7 @@ function InvoiceEdit() {
         itemName: "",
         subCategory: "",
         quantity: 1,
-        price: "0",
+        price: 0,
       },
     ]);
   };
@@ -158,8 +164,6 @@ function InvoiceEdit() {
       toast.error(`Error: ${error.response?.data?.error || error.message}`);
     }
   };
-
-  if (!invoiceData) return <div>Loading...</div>;
 
   return (
     <div>

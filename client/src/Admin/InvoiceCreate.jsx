@@ -17,6 +17,7 @@ import {
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
 import { toast } from "sonner";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function InvoiceCreate() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function InvoiceCreate() {
   // State for fetched products
   const [products, setProducts] = useState([]);
 
-  // State for from fields
+  // State for form fields
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [invoiceStatus, setInvoiceStatus] = useState("draft");
   const [dateCreated, setDateCreated] = useState(new Date());
@@ -49,7 +50,7 @@ function InvoiceCreate() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/api/product/all`, {
+        const res = await axios.get(`${backendUrl}/api/product/all`, {
           params: { search: "" },
         });
         setProducts(res.data.data);
@@ -90,7 +91,7 @@ function InvoiceCreate() {
         itemName: "",
         subCategory: "",
         quantity: 1,
-        price: "0",
+        price: 0,
       },
     ]);
   };
@@ -100,9 +101,6 @@ function InvoiceCreate() {
     updatedItems.splice(index, 1);
     setItems(updatedItems);
   };
-
-  // API Configuration
-  const API_URL = "http://localhost:8000/api/invoices";
 
   const handleSubmit = async (isDraft = false) => {
     const invoiceData = {
@@ -126,7 +124,10 @@ function InvoiceCreate() {
     };
 
     try {
-      const response = await axios.post(`${API_URL}/create`, invoiceData);
+      const response = await axios.post(
+        `${backendUrl}/invoices/create`,
+        invoiceData
+      );
       toast.success(response.data.message);
       navigate("/adminpanel/invoice/invoicelist");
     } catch (error) {

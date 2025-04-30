@@ -5,6 +5,8 @@ import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import { Box, Divider, Paper, Typography, Button } from "@mui/material";
 import { InputField } from "../AtomicComponents/Inputs/Input";
+import { toast } from "sonner";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function RMAsupport() {
   const location = useLocation();
@@ -35,7 +37,6 @@ export default function RMAsupport() {
     fetchRMARequests(storedUserId);
   }, []);
 
-  // Handle input changes
   const handleChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -47,14 +48,14 @@ export default function RMAsupport() {
   const handleSubmit = async () => {
     const { subject, orderId, reason, message, userId } = formData;
 
-    if (!subject || !orderId || !reason || !message) {
-      alert("Please fill in all fields.");
+    if (!subject || !orderId || !reason) {
+      toast.info("Please fill in Subject, Order ID, and Reason.");
       return;
     }
 
     try {
-      await axios.post("http://localhost:8000/api/rma", formData);
-      alert("RMA request submitted successfully!");
+      await axios.post(`${backendUrl}/api/rma`, formData);
+      toast.success("RMA request submitted successfully!");
       setFormData({
         subject: "",
         orderId: "",
@@ -65,19 +66,18 @@ export default function RMAsupport() {
       fetchRMARequests(userId);
     } catch (error) {
       console.error("Error submitting RMA:", error);
-      alert("Failed to submit RMA request.");
+      toast.error("Failed to submit RMA request.");
     }
   };
 
   // Fetch RMA requests
   const fetchRMARequests = async (userId) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/rma/user/${userId}`
-      );
+      const response = await axios.get(`${backendUrl}/api/rma/user/${userId}`);
       setRmaRequests(response.data);
     } catch (error) {
       console.error("Error fetching RMAs:", error);
+      toast.error("Error fetching RMAs");
     }
   };
 
@@ -222,7 +222,6 @@ export default function RMAsupport() {
                             className="mt-6 p-6 rounded-2xl flex flex-col gap-1 w-4/5 mx-auto bg-white"
                             elevation={3}
                           >
-                            {/* Header */}
                             <div className="flex justify-between items-start mb-4">
                               <p className="font-semibold text-gray-900 text-2xl">
                                 {rma.subject}
@@ -244,7 +243,6 @@ export default function RMAsupport() {
                               </div>
                             </div>
 
-                            {/* Message */}
                             <div className="mb-2">
                               <p className="text-gray-700">
                                 <span className="font-medium">Message: </span>
@@ -252,7 +250,6 @@ export default function RMAsupport() {
                               </p>
                             </div>
 
-                            {/* Admin Response */}
                             <div className="mb-4">
                               <p className="text-gray-700">
                                 <span className="font-medium">
@@ -266,7 +263,6 @@ export default function RMAsupport() {
                               </p>
                             </div>
 
-                            {/* Action Buttons */}
                             <div className="flex justify-end gap-3">
                               <Button
                                 variant="contained"
