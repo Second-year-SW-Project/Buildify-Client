@@ -12,6 +12,10 @@ import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 
 function ManageGames() {
+
+    //Backend URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     const [games, setGames] = useState([]);
     const [filteredGames, setFilteredGames] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -30,7 +34,7 @@ function ManageGames() {
 
     const fetchGames = async (searchTerm = "") => {
         try {
-            const response = await axios.get("http://localhost:8000/api/game/games", {
+            const response = await axios.get(`${backendUrl}/api/game/games`, {
                 params: searchTerm ? { search: searchTerm } : {}
             });
 
