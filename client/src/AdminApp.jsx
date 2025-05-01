@@ -1,8 +1,9 @@
 import { AppProvider } from "@toolpad/core/react-router-dom";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate} from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react"; 
+
 import Iconset from './AtomicComponents/Icons/Iconset';
 import theme from './AtomicComponents/theme';
-import React from 'react';
 import axios from 'axios';
 import { toast } from "sonner";
 
@@ -201,58 +202,67 @@ const NAVIGATION = addBaseToSegments([
 ], BASE_PATH);
 
 
+
+
 function AdminApp() {
-
-  const [session, setSession] = React.useState({
-    user: {
-      name: 'Admin User',
-      email: 'admin@example.com',
-      image: 'https://avatars.githubusercontent.com/u/19550456',
-    },
-  });
-
+  const [session, setSession] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+
+      try {
+        const res = await axios.get(`http://localhost:8000/api/v1/users/${userId}`, {
+          withCredentials: true,
+        });
+
+        const { name, email, profilePicture } = res.data.user;
+
+        setSession({
+          user: {
+            name,
+            email,
+            image: profilePicture,
+          },
+        });
+      } catch (error) {
+        console.error("Failed to fetch admin data:", error);
+        toast.error("Failed to load admin profile");
+      }
+    };
+
+    fetchAdminData();
+  }, []);
 
   const handleSignOut = async () => {
     try {
-      // Call backend logout API
-      const logout = await axios.post(
-        'http://localhost:8000/api/v1/users/logout',
+      await axios.post(
+        "http://localhost:8000/api/v1/users/logout",
         {},
         { withCredentials: true }
       );
-  
-      // Clear frontend session
+
       setSession(null);
       localStorage.removeItem("userId");
       localStorage.removeItem("token");
-  
-      if (logout) {
-        toast.success("Logout successfully");
-      }
-  
-      // Navigate to home page
-      navigate('/');
+
+      toast.success("Logout successfully");
+      navigate("/");
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
       toast.error("Logout failed");
     }
   };
-  
-  
-  const authentication = React.useMemo(() => ({
-    signIn: () => {
-      setSession({
-        user: {
-          name: 'Admin User',
-          email: 'admin@example.com',
-          image: 'https://avatars.githubusercontent.com/u/19550456',
-        },
-      });
-    },
-    signOut: handleSignOut,
 
-  }), []);
+  const authentication = useMemo(
+    () => ({
+      signIn: () => {}, // You can enhance this later
+      signOut: handleSignOut,
+    }),
+    []
+  );
 
   return (
     <AppProvider
@@ -260,26 +270,28 @@ function AdminApp() {
       authentication={authentication}
       navigation={NAVIGATION}
       branding={{
-        logo: (<img
-          src='/src/assets/images/Logos/logo-white.png'
-          alt='Logo'
-          style={{
-            marginLeft: '8px',
-            marginTop: '4px',
-            maxWidth: '100%',
-            height: 'auto',
-            width: '140px'
-          }}
-        />
+        logo: (
+          <img
+            src="/src/assets/images/Logos/logo-white.png"
+            alt="Logo"
+            style={{
+              marginLeft: "8px",
+              marginTop: "4px",
+              maxWidth: "100%",
+              height: "auto",
+              width: "140px",
+            }}
+          />
         ),
-        title: '',
+        title: "",
       }}
       theme={theme}
     >
       <Outlet />
     </AppProvider>
-  )
+  );
 }
+
 
 export default AdminApp;
 
