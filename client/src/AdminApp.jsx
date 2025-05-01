@@ -7,6 +7,9 @@ import { Box } from '@mui/material';
 import { Account } from '@toolpad/core/Account';
 import CustomMenu from "./MoleculesComponents/Admin_components/AdminProfileDropdown";
 import AdminBranding from "./MoleculesComponents/Admin_components/AdminAppbar";
+import axios from 'axios';
+import { toast } from "sonner";
+
 
 const addBaseToSegments = (items, basePath) =>
   items.map((item) => {
@@ -221,11 +224,33 @@ function AdminApp() {
 
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    setSession(null);
-    navigate('/adminpanel/auth/signup');
+  const handleSignOut = async () => {
+    try {
+      // Call backend logout API
+      const logout = await axios.post(
+        'http://localhost:8000/api/v1/users/logout',
+        {},
+        { withCredentials: true }
+      );
+  
+      // Clear frontend session
+      setSession(null);
+      localStorage.removeItem("userId");
+      localStorage.removeItem("token");
+  
+      if (logout) {
+        toast.success("Logout successfully");
+      }
+  
+      // Navigate to home page
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error("Logout failed");
+    }
   };
-
+  
+  
   const authentication = React.useMemo(() => ({
     signIn: () => {
       setSession({
