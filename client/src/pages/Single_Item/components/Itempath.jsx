@@ -11,10 +11,13 @@ export default function Itempath() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/product/${id}`);
+        const response = await axios.get(`${backendUrl}/api/product/${id}`);
         setProduct(response.data);
       } catch (err) {
         setError('Failed to load product');
@@ -49,7 +52,17 @@ export default function Itempath() {
 
   
 
-  if (loading) return <p>Loading product...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#1a1c1e] text-white">
+        <div className="flex flex-col items-center justify-center flex-grow">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-6"></div>
+          <p className="text-xl font-semibold">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
   if (error) return <p>{error}</p>;
   if (!product) return <p>Product not found</p>;
 

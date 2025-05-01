@@ -37,6 +37,8 @@ function ManageProducts() {
     const [selectedSubCategory, setSelectedSubCategory] = useState('');
     const [subCategoryOptions, setSubCategoryOptions] = useState([]);
 
+    const [loading, setLoading] = useState(false);
+
     //Clear filters function
     const clearFilters = () => {
         setStatusFilter('');
@@ -142,6 +144,7 @@ function ManageProducts() {
     //Delete product function
     const handleDelete = async () => {
         try {
+            setLoading(true)
             const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/product/${selectedProductId}`);
             if (response.data.Success) {
                 toast.success("Product deleted successfully", selectedProductId);
@@ -151,8 +154,12 @@ function ManageProducts() {
             }
         } catch (error) {
             toast.error("Failed to delete product");
+        } finally {
+            setLoading(false);
+            setOpenDialog(false);
         }
-        setOpenDialog(false);
+
+
     };
 
     //Open delete dialog function
@@ -324,6 +331,7 @@ function ManageProducts() {
                 open={openDialog}
                 handleClose={() => setOpenDialog(false)}
                 handleAgree={handleDelete}
+                loading={loading}
             />
         </div>
 

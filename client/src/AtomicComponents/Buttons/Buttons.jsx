@@ -59,7 +59,6 @@ export function PrimaryButton({
                 color={color}
                 disabled={isDisabled || loading}
                 loading={loading}
-                loadingIndicator="Loading…"
                 onClick={onClick}
                 type={type}
                 sx={{
@@ -143,7 +142,6 @@ export function TextButton({
                 color={color}
                 disabled={isDisabled || loading}
                 loading={loading}
-                loadingIndicator="Loading…"
                 onClick={onClick}
                 type={type}
                 sx={{

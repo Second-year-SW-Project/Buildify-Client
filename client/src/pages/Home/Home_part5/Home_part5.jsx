@@ -5,11 +5,13 @@ import { Link, useNavigate } from "react-router-dom";
 
 const NewestReleases = () => {
   const [releases, setReleases] = useState([]);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 
   useEffect(() => {
     const fetchReleases = async () => {
       try {
-        const res = await axios.get('http://localhost:8000/api/product/filter?');
+        const res = await axios.get(`${backendUrl}/api/product/filter?`);
         setReleases(res.data.slice(0, 6)); // Fetch only 6 products
       } catch (error) {
         console.error('Failed to fetch new releases:', error);

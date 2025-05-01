@@ -680,7 +680,7 @@ const handlePrebuildStorageToggle = (storage) => {
                       onChange={() => handleLaptopRamCapacityToggle(capacity)}
                     />
                   }
-                  label={capacity}
+                  label={capacity + "GB"}
                   className="grid gap-4"
                 />
               )
@@ -698,9 +698,14 @@ const handlePrebuildStorageToggle = (storage) => {
                         onChange={() => handleLaptopGraphicCardToggle(gpu)}
                       />
                     }
-                    label={gpu}
-                    className="grid gap-4"
+                    label={gpu
+                      .replace(/nvidia_/i, '')
+                      .replace(/geforce_/i, '')
+                      .replace(/_/g, ' ')
+                      .toUpperCase()}
+                    className="grid gap-4 "
                   />
+                   
                 )
               )}
             </div>
@@ -858,7 +863,7 @@ const handlePrebuildStorageToggle = (storage) => {
 
         <div className="justify-between mt-2">
           <span className="text-sm">{priceRange[0]}LKR</span>
-          <span className="ml-[52px] text-sm">{priceRange[1]} LKR</span>
+          <span className="ml-[76px] text-sm">{priceRange[1]} LKR</span>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
+import dayjs from "dayjs";
 import {
   Divider,
   IconButton,
@@ -28,8 +29,8 @@ function InvoiceCreate() {
   // State for form fields
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [invoiceStatus, setInvoiceStatus] = useState("draft");
-  const [dateCreated, setDateCreated] = useState(new Date());
-  const [dueDate, setDueDate] = useState(new Date());
+  const [dateCreated, setDateCreated] = useState(dayjs());
+  const [dueDate, setDueDate] = useState(dayjs());
   const [shippingCost, setShippingCost] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [fromEdit, setFromEdit] = useState(false);
@@ -103,6 +104,16 @@ function InvoiceCreate() {
   };
 
   const handleSubmit = async (isDraft = false) => {
+    if (!invoiceNumber) {
+      toast.error("Invoice Number is required.");
+      return;
+    }
+
+    if (items.some((item) => !item.itemCode)) {
+      toast.error("Every item must have an Item Code.");
+      return;
+    }
+
     const invoiceData = {
       fromAddress,
       toAddress,
@@ -119,13 +130,15 @@ function InvoiceCreate() {
       total,
       invoiceNumber,
       invoiceStatus: isDraft ? "draft" : invoiceStatus,
-      dateCreated,
-      dueDate,
+      dateCreated: dayjs(dateCreated).format("YYYY-MM-DD"),
+      dueDate: dayjs(dueDate).format("YYYY-MM-DD"),
     };
+
+    console.log(invoiceData);
 
     try {
       const response = await axios.post(
-        `${backendUrl}/invoices/create`,
+        `${backendUrl}/api/invoices/create`,
         invoiceData
       );
       toast.success(response.data.message);
@@ -393,7 +406,10 @@ function InvoiceCreate() {
               <Button
                 variant="outlined"
                 size="medium"
-                onClick={() => handleSubmit(true)}
+                onClick={() => {
+                  console.log("Create Invoice button clicked");
+                  handleSubmit(false);
+                }}
               >
                 Save Draft
               </Button>

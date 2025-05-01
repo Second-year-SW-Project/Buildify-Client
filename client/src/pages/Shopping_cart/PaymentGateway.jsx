@@ -1,69 +1,77 @@
 import React, { useEffect, useState } from "react";
-
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart, increaseQuantity, decreaseQuantity,clearCart } from "../../redux/cartSlice";
+import {
+  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
+  clearCart,
+} from "../../redux/cartSlice";
 import { Button, IconButton } from "@mui/material";
 import { Add, Remove, Delete, Label } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
 import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer";
+import Swal from "sweetalert2"; 
+
 
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 
+import { toast, Toaster } from "sonner";
 
-
-
-
-const stripePromise = loadStripe("pk_test_51RAt66QrMZYW3Chd7hWi12tUhngYuiEe7M1hBUpvJAHIIZq95xF9yo97ZQBuup7avOuiTojlhqxm3R0GbxAmNexx00e2V1MOzb"); // Replace with your Stripe test publishable key
+const stripePromise = loadStripe(
+  "pk_test_51RAt66QrMZYW3Chd7hWi12tUhngYuiEe7M1hBUpvJAHIIZq95xF9yo97ZQBuup7avOuiTojlhqxm3R0GbxAmNexx00e2V1MOzb"
+); // Replace with your Stripe publishable key
 
 const PaymentGateway = () => {
-
-    const [users, setUsers] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const cartItems = useSelector((state) => state.cart.cartItems) || [];
   const totalPrice = useSelector((state) => state.cart.totalPrice) || 0;
 
-  const dispatch = useDispatch(); // for clearcart
-  const navigate = useNavigate(); // for navigate to home
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    useEffect(() => {
-      const token  = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId");
-      if (!token || !userId) {
-        setLoading(false);
-        return;
-      }
-  
-      const fetchUsers = async () => {
-        try {
-          const response = await axios.get("http://localhost:8000/api/v1/users", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-          setUsers(response.data);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchUsers();
-    }, []);
-  
-
+  useEffect(() => {
+    const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    const currentUserArray = users.filter((u) => u._id === userId);
-    const currentUser = currentUserArray.length > 0 ? currentUserArray[0] : null;
+    if (!token || !userId) {
+      setLoading(false);
+      return;
+    }
 
-    //the checkout button function
-  const handleCheckout = async (paymentMethodId,formData) => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/v1/users", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const userId = localStorage.getItem("userId");
+  const currentUserArray = users.filter((u) => u._id === userId);
+  const currentUser = currentUserArray.length > 0 ? currentUserArray[0] : null;
+
+
+  const handleCheckout = async (paymentMethodId, formData, setIsProcessing) => {
     try {
       const sanitizedCartItems = cartItems.map((item) => ({
         _id: item._id || item.id,
@@ -81,8 +89,8 @@ const PaymentGateway = () => {
           items: sanitizedCartItems,
           total: totalPrice,
           paymentMethodId,
-          user:userId,   //user id that get from using token
-          customerEmail: formData.email, //  pass customer email here get from form
+          user: userId,
+          customerEmail: formData.email,
           customerName: formData.name,
         }),
       });
@@ -91,29 +99,45 @@ const PaymentGateway = () => {
       console.log("Server Response:", data);
   
       if (response.ok) {
-        alert("Transaction Successful! 🎉");
-        dispatch(clearCart());
-        navigate("/");
+        Swal.fire({
+          title: "Payment Successful 🎉",
+          text: "Thank you for your purchase!",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          dispatch(clearCart());
+          navigate("/");
+        });
       } else {
-        alert(`Transaction Failed: ${data.message}`);
+        Swal.fire({
+          title: "Payment Failed",
+          text: data.message || "Please try again.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       }
     } catch (error) {
       console.error("Checkout Error:", error);
-      alert("Transaction Failed! Please try again.");
+      Swal.fire({
+        title: "Error",
+        text: "Transaction Failed! Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    } finally {
+      setIsProcessing(false);
     }
   };
+  
   return (
     <div>
-      <div>
-        <Navbar />
-      </div>
+      <Toaster richColors position="top-right" />
+      <Navbar />
       <div className="w-full max-w-5xl mx-auto mb-40 p-6 bg-white shadow-lg rounded-lg">
-        {/* Title */}
         <h2 className="text-center text-xl font-bold bg-black text-white py-3 rounded-md">
           PAYMENT GATEWAY
         </h2>
 
-        {/* Cart Items List */}
         {cartItems.length === 0 ? (
           <p className="text-center text-gray-600 mt-5">Your cart is empty</p>
         ) : (
@@ -123,36 +147,31 @@ const PaymentGateway = () => {
                 key={item._id || item.Id}
                 className="flex items-center justify-between p-4 border rounded-md shadow-sm w-full"
               >
-                {/* Product Image & Name */}
                 <div className="flex items-center space-x-4 w-1/3 min-w-[250px]">
                   <img
                     src={item.imgUrls?.[0]?.url || item.image || "./graph1.png"}
                     alt={item.name}
                     className="w-20 h-20 rounded-md object-cover"
                   />
-                  <p className="text-gray-800 font-medium truncate w-full">{item.name}</p>
+                  <p className="text-gray-800 font-medium truncate w-full">
+                    {item.name}
+                  </p>
                 </div>
 
-                {/* Quantity Control + Price + Remove */}
                 <div className="flex items-center justify-end space-x-6 w-2/3">
                   <div className="flex items-center space-x-2 border px-3 py-1 rounded-md">
-
                     <span className="px-3 py-1 text-lg">{item.quantity}</span>
-
                   </div>
 
                   <p className="text-lg font-semibold text-gray-800">
                     {(item.price * item.quantity).toLocaleString()} LKR
                   </p>
-
-
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Total & Checkout */}
         {cartItems.length > 0 && (
           <div className="mt-6 text-left">
             <h3 className="text-2xl font-bold mb-14">
@@ -164,21 +183,17 @@ const PaymentGateway = () => {
           </div>
         )}
       </div>
-      <div>
-        <Footer />
-      </div>
-
+      <Footer />
     </div>
   );
 };
 
-//checkout form
-
 const CheckoutForm = ({ onCheckout }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     name: "",
     address: "",
     phone: "",
@@ -193,9 +208,9 @@ const CheckoutForm = ({ onCheckout }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!stripe || !elements) {
-      return;
-    }
+    if (!stripe || !elements) return;
+
+    setIsProcessing(true);
 
     const cardElement = elements.getElement(CardElement);
 
@@ -214,10 +229,10 @@ const CheckoutForm = ({ onCheckout }) => {
 
     if (error) {
       console.error("Payment Method Error:", error);
-
-      alert("Payment failed. Please try again.");
+      toast.error("Payment failed. Please check your card details.");
+      setIsProcessing(false);
     } else {
-      onCheckout(paymentMethod.id,formData);
+      onCheckout(paymentMethod.id, formData, setIsProcessing);
     }
   };
 
@@ -262,7 +277,9 @@ const CheckoutForm = ({ onCheckout }) => {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Phone Number
+        </label>
         <input
           type="tel"
           name="phone"
@@ -284,15 +301,22 @@ const CheckoutForm = ({ onCheckout }) => {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Card Details</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Card Details
+        </label>
         <CardElement options={cardElementOptions} className="border px-3 py-2 rounded-md" />
       </div>
+
+      {isProcessing && (
+        <div className="text-blue-600 font-semibold">Processing payment...</div>
+      )}
+
       <button
         type="submit"
         className="mt-4 bg-purple-600 text-white px-4 py-2 rounded-md"
-        disabled={!stripe}
+        disabled={!stripe || isProcessing}
       >
-        Pay Now
+        {isProcessing ? "Processing..." : "Pay Now"}
       </button>
     </form>
   );

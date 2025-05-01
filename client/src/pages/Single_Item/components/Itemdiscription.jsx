@@ -15,10 +15,13 @@ export default function ProductTabs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/product/${id}`);
+        const response = await axios.get(`${backendUrl}/api/product/${id}`);
         setProduct(response.data);
       } catch (err) {
         setError('Failed to load product');
@@ -34,7 +37,7 @@ export default function ProductTabs() {
   const [activeTab, setActiveTab] = useState("specification");
   
 
-  if (loading) return <p>Loading product...</p>;
+  if (loading) return <p></p>;
   if (error) return <p>{error}</p>;
   if (!product) return <p>Product not found</p>;
 

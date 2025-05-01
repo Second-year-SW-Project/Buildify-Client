@@ -19,10 +19,10 @@ function OrderList() {
 
     const [SelectedOrderId, setSelectedOrderId] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
-
-
     const [searchTerm, setSearchTerm] = useState('');
     const [orders, setOrders] = useState([]);
+
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchOrders();
@@ -58,6 +58,7 @@ function OrderList() {
     //Delete product function
     const handleDelete = async () => {
         try {
+            setLoading(true)
             const response = await axios.delete(`${backendUrl}/api/checkout/order/${SelectedOrderId}`);
             if (response.data.Success) {
                 toast.success("Order deleted successfully", SelectedOrderId);
@@ -67,8 +68,11 @@ function OrderList() {
             }
         } catch (error) {
             toast.error("Failed to delete Order");
+        } finally {
+            setLoading(false)
+            setOpenDialog(false);
         }
-        setOpenDialog(false);
+
     };
 
     //Open delete dialog function
@@ -152,6 +156,7 @@ function OrderList() {
                 open={openDialog}
                 handleClose={() => setOpenDialog(false)}
                 handleAgree={handleDelete}
+                loading={loading}
             />
         </div>
     )
