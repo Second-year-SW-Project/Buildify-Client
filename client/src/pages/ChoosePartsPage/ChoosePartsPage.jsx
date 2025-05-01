@@ -122,7 +122,8 @@ const ChooseParts = () => {
       };
 
       // Save build to database
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/build/builds`, buildData);
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      const response = await axios.post(`${backendUrl}/api/build/builds`, buildData);
 
       if (response.data.success) {
         toast.success("Build saved successfully!");
