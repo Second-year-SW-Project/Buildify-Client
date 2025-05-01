@@ -52,13 +52,35 @@ const SelectedPartsSummaryPopup = ({ onClose, selectedComponents }) => {
       // Prepare build data
       const buildData = {
         name: buildName,
-        components: selectedComponents,
-        totalPrice,
-        image: selectedComponents.Case?.image || '', // Use case image as build image
+        type: "custom",
+        image: selectedComponents.Case?.image || '',
+        components: Object.entries(selectedComponents).map(([type, component]) => {
+          if (Array.isArray(component)) {
+            return component.map(item => ({
+              componentName: item.name,
+              type: type,
+              quantity: 1,
+              price: parseFloat(item.price.replace('LKR ', '')),
+              image: item.image,
+              _id: item._id
+            }));
+          }
+          return [{
+            componentName: component.name,
+            type: type,
+            quantity: 1,
+            price: parseFloat(component.price.replace('LKR ', '')),
+            image: component.image,
+            _id: component._id
+          }];
+        }).flat(),
+        totalPrice: totalPrice
       };
 
+      console.log('Sending build data:', buildData);
+
       // Send to backend
-      const response = await axios.post('http://localhost:8000/api/build/save', buildData);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/build/builds`, buildData);
 
       if (response.data.success) {
         toast.success('Build saved successfully!', {
@@ -72,12 +94,19 @@ const SelectedPartsSummaryPopup = ({ onClose, selectedComponents }) => {
         });
         onClose();
       } else {
+        console.error('Server response error:', response.data);
         throw new Error(response.data.message || 'Failed to save build');
       }
     } catch (error) {
       console.error('Error saving build:', error);
-      toast.error(error.message || 'Failed to save build. Please try again.', {
-        duration: 3000,
+      console.error('Error response:', error.response?.data);
+      
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          'Failed to save build. Please try again.';
+      
+      toast.error(errorMessage, {
+        duration: 5000,
         style: {
           background: '#ff6b6b',
           color: '#fff',
