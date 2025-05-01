@@ -11,6 +11,8 @@ import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import axios from "axios";
 import { toast } from "sonner";
 import { setAuthUser } from "../Store/authSlice";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 
 export default function UserProfile() {
   const dispatch = useDispatch();
@@ -74,10 +76,7 @@ export default function UserProfile() {
 
     try {
       setUploading(true);
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/dfdjzbfjn/image/upload`,
-        formData
-      );
+      const response = await axios.post(CLOUDINARY_UPLOAD_URL, formData);
 
       setFormData((prev) => ({
         ...prev,
@@ -129,7 +128,7 @@ export default function UserProfile() {
       };
 
       const response = await axios.post(
-        `http://localhost:8000/api/v1/users/update-profile`,
+        `${backendUrl}/api/v1/users/update-profile`,
         updateData,
         {
           headers: {

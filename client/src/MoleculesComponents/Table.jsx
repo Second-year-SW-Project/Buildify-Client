@@ -150,7 +150,6 @@ export function OrderTable({
     setExpandedRowId((prev) => (prev === orderId ? null : orderId));
   };
 
-
   const isRowOpen = (rowId) => expandedRowId === rowId;
 
   const statusColorMap = {
@@ -215,7 +214,9 @@ export function OrderTable({
                       hover
                     >
                       <TableCell sx={{ fontWeight: "bold" }}>
-                        {order._id ? `#${order._id.slice(-4).toUpperCase()}` : "#----"}
+                        {order._id
+                          ? `#${order._id.slice(-4).toUpperCase()}`
+                          : "#----"}
                       </TableCell>
                       <TableCell>
                         <UserCard
@@ -232,8 +233,16 @@ export function OrderTable({
                           {format(new Date(order.createdAt), "p")}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ fontWeight: "bold", textAlign: "center", textAlign: "center", }}>{order.items.length}</TableCell>
-                      <TableCell sx={{ fontWeight: "bold" }}>{(order.total !== undefined ? order.total.toLocaleString() : "0")} LKR
+                      <TableCell
+                        sx={{ fontWeight: "bold", textAlign: "center" }}
+                      >
+                        {order.items.length}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>
+                        {order.total !== undefined
+                          ? order.total.toLocaleString()
+                          : "0"}{" "}
+                        LKR
                       </TableCell>
                       <TableCell>
                         <Chip
@@ -256,7 +265,7 @@ export function OrderTable({
                                 type === "toggle"
                                   ? toggleRow(order._id)
                                   : iconActions[type] &&
-                                  iconActions[type](order._id)
+                                    iconActions[type](order._id)
                               }
                               translate="3s"
                               sx={{
@@ -280,7 +289,10 @@ export function OrderTable({
                       )}
                     </TableRow>
                     <TableRow>
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
+                      <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={8}
+                      >
                         <Collapse in={isOpen} timeout="auto" unmountOnExit>
                           <Box margin={1} p={1}>
                             {order.items.map((item, i) => (
@@ -305,7 +317,11 @@ export function OrderTable({
                                 >
                                   <Typography color="primary" flex={1}>{`#${item._id?.slice(-4).toUpperCase() || "----"}`}</Typography>
                                 </Box> */}
-                                <Box flex={3} display="flex" alignItems="center">
+                                <Box
+                                  flex={3}
+                                  display="flex"
+                                  alignItems="center"
+                                >
                                   <OrderItemCard
                                     name={item.name}
                                     type={item.category}
@@ -319,8 +335,16 @@ export function OrderTable({
                                   justifyContent="flex-end"
                                   textAlign="right"
                                 >
-                                  <Typography fontWeight="bold" flex={1}>x {item.quantity}</Typography>
-                                  <Typography fontSize={14} flex={1} color="black500">Unit Price -{item.price}</Typography>
+                                  <Typography fontWeight="bold" flex={1}>
+                                    x {item.quantity}
+                                  </Typography>
+                                  <Typography
+                                    fontSize={14}
+                                    flex={1}
+                                    color="black500"
+                                  >
+                                    Unit Price -{item.price}
+                                  </Typography>
                                 </Box>
                                 <Box
                                   flex={1}
