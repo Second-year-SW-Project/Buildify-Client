@@ -3,10 +3,6 @@ import { Outlet, useNavigate } from "react-router-dom";
 import Iconset from './AtomicComponents/Icons/Iconset';
 import theme from './AtomicComponents/theme';
 import React from 'react';
-import { Box } from '@mui/material';
-import { Account } from '@toolpad/core/Account';
-import CustomMenu from "./MoleculesComponents/Admin_components/AdminProfileDropdown";
-import AdminBranding from "./MoleculesComponents/Admin_components/AdminAppbar";
 import axios from 'axios';
 import { toast } from "sonner";
 
@@ -164,7 +160,7 @@ const NAVIGATION = addBaseToSegments([
     title: 'Comments & Reviews',
     icon: <Iconset type="comments" />,
     children: [
-      
+
       {
         segment: 'comment',
         title: 'Comments',
@@ -205,8 +201,6 @@ const NAVIGATION = addBaseToSegments([
 ], BASE_PATH);
 
 
-
-
 function AdminApp() {
 
   const [session, setSession] = React.useState({
@@ -214,11 +208,6 @@ function AdminApp() {
       name: 'Admin User',
       email: 'admin@example.com',
       image: 'https://avatars.githubusercontent.com/u/19550456',
-    },
-    org: {
-      name: 'MUI Inc.',
-      url: 'https://mui.com',
-      logo: 'https://mui.com/static/logo.svg',
     },
   });
 
@@ -270,10 +259,6 @@ function AdminApp() {
       session={session}
       authentication={authentication}
       navigation={NAVIGATION}
-      // branding={{
-      //   logo: <AdminBranding />,
-      //   title: '',
-      // }}
       branding={{
         logo: (<img
           src='/src/assets/images/Logos/logo-white.png'
@@ -289,11 +274,7 @@ function AdminApp() {
         ),
         title: '',
       }}
-      slots={{
-        popoverContent: CustomMenu,
-      }}
       theme={theme}
-
     >
       <Outlet />
     </AppProvider>

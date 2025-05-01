@@ -40,16 +40,15 @@ export default function Itempage() {
   const [quantity, setQuantity] = useState(1);
 
   const dispatch = useDispatch();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        // const response = await fetch(`api/product/${id}`);
-        // const data = await response.text();
-        // setProduct(data);
-        const response = await axios.get(`http://localhost:8000/api/product/${id}`);
+
+        const response = await axios.get(`${backendUrl}/api/product/${id}`);
         setProduct(response.data);
       } catch (err) {
         setError(err.message);
@@ -60,7 +59,7 @@ export default function Itempage() {
     fetchProduct();
   }, [id]);
 
-  if (loading) return <p className='bg-slate-600 text-center text-2xl'>Loading...</p>;
+  if (loading) return <p></p>;
   if (error) return <p>Error: {error}</p>;
   if (!product) return <p>Product not found</p>;
 
@@ -260,17 +259,18 @@ export default function Itempage() {
              spec1 = "Brand:";  //x
              spec2 = "Ram:";  //y
              spec3 = "Graphic Card:";  //z
-             spec4 = "Storage::"  //p
-             spec5 = "Resolution:";  //q
+             spec4 = "Storage:"  //p
+             spec5 = "Refresh Rate:";  //q
              spec6 ="Warranty:";  //r
           
       
             x = product.manufacturer.toUpperCase();
             y = product.ram + " GB";
-            z = product.graphicCard;
+            z = product.graphicCard.toUpperCase();
+
             
-            p = product.storage;
-            q = product.resolution;
+            p = product.storage + "GB";
+            q = product.refreshRate + "Hz";
             r = product.warranty;
  
             break;
@@ -289,7 +289,7 @@ export default function Itempage() {
              z = product.graphicCard.toUpperCase();
              
              p = product.storage+" GB HDD";
-             q = product.resolution;
+             q = product.cpu.toUpperCase();
              r = product.warranty;
   
              break;

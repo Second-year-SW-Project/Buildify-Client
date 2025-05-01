@@ -5,6 +5,8 @@ export default function UserProfile() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const token  = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
@@ -15,7 +17,7 @@ export default function UserProfile() {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/v1/users", {
+        const response = await axios.get(`${backendUrl}/api/v1/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

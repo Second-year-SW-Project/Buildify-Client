@@ -9,11 +9,14 @@ export default function Itemimage() {
   const [error, setError] = useState(null);
   const [Mainimage, setMainImage] = useState(null); // Initialize as null
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+
   // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/product/${id}`);
+        const response = await axios.get(`${backendUrl}/api/product/${id}`);
         setProduct(response.data);
       } catch (err) {
         setError("Failed to load product");
@@ -32,12 +35,12 @@ export default function Itemimage() {
     }
   }, [product]);
 
-  if (loading) return <p>Loading product...</p>;
+  if (loading) return <p></p>;
   if (error) return <p>{error}</p>;
   if (!product) return <p>Product not found</p>;
 
   // Fallback image in case `product.image1` is missing
-  const defaultImage = "../../../../public/graph1.png";
+  const defaultImage = "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421085/graph1_zqumzj.png";
   const imageArray = [product?.imgUrls?.[0]?.url || defaultImage, defaultImage];
 
   return (
