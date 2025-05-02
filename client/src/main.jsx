@@ -70,7 +70,7 @@ export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const router = createBrowserRouter([
   {
-    // Admin Routes
+    //Admin Routes
     path: "/adminpanel",
     element: <AdminApp />,
     children: [
@@ -136,7 +136,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    // Customer Routes
+    //Customer Routes
     path: "/",
     element: <CustomerApp />,
     children: [
@@ -157,7 +157,7 @@ const router = createBrowserRouter([
       { path: "chooseparts", element: <ChoosePartsPage /> },
       { path: "modeselect", element: <ModelSelectPage /> },
 
-      // User
+      //User
       {
         path: "user",
         children: [

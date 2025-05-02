@@ -37,9 +37,9 @@ const CreateProducts = () => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    const { id } = useParams();
-    const isEditMode = !!id;
-    const navigate = useNavigate();
+    const { id } = useParams(); //Get the product ID from the URL parameters
+    const isEditMode = !!id; //Check if the ID exists to determine if it's edit mode
+    const navigate = useNavigate(); //Get the navigation function
 
     //Set up a ref for the image selector component
     const imageSelectorRef = useRef();
@@ -55,23 +55,21 @@ const CreateProducts = () => {
     const [manufactureOptions, setManufactureOptions] = useState([]);
     const [socketTypeOptions, setSocketTypeOptions] = useState([]);
 
+    //Set loading state for the form submission
     const [loading, setLoading] = useState(false);
 
     const handleMainCategoryChange = (value) => {
         setSelectedMainCategory(value);
         setSubCategoryOptions(subCategories[value] || []);
         setSelectedSubCategory('');
-        setSelectedManufacture('');
         setManufactureOptions([]);
-        setSocketTypeOptions([]);
-        setProduct((prev) => ({ ...prev, type: '' }));
+        setProduct((prev) => ({ ...prev, quantity: '' }));
     };
 
     const handleSubCategoryChange = (value) => {
         setSelectedSubCategory(value);
         setManufactureOptions(manufacture[value] || []);
         setSelectedManufacture('');
-        setSocketTypeOptions([]);
         setProduct((prev) => ({ ...prev, quantity: '' }));
     };
 
@@ -314,7 +312,7 @@ const CreateProducts = () => {
         }));
     }, [selectedSubCategory, selectedManufacture]);
 
-    //Update product state when selected main category changes
+    //Handle input changes for checkboxs
     const handleInputChange = (field, value) => {
         setProduct((prevProduct) => ({
             ...prevProduct,
@@ -322,7 +320,7 @@ const CreateProducts = () => {
         }));
     };
 
-    //Update product state when selected socket type changes
+    //Handle array changes for multi-select fields
     const handleArrayChange = (field, value) => {
         setProduct((prevProduct) => ({
             ...prevProduct,
@@ -330,7 +328,8 @@ const CreateProducts = () => {
         }));
     };
 
-    //validation function for reqired fields
+    // Validate required fields based on product type and component type
+    // Different product types have different required fields
     const validateRequiredFields = (product, isEditMode = false, shouldThrow = false) => {
         const allRequiredFields = {
             processor: [
@@ -538,6 +537,7 @@ const CreateProducts = () => {
             default: ['name', 'price', 'description', 'imgUrls', 'type', 'manufacturer', 'quantity'],
         };
 
+        //if the product type is expansion_network pass the component type to the required fields 
         if (product.type === 'expansion_network') {
             if (product.componentType === 'sound_card') {
                 allRequiredFields.expansion_network.push('soundCardChannels');
@@ -601,7 +601,7 @@ const CreateProducts = () => {
                 formData.append('existingImgUrls', JSON.stringify(selectedImages.filter((img) => typeof img === 'string')));
             }
 
-            //Remove processor-specific fields if not a processor
+            //Remove processor-specific fields if not a processor(For Checkboxes)
             if (product.type === 'processor') {
                 product.integratedGraphics = product.integratedGraphics ?? false;
                 product.includesCooler = product.includesCooler ?? false;
@@ -624,14 +624,17 @@ const CreateProducts = () => {
 
             if (response.data.Success) {
                 toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');
-                console.log("sent product=============", response.data);
+                console.log("sent product=============", response.data);//Debugging
 
                 if (!isEditMode) {
-                    setProduct({ ...initialProductState });
-                    setSelectedImages([]);
+
+                    setProduct({ ...initialProductState }); //Reset the form state after successful creation                 
+                    setSelectedImages([]); //Reset selected images 
+                    //Delete all images
                     if (imageSelectorRef.current) {
                         imageSelectorRef.current.deleteAllImages();
                     }
+                    //Reset selected categories
                     setSelectedMainCategory('');
                     setSelectedSubCategory('');
                     setSelectedManufacture('');
@@ -652,7 +655,10 @@ const CreateProducts = () => {
 
     return (
         <div>
+            {/*Set Screen Loader*/}
             <FullScreenLoader open={loading} message={isEditMode ? 'Updating...' : 'Creating...'} />
+
+            {/*Set the title and breadcrumbs*/}
             <div className="mt-3 mb-5 ml-6 mr-6">
                 <div>
                     <PageTitle value={isEditMode ? 'Edit Products' : 'Create New Products'} />
@@ -664,6 +670,7 @@ const CreateProducts = () => {
                     ]}
                 />
             </div>
+
             <div>
                 <form onSubmit={onSubmitHandler}>
                     <div className="grid-flow-* gap-20 pl-3 pr-3 grid gap-y-4 mb-4">
