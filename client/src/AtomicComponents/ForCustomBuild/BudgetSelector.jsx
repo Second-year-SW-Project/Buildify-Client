@@ -5,12 +5,14 @@ function BudgetSelector({ budget, onBudgetChange, onApply }) {
   const [sliderValue, setSliderValue] = useState(budget);
   const sliderRef = useRef(null);
 
+  //Handles the slider change. Also updates the slider progress
   const handleSliderChange = (e) => {
     const value = parseInt(e.target.value);
     setSliderValue(value);
     updateSliderProgress(value);
   };
 
+  //Handles the slider change end
   const handleSliderChangeEnd = () => {
     onBudgetChange(sliderValue);
   };
@@ -20,15 +22,16 @@ function BudgetSelector({ budget, onBudgetChange, onApply }) {
       const percentage = (value / 2000000) * 100;
       sliderRef.current.style.setProperty('--range-progress', `${percentage}%`);
     }
-  };
+  };//Updates the slider progress
 
   useEffect(() => {
     updateSliderProgress(budget);
-  }, [budget]);
+  }, [budget]);//Updates the slider progress when the budget changes
 
   const formatBudget = (value) => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
+  };//Converts numbers like 1000000 to 1,000,000 using regex.
+
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 max-w-[400px] w-full mx-auto">

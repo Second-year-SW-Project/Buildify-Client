@@ -13,16 +13,13 @@ import axios from 'axios';
 
 const ChooseParts = () => {
   // State for warnings/messages
-  const [messages, setMessages] = useState([
-    { type: "note", text: "Choose components that are compatible with each other." },
-    { type: "disclaimer", text: "Prices are subject to change based on availability." },
-  ]);
+  const [messages, setMessages] = useState([]);//Holds the messages
 
   // State for total TDP
-  const [totalTDP, setTotalTDP] = useState("0W");
+  const [totalTDP, setTotalTDP] = useState("0W");//Holds the total TDP
 
   // State to track compatibility issues
-  const [hasCompatibilityIssues, setHasCompatibilityIssues] = useState(false);
+  const [hasCompatibilityIssues, setHasCompatibilityIssues] = useState(false);//Flage to check if there are compatibility issues
 
   // State to track selected components
   const [selectedComponents, setSelectedComponents] = useState({});
@@ -33,7 +30,7 @@ const ChooseParts = () => {
   // Listen for changes in the PartsTable component
   const handleComponentsChanged = useCallback((components) => {
     setSelectedComponents(components);
-    const compatibilityResult = checkCompatibility(components);
+    const compatibilityResult = checkCompatibility(components);//Update the compatibility result
     setMessages(compatibilityResult.messages);
     setTotalTDP(compatibilityResult.totalTDP);
     setHasCompatibilityIssues(compatibilityResult.hasCompatibilityIssues);
@@ -122,11 +119,11 @@ const ChooseParts = () => {
       };
 
       // Save build to database
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const response = await axios.post(`${backendUrl}/api/build/builds`, buildData);
 
       if (response.data.success) {
-        toast.success("Build saved successfully!");
+        toast.success("Build saved successfully!");//Default success message
         setShowConfirmationPopup(false);
       } else {
         throw new Error(response.data.message || "Failed to save build");

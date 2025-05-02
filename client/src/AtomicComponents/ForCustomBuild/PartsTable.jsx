@@ -17,9 +17,9 @@ const rows = [
 ];
 
 function PartsTable({ onComponentsChanged }) {
-  const [selectedComponents, setSelectedComponents] = useState({});
+  const [selectedComponents, setSelectedComponents] = useState({});//Stores the selected components
   const [showPopup, setShowPopup] = useState(false);
-  const [currentComponentType, setCurrentComponentType] = useState(null);
+  const [currentComponentType, setCurrentComponentType] = useState(null);//Tracks the current component type
 
   // Notify parent of component changes
   React.useEffect(() => {
@@ -35,6 +35,7 @@ function PartsTable({ onComponentsChanged }) {
   // Handle component selection from the popup
   const handleComponentSelected = (componentType, selectedData) => {
     const key = typeof componentType === 'object' ? componentType.componentType : componentType;
+    //Extract the key from the component type
     
     // Special handling for RAM and Storage to allow multiple modules
     if (key === 'Memory' || key === 'Storage') {
@@ -117,6 +118,7 @@ function PartsTable({ onComponentsChanged }) {
     { display: 'Wireless Network Adapters', componentType: 'wireless_network_adapter' },
   ];
 
+  //Render the table
   return (
     <>
       <div className="overflow-x-auto shadow-md opacity-100 rounded-none bg-white">
@@ -168,12 +170,6 @@ function PartsTable({ onComponentsChanged }) {
                                       {component.name}
                                     </span>
                                   </div>
-                                  <button
-                                    onClick={() => handleRemoveComponent(row.component, idx)}
-                                    className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
-                                  >
-                                    <ClearIcon className="w-5 h-5" />
-                                  </button>
                                 </div>
                               ))
                             ) : (
@@ -188,12 +184,6 @@ function PartsTable({ onComponentsChanged }) {
                                     {selectedData.name}
                                   </span>
                                 </div>
-                                <button
-                                  onClick={() => handleRemoveComponent(row.component)}
-                                  className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
-                                >
-                                  <ClearIcon className="w-5 h-5" />
-                                </button>
                               </div>
                             )}
                             <div className="h-[38px] flex items-center">
@@ -215,12 +205,6 @@ function PartsTable({ onComponentsChanged }) {
                                 {selectedData.name}
                               </span>
                             </div>
-                            <button
-                              onClick={() => handleRemoveComponent(row.component)}
-                              className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
-                            >
-                              <ClearIcon className="w-5 h-5" />
-                            </button>
                           </div>
                         )
                       ) : (
@@ -246,12 +230,6 @@ function PartsTable({ onComponentsChanged }) {
                                   {selectedComponents[componentType].name}
                                 </span>
                               </div>
-                              <button
-                                onClick={() => handleRemoveComponent(componentType)}
-                                className="text-gray-500 hover:text-red-700 focus:outline-none ml-2"
-                              >
-                                <ClearIcon className="w-5 h-5" />
-                              </button>
                             </div>
                           ) : (
                             <div

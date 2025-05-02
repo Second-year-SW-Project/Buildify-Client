@@ -24,6 +24,8 @@ const BannerLargeContainer2 = ({ heading, subheading, buttonText, imageUrl, clas
   );
 };
 
+//BannerLargeContainer2 is a component that displays a large banner with a small container inside it.
+//Following props are used to display the banner:
 BannerLargeContainer2.propTypes = {
   heading: PropTypes.string.isRequired,
   subheading: PropTypes.string.isRequired,

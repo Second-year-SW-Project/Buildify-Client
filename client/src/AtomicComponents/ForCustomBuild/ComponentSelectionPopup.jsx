@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ClearIcon from '@mui/icons-material/Clear';
-import AddButton from './AddButton';
+//import AddButton from './AddButton';
 import { toast } from 'sonner';
 
 const ComponentSelectionPopup = ({ 
@@ -9,9 +9,9 @@ const ComponentSelectionPopup = ({
   onComponentSelected, 
   componentType 
 }) => {
-  const [components, setComponents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [components, setComponents] = useState([]);//State for the components fetched from the backend holds an empty array
+  const [loading, setLoading] = useState(true);//State for the loading holds a boolean value
+  const [error, setError] = useState(null);//State for the error holds a null value
 
   useEffect(() => {
     const fetchComponents = async () => {
@@ -22,16 +22,17 @@ const ComponentSelectionPopup = ({
         const componentTypeValue = typeof componentType === 'object' ? componentType.componentType : null;
 
         // Construct query URL
-        let url = `http://localhost:8000/api/product/filter?attribute=type&value=${backendType}`;
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        let url = `${backendUrl}/api/product/filter?attribute=type&value=${backendType}`;//Constructs the URL for the backend for fetching the components
         if (isExpansionNetwork && componentTypeValue) {
           url += `&attribute2=component_type&value2=${componentTypeValue}`;
-        }
+        }//If the component type is an expansion network and the component type value is not null, add the component type value to the URL
 
-        const response = await fetch(url);
+        const response = await fetch(url);//Fetches the components from the backend
         
         if (!response.ok) {
           throw new Error(`Failed to fetch ${componentType} components`);
-        }
+        }//If the response is not ok, throw an error
         
         const data = await response.json();
         setComponents(data);
@@ -84,15 +85,15 @@ const ComponentSelectionPopup = ({
         .join(' ');
     }
     return type;
-  };
+  };//Capilalize, split and join the component type. Ex:- expansion_network -> Expansion Network
 
   const handleSelectComponent = (component) => {
-    // Format the component data for the table
+    // Format the component data to be used in the table as a object
     const selectedData = {
       name: component.name,
       image: component.imgUrls && component.imgUrls.length > 0 
         ? component.imgUrls[0].url 
-        : 'https://via.placeholder.com/38',
+        : '',
       availability: component.quantity > 0 ? 'In Stock' : 'Out of Stock',
       price: `LKR ${component.price.toFixed(2)}`,
       tdp: component.tdp || 0,
@@ -180,7 +181,7 @@ const ComponentSelectionPopup = ({
                           <p className="text-lg font-bold text-gray-900">
                             LKR {component.price.toLocaleString()}
                           </p>
-                          <p className={`text-sm font-medium ${component.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          <p className={`text-sm font-medium ${component.quantity > 3 ? 'text-green-600' : 'text-red-600'}`}>
                             {component.quantity > 0 
                               ? `In Stock (${component.quantity})` 
                               : 'Out of Stock'}

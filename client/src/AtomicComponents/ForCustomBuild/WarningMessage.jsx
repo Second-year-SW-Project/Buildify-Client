@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import WarningPopup from './WarningPopup';
 
 const WarningMessage = ({ messages }) => {
-  const [activePopup, setActivePopup] = useState(null);
+  const [activePopup, setActivePopup] = useState(null);//Tracks the type of popup that is currently open
   const prevMessagesRef = useRef([]);
 
-  // Group messages by their type
+  // Group messages by their type into an object
   const groupedMessages = messages.reduce((acc, message) => {
     if (!acc[message.type]) {
       acc[message.type] = [];

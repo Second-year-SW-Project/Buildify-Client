@@ -9,10 +9,12 @@ import advancedModeImage from '../../assets/images/ForCustomBuild/advanced-mode.
 const ModeSelectPage = () => {
   const navigate = useNavigate();
 
+  //Handles the easy mode click by navigating to the select game page
   const handleEasyModeClick = () => {
     navigate('/selectgame');
   };
 
+  //Handles the advanced mode click by navigating to the choose parts page
   const handleAdvancedModeClick = () => {
     navigate('/chooseparts');
   };
