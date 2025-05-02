@@ -175,6 +175,7 @@ const socketTypes = {
     { value: "lga1151", label: "LGA 1151" },
     { value: "lga2066", label: "LGA 2066" },
     { value: "lga1700", label: "LGA 1700" },
+    { value: "lga1851", label: "LGA 1851" },
   ],
   amd: [
     { value: "am4", label: "AM4" },
@@ -284,6 +285,7 @@ const motherboardAttributes = {
     { value: "lga1151", label: "LGA 1151" },
     { value: "lga2066", label: "LGA 2066" },
     { value: "lga1700", label: "LGA 1700" },
+    { value: "lga1851", label: "LGA 1851" },
     { value: "am4", label: "AM4" },
     { value: "tr4", label: "TR4" },
     { value: "am5", label: "AM5" },

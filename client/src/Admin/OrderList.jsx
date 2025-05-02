@@ -24,6 +24,7 @@ function OrderList() {
 
     const [loading, setLoading] = useState(false);
 
+    //Call the function to fetch the orders
     useEffect(() => {
         fetchOrders();
     }, []);
@@ -31,12 +32,13 @@ function OrderList() {
     //fetch all the orders
     const fetchOrders = async (searchTerm = "") => {
         try {
-            const response = await axios.get("http://localhost:8000/api/checkout/payment", {
+            const response = await axios.get(`${backendUrl}/api/checkout/payment`, {
                 params: searchTerm ? { search: searchTerm } : {}
             });
 
-            console.log("API Response:", response.data);
+            console.log("API Response:", response.data);// Log the entire response for debugging
 
+            // Check if the response contains the expected data structure
             if (response.data && Array.isArray(response.data.data)) {
                 const allOrders = response.data.data;
                 setOrders(allOrders);
@@ -60,6 +62,7 @@ function OrderList() {
         try {
             setLoading(true)
             const response = await axios.delete(`${backendUrl}/api/checkout/order/${SelectedOrderId}`);
+
             if (response.data.Success) {
                 toast.success("Order deleted successfully", SelectedOrderId);
                 fetchOrders();
@@ -82,6 +85,7 @@ function OrderList() {
         setOpenDialog(true);
     };
 
+    //Define the columns for the order table
     const orderColumns = [
         { id: "Id", label: "OrderID" },
         { id: "userCard", label: "Customer" },
@@ -91,6 +95,7 @@ function OrderList() {
         { id: "orderStatus", label: "Status" },
     ];
 
+    //Define the icon types and actions for the columns
     const iconTypes = ["view", "delete", "toggle"];
     const iconActions = {
         // view: handleView,

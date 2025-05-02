@@ -86,7 +86,7 @@ function ManageProducts() {
                 params: searchTerm ? { search: searchTerm } : {}
             });
 
-            console.log("API Response:", response.data);
+            console.log("API Response:", response.data);// Debugging
 
             if (response.data && Array.isArray(response.data.data)) {
                 const allProducts = response.data.data.reverse();

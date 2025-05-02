@@ -3,8 +3,8 @@ import Iconset from '../../AtomicComponents/Icons/Iconset';
 import { Typography } from '@mui/material';
 import { toast } from 'sonner';
 
-// Use forwardRef to allow the parent to access internal methods
 const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
+
     const [images, setImages] = useState([])
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef()
@@ -14,9 +14,12 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
         deleteAllImages
     }));
 
+    // Function to trigger file input click
     function selectFiles() {
         fileInputRef.current.click();
     }
+
+    // Function to handle file selection
     function onFileSelect(event) {
         const files = event.target.files;
         if (!files || files.length === 0) return;
@@ -27,8 +30,10 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
         const maxWidth = 1600;
         const maxHeight = 1600;
 
+        // Efficient image loading and validation
         const validationPromises = Array.from(files).map((file) => {
             return new Promise((resolve) => {
+
                 const isValidType = allowedTypes.includes(file.type);
                 const isValidSize = file.size <= maxSize;
 
@@ -59,7 +64,7 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
                 const objectUrl = URL.createObjectURL(file);
                 img.src = objectUrl;
 
-                //Image dimention Validation
+                //Validate Image dimention 
                 img.onload = () => {
                     if (img.width > maxWidth || img.height > maxHeight) {
                         toast.error(`${file.name} exceeds ${maxWidth}x${maxHeight}px.`, {
@@ -68,6 +73,7 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
                                 color: '#fff',
                             },
                         });
+                        //Revoke the object URL to free up memory
                         URL.revokeObjectURL(objectUrl);
                         return resolve(null);
                     }
@@ -79,7 +85,7 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
                     });
                 };
 
-                //Image Load Validation
+                //Validate Image Loading
                 img.onerror = () => {
                     toast.error(`Could not load ${file.name}.`, {
                         style: {
@@ -93,6 +99,7 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
             });
         });
 
+        //Wait for all validations to complete
         Promise.all(validationPromises).then((validImages) => {
             const filtered = validImages
                 .filter((img) => {
@@ -113,7 +120,7 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
                     return true;
                 });
 
-            //Set Image Limit
+            //Set Image Limit to 4
             const updatedImages = [...images, ...filtered].slice(0, 4);
             //Update State
             setImages(updatedImages);
@@ -121,24 +128,29 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
         });
     }
 
+    //Delete a Single image
     function deleteImage(index) {
         const updatedImages = images.filter((_, i) => i !== index);
         setImages(updatedImages);
         onImagesSelect(updatedImages.map((img) => img.file));
     }
+    //Delete all images
     function deleteAllImages() {
         setImages([]);
         onImagesSelect([]);
     }
+    //Drag and Drop function 1
     function onDragOver(event) {
         event.preventDefault()
         setIsDragging(true)
         event.dataTransfer.dropEffect = 'copy'
     }
+    //Drag and Drop function 2
     function onDragLeave(event) {
         event.preventDefault()
         setIsDragging(false)
     }
+    //Drag and Drop function 3
     function onDrop(event) {
         event.preventDefault();
         setIsDragging(false);
@@ -147,10 +159,12 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
     return (
         <div class='card w-auto rounded-md border bg-white border-gray-300 hover:border-gray-500'>
             <div
-                onDragOver={onDragOver}
-                onDragLeave={onDragLeave}
-                onDrop={onDrop}
-                className='drag-area rounded-md bg-gray-100 flex-auto justify-center text-center h-60 select-none text-md'>
+                onDragOver={onDragOver} // Dragging over the area
+                onDragLeave={onDragLeave} // Leaving the area
+                onDrop={onDrop} // Dropping the files
+                className='drag-area rounded-md bg-gray-100 flex-auto justify-center text-center h-60 select-none text-md'
+            >
+                {/* Drag and Drop area */}
                 {isDragging ? (
                     <div className='select justify-center items-center text-center text-violet-900 pt-14 pb-14 cursor-pointer duration-500 hover:opacity-60 border-2 border-purple-600 rounded-md'>
                         <Iconset type='photo' fontSize='100px' color="primary800" />
@@ -170,6 +184,8 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
                 )}
                 <input type='file' name='file' className='hidden' multiple ref={fileInputRef} onChange={onFileSelect} />
             </div>
+
+            {/* Image preview area */}
             <div className='container w-full h-30 max-h-50 flex justify-start items-start overflow-y-auto relative justify-center'>
                 {Array.isArray(images) && images.map((image, index) => (
                     <div key={index} className="image w-28 h-28 mb-4 ml-4 relative mt-4">

@@ -1,17 +1,19 @@
 import { AppProvider } from "@toolpad/core/react-router-dom";
-import { Outlet, useNavigate} from "react-router-dom";
-import React, { useEffect, useState, useMemo } from "react"; 
+import { Outlet, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
 
 import Iconset from './AtomicComponents/Icons/Iconset';
 import theme from './AtomicComponents/theme';
 import axios from 'axios';
 import { toast } from "sonner";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+//Set the base path for the navigation segments
 const addBaseToSegments = (items, basePath) =>
   items.map((item) => {
     if (item.segment) {
-      const newSegment = `${basePath}/${item.segment}`;
+      const newSegment = `${basePath}/${item.segment}`; //add the base path 
       return {
         ...item,
         segment: newSegment,
@@ -23,8 +25,10 @@ const addBaseToSegments = (items, basePath) =>
     return item;
   });
 
+//Define the base path
 const BASE_PATH = 'adminpanel';
 
+//Define the navigation structure
 const NAVIGATION = addBaseToSegments([
   {
     kind: 'header',
@@ -203,23 +207,26 @@ const NAVIGATION = addBaseToSegments([
 
 
 
-
+//Define the AdminApp component
 function AdminApp() {
+
   const [session, setSession] = useState(null);
   const navigate = useNavigate();
 
+  //Fetch the admin data when the component runs
   useEffect(() => {
     const fetchAdminData = async () => {
       const userId = localStorage.getItem("userId");
       if (!userId) return;
 
       try {
-        const res = await axios.get(`http://localhost:8000/api/v1/users/${userId}`, {
+        const res = await axios.get(`${backendUrl}/api/v1/users/${userId}`, {
           withCredentials: true,
         });
 
         const { name, email, profilePicture } = res.data.user;
 
+        //Set the name, email, profilePicture with the fetched data
         setSession({
           user: {
             name,
@@ -228,28 +235,31 @@ function AdminApp() {
           },
         });
       } catch (error) {
-        console.error("Failed to fetch admin data:", error);
+        console.error("Failed to fetch admin data:", error); //Debugging
+
         toast.error("Failed to load admin profile");
       }
     };
 
-    fetchAdminData();
+    fetchAdminData(); //Call the function
   }, []);
 
+  //Handle the sign out process
   const handleSignOut = async () => {
     try {
-      await axios.post(
-        "http://localhost:8000/api/v1/users/logout",
-        {},
+      await axios.post(`${backendUrl}/api/v1/users/logout`, {},
         { withCredentials: true }
       );
 
+      //Clear the session and local storage
       setSession(null);
       localStorage.removeItem("userId");
       localStorage.removeItem("token");
 
       toast.success("Logout successfully");
-      navigate("/");
+
+      navigate("/adminpanel/auth/signup"); //Redirect to the signup page
+
     } catch (error) {
       console.error("Logout failed:", error);
       toast.error("Logout failed");
@@ -258,7 +268,7 @@ function AdminApp() {
 
   const authentication = useMemo(
     () => ({
-      signIn: () => {}, // You can enhance this later
+      signIn: () => { },
       signOut: handleSignOut,
     }),
     []

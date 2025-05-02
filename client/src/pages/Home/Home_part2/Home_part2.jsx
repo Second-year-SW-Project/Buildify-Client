@@ -10,7 +10,7 @@ export default function Home_part2() {
     const fetchPCs = async () => {
       try {
         const response = await axios.get(`${backendUrl}/api/product/filter?attribute=type&value=prebuild`); // Axios fetch
-        setPcs(response.data.slice(0, 8)); // select only  8 items
+        setPcs(response.data.slice(0, 4)); // select only  8 items
       } catch (error) {
         console.error("Error fetching products:", error);
       }
