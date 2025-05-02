@@ -153,7 +153,7 @@ function InvoiceEdit() {
 
     try {
       const response = await axios.put(
-        `${API_URL}/edit/${invoiceId}`,
+        `${backendUrl}/api/invoices/edit/${invoiceId}`,
         invoiceDataToUpdate
       );
       toast.success(response.data.message);

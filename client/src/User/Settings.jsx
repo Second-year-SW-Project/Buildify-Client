@@ -10,6 +10,7 @@ import {
   TextField,
   Button,
   CircularProgress,
+  Divider,
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
@@ -230,232 +231,246 @@ export default function Settings() {
                     borderRadius: 2,
                   }}
                 >
-                  <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
-                    <Typography variant="h5" className="mb-8 font-bold pb-5">
-                      Change Password
-                    </Typography>
-
-                    <form onSubmit={handlePasswordSubmit}>
-                      <Grid container spacing={3}>
-                        <Grid item xs={10}>
-                          <TextField
-                            fullWidth
-                            label="Current Password"
-                            name="currentPassword"
-                            type="password"
-                            value={passwordForm.currentPassword}
-                            onChange={handlePasswordChange}
-                            error={!!errors.password.currentPassword}
-                            helperText={errors.password.currentPassword}
-                            className="h-14"
-                          />
-                        </Grid>
-
-                        <Grid item xs={10} sm={5}>
-                          <TextField
-                            fullWidth
-                            label="New Password"
-                            name="newPassword"
-                            type="password"
-                            value={passwordForm.newPassword}
-                            onChange={handlePasswordChange}
-                            error={!!errors.password.newPassword}
-                            helperText={errors.password.newPassword}
-                            className="h-14"
-                          />
-                        </Grid>
-
-                        <Grid item xs={10} sm={5}>
-                          <TextField
-                            fullWidth
-                            label="Confirm New Password"
-                            name="confirmPassword"
-                            type="password"
-                            value={passwordForm.confirmPassword}
-                            onChange={handlePasswordChange}
-                            error={!!errors.password.confirmPassword}
-                            helperText={errors.password.confirmPassword}
-                            className="h-14"
-                          />
-                        </Grid>
-
-                        <Grid item xs={10}>
-                          <Button
-                            type="submit"
-                            variant="contained"
-                            disabled={loading.password}
-                            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-                            style={{
-                              padding: "14px 18px",
-                              width: "200px",
-                              textTransform: "none",
-                              fontSize: "16px",
-                              borderRadius: "10px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {loading.password ? (
-                              <CircularProgress
-                                size={24}
-                                className="text-white"
-                              />
-                            ) : (
-                              "Change Password"
-                            )}
-                          </Button>
-                        </Grid>
-                      </Grid>
-                    </form>
-                  </Paper>
-
-                  {/* 2FA Section */}
-                  <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
-                    <Typography variant="h5" className="mb-8 font-bold pb-5">
-                      Two-Factor Authentication
-                    </Typography>
-
-                    {user?.is2FAEnabled ? (
-                      <Box>
-                        <Typography className="text-purple-600 mb-4 mt-4">
-                          2FA is currently enabled for your account
-                        </Typography>
-                        <Button
-                          variant="contained"
-                          onClick={handle2FADisable}
-                          disabled={loading.twoFADisable}
-                          className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-                          style={{
-                            padding: "14px 18px",
-                            width: "180px",
-                            textTransform: "none",
-                            fontSize: "16px",
-                            borderRadius: "10px",
-                            fontWeight: "bold",
-                          }}
+                  <h1 className="text-3xl font-bold mt-5 mb-6">
+                    User Settings
+                  </h1>
+                  <Divider />
+                  <Box sx={{ pt: 3 }}>
+                    <Box sx={{ pt: 2, textAlign: "left", pb: 2 }}>
+                      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+                        <Typography
+                          variant="h5"
+                          className="mb-8 font-bold pb-5"
                         >
-                          {loading.twoFADisable ? (
-                            <CircularProgress
-                              size={24}
-                              className="text-white"
-                            />
-                          ) : (
-                            "Disable 2FA"
-                          )}
-                        </Button>
-                      </Box>
-                    ) : (
-                      <Box>
-                        {qrCode ? (
-                          <form onSubmit={handle2FAEnable}>
-                            <Grid container spacing={3} alignItems="center">
-                              <Grid item xs={10} md={5}>
-                                <div
-                                  className="qr-container"
-                                  style={{ position: "relative" }}
-                                >
-                                  <img
-                                    src={qrCode}
-                                    alt="QR Code"
-                                    style={{
-                                      display: "block",
-                                      margin: "0 auto",
-                                      border: "1px solid #eee",
-                                      padding: 8,
-                                    }}
-                                    width="256"
-                                    height="256"
+                          Change Password
+                        </Typography>
+
+                        <form onSubmit={handlePasswordSubmit}>
+                          <Grid container spacing={3}>
+                            <Grid item xs={10}>
+                              <TextField
+                                fullWidth
+                                label="Current Password"
+                                name="currentPassword"
+                                type="password"
+                                value={passwordForm.currentPassword}
+                                onChange={handlePasswordChange}
+                                error={!!errors.password.currentPassword}
+                                helperText={errors.password.currentPassword}
+                                className="h-14"
+                              />
+                            </Grid>
+
+                            <Grid item xs={10} sm={5}>
+                              <TextField
+                                fullWidth
+                                label="New Password"
+                                name="newPassword"
+                                type="password"
+                                value={passwordForm.newPassword}
+                                onChange={handlePasswordChange}
+                                error={!!errors.password.newPassword}
+                                helperText={errors.password.newPassword}
+                                className="h-14"
+                              />
+                            </Grid>
+
+                            <Grid item xs={10} sm={5}>
+                              <TextField
+                                fullWidth
+                                label="Confirm New Password"
+                                name="confirmPassword"
+                                type="password"
+                                value={passwordForm.confirmPassword}
+                                onChange={handlePasswordChange}
+                                error={!!errors.password.confirmPassword}
+                                helperText={errors.password.confirmPassword}
+                                className="h-14"
+                              />
+                            </Grid>
+
+                            <Grid item xs={10}>
+                              <Button
+                                type="submit"
+                                variant="contained"
+                                disabled={loading.password}
+                                className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                                style={{
+                                  padding: "14px 18px",
+                                  width: "200px",
+                                  textTransform: "none",
+                                  fontSize: "16px",
+                                  borderRadius: "10px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {loading.password ? (
+                                  <CircularProgress
+                                    size={24}
+                                    className="text-white"
                                   />
-                                  {loading.twoFAEnable && (
+                                ) : (
+                                  "Change Password"
+                                )}
+                              </Button>
+                            </Grid>
+                          </Grid>
+                        </form>
+                      </Paper>
+
+                      {/* 2FA Section */}
+                      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+                        <Typography
+                          variant="h5"
+                          className="mb-8 font-bold pb-5"
+                        >
+                          Two-Factor Authentication
+                        </Typography>
+
+                        {user?.is2FAEnabled ? (
+                          <Box>
+                            <Typography className="text-purple-600 mb-4 mt-4">
+                              2FA is currently enabled for your account
+                            </Typography>
+                            <Button
+                              variant="contained"
+                              onClick={handle2FADisable}
+                              disabled={loading.twoFADisable}
+                              className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                              style={{
+                                padding: "14px 18px",
+                                width: "180px",
+                                textTransform: "none",
+                                fontSize: "16px",
+                                borderRadius: "10px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {loading.twoFADisable ? (
+                                <CircularProgress
+                                  size={24}
+                                  className="text-white"
+                                />
+                              ) : (
+                                "Disable 2FA"
+                              )}
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Box>
+                            {qrCode ? (
+                              <form onSubmit={handle2FAEnable}>
+                                <Grid container spacing={3} alignItems="center">
+                                  <Grid item xs={10} md={5}>
                                     <div
+                                      className="qr-container"
+                                      style={{ position: "relative" }}
+                                    >
+                                      <img
+                                        src={qrCode}
+                                        alt="QR Code"
+                                        style={{
+                                          display: "block",
+                                          margin: "0 auto",
+                                          border: "1px solid #eee",
+                                          padding: 8,
+                                        }}
+                                        width="256"
+                                        height="256"
+                                      />
+                                      {loading.twoFAEnable && (
+                                        <div
+                                          style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            backgroundColor:
+                                              "rgba(255,255,255,0.8)",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                          }}
+                                        >
+                                          <CircularProgress />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <Typography
+                                      variant="body2"
+                                      className="mt-2 text-center"
+                                    >
+                                      Scan with authenticator app
+                                    </Typography>
+                                  </Grid>
+
+                                  <Grid item xs={10} md={5}>
+                                    <TextField
+                                      fullWidth
+                                      label="Enter 6-digit Code"
+                                      name="token"
+                                      value={twoFAForm.token}
+                                      onChange={handle2FAChange}
+                                      className="h-14"
+                                    />
+                                    <Button
+                                      type="submit"
+                                      variant="contained"
+                                      disabled={loading.twoFAEnable}
+                                      className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
                                       style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 0,
-                                        backgroundColor:
-                                          "rgba(255,255,255,0.8)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
+                                        mt: 2,
+                                        padding: "14px 18px",
+                                        width: "180px",
+                                        textTransform: "none",
+                                        fontSize: "16px",
+                                        borderRadius: "10px",
+                                        fontWeight: "bold",
                                       }}
                                     >
-                                      <CircularProgress />
-                                    </div>
-                                  )}
-                                </div>
-                                <Typography
-                                  variant="body2"
-                                  className="mt-2 text-center"
-                                >
-                                  Scan with authenticator app
-                                </Typography>
-                              </Grid>
-
-                              <Grid item xs={10} md={5}>
-                                <TextField
-                                  fullWidth
-                                  label="Enter 6-digit Code"
-                                  name="token"
-                                  value={twoFAForm.token}
-                                  onChange={handle2FAChange}
-                                  className="h-14"
-                                />
-                                <Button
-                                  type="submit"
-                                  variant="contained"
-                                  disabled={loading.twoFAEnable}
-                                  className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-                                  style={{
-                                    mt: 2,
-                                    padding: "14px 18px",
-                                    width: "180px",
-                                    textTransform: "none",
-                                    fontSize: "16px",
-                                    borderRadius: "10px",
-                                    fontWeight: "bold",
-                                  }}
-                                >
-                                  {loading.twoFAEnable ? (
-                                    <CircularProgress
-                                      size={24}
-                                      className="text-white"
-                                    />
-                                  ) : (
-                                    "Verify and Enable"
-                                  )}
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          </form>
-                        ) : (
-                          <Button
-                            variant="contained"
-                            onClick={generate2FASecret}
-                            disabled={loading.twoFAEnable}
-                            className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-                            style={{
-                              padding: "14px 18px",
-                              width: "180px",
-                              textTransform: "none",
-                              fontSize: "16px",
-                              borderRadius: "10px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {loading.twoFAEnable ? (
-                              <CircularProgress
-                                size={24}
-                                className="text-white"
-                              />
+                                      {loading.twoFAEnable ? (
+                                        <CircularProgress
+                                          size={24}
+                                          className="text-white"
+                                        />
+                                      ) : (
+                                        "Verify and Enable"
+                                      )}
+                                    </Button>
+                                  </Grid>
+                                </Grid>
+                              </form>
                             ) : (
-                              "Set Up 2FA"
+                              <Button
+                                variant="contained"
+                                onClick={generate2FASecret}
+                                disabled={loading.twoFAEnable}
+                                className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+                                style={{
+                                  padding: "14px 18px",
+                                  width: "180px",
+                                  textTransform: "none",
+                                  fontSize: "16px",
+                                  borderRadius: "10px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {loading.twoFAEnable ? (
+                                  <CircularProgress
+                                    size={24}
+                                    className="text-white"
+                                  />
+                                ) : (
+                                  "Set Up 2FA"
+                                )}
+                              </Button>
                             )}
-                          </Button>
+                          </Box>
                         )}
-                      </Box>
-                    )}
-                  </Paper>
+                      </Paper>
+                    </Box>
+                  </Box>
                 </Box>
               </Box>
             </Box>

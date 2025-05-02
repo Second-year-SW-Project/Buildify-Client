@@ -112,7 +112,7 @@ export default function Navbar() {
                   <a href="http://localhost:5173/user/profile" className="block px-4 py-2 hover:bg-blue-400">
                     Profile
                   </a>
-                  <a href="http://localhost:5173/adminpanel/auth/signup" className="block px-4 py-2 hover:bg-blue-400">
+                  <a href="http://localhost:5173/adminpanel/auth/login" className="block px-4 py-2 hover:bg-blue-400">
                     Login
                   </a>
                 </div>
@@ -127,8 +127,8 @@ export default function Navbar() {
       <div className="w-full max-w-[1350px] flex justify-around text-sm font-medium pb-[10px] space-x-6 sm:space-x-4">
         <Link to="/home" className="hover:text-blue-400">Home</Link>
         <Link to="/modeselect" className="hover:text-blue-400">Custom Build</Link>
-        <Link to="/productcategorypage/prebuild" className="hover:text-blue-400">Pre Build</Link>
-        <Link to="/productcategorypage/laptop" className="hover:text-blue-400">Laptops</Link>
+        <a href="/productcategorypage/prebuild" className="hover:text-blue-400">Pre Build</a>
+        <a href="/productcategorypage/laptop" className="hover:text-blue-400">Laptops</a>
 
         {/* Components Dropdown */}
         <div className="relative dropdown-container">
