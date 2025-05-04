@@ -114,7 +114,6 @@ const CreateProducts = () => {
     const keyboardTypeOptions = keyboardAttributes.type;
     const keyboardConnectivityOptions = keyboardAttributes.connectivity;
     //mouseAttributes
-    const mouseTypeOptions = mouseAttributes.type;
     const mouseConnectivityOptions = mouseAttributes.connectivity;
     //monitorAttributes
     const displaySizeOptions = monitorAttributes.displaySize;
@@ -332,7 +331,7 @@ const CreateProducts = () => {
     // Different product types have different required fields
     const validateRequiredFields = (product, isEditMode = false, shouldThrow = false) => {
         const allRequiredFields = {
-            processor: [
+            Processor: [
                 'name',
                 'price',
                 'description',
@@ -349,7 +348,7 @@ const CreateProducts = () => {
                 'integratedGraphics',
                 'includesCooler',
             ],
-            cooling: [
+            Cooling: [
                 'name',
                 'price',
                 'description',
@@ -363,7 +362,7 @@ const CreateProducts = () => {
                 'height',
                 'tdp',
             ],
-            gpu: [
+            Graphic_Card: [
                 'name',
                 'price',
                 'description',
@@ -380,7 +379,7 @@ const CreateProducts = () => {
                 'gpuCores',
 
             ],
-            ram: [
+            Ram: [
                 'name',
                 'price',
                 'description',
@@ -393,7 +392,7 @@ const CreateProducts = () => {
                 'memorySpeed',
                 'tdp',
             ],
-            motherboard: [
+            Motherboard: [
                 'name',
                 'price',
                 'description',
@@ -411,7 +410,7 @@ const CreateProducts = () => {
                 'storageInterfaces',
                 'tdp',
             ],
-            storage: [
+            Storage: [
                 'name',
                 'price',
                 'description',
@@ -423,7 +422,7 @@ const CreateProducts = () => {
                 'storageCapacity',
                 'tdp',
             ],
-            casing: [
+            Casing: [
                 'name',
                 'price',
                 'description',
@@ -436,7 +435,7 @@ const CreateProducts = () => {
                 'maxGpuLength',
                 'maxCoolerHeight',
             ],
-            power: [
+            Power_Supply: [
                 'name',
                 'price',
                 'description',
@@ -448,7 +447,7 @@ const CreateProducts = () => {
                 'efficiencyRating',
                 'modularType',
             ],
-            keyboard: [
+            Keyboard: [
                 'name',
                 'price',
                 'description',
@@ -459,7 +458,7 @@ const CreateProducts = () => {
                 'keyboardType',
                 'connectivity',
             ],
-            mouse: [
+            Mouse: [
                 'name',
                 'price',
                 'description',
@@ -469,7 +468,7 @@ const CreateProducts = () => {
                 'quantity',
                 'connectivity',
             ],
-            laptop: [
+            Laptop: [
                 'name',
                 'price',
                 'description',
@@ -485,7 +484,7 @@ const CreateProducts = () => {
                 'storage',
                 'graphicCard',
             ],
-            monitor: [
+            Monitor: [
                 'name',
                 'price',
                 'description',
@@ -499,7 +498,7 @@ const CreateProducts = () => {
                 'panelType',
                 'monitorType',
             ],
-            prebuild: [
+            Prebuild: [
                 'name',
                 'price',
                 'description',
@@ -523,7 +522,7 @@ const CreateProducts = () => {
                 'storage',
                 'desktopType',
             ],
-            expansion_network: [
+            Expansion_Network: [
                 'name',
                 'price',
                 'description',
@@ -538,13 +537,13 @@ const CreateProducts = () => {
         };
 
         //if the product type is expansion_network pass the component type to the required fields 
-        if (product.type === 'expansion_network') {
+        if (product.type === 'Expansion_Network') {
             if (product.componentType === 'sound_card') {
-                allRequiredFields.expansion_network.push('soundCardChannels');
+                allRequiredFields.Expansion_Network.push('soundCardChannels');
             } else if (product.componentType === 'wired_network_adapter') {
-                allRequiredFields.expansion_network.push('networkSpeed');
+                allRequiredFields.Expansion_Network.push('networkSpeed');
             } else if (product.componentType === 'wireless_network_adapter') {
-                allRequiredFields.expansion_network.push('wifiStandard');
+                allRequiredFields.Expansion_Network.push('wifiStandard');
             }
         }
 
@@ -602,7 +601,7 @@ const CreateProducts = () => {
             }
 
             //Remove processor-specific fields if not a processor(For Checkboxes)
-            if (product.type === 'processor') {
+            if (product.type === 'Processor') {
                 product.integratedGraphics = product.integratedGraphics ?? false;
                 product.includesCooler = product.includesCooler ?? false;
             } else {
@@ -802,7 +801,7 @@ const CreateProducts = () => {
                                         />
                                     </div>
                                 </div>
-                                {selectedSubCategory === 'processor' && (
+                                {selectedSubCategory === 'Processor' && (
                                     <div className="cpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subCpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -897,7 +896,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'motherboard' && (
+                                {selectedSubCategory === 'Motherboard' && (
                                     <div className="motherboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subMotherboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1108,7 +1107,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'ram' && (
+                                {selectedSubCategory === 'Ram' && (
                                     <div className="ramProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subRamProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1158,7 +1157,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'storage' && (
+                                {selectedSubCategory === 'Storage' && (
                                     <div className="storageProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subStorageProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1197,7 +1196,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'gpu' && (
+                                {selectedSubCategory === 'Graphic_Card' && (
                                     <div className="gpuProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subGpuProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1280,7 +1279,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'casing' && (
+                                {selectedSubCategory === 'Casing' && (
                                     <div className="casingProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subCasingProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1331,7 +1330,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'power' && (
+                                {selectedSubCategory === 'Power_Supply' && (
                                     <div className="powerProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subPowerProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1370,7 +1369,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'cooling' && (
+                                {selectedSubCategory === 'Cooling' && (
                                     <div className="coolingProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subCoolingProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1431,7 +1430,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'keyboard' && (
+                                {selectedSubCategory === 'Keyboard' && (
                                     <div className="keyboardProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subKeyboardProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1459,7 +1458,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'mouse' && (
+                                {selectedSubCategory === 'Mouse' && (
                                     <div className="mouseProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subMouseProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1476,7 +1475,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'monitor' && (
+                                {selectedSubCategory === 'Monitor' && (
                                     <div className="monitorProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subMonitorProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1537,7 +1536,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'laptop' && (
+                                {selectedSubCategory === 'Laptop' && (
                                     <div className="laptopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subLaptopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1620,7 +1619,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'prebuild' && (
+                                {selectedSubCategory === 'Prebuild' && (
                                     <div className="desktopProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subDesktopProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
@@ -1790,7 +1789,7 @@ const CreateProducts = () => {
                                         </div>
                                     </div>
                                 )}
-                                {selectedSubCategory === 'expansion_network' && (
+                                {selectedSubCategory === 'Expansion_Network' && (
                                     <div className="expansionNetworkProperty grid gap-4 grid-cols-1 flex flex-row mt-4 mb-4">
                                         <div className="subExpansionNetworkProperty1 grid gap-y-2 gap-x-4 grid-cols-4 flex flex-row">
                                             <div>
