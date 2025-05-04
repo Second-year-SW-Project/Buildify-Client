@@ -13,16 +13,19 @@ export default function SearchResults() {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  
+
   const [error, setError] = useState(null);
   //fetch products for the query
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response1 = await axios.get(`${backendUrl}/api/product/search?query=${query}`);
-        setProducts(response1.data);
-        
-
+        const response1 = await axios.get(`${backendUrl}/api/product/all?query=${query}`);
+        console.log(response1.data.data);
+        if (response1.data.Success) {
+          setProducts(response1.data.data);
+        } else {
+          setError(response1.data.message || "Error fetching search results");
+        }
       } catch (error) {
         setError("Error fetching search results");
       } finally {
@@ -41,26 +44,26 @@ export default function SearchResults() {
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-6"></div>
           <p className="text-xl font-semibold">Loading search results...</p>
         </div>
-        
+
       </div>
     );
   }
-  
+
   if (error) return <p>{error}</p>;
 
   return (
     <div>
 
-        <Navbar></Navbar>
+      <Navbar></Navbar>
       <div className="container mx-auto p-4">
         <br></br>
-        
+
         <h2 className="text-2xl font-semibold mb-4">
           Search results for: {query}
         </h2>
         <br></br>
         <br></br>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {products.map((product) => (
             <ItemCard key={product._id} product={product} />
