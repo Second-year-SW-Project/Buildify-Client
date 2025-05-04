@@ -1,10 +1,4 @@
-// src/utils/scoreCalculator.js
-
-/**
- * Utility for calculating performance scores for PC components
- */
-
-// CPU scoring constants
+//Defines the weights for the CPU scoring
 const CPU_SCORE_WEIGHTS = {
   cores: 10,
   threads: 5,
@@ -12,7 +6,7 @@ const CPU_SCORE_WEIGHTS = {
   boostClock: 20,
 };
 
-// GPU scoring constants
+// GPU scoring constants. Norminalized as suits
 const GPU_SCORE_WEIGHTS = {
   vramGB: 8,
   boostClockMHz: 0.02, // 1/50
@@ -111,7 +105,7 @@ export function calculateRAMScore({ sizeGB, speedMHz, type = 'DDR4' }) {
  * @returns {number} Total system performance score
  */
 export function calculateTotalScore(cpuScore, gpuScore, ramScore) {
-  return parseFloat(((cpuScore * 0.3) + (gpuScore * 0.5) + (ramScore * 0.2)).toFixed(2));
+  return parseFloat(((cpuScore * 0.3) + (gpuScore * 0.5) + (ramScore * 0.2)).toFixed(2));//Normalized as suits
 }
 
 /**
@@ -128,22 +122,28 @@ export function calculatePrebuiltPcScore(prebuilt) {
   };
 
   const gpuData = {
-    vramGB: parseFloat(prebuilt.gpuVramGb) || 0,
-    boostClockMHz: parseFloat(prebuilt.gpuBoostClockMhz) || 0,
+    vramGB: parseFloat(prebuilt.gpuVram) || 0,
+    boostClockMHz: parseFloat(prebuilt.gpuBoostClock) || 0,
     cores: parseFloat(prebuilt.gpuCores) || 0,
     series: prebuilt.gpuSeries || '',
   };
 
+  // Extract RAM size and speed from string values (e.g., "16 GB", "3200 MHz")
+  const ramSize = parseFloat(prebuilt.ramSize?.toString().replace(/[^\d.]/g, '')) || 0;//Cleans up the ram size
+  const ramSpeed = parseFloat(prebuilt.ramSpeed?.toString().replace(/[^\d.]/g, '')) || 0;//Cleans up the ram speed
+  const ramType = prebuilt.ramType?.toUpperCase() || 'DDR4';//Cleans up the ram type
+
   const ramData = {
-    sizeGB: parseFloat(prebuilt.ramSizeGb) || 0,
-    speedMHz: parseFloat(prebuilt.ramSpeedMhz) || 0,
-    type: prebuilt.ramType || 'DDR4',
-  };
+    sizeGB: ramSize,
+    speedMHz: ramSpeed,
+    type: ramType,
+  };//Creates the ram data object
 
   const cpuScore = calculateCPUScore(cpuData);
   const gpuScore = calculateGPUScore(gpuData);
   const ramScore = calculateRAMScore(ramData);
   const totalScore = calculateTotalScore(cpuScore, gpuScore, ramScore);
+  //Calculates the scores for the cpu, gpu and ram. Calls the functions with the data
 
   return {
     cpu: cpuScore,
@@ -159,12 +159,12 @@ export function calculatePrebuiltPcScore(prebuilt) {
  * @returns {string} Normalized GPU series name
  */
 function normalizeGPUSeries(series) {
-  if (!series) return '';
+  if (!series) return '';//If the series is not found, return an empty string
   
-  const upperSeries = series.toUpperCase();
+  const upperSeries = series.toUpperCase();//Converts the series to uppercase
   
-  if (upperSeries.includes('GTX')) return 'GTX';
-  if (upperSeries.includes('RTX 20')) return 'RTX 20';
+  if (upperSeries.includes('GTX')) return 'GTX';//If the series includes GTX, return GTX
+  if (upperSeries.includes('RTX 20')) return 'RTX 20';//If the series includes RTX 20, return RTX 20
   if (upperSeries.includes('RTX 30') || 
       upperSeries.includes('3060') || 
       upperSeries.includes('3070') || 

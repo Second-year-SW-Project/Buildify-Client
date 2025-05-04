@@ -3,21 +3,22 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 
 function SearchBar({ isExpanded, onExpand, onGameSelect }) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [availableGames, setAvailableGames] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');//Stores the search term
+  const [searchResults, setSearchResults] = useState([]);//Stores the search results
+  const [showDropdown, setShowDropdown] = useState(false);//Stores the show dropdown
+  const [availableGames, setAvailableGames] = useState([]);//Stores the available games
+  const [isLoading, setIsLoading] = useState(false);//Stores the loading
+  const [error, setError] = useState(null);//Stores the error
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await axios.get('http://localhost:8000/api/game/games', {
-          timeout: 5000,
-        });
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
+        const response = await axios.get(`${backendUrl}/api/game/games`, {
+          timeout: 5000,//5 seconds timeout
+        });//When isExpanded is true, fetch games from the backend
         if (response.data.success) {
           const transformedGames = response.data.games.map((game) => ({
             id: game._id,
@@ -41,7 +42,7 @@ function SearchBar({ isExpanded, onExpand, onGameSelect }) {
               speedMHz: game.ram.speedMHz,
               type: game.ram.type,
             },
-          }));
+          }));//Transforms the games to the desired format
           setAvailableGames(transformedGames);
         } else {
           setError('Failed to fetch games from server');
@@ -50,15 +51,16 @@ function SearchBar({ isExpanded, onExpand, onGameSelect }) {
         console.error('Error fetching games:', err.message);
         setError('Unable to connect to the server. Please try again later.');
       } finally {
-        setIsLoading(false);
+        setIsLoading(false);//Sets the loading to false
       }
     };
 
     if (isExpanded) {
-      fetchGames();
+      fetchGames();//On expanded, fetch games
     }
   }, [isExpanded]);
 
+  //When the search term changes, filter the games
   useEffect(() => {
     if (searchTerm.trim().length > 0) {
       const filteredResults = availableGames.filter((game) =>
@@ -72,6 +74,7 @@ function SearchBar({ isExpanded, onExpand, onGameSelect }) {
     }
   }, [searchTerm, availableGames]);
 
+  //When a game is selected, set the search term to empty and close the dropdown
   const handleSelectGame = (game) => {
     onGameSelect(game);
     setSearchTerm('');
@@ -113,7 +116,7 @@ function SearchBar({ isExpanded, onExpand, onGameSelect }) {
             className="bg-transparent text-white placeholder-purple-200 outline-none w-full pr-4"
             autoFocus
           />
-        )}
+        )}{/*When the search bar is expanded, show the input field*/}
       </div>
       {isExpanded && showDropdown && (
         <div className="absolute top-full right-0 mt-2 w-64 bg-white shadow-lg rounded-lg z-10 max-h-96 overflow-y-auto">
@@ -136,6 +139,7 @@ function SearchBar({ isExpanded, onExpand, onGameSelect }) {
                     loading="lazy"
                   />
                   <span>{game.name}</span>
+                  {/*Displays the game name*/}
                 </li>
               ))}
             </ul>
