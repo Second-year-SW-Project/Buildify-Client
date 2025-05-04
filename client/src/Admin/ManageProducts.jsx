@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -77,25 +77,30 @@ function ManageProducts() {
         // Add more 
     };
 
+    // Add debounced search
+    const debouncedSearch = useCallback((value) => {
+        setSearchTerm(value);
+    }, []);
+
+    //Fetch products using filters and search term
     useEffect(() => {
         fetchProducts();
-    }, [currentPage, itemsPerPage]); // Add pagination dependencies
+    }, [currentPage, itemsPerPage, searchTerm, statusFilter, selectedDate, selectedMainCategory, selectedSubCategory]);
 
-    //Fetch products using filters
-    useEffect(() => {
-        applyFilters();
-    }, [statusFilter, selectedSubCategory, products, selectedDate]);
-
-    //fetch all the products
-    const fetchProducts = async (searchTerm = "") => {
+    //fetch all the products 
+    const fetchProducts = async () => {
         try {
-            const response = await axios.get(`${backendUrl}/api/product/all`, {
-                params: {
-                    search: searchTerm,
-                    page: currentPage,
-                    limit: itemsPerPage
-                }
-            });
+            setLoading(true);
+            const params = {
+                page: currentPage,
+                limit: itemsPerPage,
+                search: searchTerm,
+                statusFilter: statusFilter,
+                date: selectedDate ? selectedDate.toISOString() : null,
+                subCategory: selectedSubCategory
+            };
+
+            const response = await axios.get(`${backendUrl}/api/product/all`, { params });
 
             console.log("API Response:", response.data);// Debugging
 
@@ -104,7 +109,7 @@ function ManageProducts() {
                 setProducts(allProducts);
                 setTotalPages(response.data.pagination.totalPages); // Set total pages for pagination
                 setTotalProducts(response.data.pagination.total); // Set total products for pagination
-                applyFilters(allProducts);
+                setFilteredProducts(response.data.data);
             } else {
                 console.error("Expected an array but got:", response.data);
                 setProducts([]);
@@ -115,38 +120,9 @@ function ManageProducts() {
             setProducts([]);
             setFilteredProducts([]);
             toast.error("Failed to fetch products");
+        } finally {
+            setLoading(false);
         }
-    };
-
-    //Apply the filters
-    const applyFilters = (allProducts = products, selectedType = selectedSubCategory) => {
-        let filtered = allProducts;
-
-        // Filter by stock status
-        if (statusFilter) {
-            filtered = filtered.filter(product => {
-                if (statusFilter === "In Stock") return product.quantity > 5;
-                if (statusFilter === "Low Stock") return product.quantity > 0 && product.quantity <= 5;
-                if (statusFilter === "Out of Stock") return product.quantity === 0;
-                return true;
-            });
-        }
-
-        // Filter by subcategory options
-        if (selectedType) {
-            filtered = filtered.filter(product => product.type === selectedType);
-        }
-
-        // Filter by Date
-        if (selectedDate) {
-            filtered = filtered.filter(product => {
-                const productDate = new Date(product.updatedAt).toLocaleDateString();
-                const selectedFormatted = new Date(selectedDate).toLocaleDateString();
-                return productDate === selectedFormatted;
-            });
-        }
-
-        setFilteredProducts(filtered);
     };
 
     //Handle edit product function
@@ -315,12 +291,8 @@ function ManageProducts() {
                                 placeholder="Search"
                                 width="100%"
                                 value={searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    fetchProducts(e.target.value);
-                                }}
-                            >
-                            </SearchBar>
+                                onChange={(e) => debouncedSearch(e.target.value)}
+                            />
                         </div>
                         <div className="col-span-2 flex justify">
                             <PrimaryButton
