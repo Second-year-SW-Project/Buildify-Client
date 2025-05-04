@@ -30,6 +30,12 @@ function ManageProducts() {
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState(null);
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
     const navigate = useNavigate();
 
     //Set initial state for selected categories and options
@@ -47,6 +53,7 @@ function ManageProducts() {
         setSelectedSubCategory('');
         setSubCategoryOptions([]);
         setSearchTerm('');
+        setCurrentPage(1);
         fetchProducts();
     };
 
@@ -72,7 +79,7 @@ function ManageProducts() {
 
     useEffect(() => {
         fetchProducts();
-    }, []);
+    }, [currentPage, itemsPerPage]); // Add pagination dependencies
 
     //Fetch products using filters
     useEffect(() => {
@@ -83,14 +90,20 @@ function ManageProducts() {
     const fetchProducts = async (searchTerm = "") => {
         try {
             const response = await axios.get(`${backendUrl}/api/product/all`, {
-                params: searchTerm ? { search: searchTerm } : {}
+                params: {
+                    search: searchTerm,
+                    page: currentPage,
+                    limit: itemsPerPage
+                }
             });
 
             console.log("API Response:", response.data);// Debugging
 
             if (response.data && Array.isArray(response.data.data)) {
-                const allProducts = response.data.data.reverse();
+                const allProducts = response.data.data;
                 setProducts(allProducts);
+                setTotalPages(response.data.pagination.totalPages); // Set total pages for pagination
+                setTotalProducts(response.data.pagination.total); // Set total products for pagination
                 applyFilters(allProducts);
             } else {
                 console.error("Expected an array but got:", response.data);
@@ -209,7 +222,16 @@ function ManageProducts() {
         }
     };
 
+    // Handle page change
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+    };
 
+    // Handle items per page change
+    const handleItemsPerPageChange = (newLimit) => {
+        setItemsPerPage(newLimit);
+        setCurrentPage(1); // Reset to first page when changing items per page
+    };
 
     return (
         <div className='pl-6 grid grid-rows'>
@@ -318,6 +340,14 @@ function ManageProducts() {
                         data={productData}
                         iconTypes={iconTypes}
                         iconActions={iconActions}
+                        pagination={{
+                            currentPage,
+                            totalPages,
+                            totalItems: totalProducts,
+                            itemsPerPage,
+                            onPageChange: handlePageChange,
+                            onItemsPerPageChange: handleItemsPerPageChange
+                        }}
                     />
                 </div>
             </div>

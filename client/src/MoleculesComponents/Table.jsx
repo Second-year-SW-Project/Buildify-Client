@@ -29,26 +29,46 @@ export function UserTable({
   width,
   color,
   idKey = "id",
+  pagination = null,
 }) {
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  // Handle pagination changes
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    if (pagination) {
+      pagination.onPageChange(newPage + 1); // Convert to 1-based index for API
+    } else {
+      setPage(newPage);
+    }
   };
 
+  // Handle rows per page changes
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    if (pagination) {
+      pagination.onItemsPerPageChange(newRowsPerPage);
+    } else {
+      setRowsPerPage(newRowsPerPage);
+      setPage(0);
+    }
   };
+
   const autoSizeCellStyle = {
     padding: "8px 16px", // Ensure consistent padding
     whiteSpace: "nowrap",
     Maxwidth: "50%",
   };
+
   const getIdValue = (obj, key) => {
     return key.split(".").reduce((o, k) => (o ? o[k] : undefined), obj);
   };
+
+  // Use pagination props if provided, otherwise use local state
+  const currentPage = pagination ? pagination.currentPage - 1 : page; // Convert to 0-based index for MUI
+  const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
+  const totalCount = pagination ? pagination.totalItems : data.length;
 
   return (
     <Paper style={{ width: width || "100%" }}>
@@ -74,63 +94,65 @@ export function UserTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => (
-                <TableRow key={index} hover>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      style={{
-                        ...autoSizeCellStyle,
-                        color: color || "black",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {row[column.id]}
-                    </TableCell>
-                  ))}
-                  {iconTypes.length > 0 && (
-                    <TableCell style={autoSizeCellStyle}>
-                      {iconTypes.map((type, idx) => (
-                        <IconButton
-                          key={idx}
-                          disableRipple
-                          onClick={() =>
-                            iconActions[type] &&
-                            iconActions[type](getIdValue(row, idKey))
+            {data.map((row, index) => (
+              <TableRow key={index} hover>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    style={{
+                      ...autoSizeCellStyle,
+                      color: color || "black",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {row[column.id]}
+                  </TableCell>
+                ))}
+                {iconTypes.length > 0 && (
+                  <TableCell style={autoSizeCellStyle}>
+                    {iconTypes.map((type, idx) => (
+                      <IconButton
+                        key={idx}
+                        disableRipple
+                        onClick={() =>
+                          iconActions[type] &&
+                          iconActions[type](getIdValue(row, idKey))
+                        }
+                        translate="3s"
+                        sx={{
+                          "&:hover": {
+                            color: theme.palette.primary.main,
+                            opacity: 0.9,
+                          },
+                        }}
+                      >
+                        <Iconset
+                          type={type}
+                          isOpen={
+                            type === "toggle" ? isRowOpen(row.id) : undefined
                           }
-                          translate="3s"
-                          sx={{
-                            "&:hover": {
-                              color: theme.palette.primary.main, // Change icon color on hover
-                              opacity: 0.9, // Change icon opacity on hover
-                            },
-                          }}
-                        >
-                          <Iconset
-                            type={type}
-                            isOpen={
-                              type === "toggle" ? isRowOpen(row.id) : undefined
-                            }
-                          />
-                        </IconButton>
-                      ))}
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
+                        />
+                      </IconButton>
+                    ))}
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={data.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
+        count={totalCount}
+        rowsPerPage={currentRowsPerPage}
+        page={currentPage}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        labelDisplayedRows={({ from, to, count }) => {
+          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / currentRowsPerPage);
+          return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
+        }}
       />
     </Paper>
   );
@@ -265,7 +287,7 @@ export function OrderTable({
                                 type === "toggle"
                                   ? toggleRow(order._id)
                                   : iconActions[type] &&
-                                    iconActions[type](order._id)
+                                  iconActions[type](order._id)
                               }
                               translate="3s"
                               sx={{
@@ -378,6 +400,7 @@ export function OrderTable({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+
       />
     </Paper>
   );
