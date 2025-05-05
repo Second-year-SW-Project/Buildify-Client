@@ -25,38 +25,38 @@ const InvoiceStatus = [
 
 const subCategories = {
   Necessary: [
-    { value: "Ram", label: "Ram" },
-    { value: "Graphic_Card", label: "Graphic Card" },
-    { value: "Processor", label: "Processors" },
-    { value: "Motherboard", label: "Motherboard" },
-    { value: "Storage", label: "Storages" },
-    { value: "Casing", label: "Casing" },
-    { value: "Power_Supply", label: "Power Supply" },
+    { value: "ram", label: "Ram" },
+    { value: "gpu", label: "Graphic Card" },
+    { value: "processor", label: "Processors" },
+    { value: "motherboard", label: "Motherboard" },
+    { value: "storage", label: "Storages" },
+    { value: "pasing", label: "Casing" },
+    { value: "power", label: "Power Supply" },
   ],
   Optional: [
-    { value: "Cooling", label: "Cooling" },
-    { value: "Keyboard", label: "Keyboard" },
-    { value: "Mouse", label: "Mouse" },
-    { value: "Monitor", label: "Monitor" },
-    { value: "Ups", label: "UPS" },
-    { value: "Expansion_Network", label: "Expansion & Networking" },
-    { value: "Gamepad", label: "Gamepad" },
+    { value: "cooling", label: "Cooling" },
+    { value: "keyboard", label: "Keyboard" },
+    { value: "mouse", label: "Mouse" },
+    { value: "monitor", label: "Monitor" },
+    { value: "ups", label: "UPS" },
+    { value: "expansion_network", label: "Expansion & Networking" },
+    { value: "gamepad", label: "Gamepad" },
   ],
   Common: [
-    { value: "Laptop", label: "Laptop" },
-    { value: "Prebuild", label: "Prebuilds" },
-    { value: "Accessories", label: "Steaming Accessories" },
-    { value: "Externals", label: "External Storage" },
-    { value: "Cables_And_Connectors", label: "Cables & Connectors" },
+    { value: "laptop", label: "Laptop" },
+    { value: "prebuild", label: "Prebuilds" },
+    { value: "accessories", label: "Steaming Accessories" },
+    { value: "externals", label: "External Storage" },
+    { value: "cables_and_connectors", label: "Cables & Connectors" },
   ],
 };
 
 const manufacture = {
-  Processor: [
+  processor: [
     { value: "Intel", label: "Intel" },
     { value: "AMD", label: "AMD" },
   ],
-  Ram: [
+  ram: [
     { value: "Corsair", label: "Corsair" },
     { value: "Team", label: "Team" },
     { value: "GSKILL", label: "GSKILL" },
@@ -64,13 +64,13 @@ const manufacture = {
     { value: "ADATA", label: "ADATA" },
     { value: "Transcend", label: "Transcend" }
   ],
-  Motherboard: [
+  motherboard: [
     { value: "Asus", label: "ASUS" },
     { value: "Gigabyte", label: "Gigabyte" },
     { value: "MSI", label: "MSI" },
     { value: "Colorful", label: "Colorful" },
   ],
-  Graphic_Card: [
+  gpu: [
     { value: "Nvidia", label: "NVIDIA" },
     { value: "AMD", label: "AMD" },
     { value: "MSI", label: "MSI" },
@@ -78,7 +78,7 @@ const manufacture = {
     { value: "Corsair", label: "Corsair" },
     { value: "Asus", label: "ASUS" },
   ],
-  Storage: [
+  storage: [
     { value: "Samsung", label: "Samsung" },
     { value: "Seagate", label: "Seagate" },
     { value: "Corsair", label: "Corsair" },
@@ -88,7 +88,7 @@ const manufacture = {
     { value: "ADATA", label: "ADATA" },
     { value: "Kingston", label: "Kingston" },
   ],
-  Casing: [
+  casing: [
     { value: "Asus", label: "ASUS" },
     { value: "Gigabyte", label: "Gigabyte" },
     { value: "MSI", label: "MSI" },
@@ -99,7 +99,7 @@ const manufacture = {
     { value: "Cooler Master", label: "Cooler Master" },
     { value: "Fractal Design", label: "Fractal Design" },
   ],
-  Power_Supply: [
+  power: [
     { value: "Asus", label: "ASUS" },
     { value: "Corsair", label: "Corsair" },
     { value: "Antec", label: "Antec" },
@@ -109,7 +109,7 @@ const manufacture = {
     { value: "Thermaltake", label: "Thermaltake" },
     { value: "Be Quiet", label: "Be Quiet" },
   ],
-  Cooling: [
+  cooling: [
     { value: "Noctua", label: "Noctua" },
     { value: "Corsair", label: "Corsair" },
     { value: "Bequiet", label: "Be Quiet" },
@@ -120,7 +120,7 @@ const manufacture = {
     { value: "Lian Li", label: "Lian Li" },
     { value: "Antec", label: "Antec" },
   ],
-  Keyboard: [
+  keyboard: [
     { value: "Logitech", label: "Logitech" },
     { value: "HyperX", label: "HyperX" },
     { value: "Corsair", label: "Corsair" },
@@ -128,7 +128,7 @@ const manufacture = {
     { value: "Razer", label: "Razer" },
     { value: "Asus", label: "ASUS" },
   ],
-  Mouse: [
+  mouse: [
     { value: "Asus", label: "ASUS" },
     { value: "MSI", label: "MSI" },
     { value: "Lenovo", label: "Lenovo" },
@@ -141,7 +141,7 @@ const manufacture = {
     { value: "Steelseries", label: "SteelSeries" },
     { value: "Razer", label: "Razer" },
   ],
-  Monitor: [
+  monitor: [
     { value: "Asus", label: "ASUS" },
     { value: "MSI", label: "MSI" },
     { value: "Acer", label: "Acer" },
@@ -152,12 +152,12 @@ const manufacture = {
     { value: "LG", label: "LG" },
     { value: "Gigabyte", label: "Gigabyte" },
   ],
-  Ups: [
+  ups: [
     { value: "APC", label: "APC" },
     { value: "Tripplite", label: "Tripplite" },
     { value: "Cyber Power Pc", label: "CyberPowerPC" },
   ],
-  Expansion_Network: [
+  expansion_network: [
     { value: "Creative", label: "Creative" },
     { value: "Asus", label: "ASUS" },
     { value: "Tp-link", label: "TP-Link" },
@@ -165,13 +165,13 @@ const manufacture = {
     { value: "Realtek", label: "Realtek" },
     { value: "Netgear", label: "Netgear" },
   ],
-  Gamepad: [
+  gamepad: [
     { value: "Logitech", label: "Logitech" },
     { value: "Microsoft", label: "Microsoft" },
     { value: "Sony", label: "Sony" },
     { value: "Razer", label: "Razer" },
   ],
-  Laptop: [
+  laptop: [
     { value: "Dell", label: "Dell" },
     { value: "Lenovo", label: "Lenovo" },
     { value: "HP", label: "HP" },
@@ -180,7 +180,7 @@ const manufacture = {
     { value: "MSI", label: "MSI" },
     { value: "Gigabyte", label: "Gigabyte" },
   ],
-  Prebuild: [
+  prebuild: [
     { value: "Dell", label: "Dell" },
     { value: "HP", label: "HP" },
     { value: "Asus", label: "ASUS" },
