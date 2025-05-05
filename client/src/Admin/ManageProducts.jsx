@@ -77,18 +77,14 @@ function ManageProducts() {
         // Add more 
     };
 
-    // Add debounced search
-    const debouncedSearch = useCallback((value) => {
-        setSearchTerm(value);
-    }, []);
 
     //Fetch products using filters and search term
     useEffect(() => {
-        fetchProducts();
+        fetchProducts(searchTerm);
     }, [currentPage, itemsPerPage, searchTerm, statusFilter, selectedDate, selectedMainCategory, selectedSubCategory]);
 
     //fetch all the products 
-    const fetchProducts = async () => {
+    const fetchProducts = async (searchTerm = "") => {
         try {
             setLoading(true);
             const params = {
@@ -96,7 +92,7 @@ function ManageProducts() {
                 limit: itemsPerPage,
                 search: searchTerm,
                 statusFilter: statusFilter,
-                date: selectedDate ? selectedDate.toISOString() : null,
+                date: selectedDate ? selectedDate.toISOString() : null, // Date format conversion to ISO string
                 subCategory: selectedSubCategory
             };
 
@@ -291,7 +287,10 @@ function ManageProducts() {
                                 placeholder="Search"
                                 width="100%"
                                 value={searchTerm}
-                                onChange={(e) => debouncedSearch(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    fetchOrders(e.target.value);
+                                }}
                             />
                         </div>
                         <div className="col-span-2 flex justify">
