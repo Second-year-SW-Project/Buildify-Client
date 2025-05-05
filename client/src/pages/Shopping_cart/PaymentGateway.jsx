@@ -13,7 +13,7 @@ import axios from "axios";
 
 import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar";
 import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 
 import { loadStripe } from "@stripe/stripe-js";
@@ -31,6 +31,10 @@ const stripePromise = loadStripe(
 ); // Replace with your Stripe publishable key
 
 const PaymentGateway = () => {
+
+  //Backend URL
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const cartItems = useSelector((state) => state.cart.cartItems) || [];
@@ -49,7 +53,7 @@ const PaymentGateway = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/v1/users", {
+        const response = await axios.get(`${backendUrl}/api/v1/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -81,8 +85,8 @@ const PaymentGateway = () => {
         quantity: item.quantity,
         price: item.price,
       }));
-  
-      const response = await fetch("http://localhost:8000/api/checkout/payment", {
+
+      const response = await fetch(`${backendUrl}/api/checkout/payment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,10 +98,10 @@ const PaymentGateway = () => {
           customerName: formData.name,
         }),
       });
-  
+
       const data = await response.json();
       console.log("Server Response:", data);
-  
+
       if (response.ok) {
         Swal.fire({
           title: "Payment Successful 🎉",
@@ -128,7 +132,7 @@ const PaymentGateway = () => {
       setIsProcessing(false);
     }
   };
-  
+
   return (
     <div>
       <Toaster richColors position="top-right" />
