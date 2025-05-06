@@ -130,7 +130,7 @@ function ManageGames() {
                         <PageTitle value="Manage Games" />
                         <CustomBreadcrumbs
                             paths={[
-                                { label: 'Games', href: "/games" },
+                                { label: 'Games', href: "/adminpanel/games/managegames" },
                                 { label: 'Manage Games' },
                             ]}
                         />

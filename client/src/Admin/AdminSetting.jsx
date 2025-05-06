@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useSelector ,useDispatch } from "react-redux";
-import {Box,Paper,Divider,Typography,TextField,Button,Grid,CircularProgress} from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { Box, Paper, Divider, Typography, TextField, Button, Grid, CircularProgress } from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
@@ -52,12 +52,12 @@ export default function AdminSettings() {
   const validatePasswordForm = () => {
 
     const newErrors = {};
-    
+
     if (!passwordForm.currentPassword) {
 
       newErrors.currentPassword = "Current password is required";
     }
-    
+
     if (!passwordForm.newPassword) {
 
       newErrors.newPassword = "New password is required";
@@ -65,7 +65,7 @@ export default function AdminSettings() {
 
       newErrors.newPassword = "Password must be at least 8 characters";
     }
-    
+
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
 
       newErrors.confirmPassword = "Passwords do not match";
@@ -79,7 +79,7 @@ export default function AdminSettings() {
 
     e.preventDefault();
     if (!validatePasswordForm()) return;
-  
+
     setLoading({ ...loading, password: true });
 
     try {
@@ -97,10 +97,10 @@ export default function AdminSettings() {
         }
       );
 
-  
+
       toast.success("Password changed successfully!");
 
-      
+
       setPasswordForm({
         currentPassword: "",
         newPassword: "",
@@ -115,12 +115,12 @@ export default function AdminSettings() {
         setErrors({ password: validationErrors });
 
       } else {
-        
+
         toast.error(errorMessage);
       }
     }
     finally {
-  
+
       setLoading({ ...loading, password: false });
     }
   };
@@ -143,8 +143,8 @@ export default function AdminSettings() {
       const otpUrl = response.data?.otpauth_url || response.data?.qr;
 
       if (!otpUrl) {
-      toast.error("QR code generation failed. Try again.");
-      return;
+        toast.error("QR code generation failed. Try again.");
+        return;
       }
 
       setQrCode(otpUrl);
@@ -185,14 +185,14 @@ export default function AdminSettings() {
           }
         }
       );
-      
+
       toast.success("2FA enabled successfully");
       dispatch(setAuthUser({ ...user, is2FAEnabled: true }));
 
       setTwoFAForm({ token: "" });
       setQrCode("");
 
-     
+
 
     } catch (error) {
 
@@ -241,16 +241,16 @@ export default function AdminSettings() {
 
     <Box className="ml-7 mt-8">
 
-       <div className='mt-3 mb-5'>
+      <div className='mt-3 mb-5'>
 
-                              <PageTitle value="Admin Setting"></PageTitle>
-                              <CustomBreadcrumbs
-                                  paths={[
-                                      { label: 'Admin', href: "/admin/setting" },
-                                      { label: 'Setting' },
-                                  ]} />
+        <PageTitle value="Admin Setting"></PageTitle>
+        <CustomBreadcrumbs
+          paths={[
+            { label: 'Admin', href: "/adminpanel/admin/profile" },
+            { label: 'Setting' },
+          ]} />
 
-                          </div>
+      </div>
 
       {/* Password Change Section */}
       <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
@@ -258,7 +258,7 @@ export default function AdminSettings() {
         <Typography variant="h5" className="mb-8 font-bold pb-5">
           Change Password
         </Typography>
-        
+
         <form onSubmit={handlePasswordSubmit}>
 
           <Grid container spacing={3}>
@@ -342,7 +342,7 @@ export default function AdminSettings() {
         <Typography variant="h5" className="mb-8 font-bold pb-5">
           Two-Factor Authentication
         </Typography>
-        
+
         {user?.is2FAEnabled ? (
           <Box>
 
@@ -356,13 +356,13 @@ export default function AdminSettings() {
               disabled={loading.twoFADisable}
               className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
               style={{
-              padding: "14px 18px",
-              width: "180px",
-              textTransform: "none",
-              fontSize: "16px",
-              borderRadius: "10px",
-              fontWeight: "bold"
-               }}
+                padding: "14px 18px",
+                width: "180px",
+                textTransform: "none",
+                fontSize: "16px",
+                borderRadius: "10px",
+                fontWeight: "bold"
+              }}
             >
 
               {loading.twoFADisable ? (
@@ -438,13 +438,13 @@ export default function AdminSettings() {
                       disabled={loading.twoFAEnable}
                       className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
                       style={{
-                      mt:2,
-                      padding: "14px 18px",
-                      width: "180px",
-                      textTransform: "none",
-                      fontSize: "16px",
-                      borderRadius: "10px",
-                      fontWeight: "bold"
+                        mt: 2,
+                        padding: "14px 18px",
+                        width: "180px",
+                        textTransform: "none",
+                        fontSize: "16px",
+                        borderRadius: "10px",
+                        fontWeight: "bold"
                       }}
                     >
 
@@ -469,14 +469,14 @@ export default function AdminSettings() {
                 onClick={generate2FASecret}
                 disabled={loading.twoFAEnable}
                 className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
-                 style={{
-                 padding: "14px 18px",
-                 width: "180px",
-                 textTransform: "none",
-                 fontSize: "16px",
-                 borderRadius: "10px",
-                 fontWeight: "bold"
-                 }}
+                style={{
+                  padding: "14px 18px",
+                  width: "180px",
+                  textTransform: "none",
+                  fontSize: "16px",
+                  borderRadius: "10px",
+                  fontWeight: "bold"
+                }}
               >
 
                 {loading.twoFAEnable ? (
@@ -493,6 +493,6 @@ export default function AdminSettings() {
       </Paper>
 
     </Box>
-    
+
   );
 }
