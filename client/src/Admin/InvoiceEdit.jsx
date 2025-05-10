@@ -7,13 +7,8 @@ import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
-import {
-  Divider,
-  TextField,
-  Button,
-  Autocomplete,
-  Skeleton,
-} from "@mui/material";
+import dayjs from "dayjs";
+import { Divider, TextField, Button, Autocomplete } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
 import { toast } from "sonner";
@@ -33,8 +28,8 @@ function InvoiceEdit() {
   const [toAddress, setToAddress] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [invoiceStatus, setInvoiceStatus] = useState("");
-  const [dateCreated, setDateCreated] = useState(new Date());
-  const [dueDate, setDueDate] = useState(new Date());
+  const [dateCreated, setDateCreated] = useState(dayjs());
+  const [dueDate, setDueDate] = useState(dayjs());
 
   // Fetch invoice data for editing
   useEffect(() => {
@@ -82,8 +77,8 @@ function InvoiceEdit() {
     if (invoiceData) {
       setInvoiceNumber(invoiceData.invoiceNumber);
       setInvoiceStatus(invoiceData.invoiceStatus);
-      setDateCreated(new Date(invoiceData.dateCreated));
-      setDueDate(new Date(invoiceData.dueDate));
+      setDateCreated(dayjs(invoiceData.dateCreated));
+      setDueDate(dayjs(invoiceData.dueDate));
       setShippingCost(invoiceData.shippingCost);
       setDiscount(invoiceData.discount);
       setFromAddress(invoiceData.fromAddress);

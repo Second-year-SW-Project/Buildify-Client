@@ -21,6 +21,7 @@ export default function RMAsupport() {
 
   const [rmaRequests, setRmaRequests] = useState([]);
 
+  //to pass orderId from URL if there is
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const orderIdFromQuery = params.get("orderId");

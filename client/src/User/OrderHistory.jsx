@@ -23,7 +23,7 @@ export default function OrderHistory() {
     setValue(newValue);
   };
 
-  // Fetch orders for the user, filter only 'Completed' status
+  // Fetch Successful orders for the user
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -42,7 +42,7 @@ export default function OrderHistory() {
 
         if (isMounted) {
           const completedOrders = res.data
-            .filter((order) => order.status === "Completed")
+            .filter((order) => order.status === "Successful")
             .map((order) => {
               const itemCount = order.items.reduce(
                 (total, item) => total + item.quantity,
@@ -145,7 +145,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No completed orders found.</p>
+                        <p>No Successful orders found.</p>
                       )}
                     </TabPanel>
 
@@ -168,7 +168,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No completed builds found.</p>
+                        <p>No Successful build orders found.</p>
                       )}
                     </TabPanel>
 
@@ -190,7 +190,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No completed components found.</p>
+                        <p>No Successful component orders found.</p>
                       )}
                     </TabPanel>
                   </TabContext>

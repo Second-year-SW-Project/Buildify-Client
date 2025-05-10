@@ -110,7 +110,7 @@ export default function MyOrders() {
   }, []);
 
   const filteredOrders = orders
-    .filter((order) => order.status !== "Completed")
+    .filter((order) => order.status !== "Successful")
     .filter((order) => {
       if (value === "1") return true;
       if (value === "2") return order.type === "pc_build";
