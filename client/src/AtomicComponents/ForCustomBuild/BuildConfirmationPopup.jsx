@@ -7,11 +7,11 @@ import { toast } from 'sonner';
 const BuildConfirmationPopup = ({ 
   open, 
   onClose, 
-  selectedComponents,
+  selectedComponents,//Holds the selected components
   onConfirm,
   totalPrice
 }) => {
-  const [buildName, setBuildName] = useState('');
+  const [buildName, setBuildName] = useState('');//Save the build name
 
   const handleConfirm = () => {
     if (!buildName.trim()) {
@@ -41,7 +41,7 @@ const BuildConfirmationPopup = ({
       .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
-  };
+  };//Converts internal keys like "sound_card" to "Sound Card"
 
   if (!open) return null;
 
@@ -154,4 +154,4 @@ BuildConfirmationPopup.propTypes = {
   totalPrice: PropTypes.number.isRequired
 };
 
-export default BuildConfirmationPopup; 
+export default BuildConfirmationPopup;

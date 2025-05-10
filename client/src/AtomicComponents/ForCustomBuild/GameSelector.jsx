@@ -6,10 +6,10 @@ import GameDetailPopup from './GameDetailPopup';
 import { calculateCPUScore, calculateGPUScore, calculateRAMScore, calculateTotalScore } from '../../utils/scoreCalculator';
 
 function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [selectedGame, setSelectedGame] = useState(null);
-  const [showGameDetail, setShowGameDetail] = useState(false);
-  const searchRef = useRef(null);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);//State for the search bar
+  const [selectedGame, setSelectedGame] = useState(null);//State for the selected game
+  const [showGameDetail, setShowGameDetail] = useState(false);//State for the game detail popup
+  const searchRef = useRef(null);//Ref for the search bar
 
   // Calculate highest score
   const highestScore = selectedGames.length > 0 
@@ -26,7 +26,7 @@ function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [searchRef]);
+  }, [searchRef]);//Adds an event listener to the document to close the search bar when the user clicks outside of it
 
   const handleGameSelectInternal = (game) => {
     const cpuScore = calculateCPUScore(game.cpu);
@@ -42,19 +42,19 @@ function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
         ram: ramScore,
         total: totalScore
       }
-    };
-    onGameSelect(gameWithScores);
-    setIsSearchExpanded(false);
+    };//Enhances the game object with the scores
+    onGameSelect(gameWithScores);//Passes the game with the scores to the parent component
+    setIsSearchExpanded(false);//Closes the search bar
   };
 
   const handleGameCardClick = (game) => {
     setSelectedGame(game);
     setShowGameDetail(true);
-  };
+  };//Handles the game card click
 
   const handleCloseDetail = () => {
     setShowGameDetail(false);
-  };
+  };//Handles the close detail
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6">

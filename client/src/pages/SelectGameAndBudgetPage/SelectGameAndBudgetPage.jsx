@@ -9,12 +9,12 @@ import Footer from '../../MoleculesComponents/User_navbar_and_footer/Footer';
 import PrebuiltPcPopup from '../../AtomicComponents/ForCustomBuild/PrebuiltPcPopup';
 
 function SelectGameAndBudgetPage() {
-  const [budget, setBudget] = useState(800000);
-  const [selectedGames, setSelectedGames] = useState([]);
-  const [showPrebuiltPopup, setShowPrebuiltPopup] = useState(false);
-  const [prebuiltPcs, setPrebuiltPcs] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [budget, setBudget] = useState(800000);//Initial budget
+  const [selectedGames, setSelectedGames] = useState([]);//Initial selected games
+  const [showPrebuiltPopup, setShowPrebuiltPopup] = useState(false);//Initial show prebuilt popup
+  const [prebuiltPcs, setPrebuiltPcs] = useState([]);//Initial prebuilt PCs
+  const [loading, setLoading] = useState(false);//Initial loading
+  const [error, setError] = useState(null);//Initial error
 
   const handleBudgetChange = (newBudget) => {
     setBudget(newBudget);
@@ -24,11 +24,11 @@ function SelectGameAndBudgetPage() {
     if (!selectedGames.some((g) => g.id === game.id)) {
       setSelectedGames([...selectedGames, game]);
     }
-  };
+  };//Handles the game select
 
   const handleRemoveGame = (gameId) => {
     setSelectedGames(selectedGames.filter((game) => game.id !== gameId));
-  };
+  };//Handles the game remove
 
   const handleApply = async () => {
     if (selectedGames.length === 0) {
@@ -39,7 +39,7 @@ function SelectGameAndBudgetPage() {
           color: '#fff',
           fontSize: '16px',
           fontWeight: 'bold',
-        },
+        },//Toast style
       });
       return;
     }
@@ -49,7 +49,8 @@ function SelectGameAndBudgetPage() {
 
     try {
       const highestGameScore = Math.max(...selectedGames.map((game) => game.scores.total));
-      const response = await axios.get('http://localhost:8000/api/product/all');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const response = await axios.get(`${backendUrl}/api/product/all`);//Fetch all products
       if (response.data.Success) {
         const allProducts = response.data.data;
         const prebuilds = allProducts.filter((product) => product.type === 'prebuild');
@@ -93,6 +94,7 @@ function SelectGameAndBudgetPage() {
         </div>
       </div>
       <Footer />
+      {/*Conditional rendering for the prebuilt popup, loading and error*/}
       {showPrebuiltPopup && (
         <PrebuiltPcPopup
           prebuiltPcs={prebuiltPcs}

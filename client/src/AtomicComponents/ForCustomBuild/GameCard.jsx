@@ -9,7 +9,7 @@ function GameCard({ game, onClick, onRemove }) {
           src={game.image}
           alt={game.name}
           className="object-cover w-full h-full"
-          loading="lazy"
+          loading="lazy"//Deferring image loading until it is needed
         />
       </div>
       <h3 className="font-medium truncate mt-auto" onClick={onClick}>{game.name}</h3>
