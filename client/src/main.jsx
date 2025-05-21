@@ -33,6 +33,7 @@ import ManageGames from "./Admin/ManageGames.jsx";
 import OrderList from "./Admin/OrderList.jsx";
 import ReceivedOrders from "./Admin/ReceivedOrders.jsx";
 import Comment from "./Admin/Comment.jsx";
+import ViewOrder from "./Admin/ViewOrder.jsx";
 //Login pages
 import Signup from "./Login/Signup.jsx";
 import Login from "./Login/Login.jsx";
@@ -104,9 +105,13 @@ const router = createBrowserRouter([
             path: "products/createproduct",
             children: [
               { index: true, element: <CreateProducts /> },
-              { path: ":id", element: <CreateProducts /> },
             ],
           },
+          {
+            path: "products/editproduct/:id",
+            element: <CreateProducts />,
+          },
+          { path: "orders", element: <OrderList /> },
           {
             path: "orders/orderlist",
             children: [
@@ -120,6 +125,10 @@ const router = createBrowserRouter([
               { index: true, element: <ReceivedOrders /> },
               { path: ":id", element: <ReceivedOrders /> },
             ],
+          },
+          {
+            path: "orders/vieworder/:id",
+            element: <ViewOrder />
           },
           { path: "usermanage", element: <Usermanage /> },
           { path: "feedbackmanage", element: <Complaints /> },
@@ -189,7 +198,6 @@ createRoot(root).render(
     <PersistGate loading={null} persistor={persistor}>
       <ThemeProvider theme={theme}>
         <Toaster />
-
         <StrictMode>
           <RouterProvider router={router} />
         </StrictMode>

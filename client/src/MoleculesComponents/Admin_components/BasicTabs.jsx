@@ -5,16 +5,17 @@ import Box from '@mui/material/Box';
 import theme from '../../AtomicComponents/theme';
 import { styled } from '@mui/material/styles';
 
-const statusOptions = ['All', 'Pending', 'Shipped', 'Successful', 'Refunded', 'Canceled'];
+const statusOptions = ['All', 'Pending', 'Shipped', 'Successful', 'Delivered', 'Refunded', 'Canceled'];
 
 // Define unique colors for each status
 const statusColors = {
-    All: theme.palette.black900.main,
+    All: theme.palette.primary400.main,
     Pending: theme.palette.warning.main,
     Successful: theme.palette.success.main,
-    Refunded: theme.palette.info.main,
+    Refunded: theme.palette.ternary.main,
     Canceled: theme.palette.error.main,
-    Shipped: theme.palette.primary.main,
+    Shipped: theme.palette.info.main,
+    Delivered: theme.palette.primary.main,
 };
 
 const CountBox = styled(Box, {

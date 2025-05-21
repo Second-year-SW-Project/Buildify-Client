@@ -13,6 +13,8 @@ import { PrimaryButton } from "../AtomicComponents/Buttons/Buttons";
 import OrderStatusTabs from '../MoleculesComponents/Admin_components/BasicTabs';
 import { Box, Tabs, Tab } from '@mui/material';
 import Divider from '@mui/material/Divider';
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
+import { useNavigation } from '../MoleculesComponents/Admin_components/NavigationContext';
 
 // Add debounce function to limit the number of API calls
 const debounce = (func, wait) => {
@@ -30,6 +32,9 @@ const debounce = (func, wait) => {
 };
 
 function OrderList() {
+
+    const navigate = useNavigate();
+
     //Backend URL
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -50,12 +55,22 @@ function OrderList() {
 
     const [loading, setLoading] = useState(false);
 
+    const { showOrderView, selectedTab, setSelectedTab } = useNavigation();
+
+    // Set initial status from selectedTab when component mounts
+    useEffect(() => {
+        if (selectedTab) {
+            setStatus(selectedTab);
+        }
+    }, [selectedTab]);
+
     //Clear filters function
     const clearFilters = () => {
         setSelectedDate(null);
         setSearchTerm('');
         setOrderIdSearch('');
         setStatus('');
+        setSelectedTab(''); // Clear the selected tab
         setCurrentPage(1);
     };
 
@@ -69,7 +84,7 @@ function OrderList() {
                 date: selectedDate ? selectedDate.toISOString() : null,
                 search: searchTerm,
                 orderId: orderIdSearch,
-                status: status
+                status: selectedTab || status
             };
 
             const response = await axios.get(`${backendUrl}/api/checkout/payment`, { params });
@@ -98,18 +113,24 @@ function OrderList() {
         debounce(() => {
             fetchOrders(); // Call the fetchOrders function with the current parameters
         }, 300),
-        [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status]
+        [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status, selectedTab] // Add selectedTab to dependencies
     );
 
     //Call the function to fetch the orders when the component mounts or dependencies change
     useEffect(() => {
         debouncedFetchOrders(); // Call the debounced function
-    }, [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status]);
+    }, [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status, selectedTab]); // Add selectedTab to dependencies
+
+    //Handle edit product function
+    const handleView = (id) => {
+        showOrderView(id);
+        navigate(`/adminpanel/orders/vieworder/${id}`);
+    };
+
 
     //Delete order function
     const handleDelete = async () => {
         try {
-            setLoading(true)
             const response = await axios.delete(`${backendUrl}/api/checkout/order/${SelectedOrderId}`);
 
             if (response.data.Success) {
@@ -121,7 +142,6 @@ function OrderList() {
         } catch (error) {
             toast.error("Failed to delete Order");
         } finally {
-            setLoading(false)
             setOpenDialog(false);
         }
     };
@@ -146,6 +166,7 @@ function OrderList() {
     //Define the icon types and actions for the columns
     const iconTypes = ["view", "delete", "toggle"];
     const iconActions = {
+        view: (_id) => handleView(_id),
         delete: (_id) => {
             openDeleteDialog(_id);
         }
@@ -170,6 +191,7 @@ function OrderList() {
 
     return (
         <div className='pl-6 grid grid-rows'>
+            <FullScreenLoader open={loading} message={'Loading Data...'} />
             <div className='mt-3'>
                 <PageTitle value="Order List"></PageTitle>
                 <CustomBreadcrumbs
@@ -182,8 +204,11 @@ function OrderList() {
                 <div className="mt-5 mb-10 mr-4 border-2 border-black-200 rounded-md">
                     {/* Status Tabs */}
                     <OrderStatusTabs
-                        status={status}
-                        setStatus={setStatus}
+                        status={selectedTab || status}
+                        setStatus={(newStatus) => {
+                            setStatus(newStatus);
+                            setSelectedTab(newStatus);
+                        }}
                         statusCounts={statusCounts}
                     />
                     <Divider sx={{ marginLeft: "2px" }} />

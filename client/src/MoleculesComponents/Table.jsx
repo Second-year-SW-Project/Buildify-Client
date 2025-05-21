@@ -181,9 +181,10 @@ export function OrderTable({
   const statusColorMap = {
     Successful: "success",
     Pending: "warning",
-    Refunded: "info",
+    Refunded: "ternary",
     Canceled: "error",
-    Shipped: "primary",
+    Shipped: "info",
+    Delivered: "primary"
   };
 
   const [page, setPage] = React.useState(0);
@@ -305,6 +306,9 @@ export function OrderTable({
                         sx={{
                           padding: "5px",
                           height: "30px",
+                          width: "100px",
+                          textAlign: "center",
+                          fontWeight: "bold",
                         }}
                       />
                     </TableCell>
