@@ -7,13 +7,14 @@ import { toast } from 'sonner';
 const BuildConfirmationPopup = ({ 
   open, 
   onClose, 
-  selectedComponents,//Holds the selected components
+  selectedComponents,
   onConfirm,
   totalPrice
 }) => {
-  const [buildName, setBuildName] = useState('');//Save the build name
+  const [buildName, setBuildName] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!buildName.trim()) {
       toast.error("Please enter a name for your build", {
         duration: 3000,
@@ -26,22 +27,83 @@ const BuildConfirmationPopup = ({
       });
       return;
     }
-    onConfirm(buildName);
+
+    try {
+      setIsSaving(true);
+      
+      // Calculate total price
+      const componentsPrice = Object.values(selectedComponents).reduce((sum, component) => {
+        if (Array.isArray(component)) {
+          return sum + component.reduce((subSum, item) => {
+            const price = parseFloat(item.price?.toString().replace(/[^0-9.]/g, '') || '0');
+            return subSum + price;
+          }, 0);
+        }
+        const price = parseFloat(component.price?.toString().replace(/[^0-9.]/g, '') || '0');
+        return sum + price;
+      }, 0);
+
+      // Calculate service charge (5%)
+      const serviceCharge = componentsPrice * 0.05;
+      const totalCharge = componentsPrice + serviceCharge;
+
+      // Prepare components array with new structure
+      const components = Object.entries(selectedComponents).map(([type, component]) => {
+        if (Array.isArray(component)) {
+          return component.map(item => ({
+            componentId: item._id,
+            quantity: 1
+          }));
+        }
+        return [{
+          componentId: component._id,
+          quantity: 1
+        }];
+      }).flat();
+
+      // Prepare build data with new structure
+      const buildData = {
+        name: buildName,
+        image: selectedComponents.Case?.image || '',
+        components: components,
+        componentsPrice: componentsPrice,
+        serviceCharge: serviceCharge,
+        totalCharge: totalCharge,
+        buildStatus: "pending",
+        published: false,
+        stepTimestamps: {
+          Pending: new Date()
+        }
+      };
+
+      onConfirm(buildData);
+    } catch (error) {
+      console.error("Error preparing build data:", error);
+      toast.error("Failed to prepare build data. Please try again.", {
+        duration: 5000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // Function to format component type names
   const formatComponentType = (type) => {
-    // Handle expansion network types
     if (type === 'sound_card') return 'Sound Card';
     if (type === 'wired_network_adapter') return 'Wired Network Adapter';
     if (type === 'wireless_network_adapter') return 'Wireless Network Adapter';
     
-    // Handle other component types
     return type
       .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
-  };//Converts internal keys like "sound_card" to "Sound Card"
+  };
 
   if (!open) return null;
 
@@ -75,7 +137,6 @@ const BuildConfirmationPopup = ({
         <div className="flex-1 overflow-y-auto pr-2">
           <div className="space-y-4">
             {Object.entries(selectedComponents).map(([type, component]) => {
-              // Skip expansion cards/networking if empty
               if (type === 'Expansion Cards/Networking' && !component) return null;
 
               return (
@@ -122,22 +183,34 @@ const BuildConfirmationPopup = ({
 
         {/* Footer */}
         <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="flex justify-between items-center">
-            <div className="text-lg font-bold text-[#191B2A]">Total Price:</div>
-            <div className="text-xl font-bold text-[#191B2A]">LKR {totalPrice.toFixed(2)}</div>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <div className="text-lg font-bold text-[#191B2A]">Components Price:</div>
+              <div className="text-xl font-bold text-[#191B2A]">LKR {totalPrice.toFixed(2)}</div>
+            </div>
+            <div className="flex justify-between items-center text-gray-600">
+              <div>Service Charge (5%):</div>
+              <div>LKR {(totalPrice * 0.05).toFixed(2)}</div>
+            </div>
+            <div className="flex justify-between items-center text-lg font-bold text-[#191B2A] border-t pt-2">
+              <div>Total Charge:</div>
+              <div>LKR {(totalPrice + (totalPrice * 0.05)).toFixed(2)}</div>
+            </div>
           </div>
           <div className="mt-4 flex justify-end space-x-4">
             <button
               onClick={onClose}
               className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+              disabled={isSaving}
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
-              className="px-6 py-2 bg-[#a036b2] text-white rounded-md hover:bg-[#8a2da0] transition-colors"
+              className="px-6 py-2 bg-[#a036b2] text-white rounded-md hover:bg-[#8a2da0] transition-colors disabled:opacity-50"
+              disabled={isSaving}
             >
-              Save Build
+              {isSaving ? 'Saving...' : 'Save Build'}
             </button>
           </div>
         </div>
