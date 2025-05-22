@@ -91,18 +91,18 @@ export default function ReviewSubmitPage() {
   };
 
   // Update order status to complete upon review submission
-  const markAsCompleted = async (orderId) => {
+  const markAsSuccessful = async (orderId) => {
     try {
       await axios.patch(
         `${backendUrl}/api/checkout/product-orders/${orderId}`,
-        { status: "Completed" },
+        { status: "Successful" },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-      console.log(`Order ${orderId} marked as Completed`);
+      console.log(`Order ${orderId} marked as Successful!`);
     } catch (error) {
       console.error("Failed to update order status", error);
     }
@@ -145,7 +145,7 @@ export default function ReviewSubmitPage() {
 
       toast.success("Review submitted successfully!");
       console.log("Review submitted:", response.data);
-      markAsCompleted(orderId);
+      markAsSuccessful(orderId);
       navigate(`/user/orders`);
     } catch (error) {
       const message =
@@ -199,8 +199,6 @@ export default function ReviewSubmitPage() {
                         alt={itemName}
                         className="w-48 h-48 rounded-lg object-cover mb-4"
                       />
-                      {/* <Typography>Order ID: {orderId}</Typography>
-                      <Typography>Type: {type}</Typography> */}
                     </Box>
 
                     <Box sx={{ flex: 2, width: { xs: "100%", md: "auto" } }}>

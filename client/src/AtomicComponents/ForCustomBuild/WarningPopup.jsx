@@ -59,7 +59,7 @@ const WarningPopup = ({ onClose, messages, type = 'warning' }) => {
         <div className={`flex-1 overflow-y-auto ${styles.textColor} pr-2`}>
           <div className="space-y-4">
             {uniqueMessages.map((message, index) => (
-              <div key={index} className="flex items-start space-x-4 p-3 rounded-md bg-white bg-opacity-50">
+              <div key={index} className="flex items-start space-x-4 p-3 rounded-md">
                 <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-opacity-20 bg-current text-sm font-semibold">
                   {index + 1}
                 </span>

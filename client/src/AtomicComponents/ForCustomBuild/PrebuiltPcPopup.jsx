@@ -4,12 +4,28 @@ import { calculatePrebuiltPcScore } from '../../utils/scoreCalculator';
 import { toast } from 'sonner';
 
 function PrebuiltPcPopup({ prebuiltPcs, budget, highestGameScore, onClose }) {
+  console.log('PrebuiltPcPopup Props:', { prebuiltPcs, budget, highestGameScore });
+  
   const filteredPrebuilds = prebuiltPcs
     .map((pc) => {
       const scores = calculatePrebuiltPcScore(pc);
+      console.log('PC Scores:', { pc: pc.name, scores });
       return { ...pc, scores };
     })
-    .filter((pc) => pc.scores.total >= highestGameScore && pc.price <= budget);
+    .filter((pc) => {
+      const meetsRequirements = pc.scores.total >= highestGameScore && pc.price <= budget;
+      console.log('PC Filter:', { 
+        pc: pc.name, 
+        totalScore: pc.scores.total, 
+        highestGameScore, 
+        price: pc.price, 
+        budget,
+        meetsRequirements 
+      });
+      return meetsRequirements;
+    });
+
+  console.log('Filtered Prebuilds:', filteredPrebuilds);
 
   const handleAddToCart = (pc) => {
     console.log(`Added to cart: ${pc.name} (ID: ${pc._id})`);
@@ -26,7 +42,7 @@ function PrebuiltPcPopup({ prebuiltPcs, budget, highestGameScore, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto p-6 border-2 border-[#D099FE9C] shadow-lg">
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[80vh] overflow-y-auto p-6 border-2 border-[#D099FE9C] shadow-lg [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-2xl font-bold text-purple-800">Recommended Prebuilt PCs</h2>
           <button
@@ -64,14 +80,14 @@ function PrebuiltPcPopup({ prebuiltPcs, budget, highestGameScore, onClose }) {
                       />
                     )}
                     <div className="text-left">
-                      <div className="bg-[#d9a8ff1C] text-black -mx-4 my-2 p-2">
-                        <h3 className="text-xl font-semibold">{pc.name}</h3>
+                      <div className="text-left">
+                        <h3 className="text-xl font-semibold text-purple-800">{pc.name}</h3>
+                        <p className="text-lg font-bold text-gray-900 my-1">Price: {pc.price.toLocaleString()} LKR</p>
+                        <p className="text-md text-purple-700">Total Score: {pc.scores.total.toFixed(2)}</p>
+                        <p className="text-sm text-gray-600">
+                          CPU: {pc.scores.cpu.toFixed(2)} | GPU: {pc.scores.gpu.toFixed(2)} | RAM: {pc.scores.ram.toFixed(2)}
+                        </p>
                       </div>
-                      <p className="text-lg font-bold text-gray-900 my-1">Price: {pc.price.toLocaleString()} LKR</p>
-                      <p className="text-md text-purple-700">Total Score: {pc.scores.total.toFixed(2)}</p>
-                      <p className="text-sm text-gray-600">
-                        CPU: {pc.scores.cpu.toFixed(2)} | GPU: {pc.scores.gpu.toFixed(2)} | RAM: {pc.scores.ram.toFixed(2)}
-                      </p>
                     </div>
                   </div>
                   <button
