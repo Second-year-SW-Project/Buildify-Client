@@ -175,6 +175,7 @@ export function InputField({
         value={value}
         disabled={disabled}
         error={!!error}
+        size={size}
         helperText={
           showRequiredHelper && !value
             ? <span style={{ color: "red", fontWeight: 500, fontStyle: 'italic' }}>*Required</span>
