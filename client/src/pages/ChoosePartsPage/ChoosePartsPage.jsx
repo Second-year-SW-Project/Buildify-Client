@@ -10,6 +10,7 @@ import BuildConfirmationPopup from "../../AtomicComponents/ForCustomBuild/BuildC
 import { checkCompatibility } from "../../utils/compatibilityChecker";
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const ChooseParts = () => {
   // State for warnings/messages
@@ -27,6 +28,8 @@ const ChooseParts = () => {
   // State for confirmation popup
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
 
+  const user = useSelector((state) => state.auth.user);
+
   // Listen for changes in the PartsTable component
   const handleComponentsChanged = useCallback((components) => {
     setSelectedComponents(components);
@@ -38,6 +41,20 @@ const ChooseParts = () => {
 
   // Function to handle "Finish" button click
   const handleFinishAndAddToQuote = () => {
+    // Check if user is logged in
+    if (!user) {
+      toast.error("Please log in to save your build", {
+        duration: 3000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+      return;
+    }
+
     // Required components (excluding expansion cards/networking)
     const requiredComponents = [
       'CPU',
@@ -73,57 +90,22 @@ const ChooseParts = () => {
   };
 
   // Function to handle build confirmation
-  const handleBuildConfirm = async (buildName) => {
+  const handleBuildConfirm = async (buildData) => {
     try {
-      // Calculate total price
-      const totalPrice = Object.values(selectedComponents).reduce((sum, component) => {
-        if (Array.isArray(component)) {
-          return sum + component.reduce((subSum, item) => {
-            const price = parseFloat(item.price?.toString().replace(/[^0-9.]/g, '') || '0');
-            return subSum + price;
-          }, 0);
-        }
-        const price = parseFloat(component.price?.toString().replace(/[^0-9.]/g, '') || '0');
-        return sum + price;
-      }, 0);
-
-      // Prepare components array
-      const components = Object.entries(selectedComponents).map(([type, component]) => {
-        if (Array.isArray(component)) {
-          return component.map(item => ({
-            componentName: item.name,
-            type: type,
-            quantity: 1,
-            price: parseFloat(item.price?.toString().replace(/[^0-9.]/g, '') || '0'),
-            image: item.image,
-            _id: item._id
-          }));
-        }
-        return [{
-          componentName: component.name,
-          type: type,
-          quantity: 1,
-          price: parseFloat(component.price?.toString().replace(/[^0-9.]/g, '') || '0'),
-          image: component.image,
-          _id: component._id
-        }];
-      }).flat();
-
-      // Prepare build data
-      const buildData = {
-        name: buildName,
-        type: "custom",
-        image: selectedComponents.Case.image,
-        components: components,
-        totalPrice: totalPrice
-      };
-
       // Save build to database
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const response = await axios.post(`${backendUrl}/api/build/builds`, buildData);
 
       if (response.data.success) {
-        toast.success("Build saved successfully!");//Default success message
+        toast.success("Build saved successfully!", {
+          duration: 3000,
+          style: {
+            background: '#a036b2',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: 'bold',
+          },
+        });
         setShowConfirmationPopup(false);
       } else {
         throw new Error(response.data.message || "Failed to save build");

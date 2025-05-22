@@ -114,12 +114,15 @@ export function calculateTotalScore(cpuScore, gpuScore, ramScore) {
  * @returns {Object} Component scores and total score
  */
 export function calculatePrebuiltPcScore(prebuilt) {
+  console.log('Calculating scores for PC:', prebuilt.name);
+  
   const cpuData = {
     cores: parseFloat(prebuilt.cpuCores) || 0,
     threads: parseFloat(prebuilt.cpuThreads) || 0,
     baseClock: parseFloat(prebuilt.cpuBaseClock) || 0,
     boostClock: parseFloat(prebuilt.cpuBoostClock) || 0,
   };
+  console.log('CPU Data:', cpuData);
 
   const gpuData = {
     vramGB: parseFloat(prebuilt.gpuVram) || 0,
@@ -127,23 +130,26 @@ export function calculatePrebuiltPcScore(prebuilt) {
     cores: parseFloat(prebuilt.gpuCores) || 0,
     series: prebuilt.gpuSeries || '',
   };
+  console.log('GPU Data:', gpuData);
 
   // Extract RAM size and speed from string values (e.g., "16 GB", "3200 MHz")
-  const ramSize = parseFloat(prebuilt.ramSize?.toString().replace(/[^\d.]/g, '')) || 0;//Cleans up the ram size
-  const ramSpeed = parseFloat(prebuilt.ramSpeed?.toString().replace(/[^\d.]/g, '')) || 0;//Cleans up the ram speed
-  const ramType = prebuilt.ramType?.toUpperCase() || 'DDR4';//Cleans up the ram type
+  const ramSize = parseFloat(prebuilt.ramSize?.toString().replace(/[^\d.]/g, '')) || 0;
+  const ramSpeed = parseFloat(prebuilt.ramSpeed?.toString().replace(/[^\d.]/g, '')) || 0;
+  const ramType = prebuilt.ramType?.toUpperCase() || 'DDR4';
 
   const ramData = {
     sizeGB: ramSize,
     speedMHz: ramSpeed,
     type: ramType,
-  };//Creates the ram data object
+  };
+  console.log('RAM Data:', ramData);
 
   const cpuScore = calculateCPUScore(cpuData);
   const gpuScore = calculateGPUScore(gpuData);
   const ramScore = calculateRAMScore(ramData);
   const totalScore = calculateTotalScore(cpuScore, gpuScore, ramScore);
-  //Calculates the scores for the cpu, gpu and ram. Calls the functions with the data
+  
+  console.log('Calculated Scores:', { cpuScore, gpuScore, ramScore, totalScore });
 
   return {
     cpu: cpuScore,

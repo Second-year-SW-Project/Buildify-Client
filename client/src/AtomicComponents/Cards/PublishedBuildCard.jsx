@@ -1,45 +1,59 @@
-import React from "react";
-import { Card, CardContent, Avatar } from "@mui/material";
+import { Card } from "@mui/material";
+import PropTypes from "prop-types";
 
-const PublishedBuildCard = ({
-  image,
-  buildName,
-  username,
-  userIcon,
-  description,
-  score,
-}) => {
+const PublishedBuildCard = ({ buildName, image, createdAt, components }) => {
+  const imageUrl = image || "https://buildmypc.lk/wp-content/uploads/2024/05/Amethyst-GAming-PC-Build-MY-PC-600x600.jpg";
+  const formattedDate = createdAt ? new Date(createdAt).toLocaleDateString() : "N/A";
+
   return (
-    <Card className="rounded-3xl shadow-lg bg-white w-60 overflow-hidden mb-4">
-      {/* Image Section */}
-      <div className="relative">
-        <img src={image} alt={buildName} className="w-full h-48 object-cover" />
+    <Card className="p-4 sm:p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 bg-white border-2 border-[#D099FE9C] w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto min-h-[260px] flex flex-col items-center justify-center">
+      <img
+        src={imageUrl}
+        alt={buildName}
+        className="w-24 h-24 sm:w-32 sm:h-32 object-contain rounded-lg mb-3 sm:mb-4"
+      />
+      <h2 className="text-lg sm:text-xl font-bold text-purple-800 text-center break-words w-full mb-1">{buildName}</h2>
+      <p className="text-xs sm:text-sm text-gray-500 mb-2">Created: {formattedDate}</p>
+      <div className="w-full">
+        <h3 className="text-base font-semibold text-gray-800 mb-2">Components Used:</h3>
+        <div className="space-y-2 max-h-40 overflow-y-auto">
+          {Array.isArray(components) && components.length > 0 ? (
+            components.map((comp, idx) => (
+              <div
+                key={idx}
+                className="flex items-center py-2 px-3 bg-gray-50 rounded-lg border border-gray-200"
+              >
+                <span className="w-28 min-w-24 text-right font-semibold text-gray-500 lowercase pr-4">
+                  {comp.type}
+                </span>
+                <span className="flex-1 text-gray-900 font-medium break-words">
+                  {comp.name}
+                  {comp.quantity > 1 && (
+                    <span className="ml-2 text-xs text-gray-500 font-normal">×{comp.quantity}</span>
+                  )}
+                </span>
+              </div>
+            ))
+          ) : (
+            <div className="text-gray-500 italic">No components listed.</div>
+          )}
+        </div>
       </div>
-
-      {/* Content Section */}
-      <CardContent className="p-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold text-black ">{buildName}</h2>
-          <span className="text-md font-semibold text-purple-600">
-            Score: {score}
-          </span>
-        </div>
-
-        {/* Description */}
-        <p className="text-gray-700  text-sm mt-2 line-clamp-3">
-          {description}
-        </p>
-
-        {/* User Info */}
-        <div className="flex items-center gap-3 mt-4">
-          <Avatar src={userIcon} alt={username} className="bg-purple-500" />
-          <span className="font-medium text-black dark:text-white">
-            {username}
-          </span>
-        </div>
-      </CardContent>
     </Card>
   );
+};
+
+PublishedBuildCard.propTypes = {
+  buildName: PropTypes.string.isRequired,
+  image: PropTypes.string,
+  createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+  components: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string,
+      name: PropTypes.string,
+      quantity: PropTypes.number,
+    })
+  ),
 };
 
 export default PublishedBuildCard;

@@ -172,9 +172,7 @@ const ComponentSelectionPopup = ({
                     </div>
                     
                     <div className="flex-1 w-full">
-                      <div className="bg-[#d9a8ff1C] text-black -mx-4 my-2 p-2">
-                        <h3 className="font-semibold text-lg">{component.name}</h3>
-                      </div>
+                      <h3 className="font-semibold text-lg text-[#191B2A] mb-2">{component.name}</h3>
                       
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2">
                         <div>
