@@ -10,6 +10,7 @@ import BuildConfirmationPopup from "../../AtomicComponents/ForCustomBuild/BuildC
 import { checkCompatibility } from "../../utils/compatibilityChecker";
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const ChooseParts = () => {
   // State for warnings/messages
@@ -27,6 +28,8 @@ const ChooseParts = () => {
   // State for confirmation popup
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
 
+  const user = useSelector((state) => state.auth.user);
+
   // Listen for changes in the PartsTable component
   const handleComponentsChanged = useCallback((components) => {
     setSelectedComponents(components);
@@ -38,6 +41,20 @@ const ChooseParts = () => {
 
   // Function to handle "Finish" button click
   const handleFinishAndAddToQuote = () => {
+    // Check if user is logged in
+    if (!user) {
+      toast.error("Please log in to save your build", {
+        duration: 3000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+      return;
+    }
+
     // Required components (excluding expansion cards/networking)
     const requiredComponents = [
       'CPU',

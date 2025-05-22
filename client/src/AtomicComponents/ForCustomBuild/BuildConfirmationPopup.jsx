@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import ClearIcon from '@mui/icons-material/Clear';
 import { InputField } from '../Inputs/Input';
 import { toast } from 'sonner';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const BuildConfirmationPopup = ({ 
   open, 
@@ -13,8 +15,25 @@ const BuildConfirmationPopup = ({
 }) => {
   const [buildName, setBuildName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
   const handleConfirm = async () => {
+    // Check if user is logged in
+    if (!user) {
+      toast.error("Please log in to save your build", {
+        duration: 3000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+      navigate('/auth/login');
+      return;
+    }
+
     if (!buildName.trim()) {
       toast.error("Please enter a name for your build", {
         duration: 3000,
@@ -64,6 +83,7 @@ const BuildConfirmationPopup = ({
       // Prepare build data with new structure
       const buildData = {
         name: buildName,
+        userId: user._id,
         image: selectedComponents.Case?.image || '',
         components: components,
         componentsPrice: componentsPrice,
@@ -184,9 +204,9 @@ const BuildConfirmationPopup = ({
         {/* Footer */}
         <div className="mt-6 pt-4 border-t border-gray-200">
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center">
               <div className="text-lg font-bold text-[#191B2A]">Components Price:</div>
-              <div className="text-xl font-bold text-[#191B2A]">LKR {totalPrice.toFixed(2)}</div>
+            <div className="text-xl font-bold text-[#191B2A]">LKR {totalPrice.toFixed(2)}</div>
             </div>
             <div className="flex justify-between items-center text-gray-600">
               <div>Service Charge (5%):</div>
