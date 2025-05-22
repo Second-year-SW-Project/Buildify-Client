@@ -7,6 +7,7 @@ import { Box, Button, Divider } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import { toast } from "sonner";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
@@ -32,6 +33,7 @@ export default function OrderDetails() {
         setOrder(res.data);
       } catch (err) {
         console.error("Failed to fetch order", err);
+        toast.error("Failed to fetch order");
       }
     };
     fetchOrder();
@@ -39,7 +41,7 @@ export default function OrderDetails() {
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    toast.success("Copied to clipboard!");
   };
 
   if (!order) return <p>Loading...</p>;

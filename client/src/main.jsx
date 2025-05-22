@@ -173,6 +173,7 @@ const router = createBrowserRouter([
           { path: "reviews", element: <Reviews /> },
           { path: "rmaSupport", element: <RMAsupport /> },
           { path: "orderHistory", element: <OrderHistory /> },
+          { path: "orderHistory/:orderId", element: <OrderDetails /> },
           { path: "savedBuilds", element: <SavedBuilds /> },
           { path: "settings", element: <Settings /> },
         ],
