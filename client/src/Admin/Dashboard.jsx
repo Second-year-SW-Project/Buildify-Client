@@ -8,6 +8,7 @@ import Iconset from '../AtomicComponents/Icons/Iconset';
 import { Link } from 'react-router-dom';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts/BarChart';
+import { OrderSummary } from '../MoleculesComponents/Table';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 import { styled } from '@mui/material/styles';
 
@@ -18,6 +19,21 @@ import { InputField } from '../AtomicComponents/Inputs/Input';
 import { Margin } from '@mui/icons-material';
 
 export default function Dashboard() {
+
+    //Define the columns for the order table
+    const orderColumns = [
+        { id: "Id", label: "OrderID" },
+        { id: "userCard", label: "Customer" },
+        { id: "date", label: "Ordered at" },
+        { id: "contact", label: "Contact" },
+        { id: "address", label: "Shipping Address" },
+        { id: "items", label: "Items" },
+        { id: "price", label: "Total Price" },
+        { id: "orderStatus", label: "Status" },
+    ];
+
+    const [normalOrders, setNormalOrders] = useState([]);
+    const [status, setStatus] = useState('');
 
     const [orderFilter, setOrderFilter] = useState('All');
     const [salesFilter, setSalesFilter] = useState('All');
@@ -342,6 +358,24 @@ export default function Dashboard() {
             <div className='recentOrders grid gap-4 grid-cols-1 border-2 border-purple-600 rounded-lg flex flex-row mt-8 mb-8 ml-2 mr-2'>
                 <div className='flex flex-row justify-between items-center p-2'>
                     <Typography variant="h6" fontWeight="bold" color='primary'>Recent Orders</Typography>
+                    <div sx={{ width: '100%', borderRadius: "20px" }}>
+                        <OrderSummary
+                            columns={orderColumns}
+                            orders={normalOrders}
+                            customRenderers={{
+                                userCard: (order) => order.userDetails,
+                                items: (order) => order.items
+                            }}
+                        // pagination={{
+                        //     currentPage,
+                        //     totalPages,
+                        //     totalItems: totalOrders,
+                        //     itemsPerPage,
+                        //     onPageChange: handlePageChange,
+                        //     onItemsPerPageChange: handleItemsPerPageChange
+                        // }}
+                        />
+                    </div>
                 </div>
             </div>
 
