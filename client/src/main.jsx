@@ -64,6 +64,7 @@ import LaptopCategoryPage from "./pages/Laptop_category/Laptopcategorypage.jsx";
 import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx";
 import ChoosePartsPage from "./pages/ChoosePartsPage/ChoosePartsPage.jsx";
 import ModelSelectPage from "./pages/ModeSelectPage/ModelSelectPage.jsx";
+import ContinuePurchasePage from "./pages/ContinuePurchasePage/ContinuePurchasePage.jsx"
 import ErrorStatus from "./Login/Errorstatus.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -156,6 +157,7 @@ const router = createBrowserRouter([
       { path: "selectgame", element: <SelectGameAndBudgetpage /> },
       { path: "chooseparts", element: <ChoosePartsPage /> },
       { path: "modeselect", element: <ModelSelectPage /> },
+      { path: "continuepurchase", element: <ContinuePurchasePage /> },
 
       //User
       {
