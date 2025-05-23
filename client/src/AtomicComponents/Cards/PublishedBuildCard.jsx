@@ -2,7 +2,7 @@ import { Card } from "@mui/material";
 import PropTypes from "prop-types";
 
 const PublishedBuildCard = ({ buildName, image, createdAt, components }) => {
-  const imageUrl = image || "https://buildmypc.lk/wp-content/uploads/2024/05/Amethyst-GAming-PC-Build-MY-PC-600x600.jpg";
+  const imageUrl = image;
   const formattedDate = createdAt ? new Date(createdAt).toLocaleDateString() : "N/A";
 
   return (
