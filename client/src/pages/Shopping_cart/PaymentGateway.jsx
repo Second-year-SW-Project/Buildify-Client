@@ -96,6 +96,8 @@ const PaymentGateway = () => {
           user: userId,
           customerEmail: formData.email,
           customerName: formData.name,
+          customerAddress: formData.address,
+          customerNumber: formData.phone
         }),
       });
 

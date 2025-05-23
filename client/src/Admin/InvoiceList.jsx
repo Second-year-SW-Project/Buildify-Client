@@ -191,7 +191,7 @@ function InvoiceList() {
               isBold={1}
               buttonSize="medium"
               fontSize="16px"
-              onClick={() => navigate("/invoice/invoicecreate")}
+              onClick={() => navigate("/adminpanel/invoice/invoicecreate")}
             />
           </div>
         </div>

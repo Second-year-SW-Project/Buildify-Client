@@ -110,7 +110,9 @@ export default function MyOrders() {
   }, []);
 
   const filteredOrders = orders
-    .filter((order) => order.status !== "Successful")
+    .filter(
+      (order) => order.status !== "Successful" && order.status !== "Refunded"
+    )
     .filter((order) => {
       if (value === "1") return true;
       if (value === "2") return order.type === "pc_build";

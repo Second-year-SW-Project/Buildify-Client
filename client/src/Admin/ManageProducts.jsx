@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -123,7 +123,7 @@ function ManageProducts() {
 
     //Handle edit product function
     const handleEdit = (id) => {
-        navigate(`/adminpanel/products/createproduct/${id}`);
+        navigate(`/adminpanel/products/editproduct/${id}`);
     };
 
     //Delete product function
@@ -212,7 +212,7 @@ function ManageProducts() {
                 <PageTitle value="Manage Products"></PageTitle>
                 <CustomBreadcrumbs
                     paths={[
-                        { label: 'Products', href: "/products" },
+                        { label: 'Products', href: "/adminpanel/products/manageproduct" },
                         { label: 'Manage Product' },
                     ]} />
             </div>

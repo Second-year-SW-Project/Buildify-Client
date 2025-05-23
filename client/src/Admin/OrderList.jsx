@@ -4,13 +4,17 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { OrderTable } from "../MoleculesComponents/Table";
-import { useSelector, useDispatch } from "react-redux";
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 import SetDate from '../AtomicComponents/Inputs/date';
 import { SearchBar } from '../AtomicComponents/Inputs/Searchbar';
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import { PrimaryButton } from "../AtomicComponents/Buttons/Buttons";
+import OrderStatusTabs from '../MoleculesComponents/Admin_components/BasicTabs';
+import { Box, Tabs, Tab } from '@mui/material';
+import Divider from '@mui/material/Divider';
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
+import { useNavigation } from '../MoleculesComponents/Admin_components/NavigationContext';
 
 // Add debounce function to limit the number of API calls
 const debounce = (func, wait) => {
@@ -28,6 +32,9 @@ const debounce = (func, wait) => {
 };
 
 function OrderList() {
+
+    const navigate = useNavigate();
+
     //Backend URL
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -37,6 +44,8 @@ function OrderList() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [orders, setOrders] = useState([]);
     const [orderIdSearch, setOrderIdSearch] = useState('');
+    const [status, setStatus] = useState('');
+    const [statusCounts, setStatusCounts] = useState({});
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -46,11 +55,22 @@ function OrderList() {
 
     const [loading, setLoading] = useState(false);
 
+    const { showOrderView, selectedTab, setSelectedTab } = useNavigation();
+
+    // Set initial status from selectedTab when component mounts
+    useEffect(() => {
+        if (selectedTab) {
+            setStatus(selectedTab);
+        }
+    }, [selectedTab]);
+
     //Clear filters function
     const clearFilters = () => {
         setSelectedDate(null);
         setSearchTerm('');
         setOrderIdSearch('');
+        setStatus('');
+        setSelectedTab(''); // Clear the selected tab
         setCurrentPage(1);
     };
 
@@ -63,7 +83,8 @@ function OrderList() {
                 limit: itemsPerPage,
                 date: selectedDate ? selectedDate.toISOString() : null,
                 search: searchTerm,
-                orderId: orderIdSearch
+                orderId: orderIdSearch,
+                status: selectedTab || status
             };
 
             const response = await axios.get(`${backendUrl}/api/checkout/payment`, { params });
@@ -73,6 +94,7 @@ function OrderList() {
                 setOrders(allOrders);
                 setTotalPages(response.data.pagination.totalPages);
                 setTotalOrders(response.data.pagination.total);
+                setStatusCounts(response.data.statusCounts || {});
             } else {
                 console.error("Expected an array but got:", response.data);
                 setOrders([]);
@@ -91,18 +113,24 @@ function OrderList() {
         debounce(() => {
             fetchOrders(); // Call the fetchOrders function with the current parameters
         }, 300),
-        [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch]
+        [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status, selectedTab] // Add selectedTab to dependencies
     );
 
     //Call the function to fetch the orders when the component mounts or dependencies change
     useEffect(() => {
         debouncedFetchOrders(); // Call the debounced function
-    }, [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch]);
+    }, [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status, selectedTab]); // Add selectedTab to dependencies
+
+    //Handle edit product function
+    const handleView = (id) => {
+        showOrderView(id);
+        navigate(`/adminpanel/orders/vieworder/${id}`);
+    };
+
 
     //Delete order function
     const handleDelete = async () => {
         try {
-            setLoading(true)
             const response = await axios.delete(`${backendUrl}/api/checkout/order/${SelectedOrderId}`);
 
             if (response.data.Success) {
@@ -114,7 +142,6 @@ function OrderList() {
         } catch (error) {
             toast.error("Failed to delete Order");
         } finally {
-            setLoading(false)
             setOpenDialog(false);
         }
     };
@@ -139,6 +166,7 @@ function OrderList() {
     //Define the icon types and actions for the columns
     const iconTypes = ["view", "delete", "toggle"];
     const iconActions = {
+        view: (_id) => handleView(_id),
         delete: (_id) => {
             openDeleteDialog(_id);
         }
@@ -163,80 +191,94 @@ function OrderList() {
 
     return (
         <div className='pl-6 grid grid-rows'>
+            <FullScreenLoader open={loading} message={'Loading Data...'} />
             <div className='mt-3'>
                 <PageTitle value="Order List"></PageTitle>
                 <CustomBreadcrumbs
                     paths={[
-                        { label: 'Orders', href: "/orders" },
+                        { label: 'Orders', href: "/adminpanel/orders/orderlist" },
                         { label: 'Order List' },
                     ]} />
             </div>
-            <div className="mt-5 mb-10 mr-4 border-2 border-black-200 rounded-md">
-                {/* filtering form */}
-                <div className='filterForm grid gap-4 grid-cols-1 flex flex-row p-4'>
-                    <div className='filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4 flex flex-row'>
-                        <div>
-                            <SetDate
-                                width="100%"
-                                label="Date"
-                                value={selectedDate}
-                                onChange={(date) => setSelectedDate(date)}
-                            >
-                            </SetDate>
-                        </div>
-                        <div className="col-span-1">
-                            <SearchBar
-                                placeholder="Search Name or Email"
-                                width="100%"
-                                value={searchTerm}
-                                onChange={(e) => {
-                                    const value = e.target.value;
-                                    setSearchTerm(value);
-                                    fetchOrders(value);
-                                }}
-                            />
-                        </div>
-                        <div className="col-span-1">
-                            <SearchBar
-                                placeholder="Search Order ID"
-                                width="100%"
-                                value={orderIdSearch}
-                                onChange={handleOrderIdSearch}
-                            />
-                        </div>
-                        <div className="col-span-1 flex justify">
-                            <PrimaryButton
-                                name="Clear"
-                                buttonSize="medium"
-                                fontSize={"16px"}
-                                onClick={clearFilters}
-                                color={"primary"}
-                            />
+            <Box>
+                <div className="mt-5 mb-10 mr-4 border-2 border-black-200 rounded-md">
+                    {/* Status Tabs */}
+                    <OrderStatusTabs
+                        status={selectedTab || status}
+                        setStatus={(newStatus) => {
+                            setStatus(newStatus);
+                            setSelectedTab(newStatus);
+                        }}
+                        statusCounts={statusCounts}
+                    />
+                    <Divider sx={{ marginLeft: "2px" }} />
+                    {/* filtering form */}
+                    <div className='filterForm grid gap-4 grid-cols-1 flex flex-row p-4 pt-6'>
+                        <div className='filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4 flex flex-row'>
+                            <div>
+                                <SetDate
+                                    width="100%"
+                                    label="Date"
+                                    value={selectedDate}
+                                    onChange={(date) => setSelectedDate(date)}
+                                >
+                                </SetDate>
+                            </div>
+                            <div className="col-span-1">
+                                <SearchBar
+                                    placeholder="Search Name or Email"
+                                    width="100%"
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setSearchTerm(value);
+                                        fetchOrders(value);
+                                    }}
+                                />
+                            </div>
+                            <div className="col-span-1">
+                                <SearchBar
+                                    placeholder="Search Order ID"
+                                    width="100%"
+                                    value={orderIdSearch}
+                                    onChange={handleOrderIdSearch}
+                                />
+                            </div>
+                            <div className="col-span-1 flex justify">
+                                <PrimaryButton
+                                    name="Clear"
+                                    buttonSize="medium"
+                                    fontSize={"16px"}
+                                    onClick={clearFilters}
+                                    color={"primary"}
+                                />
+                            </div>
                         </div>
                     </div>
+                    {/* Table Details */}
+                    <div sx={{ width: '100%', borderRadius: "20px" }}>
+                        <OrderTable
+                            columns={orderColumns}
+                            orders={orders}
+                            iconTypes={iconTypes}
+                            iconActions={iconActions}
+                            customRenderers={{
+                                userCard: (order) => order.userDetails,
+                                items: (order) => order.items
+                            }}
+                            pagination={{
+                                currentPage,
+                                totalPages,
+                                totalItems: totalOrders,
+                                itemsPerPage,
+                                onPageChange: handlePageChange,
+                                onItemsPerPageChange: handleItemsPerPageChange
+                            }}
+                        />
+                    </div>
                 </div>
-                {/* Table Details */}
-                <div sx={{ width: '100%', borderRadius: "20px" }}>
-                    <OrderTable
-                        columns={orderColumns}
-                        orders={orders}
-                        iconTypes={iconTypes}
-                        iconActions={iconActions}
-                        customRenderers={{
-                            userCard: (order) => order.userDetails,
-                            items: (order) => order.items
-                        }}
-                        pagination={{
-                            currentPage,
-                            totalPages,
-                            totalItems: totalOrders,
-                            itemsPerPage,
-                            onPageChange: handlePageChange,
-                            onItemsPerPageChange: handleItemsPerPageChange
-                        }}
-                    />
-                </div>
-            </div>
+            </Box>
+
             {/* Alert Message */}
             <DialogAlert
                 name="Delete Order"

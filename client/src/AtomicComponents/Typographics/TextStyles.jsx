@@ -10,6 +10,14 @@ export function PageTitle({ value }) {
     );
 }
 
+export function PageSubtitle({ value, color }) {
+    return (
+        <Typography variant='body1' color={color} fontWeight="bold">
+            {value}
+        </Typography>
+    );
+}
+
 export function Required() {
     return (
         <Typography fontWeight="bold" color="error" sx={{ fontSize: '18px', marginRight: '.2rem' }}>*</Typography>

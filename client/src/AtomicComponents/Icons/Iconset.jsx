@@ -45,6 +45,10 @@ import GamesIcon from '@mui/icons-material/Games';
 import VideogameAssetSharpIcon from '@mui/icons-material/VideogameAssetSharp';
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import PreviewIcon from '@mui/icons-material/Preview';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import LocalAtmOutlinedIcon from '@mui/icons-material/LocalAtmOutlined';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 
 export default function Iconset({ type = 'notification', fontSize = '30px', color, isOpen }) {
     const renderIcon = () => {
@@ -87,13 +91,18 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'message': return <MessageIcon color={color} sx={{ fontSize }} />;
             case 'signout': return <ExitToAppIcon color={color} sx={{ fontSize }} />;
             case 'money': return <MonetizationOnIcon color={color} sx={{ fontSize }} />;
+            case 'payment': return <LocalAtmOutlinedIcon color={color} sx={{ fontSize }} />;
             case 'pending': return <HourglassEmptyIcon color={color} sx={{ fontSize }} />;
             case 'cart': return <ShoppingCartIcon color={color} sx={{ fontSize }} />;
+            case 'checkout': return <ShoppingCartCheckoutIcon color={color} sx={{ fontSize }} />;
+            case 'bag': return <ShoppingBagOutlinedIcon color={color} sx={{ fontSize }} />;
             case 'admin': return <AdminPanelSettingsIcon color={color} sx={{ fontSize }} />;
             case 'profile': return <AccountCircleIcon color={color} sx={{ fontSize }} />;
             case 'games': return <SportsEsportsIcon color={color} sx={{ fontSize }} />;
             case 'gamesList': return <GamesIcon color={color} sx={{ fontSize }} />;
             case 'gamesCreate': return <VideogameAssetSharpIcon color={color} sx={{ fontSize }} />;
+            case 'preview': return <PreviewIcon color={color} sx={{ fontSize }} />
+
             case 'toggle':
                 return isOpen
                     ? <KeyboardArrowUpIcon color={color} sx={{ fontSize: 40 }} />

@@ -42,7 +42,9 @@ export default function OrderHistory() {
 
         if (isMounted) {
           const completedOrders = res.data
-            .filter((order) => order.status === "Successful")
+            .filter((order) =>
+              ["Successful", "Refunded"].includes(order.status)
+            )
             .map((order) => {
               const itemCount = order.items.reduce(
                 (total, item) => total + item.quantity,

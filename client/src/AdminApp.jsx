@@ -1,6 +1,7 @@
 import { AppProvider } from "@toolpad/core/react-router-dom";
 import { Outlet, useNavigate } from "react-router-dom";
 import React, { useEffect, useState, useMemo } from "react";
+import { NavigationProvider } from './MoleculesComponents/Admin_components/NavigationContext';
 
 import Iconset from './AtomicComponents/Icons/Iconset';
 import theme from './AtomicComponents/theme';
@@ -275,30 +276,32 @@ function AdminApp() {
   );
 
   return (
-    <AppProvider
-      session={session}
-      authentication={authentication}
-      navigation={NAVIGATION}
-      branding={{
-        logo: (
-          <img
-            src="/src/assets/images/Logos/logo-white.png"
-            alt="Logo"
-            style={{
-              marginLeft: "8px",
-              marginTop: "4px",
-              maxWidth: "100%",
-              height: "auto",
-              width: "140px",
-            }}
-          />
-        ),
-        title: "",
-      }}
-      theme={theme}
-    >
-      <Outlet />
-    </AppProvider>
+    <NavigationProvider>
+      <AppProvider
+        session={session}
+        authentication={authentication}
+        navigation={NAVIGATION}
+        branding={{
+          logo: (
+            <img
+              src="/src/assets/images/Logos/logo-white.png"
+              alt="Logo"
+              style={{
+                marginLeft: "8px",
+                marginTop: "4px",
+                maxWidth: "100%",
+                height: "auto",
+                width: "140px",
+              }}
+            />
+          ),
+          title: "",
+        }}
+        theme={theme}
+      >
+        <Outlet />
+      </AppProvider>
+    </NavigationProvider>
   );
 }
 

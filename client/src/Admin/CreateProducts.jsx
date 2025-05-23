@@ -299,6 +299,23 @@ const CreateProducts = () => {
                 }
             };
             fetchProduct();
+
+        } else {
+            // Reset all form states
+            setProduct(initialProductState);
+            setSelectedImages([]);
+            setSelectedMainCategory('');
+            setSelectedSubCategory('');
+            setSelectedManufacture('');
+            setSubCategoryOptions([]);
+            setManufactureOptions([]);
+            setSocketTypeOptions([]);
+            setformValidation(false);
+
+            // Reset image selector if it exists
+            if (imageSelectorRef.current) {
+                imageSelectorRef.current.deleteAllImages();
+            }
         }
     }, [id, , isEditMode, navigate]);
 
@@ -568,6 +585,11 @@ const CreateProducts = () => {
 
     };
 
+    // Update the cancel button handler
+    const handleCancel = () => {
+        navigate('/adminpanel/products/manageproduct');
+    };
+
     //Handle form submission
     const onSubmitHandler = async (e) => {
         e.preventDefault();
@@ -660,12 +682,12 @@ const CreateProducts = () => {
             {/*Set the title and breadcrumbs*/}
             <div className="mt-3 mb-5 ml-6 mr-6">
                 <div>
-                    <PageTitle value={isEditMode ? 'Edit Products' : 'Create New Products'} />
+                    <PageTitle value={isEditMode ? 'Edit Product' : 'Create New Product'} />
                 </div>
                 <CustomBreadcrumbs
                     paths={[
-                        { label: 'Products', href: '/products' },
-                        { label: isEditMode ? 'Edit Product' : 'New Product' },
+                        { label: 'Products', href: '/adminpanel/products/manageproduct' },
+                        { label: isEditMode ? 'Edit Product' : 'Create Product' },
                     ]}
                 />
             </div>
@@ -761,7 +783,7 @@ const CreateProducts = () => {
                                             value={selectedMainCategory}
                                             onChange={handleMainCategoryChange}
                                             width="100%"
-                                            // disabled={isEditMode}
+                                            disabled={isEditMode}
                                             showRequiredHelper={formValidation}
                                         />
                                     </div>
@@ -772,8 +794,7 @@ const CreateProducts = () => {
                                             options={subCategoryOptions}
                                             value={selectedSubCategory}
                                             onChange={handleSubCategoryChange}
-                                            // disabled={!selectedMainCategory || isEditMode}
-                                            disabled={!selectedMainCategory}
+                                            disabled={!selectedMainCategory || isEditMode}
                                             width="100%"
                                             showRequiredHelper={formValidation}
                                         />
@@ -1894,7 +1915,7 @@ const CreateProducts = () => {
                                         color={"ternaryDark"}
                                         padding="50px"
                                         type="button"
-                                        onClick={() => navigate('/adminpanel/products/manageproduct')}
+                                        onClick={handleCancel}
                                     />
                                 )}
                                 <PrimaryButton

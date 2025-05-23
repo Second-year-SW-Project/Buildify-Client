@@ -110,7 +110,7 @@ const CreateGames = () => {
             }
             return !gameData[field] || gameData[field] === "";
         });
-        
+
 
         // Special validation for image in add mode
         if (!isEditMode && !selectedImage) {
@@ -210,7 +210,7 @@ const CreateGames = () => {
                     <div><PageTitle value={isEditMode ? 'Edit Game' : 'Add New Game'}></PageTitle></div>
                     <CustomBreadcrumbs
                         paths={[
-                            { label: 'Games', href: "/games" },
+                            { label: 'Games', href: "/adminpanel/games/managegames" },
                             { label: isEditMode ? 'Edit Game' : 'New Game' },
                         ]}
                     />
