@@ -19,24 +19,11 @@ const compatibilityCheckers = {
       });
     }
 
-    // Check if CPU includes stock cooler
-    if (!cpu.includesCooler) {
-      warnings.push({
-        type: "warning",
-        text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
-      });
-    } else if (cpu.includesCooler && cpu.tdp > 65) {
-      warnings.push({
-        type: "note",
-        text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
-      });
-    }
-
     return warnings;
   },
 
   // CPU and Cooler compatibility
-  checkCpuCooler: (cpu, cooler) => {
+  checkCpuCooler: (cpu, cooler, components) => {
     const warnings = [];
 
     // Socket compatibility
@@ -61,14 +48,6 @@ const compatibilityCheckers = {
       warnings.push({
         type: "warning",
         text: `CPU Cooler max TDP (${cooler.maxTdp}W) is lower than CPU TDP (${cpu.tdp}W). Consider a more powerful cooler.`,
-      });
-    }
-
-    // Check if CPU includes cooler
-    if (!cpu.includesCooler && !cooler) {
-      warnings.push({
-        type: "warning",
-        text: "CPU does not include a cooler. A CPU cooler must be selected.",
       });
     }
 
@@ -332,33 +311,39 @@ const compatibilityCheckers = {
   },
 
   // CPU integrated graphics and cooler check
-  checkCpuGraphics: (cpu) => {
+  checkCpuGraphics: (cpu, components) => {
     const warnings = [];
 
-    // Check integrated graphics
-    if (!cpu.integratedGraphics) {
+    // Check if there's a GPU component (either as GPU or Video Card)
+    const hasGpu = components.GPU || components["Video Card"];
+    const hasCooler = components["CPU Cooler"];
+
+    // Only show integrated graphics warning if no GPU is present
+    if (!cpu.integratedGraphics && !hasGpu) {
       warnings.push({
         type: "warning",
         text: "CPU does not have integrated graphics. A dedicated GPU is required.",
       });
-    } else if (cpu.integratedGraphics && cpu.graphicsModel) {
+    } else if (cpu.integratedGraphics && cpu.graphicsModel && !hasGpu) {
       warnings.push({
         type: "note",
         text: `CPU includes integrated ${cpu.graphicsModel} graphics.`,
       });
     }
 
-    // Check stock cooler
-    if (!cpu.includesCooler) {
-      warnings.push({
-        type: "warning",
-        text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
-      });
-    } else if (cpu.includesCooler && cpu.tdp > 65) {
-      warnings.push({
-        type: "note",
-        text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
-      });
+    // Check stock cooler only if no aftermarket cooler is selected
+    if (!hasCooler) {
+      if (!cpu.includesCooler) {
+        warnings.push({
+          type: "warning",
+          text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
+        });
+      } else if (cpu.includesCooler && cpu.tdp > 65) {
+        warnings.push({
+          type: "note",
+          text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
+        });
+      }
     }
 
     return warnings;
@@ -459,7 +444,8 @@ export const checkCompatibility = (components) => {
   if (components.CPU && components["CPU Cooler"]) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCpuCooler(
       components.CPU,
-      components["CPU Cooler"]
+      components["CPU Cooler"],
+      components
     ));
   }
 
@@ -518,12 +504,8 @@ export const checkCompatibility = (components) => {
 
   // Always check CPU graphics, but only show integrated graphics warning if no GPU
   if (components.CPU) {
-    const cpuGraphicsWarnings = compatibilityCheckers.checkCpuGraphics(components.CPU);
-    // Only add the integrated graphics warning if no GPU is present
-    const filteredWarnings = cpuGraphicsWarnings.filter(warning => 
-      !gpuComponent || !warning.text.includes("integrated graphics")
-    );
-    compatibilityWarnings.push(...filteredWarnings);
+    const cpuGraphicsWarnings = compatibilityCheckers.checkCpuGraphics(components.CPU, components);
+    compatibilityWarnings.push(...cpuGraphicsWarnings);
   }
 
   // Remove duplicate messages
