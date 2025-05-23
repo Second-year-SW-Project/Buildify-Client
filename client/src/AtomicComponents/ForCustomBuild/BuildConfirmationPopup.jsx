@@ -62,10 +62,6 @@ const BuildConfirmationPopup = ({
         return sum + price;
       }, 0);
 
-      // Calculate service charge (5%)
-      const serviceCharge = componentsPrice * 0.05;
-      const totalCharge = componentsPrice + serviceCharge;
-
       // Prepare components array with new structure
       const components = Object.entries(selectedComponents).map(([type, component]) => {
         if (Array.isArray(component)) {
@@ -87,8 +83,7 @@ const BuildConfirmationPopup = ({
         image: selectedComponents.Case?.image || '',
         components: components,
         componentsPrice: componentsPrice,
-        serviceCharge: serviceCharge,
-        totalCharge: totalCharge,
+        totalCharge: componentsPrice,
         buildStatus: "pending",
         published: false,
         stepTimestamps: {
@@ -204,17 +199,9 @@ const BuildConfirmationPopup = ({
         {/* Footer */}
         <div className="mt-6 pt-4 border-t border-gray-200">
           <div className="space-y-2">
-          <div className="flex justify-between items-center">
-              <div className="text-lg font-bold text-[#191B2A]">Components Price:</div>
-            <div className="text-xl font-bold text-[#191B2A]">LKR {totalPrice.toFixed(2)}</div>
-            </div>
-            <div className="flex justify-between items-center text-gray-600">
-              <div>Service Charge (5%):</div>
-              <div>LKR {(totalPrice * 0.05).toFixed(2)}</div>
-            </div>
-            <div className="flex justify-between items-center text-lg font-bold text-[#191B2A] border-t pt-2">
-              <div>Total Charge:</div>
-              <div>LKR {(totalPrice + (totalPrice * 0.05)).toFixed(2)}</div>
+            <div className="flex justify-between items-center">
+              <div className="text-lg font-bold text-[#191B2A]">Component Price:</div>
+              <div className="text-xl font-bold text-[#191B2A]">LKR {totalPrice.toFixed(2)}</div>
             </div>
           </div>
           <div className="mt-4 flex justify-end space-x-4">
@@ -231,6 +218,71 @@ const BuildConfirmationPopup = ({
               disabled={isSaving}
             >
               {isSaving ? 'Saving...' : 'Save Build'}
+            </button>
+            <button
+              onClick={() => {
+                if (!buildName.trim()) {
+                  toast.error("Please enter a name for your build", {
+                    duration: 3000,
+                    style: {
+                      background: '#ff6b6b',
+                      color: '#fff',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
+                    },
+                  });
+                  return;
+                }
+
+                // Prepare build data
+                const buildData = {
+                  name: buildName,
+                  userId: user._id,
+                  image: selectedComponents.Case?.image || '',
+                  components: Object.entries(selectedComponents).map(([type, component]) => {
+                    if (Array.isArray(component)) {
+                      return component.map(item => ({
+                        componentId: item._id,
+                        name: item.name,
+                        type: type,
+                        quantity: 1,
+                        price: parseFloat(item.price?.toString().replace(/[^0-9.]/g, '') || '0'),
+                        image: item.image,
+                        availability: item.availability
+                      }));
+                    }
+                    return [{
+                      componentId: component._id,
+                      name: component.name,
+                      type: type,
+                      quantity: 1,
+                      price: parseFloat(component.price?.toString().replace(/[^0-9.]/g, '') || '0'),
+                      image: component.image,
+                      availability: component.availability
+                    }];
+                  }).flat(),
+                  componentsPrice: totalPrice,
+                  totalCharge: totalPrice,
+                  buildStatus: "pending",
+                  published: false,
+                  stepTimestamps: {
+                    Pending: new Date()
+                  }
+                };
+
+                // Navigate to continue purchase with build data
+                navigate('/continuepurchase', { 
+                  state: { 
+                    buildData,
+                    selectedComponents,
+                    totalPrice
+                  } 
+                });
+              }}
+              className="px-6 py-2 bg-[#7315E5] text-white rounded-md hover:bg-[#5A0DB2] transition-colors disabled:opacity-50"
+              disabled={isSaving}
+            >
+              Continue Purchase
             </button>
           </div>
         </div>

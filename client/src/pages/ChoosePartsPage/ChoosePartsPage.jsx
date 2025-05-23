@@ -205,7 +205,7 @@ const ChooseParts = () => {
             <div className="flex justify-center gap-4 mb-36">
               {/* Finish Button */}
               <FinishButton
-                text="Finish"
+                text="Continue"
                 onClick={handleFinishAndAddToQuote}
               />
             </div>
