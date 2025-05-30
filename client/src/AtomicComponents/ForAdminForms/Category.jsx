@@ -30,7 +30,7 @@ const subCategories = {
     { value: "processor", label: "Processors" },
     { value: "motherboard", label: "Motherboard" },
     { value: "storage", label: "Storages" },
-    { value: "pasing", label: "Casing" },
+    { value: "casing", label: "Casing" },
     { value: "power", label: "Power Supply" },
   ],
   Optional: [
