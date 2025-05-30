@@ -23,14 +23,14 @@ const compatibilityCheckers = {
   },
 
   // CPU and Cooler compatibility
-  checkCpuCooler: (cpu, cooler, components) => {
+  checkCpuCooler: (cpu, cooler) => {
     const warnings = [];
 
     // Socket compatibility
     if (cooler.supportedSocket) {
       const supportedSockets = Array.isArray(cooler.supportedSocket)
         ? cooler.supportedSocket.map(s => s.toLowerCase().trim())
-        : cooler.supportedSocket.split(',').map(s => s.toLowerCase().trim());
+        : [cooler.supportedSocket.toLowerCase().trim()];
 
       if (!supportedSockets.includes(cpu.socketType.toLowerCase())) {
         const isIntelSocket = cpu.socketType.toLowerCase().startsWith('lga');
@@ -128,6 +128,7 @@ const compatibilityCheckers = {
     // Map storage types to motherboard interface types
     const mapStorageTypeToInterface = (storageType) => {
       switch (storageType?.toLowerCase().trim()) {
+        case 'nvme_m.2':
         case 'nvme_m2':
           return 'M.2';
         case 'sata_ssd':
@@ -159,15 +160,20 @@ const compatibilityCheckers = {
           type: "warning",
           text: "Could not verify storage type compatibility. Please check motherboard specifications.",
         });
-      } else if (!motherboardStorageTypes.includes(storageType)) {
-        warnings.push({
-          type: "warning",
-          text: `Storage device ${index + 1} type (${storageDevice.storageType}) is not compatible with motherboard. Motherboard supports: ${motherboard.storageInterfaces.map(intf => intf.type).join(', ')}.`,
-        });
+        return;
       }
 
-      // Track used slots
-      if (storageDevice.storageType === 'nvme_m2') {
+      // Check if the storage type is supported by the motherboard
+      if (!motherboardStorageTypes.includes(storageType)) {
+        warnings.push({
+          type: "warning",
+          text: `Storage device ${index + 1} type (${storageDevice.storageType}) is not compatible with motherboard. Motherboard supports: ${motherboardStorageTypes.join(', ')}.`,
+        });
+        return;
+      }
+
+      // Track used slots based on storage type
+      if (storageDevice.storageType.toLowerCase().includes('nvme') || storageDevice.storageType.toLowerCase().includes('m.2')) {
         usedM2Slots++;
         if (usedM2Slots > m2Slots) {
           warnings.push({
@@ -175,7 +181,7 @@ const compatibilityCheckers = {
             text: `Number of M.2 drives (${usedM2Slots}) exceeds available M.2 slots (${m2Slots}).`,
           });
         }
-      } else if (storageDevice.storageType === 'sata_ssd' || storageDevice.storageType === 'sata_hdd') {
+      } else if (storageDevice.storageType.toLowerCase().includes('sata')) {
         usedSataSlots++;
         if (usedSataSlots > sataSlots) {
           warnings.push({
@@ -183,6 +189,19 @@ const compatibilityCheckers = {
             text: `Number of SATA drives (${usedSataSlots}) exceeds available SATA ports (${sataSlots}).`,
           });
         }
+      }
+
+      // Add note about available slots
+      if (storageType === 'M.2' && m2Slots > 0) {
+        warnings.push({
+          type: "note",
+          text: `Motherboard has ${m2Slots} M.2 slot(s) available.`,
+        });
+      } else if (storageType === 'SATA' && sataSlots > 0) {
+        warnings.push({
+          type: "note",
+          text: `Motherboard has ${sataSlots} SATA port(s) available.`,
+        });
       }
     });
 
@@ -444,8 +463,7 @@ export const checkCompatibility = (components) => {
   if (components.CPU && components["CPU Cooler"]) {
     compatibilityWarnings.push(...compatibilityCheckers.checkCpuCooler(
       components.CPU,
-      components["CPU Cooler"],
-      components
+      components["CPU Cooler"]
     ));
   }
 
