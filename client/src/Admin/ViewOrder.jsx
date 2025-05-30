@@ -77,11 +77,10 @@ function ViewOrder() {
                     },
                 });
 
-                if (response.data.Success && response.data.data) {
-                    const singleOrder = response.data.data;
-                    setOrder(singleOrder);
+                if (response.data) {
+                    setOrder(response.data);
                     // Set active step based on order status
-                    setActiveStep(getStepFromStatus(singleOrder.status));
+                    setActiveStep(getStepFromStatus(response.data.status));
                 } else {
                     toast.error('Failed to load Order');
                     navigate('/adminpanel/orders/orderlist');
@@ -143,7 +142,7 @@ function ViewOrder() {
                     newStep = 4;
                     break;
                 case 'Canceled':
-                    newStep = 2; // Set to last step for Canceled
+                    newStep = 2;
                     break;
                 case 'Refunded':
                     newStep = 4;
@@ -283,9 +282,9 @@ function ViewOrder() {
                                 >
                                     <Box flex={3} display="flex" alignItems="center">
                                         <OrderItemCard
-                                            name={item.productDetails?.name}
-                                            type={item.productDetails?.type.toUpperCase()}
-                                            src={item.productDetails?.image}
+                                            name={item.name}
+                                            type={item.type?.toUpperCase()}
+                                            src={item.product_image}
                                         />
                                     </Box>
                                     <Box
@@ -308,7 +307,7 @@ function ViewOrder() {
                                         marginRight={2}
                                     >
                                         <Typography variant='body1' fontWeight="bold" flex={1}>
-                                            {item.productDetails?.price * item.quantity} LKR
+                                            {item.price * item.quantity} LKR
                                         </Typography>
                                     </Box>
                                 </Stack>
@@ -441,8 +440,8 @@ function ViewOrder() {
                                 width: '100%'
                             }}>
                                 <Avatar
-                                    src={order.userDetails?.profilePicture || order.profile_image}
-                                    alt={order.userDetails?.name || order.user_name}
+                                    src={order.profilePicture || "../../client/public/logo.png"}
+                                    alt={order.user_name}
                                     sx={{ width: 50, height: 50, flexShrink: 0 }}
                                 />
                                 <Box sx={{
@@ -450,10 +449,10 @@ function ViewOrder() {
                                     wordBreak: 'break-word'
                                 }}>
                                     <Typography variant="subtitle1" sx={{ wordBreak: 'break-word', fontWeight: "bold" }} >
-                                        {order.userDetails?.name || order.user_name}
+                                        {order.user_name}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary" sx={{ wordBreak: 'break-word' }}>
-                                        {order.userDetails?.email || order.email}
+                                        {order.email}
                                     </Typography>
                                 </Box>
                             </Box>

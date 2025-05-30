@@ -86,6 +86,7 @@ export function UserTable({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
+                    padding: column.padding,
                   }}
                 >
                   {column.label}
@@ -224,7 +225,7 @@ export function OrderTable({
   return (
     <Paper sx={{ width: width || "100%", overflow: "hidden", mt: 4 }}>
       <TableContainer>
-        <Table>
+        <Table sx={{ borderRadius: "20px" }}>
           <TableHead>
             <TableRow sx={{ backgroundColor: theme.palette.primary100.main }}>
               {columns.map((column) => (
@@ -234,6 +235,7 @@ export function OrderTable({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
+                    padding: column.padding,
                   }}
                 >
                   {column.label}
@@ -261,23 +263,22 @@ export function OrderTable({
                         : "#----"}
                     </TableCell>
                     <TableCell>
-                      {customRenderers.userCard ? (
+                      {order.user_id ? (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Avatar
-                            src={customRenderers.userCard(order)?.profilePicture}
-                            alt={customRenderers.userCard(order)?.name}
+                            src={order.profilePicture}
+                            alt={order.user_name}
                             sx={{ width: 40, height: 40 }}
                           />
                           <Box>
-                            <Typography variant="subtitle2">{customRenderers.userCard(order)?.name}</Typography>
-                            <Typography variant="caption" color="textSecondary">{customRenderers.userCard(order)?.email}</Typography>
+                            <Typography variant="subtitle2" fontWeight={"bold"}>{order.user_name}</Typography>
+                            <Typography variant="caption" color="textSecondary">{order.email}</Typography>
                           </Box>
                         </Box>
                       ) : (
                         <UserCard
                           name={order.user_name}
                           email={order.email}
-                          src={order.profile_image}
                         />
                       )}
                     </TableCell>
@@ -366,9 +367,9 @@ export function OrderTable({
                             >
                               <Box flex={3} display="flex" alignItems="center">
                                 <OrderItemCard
-                                  name={item.productDetails?.name}
-                                  type={item.productDetails?.type}
-                                  src={item.productDetails?.image}
+                                  name={item.name}
+                                  type={item.type}
+                                  src={item.product_image}
                                 />
                               </Box>
                               <Box
@@ -386,7 +387,7 @@ export function OrderTable({
                                   flex={1}
                                   color="black500"
                                 >
-                                  Unit Price - {item.productDetails?.price}
+                                  Unit Price - {item.price}
                                 </Typography>
                               </Box>
                               <Box
@@ -398,7 +399,7 @@ export function OrderTable({
                                 marginRight={2}
                               >
                                 <Typography fontWeight="bold" flex={1}>
-                                  {item.productDetails?.price * item.quantity} LKR
+                                  {item.price * item.quantity} LKR
                                 </Typography>
                               </Box>
                             </Stack>
@@ -468,21 +469,21 @@ export function OrderSummary({
   };
 
   const autoSizeCellStyle = {
-    padding: "8px 16px", // Ensure consistent padding
+    padding: "8px 16px",
     whiteSpace: "nowrap",
-    Maxwidth: "50%",
   };
-  // Use pagination props if provided, otherwise use local state
-  // const currentPage = pagination ? pagination.currentPage - 1 : page; // Convert to 0-based index for MUI
-  // const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
-  // const totalCount = pagination ? pagination.totalItems : data.length;
 
-  /*return (
+  // Use pagination props if provided, otherwise use local state
+  const currentPage = pagination ? pagination.currentPage - 1 : page;
+  const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
+  const totalCount = pagination ? pagination.totalItems : orders.length;
+
+  return (
     <Paper sx={{ width: width || "100%", overflow: "hidden", mt: 4 }}>
       <TableContainer>
-        <Table>
+        <Table sx={{ borderRadius: "20px" }}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: theme.palette.primary100.main }}>
+            <TableRow sx={{ backgroundColor: theme.palette.primary100.main, borderRadius: "50px" }}>
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
@@ -490,91 +491,76 @@ export function OrderSummary({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
+                    width: column.width || 'auto',
+                    padding: column.padding,
                   }}
                 >
                   {column.label}
                 </TableCell>
               ))}
-              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order, index) => {
-              return (
-                <React.Fragment key={order._id}>
-                  <TableRow
+            {orders.map((order) => (
+              <TableRow key={order._id}>
+                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 85 }}>
+                  {order._id ? `#${order._id.slice(-4).toUpperCase()}` : "#----"}
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} style={{ minWidth: 230 }}>
+                    <Avatar
+                      src={order.profilePicture}
+                      alt={order.user_name}
+                      sx={{ width: 40, height: 40 }}
+                    />
+                    <Box sx={{
+                      wordBreak: 'break-word'
+                    }}>
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        {order.user_name}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        {order.email}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Typography style={{ minWidth: 130 }}>
+                    {format(new Date(order.createdAt), "dd MMM yyyy")}
+                  </Typography>
+                  <Typography fontSize="small" color="gray">
+                    {format(new Date(order.createdAt), "p")}
+                  </Typography>
+                </TableCell>
+                <TableCell style={{ minWidth: 150 }}>
+                  {order.address || "N/A"}
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }} style={{ minWidth: 75 }}>
+                  {order.items?.length || 0}
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 120 }}>
+                  {order.total !== undefined
+                    ? order.total.toLocaleString()
+                    : "0"}{" "}
+                  LKR
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={order.status}
+                    color={statusColorMap[order.status] || "default"}
+                    size="small"
                     sx={{
-                      backgroundColor: isOpen
-                        ? theme.palette.black200.main
-                        : theme.palette.white.main,
+                      padding: "5px",
+                      height: "30px",
+                      width: "100px",
+                      textAlign: "center",
+                      fontWeight: "bold",
                     }}
-                    hover
-                  >
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {order._id
-                        ? `#${order._id.slice(-4).toUpperCase()}`
-                        : "#----"}
-                    </TableCell>
-                    <TableCell>
-                      {customRenderers.userCard ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar
-                            src={customRenderers.userCard(order)?.profilePicture}
-                            alt={customRenderers.userCard(order)?.name}
-                            sx={{ width: 40, height: 40 }}
-                          />
-                          <Box>
-                            <Typography variant="subtitle2">{customRenderers.userCard(order)?.name}</Typography>
-                            <Typography variant="caption" color="textSecondary">{customRenderers.userCard(order)?.email}</Typography>
-                          </Box>
-                        </Box>
-                      ) : (
-                        <UserCard
-                          name={order.user_name}
-                          email={order.email}
-                          src={order.profile_image}
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Typography>
-                        {format(new Date(order.createdAt), "dd MMM yyyy")}
-                      </Typography>
-                      <Typography fontSize="small" color="gray">
-                        {format(new Date(order.createdAt), "p")}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
-  
-                    </TableCell>
-  
-                    <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
-                      {order.items.length}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {order.total !== undefined
-                        ? order.total.toLocaleString()
-                        : "0"}{" "}
-                      LKR
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={order.status}
-                        color={statusColorMap[order.status] || "default"}
-                        size="small"
-                        sx={{
-                          padding: "5px",
-                          height: "30px",
-                          width: "100px",
-                          textAlign: "center",
-                          fontWeight: "bold",
-                        }}
-                      />
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              );
-            })}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
@@ -592,7 +578,7 @@ export function OrderSummary({
         }}
       />
     </Paper>
-  );*/
+  );
 }
 
 
