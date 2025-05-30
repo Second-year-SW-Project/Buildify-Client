@@ -149,41 +149,37 @@ function PartsTable({ onComponentsChanged }) {
 
               return (
                 <tr key={row.component} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A] align-top">
                     {row.component}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A] align-top">
                     {!isNinthRow ? (
                       selectedData ? (
                         row.component === 'Memory' || row.component === 'Storage' ? (
-                          <div className="flex flex-col gap-2">
+                          <div className="space-y-2">
                             {Array.isArray(selectedData) ? (
                               selectedData.map((component, idx) => (
-                                <div key={idx} className="flex items-center justify-between h-[38px]">
-                                  <div className="flex items-center">
-                                    <img
-                                      src={component.image}
-                                      alt={component.name}
-                                      className="w-[38px] h-[38px] mr-2"
-                                    />
-                                    <span className="break-words whitespace-normal">
-                                      {component.name}
-                                    </span>
-                                  </div>
+                                <div key={idx} className="flex items-center h-[38px]">
+                                  <img
+                                    src={component.image}
+                                    alt={component.name}
+                                    className="w-[38px] h-[38px] mr-2 flex-shrink-0"
+                                  />
+                                  <span className="break-words whitespace-normal">
+                                    {component.name}
+                                  </span>
                                 </div>
                               ))
                             ) : (
-                              <div className="flex items-center justify-between h-[38px]">
-                                <div className="flex items-center">
-                                  <img
-                                    src={selectedData.image}
-                                    alt={selectedData.name}
-                                    className="w-[38px] h-[38px] mr-2"
-                                  />
-                                  <span className="break-words whitespace-normal">
-                                    {selectedData.name}
-                                  </span>
-                                </div>
+                              <div className="flex items-center h-[38px]">
+                                <img
+                                  src={selectedData.image}
+                                  alt={selectedData.name}
+                                  className="w-[38px] h-[38px] mr-2 flex-shrink-0"
+                                />
+                                <span className="break-words whitespace-normal">
+                                  {selectedData.name}
+                                </span>
                               </div>
                             )}
                             <div className="h-[38px] flex items-center">
@@ -194,17 +190,15 @@ function PartsTable({ onComponentsChanged }) {
                             </div>
                           </div>
                         ) : (
-                          <div className="flex items-center justify-between h-[38px]">
-                            <div className="flex items-center">
-                              <img
-                                src={selectedData.image}
-                                alt={selectedData.name}
-                                className="w-[38px] h-[38px] mr-2"
-                              />
-                              <span className="break-words whitespace-normal">
-                                {selectedData.name}
-                              </span>
-                            </div>
+                          <div className="flex items-center h-[38px]">
+                            <img
+                              src={selectedData.image}
+                              alt={selectedData.name}
+                              className="w-[38px] h-[38px] mr-2 flex-shrink-0"
+                            />
+                            <span className="break-words whitespace-normal">
+                              {selectedData.name}
+                            </span>
                           </div>
                         )
                       ) : (
@@ -216,20 +210,18 @@ function PartsTable({ onComponentsChanged }) {
                         </div>
                       )
                     ) : (
-                      <div className="flex flex-col gap-2">
+                      <div className="space-y-2">
                         {expansionNetworkTypes.map(({ display, componentType }) => (
                           selectedComponents[componentType] ? (
-                            <div key={componentType} className="flex items-center justify-between h-[38px]">
-                              <div className="flex items-center">
-                                <img
-                                  src={selectedComponents[componentType].image}
-                                  alt={selectedComponents[componentType].name}
-                                  className="w-[38px] h-[38px] mr-2"
-                                />
-                                <span className="break-words whitespace-normal">
-                                  {selectedComponents[componentType].name}
-                                </span>
-                              </div>
+                            <div key={componentType} className="flex items-center h-[38px]">
+                              <img
+                                src={selectedComponents[componentType].image}
+                                alt={selectedComponents[componentType].name}
+                                className="w-[38px] h-[38px] mr-2 flex-shrink-0"
+                              />
+                              <span className="break-words whitespace-normal">
+                                {selectedComponents[componentType].name}
+                              </span>
                             </div>
                           ) : (
                             <div
@@ -244,11 +236,11 @@ function PartsTable({ onComponentsChanged }) {
                       </div>
                     )}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A] align-top">
                     {!isNinthRow ? (
                       selectedData ? (
                         row.component === 'Memory' || row.component === 'Storage' ? (
-                          <div className="flex flex-col gap-2">
+                          <div className="space-y-2">
                             {Array.isArray(selectedData) ? (
                               selectedData.map((component, idx) => (
                                 <div key={idx} className="h-[38px] flex items-center">
@@ -260,6 +252,9 @@ function PartsTable({ onComponentsChanged }) {
                                 {selectedData.availability}
                               </div>
                             )}
+                            <div className="h-[38px] flex items-center">
+                              {/* Empty space to align with Add More button */}
+                            </div>
                           </div>
                         ) : (
                           <div className="h-[38px] flex items-center">
@@ -270,7 +265,7 @@ function PartsTable({ onComponentsChanged }) {
                         <div className="h-[38px] flex items-center">—</div>
                       )
                     ) : (
-                      <div className="flex flex-col gap-2">
+                      <div className="space-y-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
                           selectedComponents[componentType] ? (
                             <div key={componentType} className="h-[38px] flex items-center">
@@ -283,11 +278,11 @@ function PartsTable({ onComponentsChanged }) {
                       </div>
                     )}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A] align-top">
                     {!isNinthRow ? (
                       selectedData ? (
                         row.component === 'Memory' || row.component === 'Storage' ? (
-                          <div className="flex flex-col gap-2">
+                          <div className="space-y-2">
                             {Array.isArray(selectedData) ? (
                               selectedData.map((component, idx) => (
                                 <div key={idx} className="h-[38px] flex items-center">
@@ -299,6 +294,9 @@ function PartsTable({ onComponentsChanged }) {
                                 {selectedData.price}
                               </div>
                             )}
+                            <div className="h-[38px] flex items-center">
+                              {/* Empty space to align with Add More button */}
+                            </div>
                           </div>
                         ) : (
                           <div className="h-[38px] flex items-center">
@@ -309,7 +307,7 @@ function PartsTable({ onComponentsChanged }) {
                         <div className="h-[38px] flex items-center">—</div>
                       )
                     ) : (
-                      <div className="flex flex-col gap-2">
+                      <div className="space-y-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
                           selectedComponents[componentType] ? (
                             <div key={componentType} className="h-[38px] flex items-center">
@@ -322,18 +320,51 @@ function PartsTable({ onComponentsChanged }) {
                       </div>
                     )}
                   </td>
-                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A]">
+                  <td className="px-4 sm:px-6 py-4 font-roboto font-bold text-xs leading-4 text-[#191B2A] align-top">
                     {!isNinthRow ? (
-                      selectedData && (
-                        <button
-                          onClick={() => handleRemoveComponent(row.component)}
-                          className="text-gray-500 hover:text-red-700 focus:outline-none"
-                        >
-                          <ClearIcon className="w-5 h-5" />
-                        </button>
+                      selectedData ? (
+                        row.component === 'Memory' || row.component === 'Storage' ? (
+                          <div className="space-y-2">
+                            {Array.isArray(selectedData) ? (
+                              selectedData.map((component, idx) => (
+                                <div key={idx} className="h-[38px] flex items-center">
+                                  <button
+                                    onClick={() => handleRemoveComponent(row.component, idx)}
+                                    className="text-gray-500 hover:text-red-700 focus:outline-none"
+                                  >
+                                    <ClearIcon className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="h-[38px] flex items-center">
+                                <button
+                                  onClick={() => handleRemoveComponent(row.component)}
+                                  className="text-gray-500 hover:text-red-700 focus:outline-none"
+                                >
+                                  <ClearIcon className="w-5 h-5" />
+                                </button>
+                              </div>
+                            )}
+                            <div className="h-[38px] flex items-center">
+                              {/* Empty space to align with Add More button */}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="h-[38px] flex items-center">
+                            <button
+                              onClick={() => handleRemoveComponent(row.component)}
+                              className="text-gray-500 hover:text-red-700 focus:outline-none"
+                            >
+                              <ClearIcon className="w-5 h-5" />
+                            </button>
+                          </div>
+                        )
+                      ) : (
+                        <div className="h-[38px]"></div>
                       )
                     ) : (
-                      <div className="flex flex-col gap-2">
+                      <div className="space-y-2">
                         {expansionNetworkTypes.map(({ componentType }) => (
                           selectedComponents[componentType] ? (
                             <div key={componentType} className="h-[38px] flex items-center">

@@ -2,33 +2,33 @@
 const SCORE_WEIGHTS = {
   // CPU Weights - Based on real-world performance impact
   cpu: {
-    cores: 8,          // Reduced weight as not all cores are equally utilized
-    threads: 4,        // Reduced weight as hyperthreading impact varies
-    baseClock: 12,     // Base clock has less impact than boost
-    boostClock: 25,    // Increased weight as boost clock is more important
-    cache: 8,          // Increased weight as cache significantly impacts performance
-    tdp: 3,           // TDP indicates power efficiency and potential performance
-    architecture: 1.5  // Architecture has significant impact on performance
+    cores: 4,          // Reduced from 8
+    threads: 2,        // Reduced from 4
+    baseClock: 6,      // Reduced from 12
+    boostClock: 12,    // Reduced from 25
+    cache: 4,          // Reduced from 8
+    tdp: 1.5,         // Reduced from 3
+    architecture: 1.5  // Kept same as it's a multiplier
   },
   
   // GPU Weights - Based on gaming performance metrics
   gpu: {
-    vramGB: 15,        // Increased weight as VRAM is crucial for modern games
-    boostClockMHz: 0.02, // Increased weight for clock speed
-    cores: 0.01,       // Adjusted for modern GPU architectures
-    memoryBusWidth: 0.8, // Increased weight as memory bandwidth is crucial
-    memoryType: 1.3,   // Memory type significantly impacts performance
-    architecture: 1.6,  // Architecture has major impact on performance
-    tdp: 0.015        // TDP indicates power efficiency and potential performance
+    vramGB: 7.5,       // Reduced from 15
+    boostClockMHz: 0.01, // Reduced from 0.02
+    cores: 0.005,      // Reduced from 0.01
+    memoryBusWidth: 0.4, // Reduced from 0.8
+    memoryType: 1.3,   // Kept same as it's a multiplier
+    architecture: 1.6,  // Kept same as it's a multiplier
+    tdp: 0.0075       // Reduced from 0.015
   },
   
   // RAM Weights - Based on gaming performance impact
   ram: {
-    sizeGB: 1.0,      // Normalized for 16GB as baseline
-    speedMHz: 0.008,  // Adjusted for DDR4/DDR5 speeds
-    type: 1.2,        // RAM type has significant impact
-    channels: 1.3,    // Dual/triple/quad channel has major impact
-    latency: 0.9      // CAS latency impacts performance
+    sizeGB: 0.5,      // Reduced from 1.0
+    speedMHz: 0.004,  // Reduced from 0.008
+    type: 1.2,        // Kept same as it's a multiplier
+    channels: 1.3,    // Kept same as it's a multiplier
+    latency: 0.9      // Kept same as it's a multiplier
   }
 };
 
@@ -36,48 +36,48 @@ const SCORE_WEIGHTS = {
 const MULTIPLIERS = {
   // CPU Architecture multipliers - Based on relative performance
   cpuArchitecture: {
-    'Zen 4': 1.5,     // Latest AMD architecture
-    'Zen 3': 1.35,    // Previous generation AMD
-    'Zen 2': 1.2,     // Older AMD architecture
-    'Alder Lake': 1.45, // Latest Intel architecture
-    'Raptor Lake': 1.5, // Latest Intel architecture
-    'Rocket Lake': 1.3, // Previous generation Intel
-    'Comet Lake': 1.25 // Older Intel architecture
+    'Zen 4': 1.5,     // Kept same as it's a relative multiplier
+    'Zen 3': 1.35,    // Kept same as it's a relative multiplier
+    'Zen 2': 1.2,     // Kept same as it's a relative multiplier
+    'Alder Lake': 1.45, // Kept same as it's a relative multiplier
+    'Raptor Lake': 1.5, // Kept same as it's a relative multiplier
+    'Rocket Lake': 1.3, // Kept same as it's a relative multiplier
+    'Comet Lake': 1.25 // Kept same as it's a relative multiplier
   },
 
   // GPU Series multipliers - Based on relative performance tiers
   gpuSeries: {
     // NVIDIA
-    'GTX 16': 0.8,    // Entry-level gaming
-    'GTX 10': 0.7,    // Older entry-level
-    'RTX 20': 1.0,    // Baseline for comparison
-    'RTX 30': 1.25,   // Previous generation high-end
-    'RTX 40': 1.5,    // Latest generation high-end
-    'RTX 50': 1.7,    // Future generation (placeholder)
+    'GTX 16': 0.8,    // Kept same as it's a relative multiplier
+    'GTX 10': 0.7,    // Kept same as it's a relative multiplier
+    'RTX 20': 1.0,    // Kept same as it's a relative multiplier
+    'RTX 30': 1.25,   // Kept same as it's a relative multiplier
+    'RTX 40': 1.5,    // Kept same as it's a relative multiplier
+    'RTX 50': 1.7,    // Kept same as it's a relative multiplier
     // AMD
-    'RX 5000': 0.9,   // Previous generation AMD
-    'RX 6000': 1.15,  // Previous generation high-end
-    'RX 7000': 1.4,   // Latest generation AMD
+    'RX 5000': 0.9,   // Kept same as it's a relative multiplier
+    'RX 6000': 1.15,  // Kept same as it's a relative multiplier
+    'RX 7000': 1.4,   // Kept same as it's a relative multiplier
     // Intel
-    'ARC A': 0.85,    // Entry-level Intel
-    'ARC B': 1.1      // Mid-range Intel
+    'ARC A': 0.85,    // Kept same as it's a relative multiplier
+    'ARC B': 1.1      // Kept same as it's a relative multiplier
   },
 
   // Memory type multipliers - Based on bandwidth and performance
   memoryType: {
-    'GDDR6X': 1.4,    // Highest performance
-    'GDDR6': 1.3,     // High performance
-    'GDDR5X': 1.2,    // Mid-high performance
-    'GDDR5': 1.0,     // Baseline
-    'HBM2': 1.5,      // High bandwidth memory
-    'HBM2e': 1.6      // Enhanced high bandwidth memory
+    'GDDR6X': 1.4,    // Kept same as it's a relative multiplier
+    'GDDR6': 1.3,     // Kept same as it's a relative multiplier
+    'GDDR5X': 1.2,    // Kept same as it's a relative multiplier
+    'GDDR5': 1.0,     // Kept same as it's a relative multiplier
+    'HBM2': 1.5,      // Kept same as it's a relative multiplier
+    'HBM2e': 1.6      // Kept same as it's a relative multiplier
   },
 
   // RAM type multipliers - Based on performance characteristics
   ramType: {
-    'DDR5': 1.3,      // Latest generation
-    'DDR4': 1.0,      // Current standard
-    'DDR3': 0.7       // Older generation
+    'DDR5': 1.3,      // Kept same as it's a relative multiplier
+    'DDR4': 1.0,      // Kept same as it's a relative multiplier
+    'DDR3': 0.7       // Kept same as it's a relative multiplier
   }
 };
 
