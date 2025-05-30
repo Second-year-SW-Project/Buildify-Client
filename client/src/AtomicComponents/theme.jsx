@@ -152,9 +152,6 @@ const theme = createTheme({
     white90: {
       main: "rgba(255, 255, 255, 0.9)",
     },
-    white: {
-      main: '#FFFFFF'
-    },
     error: {
       main: "#D91E18",
       contrastText: "#ffd6d6",
