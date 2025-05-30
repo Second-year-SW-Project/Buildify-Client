@@ -6,28 +6,11 @@ const CPU_SCORE_WEIGHTS = {
   boostClock: 20,
 };
 
-// GPU scoring constants
+// GPU scoring constants. Normalized as suits
 const GPU_SCORE_WEIGHTS = {
-  vramGB: 5,        // Base weight for VRAM, reduced to balance exponential scaling
-  boostClockMHz: 0.01, // Reduced weight, used with logarithmic scaling
-  cores: 0.005,     // Base weight for cores, reduced for exponential scaling
-  tdp: 0.2,         // Weight for TDP (power potential)
-  interfaceBandwidth: 2, // Weight for PCIe bandwidth
-  powerDelivery: 3, // Weight for power connectors (indicative of performance capacity)
-};
-
-// GPU series multipliers (adjusted for modern features and performance tiers)
-const GPU_SERIES_MULTIPLIERS = {
-  GTX: 0.8,        // Older series, limited features
-  'RTX 20': 0.9,   // Early ray tracing, basic DLSS
-  'RTX 30': 1.1,   // Improved ray tracing, DLSS 2.0
-  'RTX 40': 1.3,   // Advanced ray tracing, DLSS 3.0, higher efficiency
-  'RTX 50': 1.5,   // Cutting-edge, AI-enhanced, future-proof
-  'RX 5000': 0.9,  // Good performance, no ray tracing
-  'RX 6000': 1.1,  // Ray tracing, FSR support
-  'RX 7000': 1.3,  // Advanced ray tracing, FSR 3.0, competitive
-  'ARC A': 0.9,    // Entry-level Arc, basic features
-  'ARC B': 1.1,    // Improved Arc, better performance
+  vramGB: 8,
+  boostClockMHz: 0.02, // 1/50
+  cores: 0.01, // 1/100
 };
 
 // RAM scoring constants
@@ -36,9 +19,23 @@ const RAM_SCORE_WEIGHTS = {
   speedMHz: 0.0067, // 40/6000
 };
 
+// GPU series multipliers
+const GPU_SERIES_MULTIPLIERS = {
+  GTX: 0.9,
+  'RTX 20': 1.0,
+  'RTX 30': 1.1,
+  'RTX 40': 1.2,
+  'RTX 50': 1.3, // Added for RTX 50 series (e.g., RTX 5090, RTX 5080, RTX 5070)
+  'RX 5000': 1.0,
+  'RX 6000': 1.1,
+  'RX 7000': 1.2,
+  'ARC A': 1.0,
+  'ARC B': 1.1, // Added for newer Intel Arc B series (e.g., Arc B580, B570)
+};
+
 // RAM type multipliers
 const RAM_TYPE_MULTIPLIERS = {
-  DDR3: 0.9,
+  DDR3: 0.9, // Added for DDR3 from ramAttributes
   DDR4: 1.0,
   DDR5: 1.1,
 };
@@ -69,70 +66,29 @@ export function calculateCPUScore({ cores, threads, baseClock, boostClock, brand
 }
 
 /**
- * Calculate GPU performance score (advanced)
+ * Calculate GPU performance score
  * @param {Object} gpu - GPU component data
  * @param {number} gpu.vramGB - VRAM size in GB
  * @param {number} gpu.boostClockMHz - Boost clock speed in MHz
  * @param {number} gpu.cores - Number of GPU cores
  * @param {string} [gpu.series=''] - GPU series
  * @param {string} [gpu.brand='Generic'] - GPU brand
- * @param {number} [gpu.tdp=0] - Thermal Design Power in watts
- * @param {string} [gpu.interfaceType=''] - PCIe interface type
- * @param {string} [gpu.powerConnectors=''] - Power connector type
- * @returns {number} GPU performance score (0-1000 scale)
+ * @returns {number} GPU performance score
  */
-export function calculateGPUScore({ vramGB, boostClockMHz, cores, series = '', brand = 'Generic', tdp = 0, interfaceType = '', powerConnectors = '' }) {
+export function calculateGPUScore({ vramGB, boostClockMHz, cores, series = '', brand = 'Generic' }) {
   const parsedVramGB = parseFloat(vramGB) || 0;
   const parsedBoostClockMHz = parseFloat(boostClockMHz) || 0;
   const parsedCores = parseFloat(cores) || 0;
-  const parsedTdp = parseFloat(tdp) || 0;
 
-  // Exponential scaling for VRAM and cores to emphasize high-end GPUs
-  const vramScore = Math.pow(parsedVramGB, 1.5) * GPU_SCORE_WEIGHTS.vramGB;
-  const coresScore = Math.pow(parsedCores / 1000, 1.3) * GPU_SCORE_WEIGHTS.cores * 1000;
-  // Logarithmic scaling for boost clock to avoid over-dominance
-  const clockScore = Math.log1p(parsedBoostClockMHz / 1000) * GPU_SCORE_WEIGHTS.boostClockMHz * 1000;
-  // TDP score: moderate weight, capped to avoid over-favoring high power
-  const tdpScore = Math.min(parsedTdp, 400) * GPU_SCORE_WEIGHTS.tdp;
-
-  // Interface bandwidth score based on PCIe type
-  let interfaceScore = 0;
-  if (interfaceType) {
-    const upperInterface = interfaceType.toUpperCase();
-    if (upperInterface.includes('PCIE_5_0_X16')) interfaceScore = 100;
-    else if (upperInterface.includes('PCIE_5_0_X8')) interfaceScore = 80;
-    else if (upperInterface.includes('PCIE_4_0_X16')) interfaceScore = 70;
-    else if (upperInterface.includes('PCIE_4_0_X8')) interfaceScore = 60;
-    else if (upperInterface.includes('PCIE_3_0_X16')) interfaceScore = 50;
-    else if (upperInterface.includes('PCIE_3_0_X8')) interfaceScore = 40;
-  }
-  const interfaceContribution = interfaceScore * GPU_SCORE_WEIGHTS.interfaceBandwidth;
-
-  // Power delivery score based on connectors
-  let powerScore = 0;
-  if (powerConnectors) {
-    const upperConnectors = powerConnectors.toUpperCase();
-    if (upperConnectors.includes('16-PIN')) powerScore = 100; // High-end, modern (e.g., RTX 40/50)
-    else if (upperConnectors.includes('2X8-PIN')) powerScore = 90;
-    else if (upperConnectors.includes('6+8-PIN')) powerScore = 80;
-    else if (upperConnectors.includes('8-PIN')) powerScore = 60;
-    else if (upperConnectors.includes('6-PIN')) powerScore = 40;
-  }
-  const powerContribution = powerScore * GPU_SCORE_WEIGHTS.powerDelivery;
-
-  // Raw score combining all factors
-  const rawScore = vramScore + clockScore + coresScore + tdpScore + interfaceContribution + powerContribution;
-
-  // Apply series multiplier for modern features (ray tracing, AI, etc.)
+  const rawScore =
+    (parsedVramGB * GPU_SCORE_WEIGHTS.vramGB) +
+    (parsedBoostClockMHz * GPU_SCORE_WEIGHTS.boostClockMHz) +
+    (parsedCores * GPU_SCORE_WEIGHTS.cores);
+  
   const normalizedSeries = normalizeGPUSeries(series);
   const seriesMultiplier = GPU_SERIES_MULTIPLIERS[normalizedSeries] || 1.0;
-
-  // Scale to 0-1000 range (assuming a rough max raw score of ~1000 before multiplier)
-  const maxRawScore = 1000; // Approximate max for balancing
-  const scaledScore = (rawScore * seriesMultiplier) * (1000 / maxRawScore);
   
-  // Cap at 1000 and ensure non-negative
-  return parseFloat(Math.min(Math.max(scaledScore, 0), 1000).toFixed(2));
+  return parseFloat((rawScore * seriesMultiplier).toFixed(2));
 }
 
 /**
@@ -164,9 +120,7 @@ export function calculateRAMScore({ sizeGB, speedMHz, type = 'DDR4' }) {
  * @returns {number} Total system performance score
  */
 export function calculateTotalScore(cpuScore, gpuScore, ramScore) {
-  // Adjust weights to account for GPU's larger score range (0-1000)
-  const normalizedGpuScore = gpuScore / 10; // Scale GPU score down for balance
-  return parseFloat(((cpuScore * 0.3) + (normalizedGpuScore * 0.5) + (ramScore * 0.2)).toFixed(2));
+  return parseFloat(((cpuScore * 0.3) + (gpuScore * 0.5) + (ramScore * 0.2)).toFixed(2));
 }
 
 /**
@@ -199,9 +153,6 @@ export function calculateProductScore(product) {
       cores: parseFloat(product.gpuCores) || 0,
       series: product.gpuSeries || '',
       brand: product.manufacturer || 'Generic',
-      tdp: parseFloat(product.tdp) || 0,
-      interfaceType: product.interfaceType || '',
-      powerConnectors: product.powerConnectors || '',
     };
     console.log('GPU Data:', gpuData);
 
@@ -233,9 +184,6 @@ export function calculateProductScore(product) {
       cores: parseFloat(product.gpuCores) || 0,
       series: product.gpuChipset || '',
       brand: product.manufacturer || 'Generic',
-      tdp: parseFloat(product.tdp) || 0,
-      interfaceType: product.interfaceType || '',
-      powerConnectors: product.powerConnectors || '',
     };
     console.log('GPU Data:', gpuData);
     gpuScore = calculateGPUScore(gpuData);
@@ -324,48 +272,4 @@ export function toCamelCase(product) {
       return [camelKey, toCamelCase(value)];
     })
   );
-}
-
-/**
- * Calculate scores for a prebuilt PC
- * @param {Object} product - Prebuilt PC product data
- * @returns {Object} Component scores and total score
- */
-export function calculatePrebuiltPcScore(product) {
-  const cpuData = {
-    cores: parseFloat(product.cpuCores) || 0,
-    threads: parseFloat(product.cpuThreads) || 0,
-    baseClock: parseFloat(product.cpuBaseClock) || 0,
-    boostClock: parseFloat(product.cpuBoostClock) || 0,
-    brand: product.manufacturer || 'Generic',
-  };
-
-  const gpuData = {
-    vramGB: parseFloat(product.gpuVram) || 0,
-    boostClockMHz: parseFloat(product.gpuBoostClock) || 0,
-    cores: parseFloat(product.gpuCores) || 0,
-    series: product.gpuSeries || '',
-    brand: product.manufacturer || 'Generic',
-    tdp: parseFloat(product.tdp) || 0,
-    interfaceType: product.interfaceType || '',
-    powerConnectors: product.powerConnectors || '',
-  };
-
-  const ramData = {
-    sizeGB: parseFloat(product.ramSize) || 0,
-    speedMHz: parseFloat(product.ramSpeed) || 0,
-    type: product.ramType?.toUpperCase() || 'DDR4',
-  };
-
-  const cpuScore = calculateCPUScore(cpuData);
-  const gpuScore = calculateGPUScore(gpuData);
-  const ramScore = calculateRAMScore(ramData);
-  const totalScore = calculateTotalScore(cpuScore, gpuScore, ramScore);
-
-  return {
-    cpu: cpuScore,
-    gpu: gpuScore,
-    ram: ramScore,
-    total: totalScore,
-  };
 }

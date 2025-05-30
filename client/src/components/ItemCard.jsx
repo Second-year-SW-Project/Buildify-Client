@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../src/redux/cartSlice';
 import { toast } from 'sonner';
-import { calculateCPUScore, calculateGPUScore, calculateRAMScore, calculatePrebuiltPcScore } from '../utils/scoreCalculator';
+import { calculateCPUScore, calculateGPUScore, calculateRAMScore, calculateProductScore } from '../utils/scoreCalculator';
 
 const ItemCard = ({ product }) => {
   const dispatch = useDispatch();
@@ -76,7 +76,7 @@ const ItemCard = ({ product }) => {
           type: product.memoryType
         });
       case 'prebuild':
-        const scores = calculatePrebuiltPcScore(product);
+        const scores = calculateProductScore(product);
         return scores.total;
       default:
         return null;

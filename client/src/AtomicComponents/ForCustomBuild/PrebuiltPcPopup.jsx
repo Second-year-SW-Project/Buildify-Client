@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { calculatePrebuiltPcScore } from '../../utils/scoreCalculator';
+import { calculateProductScore } from '../../utils/scoreCalculator';
 import { toast } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../redux/cartSlice';
@@ -11,7 +11,7 @@ function PrebuiltPcPopup({ prebuiltPcs, budget, highestGameScore, onClose }) {
   
   const filteredPrebuilds = prebuiltPcs
     .map((pc) => {
-      const scores = calculatePrebuiltPcScore(pc);
+      const scores = calculateProductScore(pc);
       console.log('PC Scores:', { pc: pc.name, scores });
       return { ...pc, scores };
     })
