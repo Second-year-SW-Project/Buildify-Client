@@ -26,22 +26,33 @@ function SearchBar({ isExpanded, onExpand, onGameSelect }) {
             description: game.description,
             image: game.image,
             cpu: {
-              cores: game.cpu.cores,
-              threads: game.cpu.threads,
-              baseClock: game.cpu.baseClock,
-              boostClock: game.cpu.boostClock,
+              cores: parseFloat(game.cpu.cores) || 0,
+              threads: parseFloat(game.cpu.threads) || 0,
+              baseClock: parseFloat(game.cpu.baseClock) || 0,
+              boostClock: parseFloat(game.cpu.boostClock) || 0,
+              brand: game.cpu.brand || 'Generic',
+              cache: parseFloat(game.cpu.cache) || 0,
+              tdp: parseFloat(game.cpu.tdp) || 0,
+              architecture: game.cpu.architecture || ''
             },
             gpu: {
-              series: game.gpu.series,
-              vramGB: game.gpu.vramGB,
-              boostClockMHz: game.gpu.boostClockMHz,
-              cores: game.gpu.cores,
+              series: game.gpu.series || '',
+              vramGB: parseFloat(game.gpu.vramGB) || 0,
+              boostClockMHz: parseFloat(game.gpu.boostClockMHz) || 0,
+              cores: parseFloat(game.gpu.cores) || 0,
+              brand: game.gpu.brand || 'Generic',
+              memoryBusWidth: parseFloat(game.gpu.memoryBusWidth) || 256,
+              memoryType: game.gpu.memoryType || 'GDDR6',
+              architecture: game.gpu.architecture || '',
+              tdp: parseFloat(game.gpu.tdp) || 0
             },
             ram: {
-              sizeGB: game.ram.sizeGB,
-              speedMHz: game.ram.speedMHz,
-              type: game.ram.type,
-            },
+              sizeGB: parseFloat(game.ram.sizeGB) || 0,
+              speedMHz: parseFloat(game.ram.speedMHz) || 0,
+              type: game.ram.type || 'DDR4',
+              channels: parseFloat(game.ram.channels) || 2,
+              latency: parseFloat(game.ram.latency) || 16
+            }
           }));//Transforms the games to the desired format
           setAvailableGames(transformedGames);
         } else {

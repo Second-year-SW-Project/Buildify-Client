@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import GameCard from './GameCard';
 import SearchBar from './SearchBar';
 import GameDetailPopup from './GameDetailPopup';
-import { calculateCPUScore, calculateGPUScore, calculateRAMScore, calculateTotalScore } from '../../utils/scoreCalculator';
+import { calculateGameScore } from '../../utils/scoreCalculator';
 
 function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);//State for the search bar
@@ -13,7 +13,7 @@ function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
 
   // Calculate highest score
   const highestScore = selectedGames.length > 0 
-    ? Math.max(...selectedGames.map(game => game.scores.total))
+    ? Math.max(...selectedGames.map(game => game.scores?.total || 0))
     : 0;
 
   useEffect(() => {
@@ -29,20 +29,14 @@ function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
   }, [searchRef]);//Adds an event listener to the document to close the search bar when the user clicks outside of it
 
   const handleGameSelectInternal = (game) => {
-    const cpuScore = calculateCPUScore(game.cpu);
-    const gpuScore = calculateGPUScore(game.gpu);
-    const ramScore = calculateRAMScore(game.ram);
-    const totalScore = calculateTotalScore(cpuScore, gpuScore, ramScore);
-
+    // Calculate scores using the calculateGameScore function
+    const scores = calculateGameScore(game);
+    
     const gameWithScores = { 
       ...game, 
-      scores: {
-        cpu: cpuScore,
-        gpu: gpuScore,
-        ram: ramScore,
-        total: totalScore
-      }
-    };//Enhances the game object with the scores
+      scores
+    };
+    
     onGameSelect(gameWithScores);//Passes the game with the scores to the parent component
     setIsSearchExpanded(false);//Closes the search bar
   };
@@ -63,7 +57,7 @@ function GameSelector({ selectedGames, onGameSelect, onRemoveGame }) {
           <h2 className="text-xl font-medium">Pick your favorite games</h2>
           {selectedGames.length > 0 && (
             <p className="text-sm text-gray-600 mt-1">
-              Highest Score: <span className="font-semibold">{highestScore}</span>
+              Highest Score: <span className="font-semibold">{highestScore.toFixed(2)}</span>
             </p>
           )}
         </div>

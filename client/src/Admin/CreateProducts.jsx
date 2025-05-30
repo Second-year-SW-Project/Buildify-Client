@@ -223,7 +223,7 @@ const CreateProducts = () => {
         gpuSeries: '',
         gpuVram: '',
         gpuBoostClock: '',
-        gpuCores: '',
+        prebuildGpuCores: '',
         ramSize: '',
         ramSpeed: '',
         ramType: '',
@@ -536,7 +536,7 @@ const CreateProducts = () => {
                 'gpuSeries',
                 'gpuVram',
                 'gpuBoostClock',
-                'gpuCores',
+                'prebuildGpuCores',
                 'ramSize',
                 'ramSpeed',
                 'ramType',
@@ -1752,8 +1752,8 @@ const CreateProducts = () => {
                                                     type="number"
                                                     label="GPU Cores"
                                                     width="100%"
-                                                    value={product.gpuCores}
-                                                    onChange={(value) => handleInputChange('gpuCores', value)}
+                                                    value={product.prebuildGpuCores}
+                                                    onChange={(value) => handleInputChange('prebuildGpuCores', value)}
                                                     showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
