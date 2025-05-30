@@ -77,8 +77,40 @@ function ManageProducts() {
         // Add more 
     };
 
+    // Separate useEffect for filter restoration
+    useEffect(() => {
+        const savedFilters = sessionStorage.getItem('productFilters');
+        console.log("Restoring filters from sessionStorage:", savedFilters); // Debugging
+        if (savedFilters) {
+            try {
+                const filterState = JSON.parse(savedFilters);
+                setSearchTerm(filterState.searchTerm || '');
+                setStatusFilter(filterState.statusFilter || '');
+                setSelectedDate(filterState.selectedDate ? new Date(filterState.selectedDate) : null);
 
-    //Fetch products using filters and search term
+                if (filterState.selectedMainCategory) {
+                    setSelectedMainCategory(filterState.selectedMainCategory);
+                    setSubCategoryOptions(subCategories[filterState.selectedMainCategory] || []);
+                }
+
+                if (filterState.selectedSubCategory) {
+                    console.log("Restoring selected subcategory:", filterState.selectedSubCategory); // Debugging
+                    setSelectedSubCategory(filterState.selectedSubCategory);
+                }
+
+                setCurrentPage(filterState.currentPage || 1);
+                setItemsPerPage(filterState.itemsPerPage || 5);
+
+                // Only remove after successful restoration
+                sessionStorage.removeItem('productFilters');
+            } catch (error) {
+                console.error('Error restoring filters:', error);
+                sessionStorage.removeItem('productFilters');
+            }
+        }
+    }, []); // Only run once on component mount
+
+    // Separate useEffect for fetching products
     useEffect(() => {
         fetchProducts(searchTerm);
     }, [currentPage, itemsPerPage, searchTerm, statusFilter, selectedDate, selectedMainCategory, selectedSubCategory]);
@@ -92,13 +124,12 @@ function ManageProducts() {
                 limit: itemsPerPage,
                 search: searchTerm,
                 statusFilter: statusFilter,
-                date: selectedDate ? selectedDate.toISOString() : null, // Date format conversion to ISO string
+                date: selectedDate ? selectedDate.toISOString() : null,
                 subCategory: selectedSubCategory
             };
+            // console.log("Fetching products with params:", params); // Debugging
 
             const response = await axios.get(`${backendUrl}/api/product/all`, { params });
-
-            console.log("API Response:", response.data);// Debugging
 
             if (response.data && Array.isArray(response.data.data)) {
                 const allProducts = response.data.data;
@@ -123,6 +154,18 @@ function ManageProducts() {
 
     //Handle edit product function
     const handleEdit = (id) => {
+        // Store current filter state in sessionStorage
+        const filterState = {
+            searchTerm,
+            statusFilter,
+            selectedDate: selectedDate ? selectedDate.toISOString() : null,
+            selectedMainCategory,
+            selectedSubCategory,
+            currentPage,
+            itemsPerPage
+        };
+        sessionStorage.setItem('productFilters', JSON.stringify(filterState));
+        console.log("Stored filter state:", filterState); // Debugging
         navigate(`/adminpanel/products/editproduct/${id}`);
     };
 
@@ -288,8 +331,9 @@ function ManageProducts() {
                                 width="100%"
                                 value={searchTerm}
                                 onChange={(e) => {
-                                    setSearchTerm(e.target.value);
-                                    fetchOrders(e.target.value);
+                                    const newSearchTerm = e.target.value;
+                                    setSearchTerm(newSearchTerm);
+                                    fetchProducts(newSearchTerm);
                                 }}
                             />
                         </div>
