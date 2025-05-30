@@ -19,19 +19,6 @@ const compatibilityCheckers = {
       });
     }
 
-    // Check if CPU includes stock cooler
-    if (!cpu.includesCooler) {
-      warnings.push({
-        type: "warning",
-        text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
-      });
-    } else if (cpu.includesCooler && cpu.tdp > 65) {
-      warnings.push({
-        type: "note",
-        text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
-      });
-    }
-
     return warnings;
   },
 
@@ -43,7 +30,7 @@ const compatibilityCheckers = {
     if (cooler.supportedSocket) {
       const supportedSockets = Array.isArray(cooler.supportedSocket)
         ? cooler.supportedSocket.map(s => s.toLowerCase().trim())
-        : cooler.supportedSocket.split(',').map(s => s.toLowerCase().trim());
+        : [cooler.supportedSocket.toLowerCase().trim()];
 
       if (!supportedSockets.includes(cpu.socketType.toLowerCase())) {
         const isIntelSocket = cpu.socketType.toLowerCase().startsWith('lga');
@@ -61,14 +48,6 @@ const compatibilityCheckers = {
       warnings.push({
         type: "warning",
         text: `CPU Cooler max TDP (${cooler.maxTdp}W) is lower than CPU TDP (${cpu.tdp}W). Consider a more powerful cooler.`,
-      });
-    }
-
-    // Check if CPU includes cooler
-    if (!cpu.includesCooler && !cooler) {
-      warnings.push({
-        type: "warning",
-        text: "CPU does not include a cooler. A CPU cooler must be selected.",
       });
     }
 
@@ -149,6 +128,7 @@ const compatibilityCheckers = {
     // Map storage types to motherboard interface types
     const mapStorageTypeToInterface = (storageType) => {
       switch (storageType?.toLowerCase().trim()) {
+        case 'nvme_m.2':
         case 'nvme_m2':
           return 'M.2';
         case 'sata_ssd':
@@ -180,15 +160,20 @@ const compatibilityCheckers = {
           type: "warning",
           text: "Could not verify storage type compatibility. Please check motherboard specifications.",
         });
-      } else if (!motherboardStorageTypes.includes(storageType)) {
-        warnings.push({
-          type: "warning",
-          text: `Storage device ${index + 1} type (${storageDevice.storageType}) is not compatible with motherboard. Motherboard supports: ${motherboard.storageInterfaces.map(intf => intf.type).join(', ')}.`,
-        });
+        return;
       }
 
-      // Track used slots
-      if (storageDevice.storageType === 'nvme_m2') {
+      // Check if the storage type is supported by the motherboard
+      if (!motherboardStorageTypes.includes(storageType)) {
+        warnings.push({
+          type: "warning",
+          text: `Storage device ${index + 1} type (${storageDevice.storageType}) is not compatible with motherboard. Motherboard supports: ${motherboardStorageTypes.join(', ')}.`,
+        });
+        return;
+      }
+
+      // Track used slots based on storage type
+      if (storageDevice.storageType.toLowerCase().includes('nvme') || storageDevice.storageType.toLowerCase().includes('m.2')) {
         usedM2Slots++;
         if (usedM2Slots > m2Slots) {
           warnings.push({
@@ -196,7 +181,7 @@ const compatibilityCheckers = {
             text: `Number of M.2 drives (${usedM2Slots}) exceeds available M.2 slots (${m2Slots}).`,
           });
         }
-      } else if (storageDevice.storageType === 'sata_ssd' || storageDevice.storageType === 'sata_hdd') {
+      } else if (storageDevice.storageType.toLowerCase().includes('sata')) {
         usedSataSlots++;
         if (usedSataSlots > sataSlots) {
           warnings.push({
@@ -204,6 +189,19 @@ const compatibilityCheckers = {
             text: `Number of SATA drives (${usedSataSlots}) exceeds available SATA ports (${sataSlots}).`,
           });
         }
+      }
+
+      // Add note about available slots
+      if (storageType === 'M.2' && m2Slots > 0) {
+        warnings.push({
+          type: "note",
+          text: `Motherboard has ${m2Slots} M.2 slot(s) available.`,
+        });
+      } else if (storageType === 'SATA' && sataSlots > 0) {
+        warnings.push({
+          type: "note",
+          text: `Motherboard has ${sataSlots} SATA port(s) available.`,
+        });
       }
     });
 
@@ -332,33 +330,39 @@ const compatibilityCheckers = {
   },
 
   // CPU integrated graphics and cooler check
-  checkCpuGraphics: (cpu) => {
+  checkCpuGraphics: (cpu, components) => {
     const warnings = [];
 
-    // Check integrated graphics
-    if (!cpu.integratedGraphics) {
+    // Check if there's a GPU component (either as GPU or Video Card)
+    const hasGpu = components.GPU || components["Video Card"];
+    const hasCooler = components["CPU Cooler"];
+
+    // Only show integrated graphics warning if no GPU is present
+    if (!cpu.integratedGraphics && !hasGpu) {
       warnings.push({
         type: "warning",
         text: "CPU does not have integrated graphics. A dedicated GPU is required.",
       });
-    } else if (cpu.integratedGraphics && cpu.graphicsModel) {
+    } else if (cpu.integratedGraphics && cpu.graphicsModel && !hasGpu) {
       warnings.push({
         type: "note",
         text: `CPU includes integrated ${cpu.graphicsModel} graphics.`,
       });
     }
 
-    // Check stock cooler
-    if (!cpu.includesCooler) {
-      warnings.push({
-        type: "warning",
-        text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
-      });
-    } else if (cpu.includesCooler && cpu.tdp > 65) {
-      warnings.push({
-        type: "note",
-        text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
-      });
+    // Check stock cooler only if no aftermarket cooler is selected
+    if (!hasCooler) {
+      if (!cpu.includesCooler) {
+        warnings.push({
+          type: "warning",
+          text: "This CPU does not include a stock cooler. You must select a compatible CPU cooler.",
+        });
+      } else if (cpu.includesCooler && cpu.tdp > 65) {
+        warnings.push({
+          type: "note",
+          text: "This CPU includes a stock cooler, but for better cooling performance with high TDP, consider an aftermarket cooler.",
+        });
+      }
     }
 
     return warnings;
@@ -518,12 +522,8 @@ export const checkCompatibility = (components) => {
 
   // Always check CPU graphics, but only show integrated graphics warning if no GPU
   if (components.CPU) {
-    const cpuGraphicsWarnings = compatibilityCheckers.checkCpuGraphics(components.CPU);
-    // Only add the integrated graphics warning if no GPU is present
-    const filteredWarnings = cpuGraphicsWarnings.filter(warning => 
-      !gpuComponent || !warning.text.includes("integrated graphics")
-    );
-    compatibilityWarnings.push(...filteredWarnings);
+    const cpuGraphicsWarnings = compatibilityCheckers.checkCpuGraphics(components.CPU, components);
+    compatibilityWarnings.push(...cpuGraphicsWarnings);
   }
 
   // Remove duplicate messages

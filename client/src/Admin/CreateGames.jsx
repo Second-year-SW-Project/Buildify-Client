@@ -10,6 +10,7 @@ import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useParams, useNavigate } from "react-router-dom";
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 
 const CreateGames = () => {
 
@@ -21,6 +22,7 @@ const CreateGames = () => {
 
     const navigate = useNavigate();
     const imageSelectorRef = useRef();
+    const [loading, setLoading] = useState(false);
 
     // Options for dropdowns (reusing existing ones from your product form) from category.js
     const ramTypeOptions = ramAttributes.type;
@@ -65,14 +67,35 @@ const CreateGames = () => {
                         const fetchedGame = res.data.game;
                         console.log("Fetched Game Successfully", fetchedGame);
                         setGame(fetchedGame);
-                        // Assuming backend returns image URL directly, no need to set selectedImage here
+                        
+                        // Handle existing image
+                        if (fetchedGame.image) {
+                            // Create a file object from the image URL
+                            try {
+                                const response = await fetch(fetchedGame.image);
+                                const blob = await response.blob();
+                                const file = new File([blob], 'game-image.jpg', { type: 'image/jpeg' });
+                                setSelectedImage(file);
+                                
+                                // Update the image selector
+                                if (imageSelectorRef.current) {
+                                    imageSelectorRef.current.setImages([{
+                                        file: file,
+                                        preview: fetchedGame.image
+                                    }]);
+                                }
+                            } catch (error) {
+                                console.error("Error loading existing image:", error);
+                                toast.error("Failed to load existing image");
+                            }
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching game:", error);
                     toast.error("Failed to load game data");
                 }
             };
-            fetchGame();//Fetches the game data if in edit mode
+            fetchGame();
         }
     }, [id]);
 
@@ -149,6 +172,7 @@ const CreateGames = () => {
     // Handle form submission
     const onSubmitHandler = async (e) => {
         e.preventDefault();//Prevents the default behavior of the form
+        setLoading(true);
         try {
             const formData = new FormData();//Creates a new FormData object to store the form data
 
@@ -199,12 +223,15 @@ const CreateGames = () => {
         } catch (error) {
             console.error(error);
             toast.error(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     //Render the component for the create games page
     return (
         <div>
+            <FullScreenLoader open={loading} message={isEditMode ? "Updating game..." : "Creating game..."} />
             <div>
                 <div className='mt-3 mb-5 ml-6 mr-6'>
                     <div><PageTitle value={isEditMode ? 'Edit Game' : 'Add New Game'}></PageTitle></div>
@@ -330,12 +357,50 @@ const CreateGames = () => {
                                                     type='select'
                                                     label="Series"
                                                     options={[
-                                                        { value: 'GTX', label: 'GTX' },
-                                                        { value: 'RTX 2000', label: 'RTX 2000' },
-                                                        { value: 'RTX 3000', label: 'RTX 3000' },
-                                                        { value: 'RTX 4000', label: 'RTX 4000' },
-                                                        { value: 'RX 6000', label: 'RX 6000' },
-                                                        { value: 'RX 7000', label: 'RX 7000' },
+                                                        // NVIDIA RTX 40 Series
+                                                        { value: 'RTX_4090', label: 'NVIDIA GeForce RTX 4090' },
+                                                        { value: 'RTX_4080_Super', label: 'NVIDIA GeForce RTX 4080 Super' },
+                                                        { value: 'RTX_4080', label: 'NVIDIA GeForce RTX 4080' },
+                                                        { value: 'RTX_4070_Ti_Super', label: 'NVIDIA GeForce RTX 4070 Ti Super' },
+                                                        { value: 'RTX_4070_Ti', label: 'NVIDIA GeForce RTX 4070 Ti' },
+                                                        { value: 'RTX_4070_Super', label: 'NVIDIA GeForce RTX 4070 Super' },
+                                                        { value: 'RTX_4070', label: 'NVIDIA GeForce RTX 4070' },
+                                                        { value: 'RTX_4060_Ti', label: 'NVIDIA GeForce RTX 4060 Ti' },
+                                                        { value: 'RTX_4060', label: 'NVIDIA GeForce RTX 4060' },
+                                                        // NVIDIA RTX 30 Series
+                                                        { value: 'RTX_3090_Ti', label: 'NVIDIA GeForce RTX 3090 Ti' },
+                                                        { value: 'RTX_3090', label: 'NVIDIA GeForce RTX 3090' },
+                                                        { value: 'RTX_3080_Ti', label: 'NVIDIA GeForce RTX 3080 Ti' },
+                                                        { value: 'RTX_3080', label: 'NVIDIA GeForce RTX 3080' },
+                                                        { value: 'RTX_3070_Ti', label: 'NVIDIA GeForce RTX 3070 Ti' },
+                                                        { value: 'RTX_3070', label: 'NVIDIA GeForce RTX 3070' },
+                                                        { value: 'RTX_3060_Ti', label: 'NVIDIA GeForce RTX 3060 Ti' },
+                                                        { value: 'RTX_3060', label: 'NVIDIA GeForce RTX 3060' },
+                                                        // AMD RX 7000 Series
+                                                        { value: 'RX_7900_XTX', label: 'AMD Radeon RX 7900 XTX' },
+                                                        { value: 'RX_7900_XT', label: 'AMD Radeon RX 7900 XT' },
+                                                        { value: 'RX_7800_XT', label: 'AMD Radeon RX 7800 XT' },
+                                                        { value: 'RX_7700_XT', label: 'AMD Radeon RX 7700 XT' },
+                                                        { value: 'RX_7600_XT', label: 'AMD Radeon RX 7600 XT' },
+                                                        { value: 'RX_7600', label: 'AMD Radeon RX 7600' },
+                                                        // AMD RX 6000 Series
+                                                        { value: 'RX_6950_XT', label: 'AMD Radeon RX 6950 XT' },
+                                                        { value: 'RX_6900_XT', label: 'AMD Radeon RX 6900 XT' },
+                                                        { value: 'RX_6800_XT', label: 'AMD Radeon RX 6800 XT' },
+                                                        { value: 'RX_6800', label: 'AMD Radeon RX 6800' },
+                                                        { value: 'RX_6750_XT', label: 'AMD Radeon RX 6750 XT' },
+                                                        { value: 'RX_6700_XT', label: 'AMD Radeon RX 6700 XT' },
+                                                        { value: 'RX_6650_XT', label: 'AMD Radeon RX 6650 XT' },
+                                                        { value: 'RX_6600_XT', label: 'AMD Radeon RX 6600 XT' },
+                                                        { value: 'RX_6600', label: 'AMD Radeon RX 6600' },
+                                                        // Intel Arc Series
+                                                        { value: 'Arc_B580', label: 'Intel Arc B580' },
+                                                        { value: 'Arc_B570', label: 'Intel Arc B570' },
+                                                        { value: 'Arc_A770', label: 'Intel Arc A770' },
+                                                        { value: 'Arc_A750', label: 'Intel Arc A750' },
+                                                        { value: 'Arc_A580', label: 'Intel Arc A580' },
+                                                        { value: 'Arc_A380', label: 'Intel Arc A380' },
+                                                        { value: 'Arc_A310', label: 'Intel Arc A310' }
                                                     ]}
                                                     width='100%'
                                                     value={game.gpu.series}

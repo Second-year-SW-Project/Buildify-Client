@@ -1,14 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { calculatePrebuiltPcScore } from '../../utils/scoreCalculator';
+import { calculateProductScore } from '../../utils/scoreCalculator';
 import { toast } from 'sonner';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../redux/cartSlice';
 
 function PrebuiltPcPopup({ prebuiltPcs, budget, highestGameScore, onClose }) {
+  const dispatch = useDispatch();
   console.log('PrebuiltPcPopup Props:', { prebuiltPcs, budget, highestGameScore });
   
   const filteredPrebuilds = prebuiltPcs
     .map((pc) => {
-      const scores = calculatePrebuiltPcScore(pc);
+      const scores = calculateProductScore(pc);
       console.log('PC Scores:', { pc: pc.name, scores });
       return { ...pc, scores };
     })
@@ -29,6 +32,14 @@ function PrebuiltPcPopup({ prebuiltPcs, budget, highestGameScore, onClose }) {
 
   const handleAddToCart = (pc) => {
     console.log(`Added to cart: ${pc.name} (ID: ${pc._id})`);
+    dispatch(addToCart({
+      _id: pc._id,
+      name: pc.name,
+      type: pc.type,
+      price: pc.price,
+      image: pc.imgUrls?.[0]?.url,
+      quantity: 1
+    }));
     toast.success(`${pc.name} added to cart`, {
       duration: 2000,
       style: {

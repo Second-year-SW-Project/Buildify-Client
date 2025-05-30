@@ -154,20 +154,21 @@ const CreateProducts = () => {
         manufacturer: '',
         quantity: '',
         price: '',
-        //cpu
+        // CPU (for processors and prebuilds)
         socketType: '',
-        tdp: '',
         coreCount: '',
         threadCount: '',
         baseClock: '',
         boostClock: '',
         integratedGraphics: false,
         includesCooler: false,
-        //memory
-        memoryType: '',
-        memoryCapacity: '',
-        memorySpeed: '',
-        //motherboard
+        tdp: '',
+        // Cooler
+        coolerType: '',
+        supportedSocket: '',
+        maxTdp: '',
+        height: '',
+        // Motherboard
         motherboardChipset: '',
         formFactor: '',
         ramSlots: '',
@@ -175,17 +176,34 @@ const CreateProducts = () => {
         supportedMemoryTypes: '',
         pcieSlots: [],
         storageInterfaces: [],
-        //Storage
+        // RAM
+        memoryType: '',
+        memorySpeed: '',
+        memoryCapacity: '',
+        // Storage
         storageType: '',
         storageCapacity: '',
-        //gpu
+        // GPU
         interfaceType: '',
         length: '',
         powerConnectors: '',
         vram: '',
-        cudaCores: '',
         gpuChipset: '',
-        //laptop
+        gpuCores: '',
+        // Case
+        supportedMotherboardSizes: '',
+        maxGpuLength: '',
+        maxCoolerHeight: '',
+        // Power Supply
+        wattage: '',
+        efficiencyRating: '',
+        modularType: '',
+        // Keyboard
+        keyboardType: '',
+        connectivity: '',
+        // Mouse
+        mouseType: '',
+        // Laptops
         displaySize: '',
         refreshRate: '',
         laptopType: '',
@@ -193,15 +211,11 @@ const CreateProducts = () => {
         ram: '',
         storage: '',
         graphicCard: '',
-        //monitors
+        // Monitor
+        resolution: '',
         panelType: '',
         monitorType: '',
-        //cooling
-        coolerType: '',
-        supportedSocket: '',
-        maxTdp: '',
-        height: '',
-        //prebuild
+        // Prebuilds
         cpuCores: '',
         cpuThreads: '',
         cpuBaseClock: '',
@@ -209,27 +223,17 @@ const CreateProducts = () => {
         gpuSeries: '',
         gpuVram: '',
         gpuBoostClock: '',
-        gpuCores: '',
+        prebuildGpuCores: '',
         ramSize: '',
         ramSpeed: '',
         ramType: '',
         desktopType: '',
-        //expansion_network fields
+        // Expansion Network
         componentType: '',
         soundCardChannels: '',
-        networkSpeed: '',
+        wiredNetworkSpeed: '',
         wifiStandard: '',
-        //casing
-        supportedMotherboardSizes: '',
-        maxGpuLength: '',
-        maxCoolerHeight: '',
-        //power supply
-        wattage: '',
-        efficiencyRating: '',
-        modularType: '',
-        //keyboard & mouse
-        keyboardType: '',
-        connectivity: '',
+        networkSpeed: '',
     };
 
     //Set initialstate for product data
@@ -532,7 +536,7 @@ const CreateProducts = () => {
                 'gpuSeries',
                 'gpuVram',
                 'gpuBoostClock',
-                'gpuCores',
+                'prebuildGpuCores',
                 'ramSize',
                 'ramSpeed',
                 'ramType',
@@ -1418,9 +1422,9 @@ const CreateProducts = () => {
                                             </div>
                                             <div>
                                                 <InputField
-                                                    type="select"
+                                                    type="text"
+                                                    Placeholder="Watts"
                                                     label="Max TDP"
-                                                    options={coolerMaxTdp}
                                                     width="100%"
                                                     value={product.maxTdp}
                                                     onChange={(value) => handleInputChange('maxTdp', value)}
@@ -1714,7 +1718,7 @@ const CreateProducts = () => {
                                                 <InputField
                                                     type="select"
                                                     label="GPU Series"
-                                                    options={gpuSeriesOptions}
+                                                    options={gpuChipsetOptions}
                                                     width="100%"
                                                     value={product.gpuSeries}
                                                     onChange={(value) => handleInputChange('gpuSeries', value)}
@@ -1748,8 +1752,8 @@ const CreateProducts = () => {
                                                     type="number"
                                                     label="GPU Cores"
                                                     width="100%"
-                                                    value={product.gpuCores}
-                                                    onChange={(value) => handleInputChange('gpuCores', value)}
+                                                    value={product.prebuildGpuCores}
+                                                    onChange={(value) => handleInputChange('prebuildGpuCores', value)}
                                                     showRequiredHelper={!isEditMode ? formValidation : false}
                                                 />
                                             </div>
@@ -1856,8 +1860,8 @@ const CreateProducts = () => {
                                                         label="Network Speed"
                                                         options={wiredNetworkSpeeds}
                                                         width="100%"
-                                                        value={product.networkSpeed}
-                                                        onChange={(value) => handleInputChange('networkSpeed', value)}
+                                                        value={product.wiredNetworkSpeed}
+                                                        onChange={(value) => handleInputChange('wiredNetworkSpeed', value)}
                                                         showRequiredHelper={!isEditMode ? formValidation : false}
                                                     />
                                                 </div>

@@ -55,6 +55,52 @@ const ChooseParts = () => {
       return;
     }
 
+    // Check for out of stock items
+    const outOfStockItems = [];
+    Object.entries(selectedComponents).forEach(([type, component]) => {
+      if (Array.isArray(component)) {
+        component.forEach(item => {
+          if (item.availability?.toLowerCase().includes('out of stock')) {
+            outOfStockItems.push(`${item.name} (${type})`);
+          }
+        });
+      } else if (component.availability?.toLowerCase().includes('out of stock')) {
+        outOfStockItems.push(`${component.name} (${type})`);
+      }
+    });
+
+    if (outOfStockItems.length > 0) {
+      toast.error(`Cannot save build: The following items are out of stock: ${outOfStockItems.join(', ')}`, {
+        duration: 5000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+      return;
+    }
+
+    // Check for warning messages
+    const hasWarnings = messages.some(message => 
+      message.type?.toLowerCase() === 'warning' || 
+      message.level?.toLowerCase() === 'warning'
+    );
+
+    if (hasWarnings) {
+      toast.error("Cannot save build: There are compatibility warnings that need to be resolved", {
+        duration: 4000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+      return;
+    }
+
     // Required components (excluding expansion cards/networking)
     const requiredComponents = [
       'CPU',
@@ -159,7 +205,7 @@ const ChooseParts = () => {
             <div className="flex justify-center gap-4 mb-36">
               {/* Finish Button */}
               <FinishButton
-                text="Finish"
+                text="Continue"
                 onClick={handleFinishAndAddToQuote}
               />
             </div>
