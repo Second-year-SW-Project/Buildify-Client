@@ -36,6 +36,7 @@ export function InputField({
   labelPlacement = "end",
   disabled = false,
   showRequiredHelper = false,
+  hideSpinner = false,
 }) {
   if (type === "text") {
     return (
@@ -132,6 +133,9 @@ export function InputField({
         }}
         inputProps={{
           min: 0,
+          inputMode: "numeric",
+          pattern: "[0-9]*",
+          style: hideSpinner ? { MozAppearance: 'textfield' } : undefined,
         }}
         slotProps={{
           inputLabel: {
@@ -147,6 +151,15 @@ export function InputField({
         sx={{
           width: width,
           marginBottom: "10px",
+          ...(hideSpinner && {
+            "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button": {
+              WebkitAppearance: "none",
+              margin: 0,
+            },
+            "& input[type=number]": {
+              MozAppearance: "textfield",
+            },
+          }),
           "& .MuiInputBase-input": {
             fontSize: fontSize || "16px",
           },

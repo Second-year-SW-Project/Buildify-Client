@@ -1893,13 +1893,14 @@ const CreateProducts = () => {
                                 </Typography>
                                 <div>
                                     <InputField
-                                        type='text'
+                                        type='number'
                                         Placeholder="LKR"
                                         label="Price"
                                         width='100%'
                                         value={product.price}
                                         onChange={(value) => handleInputChange('price', value)}
                                         showRequiredHelper={formValidation}
+                                        hideSpinner={true}
                                     />
                                 </div>
                             </div>
