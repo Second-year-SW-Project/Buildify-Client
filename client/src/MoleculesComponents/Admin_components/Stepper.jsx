@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-const OrderStepper = ({ activeStep, setActiveStep, orderId, orderCreatedAt, onStatusChange, orderStatus }) => {
+const OrderStepper = ({ activeStep, setActiveStep, orderId, onStatusChange, orderStatus }) => {
     const [loading, setLoading] = useState(false);
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const [stepTimestamps, setStepTimestamps] = useState({});
@@ -48,8 +48,8 @@ const OrderStepper = ({ activeStep, setActiveStep, orderId, orderCreatedAt, onSt
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
                 });
-                if (response.data.Success && response.data.data) {
-                    const orderData = response.data.data;
+                if (response.data) {
+                    const orderData = response.data;
 
                     // Initialize timestamps with all steps
                     const initialTimestamps = {

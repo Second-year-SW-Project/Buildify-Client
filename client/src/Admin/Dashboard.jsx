@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { React, useState } from 'react';
+import { React, useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
@@ -11,6 +11,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { OrderSummary } from '../MoleculesComponents/Table';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 import { styled } from '@mui/material/styles';
+import axios from 'axios';
 
 import slide1 from '../assets/images/DashboadSlider/1.png';
 import slide2 from '../assets/images/DashboadSlider/2.png';
@@ -25,7 +26,6 @@ export default function Dashboard() {
         { id: "Id", label: "OrderID" },
         { id: "userCard", label: "Customer" },
         { id: "date", label: "Ordered at" },
-        { id: "contact", label: "Contact" },
         { id: "address", label: "Shipping Address" },
         { id: "items", label: "Items" },
         { id: "price", label: "Total Price" },
@@ -38,17 +38,102 @@ export default function Dashboard() {
     const [orderFilter, setOrderFilter] = useState('All');
     const [salesFilter, setSalesFilter] = useState('All');
     const [pendingFilter, setPendingFilter] = useState('All');
+    const [StockFilter, setStockFilter] = useState('All');
+    const [growthFilter, setgrowthFilter] = useState('All');
+
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalOrders, setTotalOrders] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
 
     const palette = ['#7B16AE', '#8A00FC', '#de1aff', '#1cbab7', '#2C87C3', '#80d1ff', '#E8CCFE'];
 
     const data = [
-        { value: 5, label: 'Ram', color: palette[0] },
-        { value: 10, label: 'Graphic Cards', color: palette[1] },
-        { value: 15, label: 'Processors', color: palette[2] },
-        { value: 10, label: 'Motherboard', color: palette[3] },
-        { value: 25, label: 'Storages', color: palette[4] },
-        { value: 20, label: 'Casings', color: palette[5] },
-        { value: 10, label: 'Power Supplys', color: palette[6] },
+        {
+            london: 59,
+            paris: 57,
+            newYork: 86,
+            seoul: 21,
+            month: 'Jan',
+        },
+        {
+            london: 50,
+            paris: 52,
+            newYork: 78,
+            seoul: 28,
+            month: 'Feb',
+        },
+        {
+            london: 47,
+            paris: 53,
+            newYork: 106,
+            seoul: 41,
+            month: 'Mar',
+        },
+        {
+            london: 54,
+            paris: 56,
+            newYork: 92,
+            seoul: 73,
+            month: 'Apr',
+        },
+        {
+            london: 57,
+            paris: 69,
+            newYork: 92,
+            seoul: 99,
+            month: 'May',
+        },
+        {
+            london: 60,
+            paris: 63,
+            newYork: 103,
+            seoul: 144,
+            month: 'June',
+        },
+        {
+            london: 59,
+            paris: 60,
+            newYork: 105,
+            seoul: 319,
+            month: 'July',
+        },
+        {
+            london: 65,
+            paris: 60,
+            newYork: 106,
+            seoul: 249,
+            month: 'Aug',
+        },
+        {
+            london: 51,
+            paris: 51,
+            newYork: 95,
+            seoul: 131,
+            month: 'Sept',
+        },
+        {
+            london: 60,
+            paris: 65,
+            newYork: 97,
+            seoul: 55,
+            month: 'Oct',
+        },
+        {
+            london: 67,
+            paris: 64,
+            newYork: 76,
+            seoul: 48,
+            month: 'Nov',
+        },
+        {
+            london: 61,
+            paris: 70,
+            newYork: 103,
+            seoul: 25,
+            month: 'Dec',
+        },
     ];
 
     const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
@@ -70,9 +155,76 @@ export default function Dashboard() {
         'Page L',
     ];
 
+    const [pendingOrders, setPendingOrders] = useState([]);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    // Fetch pending orders
+    const fetchPendingOrders = async () => {
+        try {
+            console.log('Fetching pending orders...');
+            const params = {
+                page: currentPage,
+                limit: itemsPerPage,
+                status: 'Pending'
+            };
+
+            const response = await axios.get(`${backendUrl}/api/checkout/payment`, {
+                params,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
+
+            console.log('Received data:', response.data);
+
+            if (response.data && Array.isArray(response.data.data)) {
+                setPendingOrders(response.data.data);
+                setTotalOrders(response.data.pagination.total);
+                setTotalPages(response.data.pagination.totalPages);
+                console.log('Updated state with:', {
+                    orders: response.data.data,
+                    total: response.data.pagination.total,
+                    pages: response.data.pagination.totalPages
+                });
+            } else {
+                console.error('API returned unexpected data structure:', response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching pending orders:", error);
+        }
+    };
+
+    useEffect(() => {
+        console.log('Dashboard mounted, fetching orders...');
+        fetchPendingOrders();
+    }, [currentPage, itemsPerPage]);
+
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+    };
+
+    const handleItemsPerPageChange = (newItemsPerPage) => {
+        setItemsPerPage(newItemsPerPage);
+        setCurrentPage(1);
+    };
+
+    const chartSetting = {
+        yAxis: [
+            {
+                label: 'rainfall (mm)',
+                width: 60,
+            },
+        ],
+        height: 300,
+    };
+
+    const dataset = [
+
+    ];
+
     return (
         <div className="mt-2 border-2 border-gray-200 rounded-lg m-2 max-w-full">
-            <div className="relative w-[1080px] h-64 rounded-lg m-2 overflow-hidden max-w-full">
+            <div className='Summary relative rounded-lg h-64 grid gap-4 flex flex-row m-2'>
                 <Swiper
                     modules={[Autoplay, EffectFade]}
                     slidesPerView={1}
@@ -82,23 +234,23 @@ export default function Dashboard() {
                         disableOnInteraction: false,
                     }}
                     fadeEffect={{ crossFade: true }}
-                    className="w-full h-full"
+                    style={{ width: '100%', height: '100%' }}
                 >
                     {[slide1, slide2, slide3].map((img, index) => (
                         <SwiperSlide key={index}>
                             <img
                                 src={img}
                                 alt={`Slide ${index + 1}`}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover rounded-lg"
                             />
                         </SwiperSlide>
                     ))}
                 </Swiper>
 
-                {/* Overlay background */}
-                <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-40 z-10" />
 
-                {/* Text overlay */}
+                <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-40 z-10 rounded-lg" />
+
+
                 <div className="absolute top-0 left-0 z-20 w-full h-full p-6 flex flex-col justify-center">
                     <Typography variant="h4" className="text-white font-bold">Welcome Back</Typography>
                     <Typography variant="h4" className="text-white font-bold">Admin</Typography>
@@ -256,8 +408,8 @@ export default function Dashboard() {
                             variant="standard"
                             size="small"
                             width="110px"
-                            value={orderFilter}
-                            onChange={(val) => setOrderFilter(val)}
+                            value={StockFilter}
+                            onChange={(val) => setStockFilter(val)}
                             options={[
                                 { value: 'All', label: 'All' },
                                 { value: 'today', label: 'Today' },
@@ -307,8 +459,8 @@ export default function Dashboard() {
                                 type="select"
                                 size="small"
                                 width="110px"
-                                value={orderFilter}
-                                onChange={(val) => setOrderFilter(val)}
+                                value={growthFilter}
+                                onChange={(val) => setgrowthFilter(val)}
                                 options={[
                                     { value: 'All', label: 'All' },
                                     { value: 'today', label: 'Today' },
@@ -320,7 +472,7 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className='ProductsList flex flex-row'>
-                        <BarChart
+                        {/* <BarChart
                             width={700}
                             height={280}
                             series={[
@@ -336,6 +488,17 @@ export default function Dashboard() {
                                 maxWidth: '100%',
                                 padding: 0,
                             }}
+                        /> */}
+                        <BarChart
+                            dataset={data}
+                            xAxis={[{ dataKey: 'month' }]}
+                            series={[
+                                { dataKey: 'london', label: 'London' },
+                                { dataKey: 'paris', label: 'Paris' },
+                                { dataKey: 'newYork', label: 'New York' },
+                                { dataKey: 'seoul', label: 'Seoul' },
+                            ]}
+                            {...chartSetting}
                         />
                     </div>
                 </div>
@@ -356,25 +519,40 @@ export default function Dashboard() {
             </div>
 
             <div className='recentOrders grid gap-4 grid-cols-1 border-2 border-purple-600 rounded-lg flex flex-row mt-8 mb-8 ml-2 mr-2'>
-                <div className='flex flex-row justify-between items-center p-2'>
-                    <Typography variant="h6" fontWeight="bold" color='primary'>Recent Orders</Typography>
-                    <div sx={{ width: '100%', borderRadius: "20px" }}>
-                        <OrderSummary
-                            columns={orderColumns}
-                            orders={normalOrders}
-                            customRenderers={{
-                                userCard: (order) => order.userDetails,
-                                items: (order) => order.items
-                            }}
-                        // pagination={{
-                        //     currentPage,
-                        //     totalPages,
-                        //     totalItems: totalOrders,
-                        //     itemsPerPage,
-                        //     onPageChange: handlePageChange,
-                        //     onItemsPerPageChange: handleItemsPerPageChange
-                        // }}
-                        />
+                <div className='flex flex-col justify-between p-2 pl-4 pr-4'>
+                    <div className='flex flex-row justify-between items-center mb-4 mr-6'>
+                        <Typography variant="h6" fontWeight="bold" color='primary' sx={{ justifyContent: "end" }}>Recent Orders</Typography>
+                        <Link to="/adminpanel/orders/orderlist" state={{ selectedTab: 'Pending' }}>
+                            <Typography
+                                variant="body1"
+                                fontWeight="bold"
+                                color="primary"
+                                className="cursor-pointer hover:underline"
+                            >
+                                View All
+                            </Typography>
+                        </Link>
+                    </div>
+
+                    <div sx={{ width: '100%' }}>
+                        {pendingOrders.length > 0 ? (
+                            <OrderSummary
+                                columns={orderColumns}
+                                orders={pendingOrders}
+                                pagination={{
+                                    currentPage,
+                                    totalPages,
+                                    totalItems: totalOrders,
+                                    itemsPerPage,
+                                    onPageChange: handlePageChange,
+                                    onItemsPerPageChange: handleItemsPerPageChange
+                                }}
+                            />
+                        ) : (
+                            <Typography variant="body1" color="textSecondary" sx={{ p: 2 }}>
+                                No pending orders found
+                            </Typography>
+                        )}
                     </div>
                 </div>
             </div>
