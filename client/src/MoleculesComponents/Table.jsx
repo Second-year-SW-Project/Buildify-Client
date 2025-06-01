@@ -479,7 +479,7 @@ export function OrderSummary({
   const totalCount = pagination ? pagination.totalItems : orders.length;
 
   return (
-    <Paper sx={{ width: width || "100%", overflow: "hidden", mt: 4 }}>
+    <Paper sx={{ width: width || "100%", overflow: "hidden" }}>
       <TableContainer>
         <Table sx={{ borderRadius: "20px" }}>
           <TableHead>
@@ -581,6 +581,142 @@ export function OrderSummary({
   );
 }
 
+export function GameTable({
+  columns,
+  data,
+  width,
+  color,
+}) {
+  // Only show the first 5 rows, no pagination
+  const autoSizeCellStyle = {
+    padding: "8px 10px",
+    whiteSpace: "normal", // Allow wrapping
+    wordBreak: "break-word", // Break long words
+    maxWidth: 220, // Limit cell width for wrapping
+  };
+  return (
+    <Paper sx={{ width: width || "100%", overflow: "hidden" }}>
+      <TableContainer>
+        <Table sx={{ borderRadius: "16px" }}>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: theme.palette.primary100.main }}>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  style={{
+                    ...autoSizeCellStyle,
+                    color: color || "gray",
+                    fontWeight: "bold",
+                    width: column.width || 'auto',
+                    padding: "12px",
+                  }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.slice(0, 5).map((row, index) => (
+              <TableRow key={index} hover>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    style={{ ...autoSizeCellStyle, color: color || "black", fontWeight: "bold" }}
+                  >
+                    {row[column.id]}
+                  </TableCell>
+                ))}
+
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  );
+}
+
+export function TopProductsTable({
+  columns,
+  cardDetails,
+  width,
+  color,
+  pagination = null, // for future API-based pagination
+  onPageChange, // callback for page change (future API)
+  onRowsPerPageChange, // callback for rows per page change (future API)
+}) {
+  // Ensure cardDetails is always an array
+  const rows = Array.isArray(cardDetails) ? cardDetails : [cardDetails];
+  // Pagination state
+  const [page, setPage] = React.useState(0);
+  const rowsPerPage = 5; // Always 5 as per requirements
+
+  // Use pagination props if provided, otherwise use local state
+  const currentPage = pagination ? pagination.currentPage - 1 : page; // 0-based for MUI
+  const totalCount = pagination ? pagination.totalItems : rows.length;
+
+  // Handler for page change
+  const handleChangePage = (event, newPage) => {
+    if (pagination && onPageChange) {
+      onPageChange(newPage + 1); // 1-based for API
+    } else {
+      setPage(newPage);
+    }
+  };
+
+  // Handler for rows per page change (future-proof, but always 5 for now)
+  const handleChangeRowsPerPage = (event) => {
+    if (pagination && onRowsPerPageChange) {
+      onRowsPerPageChange(5); // Always 5
+    } else {
+      setPage(0);
+    }
+  };
+
+  const autoSizeCellStyle = {
+    padding: "8px 10px",
+    whiteSpace: "normal", // Allow wrapping
+    wordBreak: "break-word", // Break long words
+    maxWidth: 220, // Limit cell width for wrapping
+  };
+  return (
+    <Paper sx={{ width: width || "100%", overflow: "hidden" }}>
+      <TableContainer>
+        <Table sx={{ borderRadius: "16px" }}>
+          <TableBody>
+            {rows.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((row, index) => (
+              <TableRow key={index} hover>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    style={{ ...autoSizeCellStyle, color: color || "black", fontWeight: "bold" }}
+                  >
+                    {row[column.id]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5]}
+        component="div"
+        count={totalCount}
+        rowsPerPage={rowsPerPage}
+        page={currentPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        labelRowsPerPage={"Rows per page"}
+        labelDisplayedRows={({ from, to, count }) => {
+          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / rowsPerPage);
+          return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
+        }}
+      />
+    </Paper>
+  );
+}
 
 // How to Use
 
