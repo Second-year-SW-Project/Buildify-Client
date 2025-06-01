@@ -259,7 +259,7 @@ function AdminApp() {
 
       toast.success("Logout successfully");
 
-      navigate("/adminpanel/auth/signup"); //Redirect to the signup page
+      navigate("/adminpanel/auth/login"); //Redirect to the login page
 
     } catch (error) {
       console.error("Logout failed:", error);

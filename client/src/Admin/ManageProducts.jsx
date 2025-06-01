@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { UserTable } from "../MoleculesComponents/Table";
-import ProductCard from "../AtomicComponents/Cards/Productcard";
+import { ProductCard } from "../AtomicComponents/Cards/Productcard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import QuantityCard from "../AtomicComponents/Cards/QuantityCard";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'

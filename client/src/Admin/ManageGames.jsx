@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { UserTable } from "../MoleculesComponents/GameTable";
-import ProductCard from "../AtomicComponents/Cards/Productcard";
+import { ProductCard } from "../AtomicComponents/Cards/Productcard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';

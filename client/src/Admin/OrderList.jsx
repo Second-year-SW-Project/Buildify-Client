@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { OrderTable } from "../MoleculesComponents/Table";
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
@@ -34,6 +34,7 @@ const debounce = (func, wait) => {
 function OrderList() {
 
     const navigate = useNavigate();
+    const location = useLocation(); // <-- get location
 
     //Backend URL
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -59,10 +60,11 @@ function OrderList() {
 
     // Set initial status from selectedTab when component mounts
     useEffect(() => {
-        if (selectedTab) {
-            setStatus(selectedTab);
+        // If selectedTab is not set in context, try to get it from location.state
+        if (!selectedTab && location.state && location.state.selectedTab) {
+            setSelectedTab(location.state.selectedTab);
         }
-    }, [selectedTab]);
+    }, [selectedTab, location.state, setSelectedTab]);
 
     //Clear filters function
     const clearFilters = () => {
