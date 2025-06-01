@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { UserTable } from "../MoleculesComponents/GameTable";
+import { UserTable } from "../MoleculesComponents/Table";
 import { ProductCard } from "../AtomicComponents/Cards/Productcard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
