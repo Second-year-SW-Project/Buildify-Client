@@ -199,12 +199,12 @@ function ManageProducts() {
 
     //Table Columns
     const productColumns = [
-        { id: "Id", label: "ID" },
-        { id: "productCard", label: "Product" },
+        { id: "Id", label: "ID", width: 80 },
+        { id: "productCard", label: "Product", },
         { id: "date", label: "Updated at" },
         { id: "availability", label: "Stock Availability" },
         { id: "quantity", label: "Quantity" },
-        { id: "stock", label: "Stock Value" },
+        { id: "stock", label: "Stock Value", width: 125 },
     ];
 
     //Get the category label from the subcategories

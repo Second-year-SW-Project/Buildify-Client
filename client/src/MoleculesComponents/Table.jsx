@@ -59,7 +59,7 @@ export function UserTable({
   const autoSizeCellStyle = {
     padding: "8px 16px", // Ensure consistent padding
     whiteSpace: "nowrap",
-    Maxwidth: "50%",
+    wordBreak: 'break-word',
   };
 
   const getIdValue = (obj, key) => {
@@ -86,7 +86,6 @@ export function UserTable({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
-                    padding: column.padding,
                   }}
                 >
                   {column.label}
@@ -105,6 +104,8 @@ export function UserTable({
                       ...autoSizeCellStyle,
                       color: color || "black",
                       fontWeight: "bold",
+                      whiteSpace: 'normal',
+                      minWidth: column.width || 'auto',
                     }}
                   >
                     {row[column.id]}
