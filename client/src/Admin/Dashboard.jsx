@@ -145,6 +145,39 @@ export default function Dashboard() {
     // Get top 5 games
     const topFiveGames = gameData.slice(0, 5);
 
+    const [orderSummary, setOrderSummary] = useState({ totalOrders: 0, pendingOrders: 0, totalPrice: 0 });
+
+    // Fetch order summary total based on filter
+    const fetchOrderSummary = async (filter, type) => {
+        try {
+            const res = await axios.get(`${backendUrl}/api/checkout/order-summary-total?filter=${filter}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    }
+                }
+            );
+            setOrderSummary(prev => ({
+                ...prev,
+                [type]: res.data[type]
+            }));
+        } catch (err) {
+            // handle error
+        }
+    };
+
+    useEffect(() => {
+        fetchOrderSummary(orderFilter, 'totalOrders');
+    }, [orderFilter]);
+
+    useEffect(() => {
+        fetchOrderSummary(pendingFilter, 'pendingOrders');
+    }, [pendingFilter]);
+
+    useEffect(() => {
+        fetchOrderSummary(salesFilter, 'totalPrice');
+    }, [salesFilter]);
+
     // Fetch pending orders
     const fetchPendingOrders = async () => {
         try {
@@ -282,7 +315,7 @@ export default function Dashboard() {
                     <div className="flex justify-between items-start">
                         <div>
                             <Typography variant="h5" fontWeight="bold" color="primary">Total Orders</Typography>
-                            <Typography variant="h2" fontWeight="bold">100</Typography>
+                            <Typography variant="h2" fontWeight="bold">{orderSummary.totalOrders}</Typography>
                         </div>
                         <div className="pt-4">
                             <Iconset type="cart" fontSize="110px" color="primary" />
@@ -302,9 +335,11 @@ export default function Dashboard() {
                             options={[
                                 { value: 'All', label: 'All' },
                                 { value: 'today', label: 'Today' },
-                                { value: 'week', label: 'This Week' },
-                                { value: 'month', label: 'This Month' },
-                                { value: 'year', label: 'This Year' },
+                                { value: 'yesterday', label: 'Yesterday' },
+                                { value: 'lastweek', label: 'Last Week' },
+                                { value: 'thisweek', label: 'This Week' },
+                                { value: 'lastmonth', label: 'Last Month' },
+                                { value: 'thismonth', label: 'This Month' },
                             ]}
                         />
 
@@ -327,7 +362,7 @@ export default function Dashboard() {
                     <div className="flex justify-between items-start">
                         <div>
                             <Typography variant="h5" fontWeight="bold" color="primary">Total Sales</Typography>
-                            <Typography variant="h4" fontWeight="bold">257.3K LKR</Typography>
+                            <Typography variant="h4" fontWeight="bold">{orderSummary.totalPrice.toLocaleString()} LKR</Typography>
                         </div>
                         <div className="pt-4">
                             <Iconset type="money" fontSize="110px" color="primary" />
@@ -347,9 +382,11 @@ export default function Dashboard() {
                             options={[
                                 { value: 'All', label: 'All' },
                                 { value: 'today', label: 'Today' },
-                                { value: 'week', label: 'This Week' },
-                                { value: 'month', label: 'This Month' },
-                                { value: 'year', label: 'This Year' },
+                                { value: 'yesterday', label: 'Yesterday' },
+                                { value: 'lastweek', label: 'Last Week' },
+                                { value: 'thisweek', label: 'This Week' },
+                                { value: 'lastmonth', label: 'Last Month' },
+                                { value: 'thismonth', label: 'This Month' },
                             ]}
                         />
 
@@ -372,7 +409,7 @@ export default function Dashboard() {
                     <div className="flex justify-between items-start">
                         <div>
                             <Typography variant="h5" fontWeight="bold" color="primary">Pending Orders</Typography>
-                            <Typography variant="h2" fontWeight="bold">15</Typography>
+                            <Typography variant="h2" fontWeight="bold">{orderSummary.pendingOrders}</Typography>
                         </div>
                         <div className="pt-4">
                             <Iconset type="bag" fontSize="110px" color="primary" />
@@ -392,8 +429,9 @@ export default function Dashboard() {
                             options={[
                                 { value: 'All', label: 'All' },
                                 { value: 'today', label: 'Today' },
-                                { value: 'week', label: 'This Week' },
-                                { value: 'month', label: 'This Month' },
+                                { value: 'yesterday', label: 'Yesterday' },
+                                { value: 'lastweek', label: 'Last Week' },
+                                { value: 'thisweek', label: 'This Week' },
                             ]}
                         />
 
