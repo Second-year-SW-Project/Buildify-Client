@@ -11,6 +11,7 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { OrderSummary, GameTable, TopProductsTable } from '../MoleculesComponents/Table';
 import { GameCard, TopProductCard } from "../AtomicComponents/Cards/Productcard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
+import { subCategories } from '../AtomicComponents/ForAdminForms/Category';
 import axios from 'axios';
 
 import slide1 from '../assets/images/DashboadSlider/1.png';
@@ -65,7 +66,6 @@ export default function Dashboard() {
     const [orderFilter, setOrderFilter] = useState('All');
     const [salesFilter, setSalesFilter] = useState('All');
     const [pendingFilter, setPendingFilter] = useState('All');
-    const [StockFilter, setStockFilter] = useState('All');
     const [growthFilter, setgrowthFilter] = useState('All');
 
 
@@ -75,16 +75,6 @@ export default function Dashboard() {
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
     const palette = ['#7B16AE', '#8A00FC', '#de1aff', '#1cbab7', '#2C87C3', '#80d1ff', '#E8CCFE'];
-
-    const data = [
-        { value: 5, label: 'Ram', color: palette[0] },
-        { value: 10, label: 'Graphic Cards', color: palette[1] },
-        { value: 15, label: 'Processors', color: palette[2] },
-        { value: 10, label: 'Motherboard', color: palette[3] },
-        { value: 25, label: 'Storages', color: palette[4] },
-        { value: 20, label: 'Casings', color: palette[5] },
-        { value: 10, label: 'Power Supplys', color: palette[6] },
-    ];
 
     const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
     const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
@@ -107,6 +97,8 @@ export default function Dashboard() {
 
     const [pendingOrders, setPendingOrders] = useState([]);
     const [games, setGames] = useState([]);
+    const [pieChartData, setPieChartData] = useState([]);
+    const [selectedMainCategory, setSelectedMainCategory] = useState('Necessary');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const fetchGames = async () => {
@@ -252,9 +244,35 @@ export default function Dashboard() {
     const [currentSummaryIndex, setCurrentSummaryIndex] = useState(0);
     const swiperRef = useRef(null);
 
-    const dataset = [
+    const getLabelFromValue = (category, value) => {
+        const list = subCategories[category] || [];
+        const match = list.find(item => item.value === value);
+        return match ? match.label : value.charAt(0).toUpperCase() + value.slice(1);
+    };
 
-    ];
+
+    useEffect(() => {
+        const fetchPieChartData = async () => {
+            try {
+                const response = await fetch(`${backendUrl}/api/product/counts/by-main-category?mainCategory=${selectedMainCategory}`);
+                const data = await response.json();
+                if (data.Success) {
+                    setPieChartData(
+                        data.data.map((item, idx) => ({
+                            value: item.count,
+                            label: getLabelFromValue(selectedMainCategory, item.value),
+                            color: palette[idx % palette.length],
+                        }))
+                    );
+                } else {
+                    setPieChartData([]);
+                }
+            } catch (err) {
+                setPieChartData([]);
+            }
+        };
+        fetchPieChartData();
+    }, [selectedMainCategory, backendUrl]);
 
     return (
         <div className="mt-2 m-2 max-w-full">
@@ -460,15 +478,13 @@ export default function Dashboard() {
                             type="select"
                             variant="standard"
                             size="small"
-                            width="110px"
-                            value={StockFilter}
-                            onChange={(val) => setStockFilter(val)}
+                            width="150px"
+                            value={selectedMainCategory}
+                            onChange={val => setSelectedMainCategory(val)}
                             options={[
-                                { value: 'All', label: 'All' },
-                                { value: 'today', label: 'Today' },
-                                { value: 'week', label: 'This Week' },
-                                { value: 'month', label: 'This Month' },
-                                { value: 'year', label: 'This Year' },
+                                { value: "Necessary", label: "Build Necessary" },
+                                { value: "Optional", label: "Build Optional" },
+                                { value: "Common", label: "Single Category" },
                             ]}
                         />
                     </div>
@@ -479,7 +495,7 @@ export default function Dashboard() {
                                     paddingAngle: 5,
                                     innerRadius: 60,
                                     outerRadius: 80,
-                                    data,
+                                    data: pieChartData,
                                 },
                             ]}
                             slotProps={{
@@ -487,6 +503,20 @@ export default function Dashboard() {
                                     sx: {
                                         ml: 2,
                                         mr: 3,
+                                        width: '110px',
+                                        '& .MuiChartsLegend-root': {
+                                            flexWrap: 'wrap', // ensure wrapping if needed
+                                        },
+                                        '& .MuiChartsLegend-series': {
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                        },
+                                        '& .MuiChartsLegend-label': {
+                                            whiteSpace: 'normal',
+                                            wordBreak: 'break-word',
+                                            lineHeight: 1.2,
+                                            flex: 1,
+                                        },
                                     },
                                 },
                             }}
