@@ -38,6 +38,7 @@ export default function UserProfile() {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     address: user?.address || "",
+    city: user?.city || "",
     profilePicture: user?.profilePicture || "",
   });
 
@@ -50,6 +51,7 @@ export default function UserProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        city: user.city,
         profilePicture: user.profilePicture,
       });
     }
@@ -100,6 +102,7 @@ export default function UserProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        city: user.city,
         profilePicture: user.profilePicture,
       });
     }
@@ -111,19 +114,18 @@ export default function UserProfile() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     try {
       // Validate required fields
       if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
         throw new Error("Invalid email format");
       }
-
       const updateData = {
         name: formData.name?.trim() || "",
         email: formData.email?.trim() || "",
         firstName: formData.firstName?.trim() || "",
         lastName: formData.lastName?.trim() || "",
         address: formData.address?.trim() || "",
+        city: formData.city?.trim(),
         profilePicture: formData.profilePicture || user.profilePicture || "",
       };
 
@@ -139,7 +141,7 @@ export default function UserProfile() {
         }
       );
 
-      dispatch(setAuthUser(response.data.user));
+      dispatch(setAuthUser(response.data.data.user));
       toast.success("Profile updated successfully");
       setEditable(false);
     } catch (error) {
@@ -314,10 +316,26 @@ export default function UserProfile() {
                       type="text"
                       variant="outlined"
                       label="Address"
+                      name="address"
                       value={formData.address}
                       onChange={wrappedHandle("address")}
                       width="86%"
                       rows={3}
+                      outlinedActive
+                      disabled={!editable}
+                    />
+                  </div>
+
+                  <div className="flex-1 mb-5 mr-1">
+                    <InputField
+                      type="text"
+                      variant="outlined"
+                      label="City"
+                      name="city"
+                      value={formData.city}
+                      onChange={wrappedHandle("city")}
+                      width="86%"
+                      rows={1}
                       outlinedActive
                       disabled={!editable}
                     />

@@ -33,6 +33,7 @@ export default function AdminProfile() {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     address: user?.address || "",
+    city: user?.city || "",
     profilePicture: user?.profilePicture || "",
   });
   const [loading, setLoading] = useState(false);
@@ -49,6 +50,7 @@ export default function AdminProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        city: user.city,
         profilePicture: user.profilePicture,
       });
     }
@@ -101,13 +103,13 @@ export default function AdminProfile() {
 
   const toggleEditable = () => {
     if (editable) {
-
       setFormData({
         name: user.name,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        city: user.city,
         profilePicture: user.profilePicture,
       });
     }
@@ -126,13 +128,13 @@ export default function AdminProfile() {
         throw new Error('Invalid email format');
       }
 
-
       const updateData = {
         name: formData.name.trim(),
         email: formData.email.trim(),
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         address: formData.address.trim(),
+        city: formData.city.trim(),
         profilePicture: formData.profilePicture || user.profilePicture
       };
       const response = await axios.post(
@@ -147,7 +149,7 @@ export default function AdminProfile() {
         }
       );
 
-      dispatch(setAuthUser(response.data.user));
+      dispatch(setAuthUser(response.data.data.user));
       toast.success('Profile updated successfully');
       setEditable(false);
 
@@ -285,18 +287,33 @@ export default function AdminProfile() {
             </Grid>
           </Grid>
 
-          <Box sx={{ marginTop: 6 }}>
-            <TextField
-              label="Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              variant="outlined"
-              fullWidth
-              disabled={!editable}
-              InputProps={{ sx: { height: "60px" } }}
-            />
-          </Box>
+          <Grid container spacing={3} sx={{ mt: 5 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Address"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                variant="outlined"
+                fullWidth
+                disabled={!editable}
+                InputProps={{ sx: { height: "60px" } }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="City"
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                variant="outlined"
+                fullWidth
+                disabled={!editable}
+                InputProps={{ sx: { height: "60px" } }}
+              />
+            </Grid>
+
+          </Grid>
 
           <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
             <Button
