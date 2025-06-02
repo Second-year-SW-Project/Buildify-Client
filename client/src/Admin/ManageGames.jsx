@@ -22,11 +22,17 @@ function ManageGames() {
     const [openDialog, setOpenDialog] = useState(false);//Stores the open dialog
     const [selectedGameId, setSelectedGameId] = useState(null);//Stores the selected game ID for the delete dialog
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
     const navigate = useNavigate();//Navigates to the next page
 
     useEffect(() => {
         fetchGames();
-    }, []);//Fetches the games when the component is mounted
+    }, [currentPage, itemsPerPage]); // Fetch games when page or itemsPerPage changes
 
     useEffect(() => {
         applyFilters();
@@ -35,7 +41,11 @@ function ManageGames() {
     const fetchGames = async (searchTerm = "") => {
         try {
             const response = await axios.get(`${backendUrl}/api/game/games`, {
-                params: searchTerm ? { search: searchTerm } : {}
+                params: {
+                    search: searchTerm,
+                    page: currentPage,
+                    limit: itemsPerPage
+                }
             });//Fetches the games from the backend. accepts a search term as a parameter
 
             console.log("API Response:", response.data);
@@ -44,6 +54,8 @@ function ManageGames() {
                 const allGames = response.data.games;
                 setGames(allGames);//if the response is successful, the games are set to the allGames array
                 applyFilters(allGames);//applies the filters to the games
+                setTotalPages(response.data.pagination.totalPages); // Set total pages for pagination
+                setTotalProducts(response.data.pagination.total); // Set total products for pagination
             } else {
                 console.error("Expected an array but got:", response.data);//if the response is not successful, the games are set to an empty array and the filtered games are set to an empty array
                 setGames([]);
@@ -120,6 +132,17 @@ function ManageGames() {
         delete: (_id) => openDeleteDialog(_id),
     };//Defines the icon actions for the game table
 
+    // Handle page change
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+    };
+
+    // Handle items per page change
+    const handleItemsPerPageChange = (newLimit) => {
+        setItemsPerPage(newLimit);
+        setCurrentPage(1); // Reset to first page when changing items per page
+    };
+
     //Render the component for the manage games page
     return (
         <div>
@@ -170,6 +193,14 @@ function ManageGames() {
                                 data={gameData}
                                 iconTypes={iconTypes}
                                 iconActions={iconActions}
+                                pagination={{
+                                    currentPage,
+                                    totalPages,
+                                    totalItems: totalProducts,
+                                    itemsPerPage,
+                                    onPageChange: handlePageChange,
+                                    onItemsPerPageChange: handleItemsPerPageChange
+                                }}
                             />
                         </div>
                     </div>
