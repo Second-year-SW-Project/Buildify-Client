@@ -13,6 +13,7 @@ import { GameCard, TopProductCard } from "../AtomicComponents/Cards/Productcard"
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import { subCategories } from '../AtomicComponents/ForAdminForms/Category';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
 import slide1 from '../assets/images/DashboadSlider/1.png';
 import slide2 from '../assets/images/DashboadSlider/3.png';
@@ -60,13 +61,10 @@ export default function Dashboard() {
         ),
     };
 
-    const [normalOrders, setNormalOrders] = useState([]);
-    const [status, setStatus] = useState('');
-
     const [orderFilter, setOrderFilter] = useState('All');
     const [salesFilter, setSalesFilter] = useState('All');
     const [pendingFilter, setPendingFilter] = useState('All');
-    const [growthFilter, setgrowthFilter] = useState('All');
+    const [growthFilter, setgrowthFilter] = useState('thisweek');
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -75,25 +73,6 @@ export default function Dashboard() {
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
     const palette = ['#7B16AE', '#8A00FC', '#de1aff', '#1cbab7', '#2C87C3', '#80d1ff', '#E8CCFE'];
-
-    const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-    const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-    const rData = [1400, 1200, 1100, 900, 800, 700, 600];
-    const tData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-    const xLabels = [
-        'Page A',
-        'Page B',
-        'Page C',
-        'Page D',
-        'Page E',
-        'Page F',
-        'Page G',
-        'Page H',
-        'Page I',
-        'Page J',
-        'Page K',
-        'Page L',
-    ];
 
     const [pendingOrders, setPendingOrders] = useState([]);
     const [games, setGames] = useState([]);
@@ -274,6 +253,114 @@ export default function Dashboard() {
         fetchPieChartData();
     }, [selectedMainCategory, backendUrl]);
 
+    // BarChart dynamic data state
+    const [barChartData, setBarChartData] = useState({ sales: [], refund: [], cancle: [], other: [], xLabels: [] });
+    const [barChartRange, setBarChartRange] = useState('thisweek'); // Set default to 'This Week'
+    const [totalGrowth, setTotalGrowth] = useState(0);
+
+    // Fetch BarChart data from backend
+    useEffect(() => {
+        const fetchBarChartData = async () => {
+            try {
+                const response = await axios.get(`${backendUrl}/api/checkout/bar-chart-summary`, { params: { filter: barChartRange } });
+                let { xLabels, sales, refund, cancle, other } = response.data || {};
+                let newXLabels = [], newSales = [], newRefund = [], newCancle = [], newOther = [];
+                const today = dayjs();
+                if (barChartRange === 'thisweek' || barChartRange === 'lastweek') {
+                    const weekRef = barChartRange === 'thisweek' ? today : today.subtract(1, 'week');
+                    newXLabels = getAllDaysOfWeek(weekRef);
+                    // Debug: Compare frontend and backend xLabels
+                    if (process.env.NODE_ENV !== 'production') {
+                        const missing = newXLabels.filter(l => !xLabels.includes(l));
+                        const extra = xLabels.filter(l => !newXLabels.includes(l));
+                        if (missing.length || extra.length) {
+                            // eslint-disable-next-line no-console
+                            console.warn('BarChart week/day label mismatch:', { missing, extra, frontend: newXLabels, backend: xLabels });
+                        }
+                    }
+                    newXLabels.forEach((label, idx) => {
+                        const i = xLabels.indexOf(label);
+                        newSales.push(i !== -1 ? sales[i] : 0);
+                        newRefund.push(i !== -1 ? refund[i] : 0);
+                        newCancle.push(i !== -1 ? cancle[i] : 0);
+                        newOther.push(i !== -1 ? other[i] : 0);
+                    });
+                } else if (barChartRange === 'thismonth' || barChartRange === 'lastmonth') {
+                    const monthRef = barChartRange === 'thismonth' ? today : today.subtract(1, 'month');
+                    // Group by day for month filters
+                    const daysInMonth = monthRef.daysInMonth();
+                    newXLabels = Array.from({ length: daysInMonth }, (_, i) => monthRef.date(i + 1).format('YYYY-MM-DD'));
+                    newXLabels.forEach((label, idx) => {
+                        const i = xLabels.indexOf(label);
+                        newSales.push(i !== -1 ? sales[i] : 0);
+                        newRefund.push(i !== -1 ? refund[i] : 0);
+                        newCancle.push(i !== -1 ? cancle[i] : 0);
+                        newOther.push(i !== -1 ? other[i] : 0);
+                    });
+                } else if (barChartRange === 'thisyear' || barChartRange === 'lastyear') {
+                    const yearRef = barChartRange === 'thisyear' ? today : today.subtract(1, 'year');
+                    newXLabels = getAllMonthsOfYear(yearRef);
+                    newXLabels.forEach((month, idx) => {
+                        const i = xLabels.indexOf(month);
+                        newSales.push(i !== -1 ? sales[i] : 0);
+                        newRefund.push(i !== -1 ? refund[i] : 0);
+                        newCancle.push(i !== -1 ? cancle[i] : 0);
+                        newOther.push(i !== -1 ? other[i] : 0);
+                    });
+                } else {
+                    newXLabels = xLabels;
+                    newSales = sales;
+                    newRefund = refund;
+                    newCancle = cancle;
+                    newOther = other;
+                }
+                setBarChartData({ xLabels: newXLabels, sales: newSales, refund: newRefund, cancle: newCancle, other: newOther });
+                const growth = newSales.reduce((a, b) => a + b, 0) - newRefund.reduce((a, b) => a + b, 0) - newCancle.reduce((a, b) => a + b, 0) - newOther.reduce((a, b) => a + b, 0);
+                setTotalGrowth(growth);
+            } catch (err) {
+                setBarChartData({ sales: [], refund: [], cancle: [], other: [], xLabels: [] });
+                setTotalGrowth(0);
+            }
+        };
+        fetchBarChartData();
+    }, [barChartRange, backendUrl]);
+
+    // Helper: get all days in week
+    function getAllDaysOfWeek(date) {
+        const startOfWeek = dayjs(date).startOf('week').add(1, 'day'); // Monday
+        return Array.from({ length: 7 }, (_, i) => startOfWeek.add(i, 'day').format('YYYY-MM-DD'));
+    }
+    // Helper: get all week ranges in month, only including days within the month
+    function getAllWeeksOfMonth(date) {
+        const start = dayjs(date).startOf('month');
+        const end = dayjs(date).endOf('month');
+        let weeks = [];
+        let current = start;
+        while (current.isBefore(end) || current.isSame(end, 'day')) {
+            // Start of week: current
+            let weekStart = current;
+            let weekEnd = current.endOf('week');
+            // Clamp weekStart and weekEnd to the month
+            if (weekStart.isBefore(start)) weekStart = start;
+            if (weekEnd.isAfter(end)) weekEnd = end;
+            weeks.push(`${weekStart.format('YYYY-MM-DD')} - ${weekEnd.format('YYYY-MM-DD')}`);
+            current = weekEnd.add(1, 'day');
+        }
+        console.log('BarChart getAllWeeksOfMonth (frontend):', weeks);
+        return weeks;
+    }
+    // Helper: get all months in year
+    function getAllMonthsOfYear(date) {
+        return Array.from({ length: 12 }, (_, i) => dayjs(date).month(i).format('MMMM'));
+    }
+
+    // Helper for y-axis label formatting
+    const formatYAxisLabel = (value) => {
+        if (value >= 1000000) return (value / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (value >= 1000) return (value / 1000).toFixed(0) + 'K';
+        return value;
+    };
+
     return (
         <div className="mt-2 m-2 max-w-full">
             <div className='Summary relative rounded-lg h-72 grid gap-4 flex flex-row m-2'>
@@ -282,7 +369,7 @@ export default function Dashboard() {
                     slidesPerView={1}
                     effect="coverflow"
                     autoplay={{
-                        delay: 5000,
+                        delay: 4000,
                         disableOnInteraction: false,
                     }}
                     fadeEffect={{ crossFade: true }}
@@ -528,35 +615,52 @@ export default function Dashboard() {
                     <div className='SalesTitle flex flex-row justify-between items-top pl-2'>
                         <div className='flex flex-col'>
                             <Typography variant="h6" fontWeight="bold" color="primary">Total Growth</Typography>
-                            <Typography variant="body1" fontWeight="bold">257,500 LKR</Typography>
+                            <Typography variant="body1" fontWeight="bold">{totalGrowth.toLocaleString()} LKR</Typography>
                         </div>
-
                         <div className='mr-6 pt-1'>
                             <InputField
                                 type="select"
                                 size="small"
-                                width="110px"
-                                value={growthFilter}
-                                onChange={(val) => setgrowthFilter(val)}
+                                width="140px"
+                                value={barChartRange}
+                                onChange={val => setBarChartRange(val)}
                                 options={[
-                                    { value: 'All', label: 'All' },
-                                    { value: 'today', label: 'Today' },
-                                    { value: 'week', label: 'This Week' },
-                                    { value: 'month', label: 'This Month' },
-                                    { value: 'year', label: 'This Year' },
+                                    { value: 'lastweek', label: 'Last Week' },
+                                    { value: 'thisweek', label: 'This Week' },
+                                    { value: 'lastmonth', label: 'Last Month' },
+                                    { value: 'thismonth', label: 'This Month' },
+                                    { value: 'thisyear', label: 'This Year' },
+                                    { value: 'lastyear', label: 'Last Year' },
                                 ]}
                             />
                         </div>
                     </div>
                     <div className='Salesdetals flex flex-row'>
                         <BarChart
-                            xAxis={[{ data: xLabels, scaleType: 'band' }]}
-                            yAxis={[{ width: 70, label: 'Sales (LKR)' }]}
+                            xAxis={[{
+                                data: barChartData.xLabels,
+                                scaleType: 'band',
+                                tickLabelStyle: {
+                                    whiteSpace: 'pre-line',
+                                    wordBreak: 'break-word',
+                                    fontSize: 11,
+                                    maxWidth: 80,
+                                },
+                            }]}
+                            yAxis={[{
+                                width: 80,
+                                label: 'Sales (LKR)',
+                                tickLabelStyle: {
+                                    fontSize: 15,
+                                    maxWidth: 80,
+                                },
+                                valueFormatter: formatYAxisLabel,
+                            }]}
                             series={[
-                                { data: pData, label: 'pv', id: 'pvId', stack: 'total', color: palette[1] },
-                                { data: uData, label: 'uv', id: 'uvId', stack: 'total', color: palette[6] },
-                                { data: rData, label: 'revenue', id: 'revenueId', stack: 'total', color: palette[3] },
-                                { data: tData, label: 'total', id: 'totalId', stack: 'total', color: palette[5] },
+                                { data: barChartData.sales, label: 'Sales', id: 'sales', stack: 'total', color: palette[1] },
+                                { data: barChartData.refund, label: 'Refunded', id: 'refund', stack: 'total', color: palette[6] },
+                                { data: barChartData.cancle, label: 'Cancled', id: 'cancle', stack: 'total', color: palette[3] },
+                                { data: barChartData.other, label: 'Other Cost', id: 'other', stack: 'total', color: palette[5] },
                             ]}
                             sx={{
                                 width: '100%',
