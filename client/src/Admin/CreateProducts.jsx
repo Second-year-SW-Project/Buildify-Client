@@ -351,234 +351,56 @@ const CreateProducts = () => {
     // Validate required fields based on product type and component type
     // Different product types have different required fields
     const validateRequiredFields = (product, isEditMode = false, shouldThrow = false) => {
-        const allRequiredFields = {
-            processor: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'socketType',
-                'tdp',
-                'coreCount',
-                'threadCount',
-                'baseClock',
-                'boostClock',
-                'integratedGraphics',
-                'includesCooler',
-            ],
-            cooling: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'coolerType',
-                'supportedSocket',
-                'maxTdp',
-                'height',
-                'tdp',
-            ],
-            gpu: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'interfaceType',
-                'length',
-                'powerConnectors',
-                'vram',
-                'tdp',
-                'gpuChipset',
-                'gpuCores',
-
-            ],
-            ram: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'memoryType',
-                'memoryCapacity',
-                'memorySpeed',
-                'tdp',
-            ],
-            motherboard: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'socketType',
-                'motherboardChipset',
-                'formFactor',
-                'ramSlots',
-                'maxRam',
-                'supportedMemoryTypes',
-                'pcieSlots',
-                'storageInterfaces',
-                'tdp',
-            ],
-            storage: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'storageType',
-                'storageCapacity',
-                'tdp',
-            ],
-            casing: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'formFactor',
-                'supportedMotherboardSizes',
-                'maxGpuLength',
-                'maxCoolerHeight',
-            ],
-            power: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'wattage',
-                'efficiencyRating',
-                'modularType',
-            ],
-            keyboard: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'keyboardType',
-                'connectivity',
-            ],
-            mouse: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'connectivity',
-            ],
-            laptop: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'displaySize',
-                'refreshRate',
-                'laptopType',
-                'cpu',
-                'ram',
-                'storage',
-                'graphicCard',
-            ],
-            monitor: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'displaySize',
-                'resolution',
-                'refreshRate',
-                'panelType',
-                'monitorType',
-            ],
-            prebuild: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'cpu',
-                'cpuCores',
-                'cpuThreads',
-                'cpuBaseClock',
-                'cpuBoostClock',
-                'graphicCard',
-                'gpuSeries',
-                'gpuVram',
-                'gpuBoostClock',
-                'prebuildGpuCores',
-                'ramSize',
-                'ramSpeed',
-                'ramType',
-                'storage',
-                'desktopType',
-            ],
-            expansion_network: [
-                'name',
-                'price',
-                'description',
-                'imgUrls',
-                'type',
-                'manufacturer',
-                'quantity',
-                'interfaceType',
-                'componentType',
-            ],
-            default: ['name', 'price', 'description', 'imgUrls', 'type', 'manufacturer', 'quantity'],
+        // Define base required fields for all products
+        const baseRequiredFields = [
+            'name', 'price', 'description', 'imgUrls', 'type', 'manufacturer', 'quantity'
+        ];
+        // Define unique fields for each type
+        const uniqueFieldsByType = {
+            processor: ['socketType', 'tdp', 'coreCount', 'threadCount', 'baseClock', 'boostClock'],
+            ram: ['ramType', 'ramSpeed', 'ramSize'],
+            gpu: ['gpuChipset', 'gpuVram', 'gpuCores', 'interfaceType'],
+            motherboard: ['motherboardChipset', 'socketType', 'formFactor', 'ramSlots', 'maxRam', 'supportedMemoryTypes', 'pcieSlots', 'pcieVersion', 'storageInterfaces'],
+            storage: ['storageType', 'storageCapacity'],
+            casing: ['formFactor', 'supportedMotherboardSizes', 'maxGpuLength', 'maxCoolerHeight'],
+            power: ['wattage', 'efficiencyRating', 'modularType'],
+            cooling: ['coolerType', 'supportedSocket', 'maxTdp', 'height'],
+            keyboard: ['keyboardType', 'connectivity'],
+            mouse: ['connectivity'],
+            monitor: ['displaySize', 'resolution', 'refreshRate', 'panelType', 'monitorType'],
+            laptop: ['laptopType', 'cpu', 'ram', 'storage', 'graphicCard', 'displaySize', 'refreshRate'],
+            prebuild: ['cpu', 'cpuCores', 'cpuThreads', 'cpuBaseClock', 'cpuBoostClock', 'graphicCard', 'gpuSeries', 'gpuVram', 'gpuBoostClock', 'prebuildGpuCores', 'ramSize', 'ramSpeed', 'ramType', 'storage', 'desktopType'],
+            expansion_network: ['interfaceType', 'componentType'],
+            gamepad: ['connectivity'],
+            accessories: [],
+            externals: [],
+            cables_and_connectors: []
         };
-
-        //if the product type is expansion_network pass the component type to the required fields 
+        // Expansion network special fields
+        let requiredFields = [...baseRequiredFields, ...(uniqueFieldsByType[product.type] || [])];
         if (product.type === 'expansion_network') {
             if (product.componentType === 'sound_card') {
-                allRequiredFields.expansion_network.push('soundCardChannels');
+                requiredFields.push('soundCardChannels');
             } else if (product.componentType === 'wired_network_adapter') {
-                allRequiredFields.expansion_network.push('networkSpeed');
+                requiredFields.push('wiredNetworkSpeed');
             } else if (product.componentType === 'wireless_network_adapter') {
-                allRequiredFields.expansion_network.push('wifiStandard');
+                requiredFields.push('wifiStandard');
             }
         }
-
-        //Check if the product type is in the required fields list
-        const requiredFields = allRequiredFields[product.type] || allRequiredFields['default'];
         const missingFields = requiredFields.filter((field) => {
             if (field === 'imgUrls' && isEditMode) return false;
-            if (field === 'imgUrls') return product.imgUrls.length === 0;
-            if (field === 'supportedMemoryTypes' || field === 'pcieSlots' || field === 'storageInterfaces' || field === 'supportedMotherboardSizes' || field === 'powerConnectors') {
+            if (field === 'imgUrls') return !product.imgUrls || product.imgUrls.length === 0;
+            if ({
+                'supportedMemoryTypes': true,
+                'pcieSlots': true,
+                'storageInterfaces': true,
+                'supportedMotherboardSizes': true,
+                'powerConnectors': true
+            }[field]) {
                 return !product[field] || product[field].length === 0;
             }
             return product[field] === null || product[field] === '' || product[field] === undefined;
         });
-
         if (missingFields.length > 0) {
             if (shouldThrow) {
                 toast.error(`Please fill in all required fields: ${missingFields.join(', ')}.`);
@@ -586,7 +408,6 @@ const CreateProducts = () => {
             return false;
         }
         return true;
-
     };
 
     // Update the cancel button handler
