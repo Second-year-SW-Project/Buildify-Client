@@ -427,7 +427,7 @@ const gpuAttributes = {
     { value: 24, label: "24GB" },
     { value: 48, label: "48GB" },
   ],
-  
+
   gpuChipset: [
     { value: "RTX_5090", label: "RTX 5090" },
     { value: "RTX_5080", label: "RTX 5080" },
@@ -655,6 +655,10 @@ const desktopAttributes = {
     { value: "Intel_Core_i9_12900K", label: "Intel Core i9-12900K" },
     { value: "Intel_Core_i7_12700K", label: "Intel Core i7-12700K" },
     { value: "Intel_Core_i5_12600K", label: "Intel Core i5-12600K" },
+    // Intel Ultra Series
+    { value: "Intel_Ultra_5", label: "Intel Ultra 5" },
+    { value: "Intel_Ultra_7", label: "Intel Ultra 7" },
+    { value: "Intel_Ultra_9", label: "Intel Ultra 9" },
     // AMD Ryzen 7000 Series
     { value: "AMD_Ryzen_9_7950X3D", label: "AMD Ryzen 9 7950X3D" },
     { value: "AMD_Ryzen_9_7950X", label: "AMD Ryzen 9 7950X" },

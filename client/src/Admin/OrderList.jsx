@@ -89,7 +89,12 @@ function OrderList() {
                 status: selectedTab || status
             };
 
-            const response = await axios.get(`${backendUrl}/api/checkout/payment`, { params });
+            const response = await axios.get(`${backendUrl}/api/checkout/payment`, {
+                params,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
 
             if (response.data && Array.isArray(response.data.data)) {
                 const allOrders = response.data.data;
@@ -133,7 +138,11 @@ function OrderList() {
     //Delete order function
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`${backendUrl}/api/checkout/order/${SelectedOrderId}`);
+            const response = await axios.delete(`${backendUrl}/api/checkout/order/${SelectedOrderId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
 
             if (response.data.Success) {
                 toast.success("Order deleted successfully", SelectedOrderId);

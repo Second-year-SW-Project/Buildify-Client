@@ -262,7 +262,12 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchBarChartData = async () => {
             try {
-                const response = await axios.get(`${backendUrl}/api/checkout/bar-chart-summary`, { params: { filter: barChartRange } });
+                const response = await axios.get(`${backendUrl}/api/checkout/bar-chart-summary`, {
+                    params: { filter: barChartRange },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    }
+                });
                 let { xLabels, sales, refund, cancle, other } = response.data || {};
                 let newXLabels = [], newSales = [], newRefund = [], newCancle = [], newOther = [];
                 const today = dayjs();
@@ -462,11 +467,11 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <div className="TotalSales relative border-2 border-stone-200 rounded-2xl pb-2 pt-4 pr-6 pl-6">
+                <div className="TotalRevenue relative border-2 border-stone-200 rounded-2xl pb-2 pt-4 pr-6 pl-6">
                     {/* Top content */}
                     <div className="flex justify-between items-start">
                         <div>
-                            <Typography variant="h5" fontWeight="bold" color="primary">Total Sales</Typography>
+                            <Typography variant="h5" fontWeight="bold" color="primary">Total Revenue</Typography>
                             <Typography variant="h4" fontWeight="bold">{orderSummary.totalPrice.toLocaleString()} LKR</Typography>
                         </div>
                         <div className="pt-4">
@@ -614,7 +619,7 @@ export default function Dashboard() {
                 <div className='SalesChart grid border-2 border-stone-200 rounded-2xl p-2 col-span-2 flex flex-col h-auto w-full'>
                     <div className='SalesTitle flex flex-row justify-between items-top pl-2'>
                         <div className='flex flex-col'>
-                            <Typography variant="h6" fontWeight="bold" color="primary">Total Growth</Typography>
+                            <Typography variant="h6" fontWeight="bold" color="primary">Gross Profit</Typography>
                             <Typography variant="body1" fontWeight="bold">{totalGrowth.toLocaleString()} LKR</Typography>
                         </div>
                         <div className='mr-6 pt-1'>
