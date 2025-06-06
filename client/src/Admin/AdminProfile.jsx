@@ -33,6 +33,7 @@ export default function AdminProfile() {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     address: user?.address || "",
+    district: user?.district || "",
     city: user?.city || "",
     profilePicture: user?.profilePicture || "",
   });
@@ -50,6 +51,7 @@ export default function AdminProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        district: user.district,
         city: user.city,
         profilePicture: user.profilePicture,
       });
@@ -109,6 +111,7 @@ export default function AdminProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        district: user.district,
         city: user.city,
         profilePicture: user.profilePicture,
       });
@@ -134,6 +137,7 @@ export default function AdminProfile() {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         address: formData.address.trim(),
+        district: formData.district.trim(),
         city: formData.city.trim(),
         profilePicture: formData.profilePicture || user.profilePicture
       };
@@ -302,6 +306,21 @@ export default function AdminProfile() {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
+                label="District"
+                name="district"
+                value={formData.district}
+                onChange={handleChange}
+                variant="outlined"
+                fullWidth
+                disabled={!editable}
+                InputProps={{ sx: { height: "60px" } }}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={3} sx={{ mt: 5 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
                 label="City"
                 name="city"
                 value={formData.city}
@@ -312,7 +331,6 @@ export default function AdminProfile() {
                 InputProps={{ sx: { height: "60px" } }}
               />
             </Grid>
-
           </Grid>
 
           <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
