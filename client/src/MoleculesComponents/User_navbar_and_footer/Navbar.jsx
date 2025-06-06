@@ -107,16 +107,92 @@ export default function Navbar() {
                   onClick={() => setOpenDropdown(openDropdown === "profile" ? null : "profile")}
                 />
               )}
-              {openDropdown === "profile" && (
-                <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-                  <a href="http://localhost:5173/user/profile" className="block px-4 py-2 hover:bg-blue-400">
-                    Profile
-                  </a>
-                  <a href="http://localhost:5173/adminpanel/auth/login" className="block px-4 py-2 hover:bg-blue-400">
-                    Login
-                  </a>
-                </div>
-              )}
+
+
+
+
+
+
+{/* {openDropdown === "profile" && (
+  <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
+    <a href="http://localhost:5173/user/profile" className="block px-4 py-2 hover:bg-blue-400">
+      Profile
+    </a>
+    {currentUser ? (
+      <button
+        onClick={() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          setCurrentUser(null);
+          setOpenDropdown(null);
+          navigate("/home");
+        }}
+        className="text-left px-4 py-2 hover:bg-blue-400"
+      >
+        Logout
+      </button>
+    ) : (
+      <a href="http://localhost:5173/adminpanel/auth/login" className="block px-4 py-2 hover:bg-blue-400">
+        Login
+      </a>
+    )}
+  </div>
+)} */}
+
+
+{openDropdown === "profile" && (
+  <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
+    {currentUser ? (
+      <>
+        <Link
+          to="/user/profile"
+          className="block px-4 py-2 hover:bg-blue-400"
+          onClick={() => setOpenDropdown(null)}
+        >
+          Profile
+        </Link>
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            setCurrentUser(null);
+            setOpenDropdown(null);
+            navigate("/home");
+          }}
+          className="block text-left px-4 py-2 hover:bg-blue-400 w-full"
+        >
+          Logout
+        </button>
+      </>
+    ) : (
+      <>
+        <button
+          onClick={() => {
+            alert("You're not logged in");
+            setOpenDropdown(null);
+            navigate("/adminpanel/auth/login");
+          }}
+          className="block text-left px-4 py-2 hover:bg-blue-400 w-full"
+        >
+          Profile
+        </button>
+        <Link
+          to="/adminpanel/auth/login"
+          className="block px-4 py-2 hover:bg-blue-400"
+          onClick={() => setOpenDropdown(null)}
+        >
+          Login
+        </Link>
+      </>
+    )}
+  </div>
+)}
+
+
+
+
+
+
             </div>
             {/* Profile Dropdown end */}
           </div>
@@ -127,8 +203,8 @@ export default function Navbar() {
       <div className="w-full max-w-[1350px] flex justify-around text-sm font-medium pb-[10px] space-x-6 sm:space-x-4">
         <Link to="/home" className="hover:text-blue-400">Home</Link>
         <Link to="/modeselect" className="hover:text-blue-400">Custom Build</Link>
-        <a href="/productcategorypage/prebuild" className="hover:text-blue-400">Pre Build</a>
-        <a href="/productcategorypage/laptop" className="hover:text-blue-400">Laptops</a>
+        <Link to="/productcategorypage/prebuild" className="hover:text-blue-400">Pre Build</Link>
+        <Link to="/productcategorypage/laptop" className="hover:text-blue-400">Laptops</Link>
 
         {/* Components Dropdown */}
         <div className="relative dropdown-container">
@@ -172,7 +248,7 @@ export default function Navbar() {
               <Link to="/productcategorypage/expansion_network" className="block px-4 py-3 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
                 <EarbudsIcon fontSize="small" className="mr-2" /> Expansions
               </Link>
-              <Link to="#" className="block px-4 py-3 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
+              <Link to="/productcategorypage/monitor" className="block px-4 py-3 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
                 <MonitorIcon fontSize="small" className="mr-2" /> Monitors
               </Link>
             </div>
