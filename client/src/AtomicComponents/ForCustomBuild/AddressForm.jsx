@@ -6,7 +6,7 @@ export default function AddressForm() {
     <div className="border rounded-lg p-4 shadow-sm">
       <h3 className="font-semibold text-purple-700 text-lg mb-4">Confirm your address</h3>
       <div className="space-y-3">
-        {['Address', 'Building no. or Street', 'City or Town', 'Postal Code'].map((placeholder) => (
+        {['Address', 'Province', 'District', 'Postal Code'].map((placeholder) => (
           <input
             key={placeholder}
             type="text"
