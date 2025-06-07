@@ -358,13 +358,13 @@ const CreateProducts = () => {
         // Define unique fields for each type
         const uniqueFieldsByType = {
             processor: ['socketType', 'tdp', 'coreCount', 'threadCount', 'baseClock', 'boostClock'],
-            ram: ['ramType', 'ramSpeed', 'ramSize'],
-            gpu: ['gpuChipset', 'gpuVram', 'gpuCores', 'interfaceType'],
-            motherboard: ['motherboardChipset', 'socketType', 'formFactor', 'ramSlots', 'maxRam', 'supportedMemoryTypes', 'pcieSlots', 'pcieVersion', 'storageInterfaces'],
-            storage: ['storageType', 'storageCapacity'],
+            ram: ['memoryType', 'memorySpeed', 'memoryCapacity', 'tdp'],
+            gpu: ['interfaceType', 'length', 'powerConnectors', 'vram', 'gpuChipset', 'gpuCores', 'tdp'],
+            motherboard: ['motherboardChipset', 'socketType', 'formFactor', 'ramSlots', 'maxRam', 'supportedMemoryTypes', 'tdp', 'pcieSlots', 'pcieVersion', 'storageInterfaces'],
+            storage: ['storageType', 'storageCapacity', 'tdp'],
             casing: ['formFactor', 'supportedMotherboardSizes', 'maxGpuLength', 'maxCoolerHeight'],
             power: ['wattage', 'efficiencyRating', 'modularType'],
-            cooling: ['coolerType', 'supportedSocket', 'maxTdp', 'height'],
+            cooling: ['coolerType', 'supportedSocket', 'maxTdp', 'height', 'tdp'],
             keyboard: ['keyboardType', 'connectivity'],
             mouse: ['connectivity'],
             monitor: ['displaySize', 'resolution', 'refreshRate', 'panelType', 'monitorType'],

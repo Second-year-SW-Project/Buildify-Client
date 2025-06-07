@@ -280,16 +280,55 @@ export default function Itempage() {
               spec2 = "Ram:";  //y
               spec3 = "Graphic Card:";  //z
               spec4 = "Storage:"  //p
-              spec5 = "Resolution:";  //q
+              spec5 = "CPU:";  //q
               spec6 ="Warranty:";  //r
            
        
              x = product.manufacturer.toUpperCase();
-             y = product.ram + " GB";
+             y = product.ramSize + " GB";
              z = product.graphicCard.toUpperCase();
              
              p = product.storage+" GB HDD";
              q = product.cpu.toUpperCase();
+             r = product.warranty;
+  
+             break;
+
+
+
+            case "monitor":
+              spec1 = "Brand:";  //x
+              spec2 = "Display Size:";  //y
+              spec3 = "Resolution:";  //z
+              spec4 = "Panel Type:"  //p
+              spec5 = "Refresh Rate:";  //q
+              spec6 ="Warranty:";  //r
+           
+       
+             x = product.manufacturer.toUpperCase();
+             y = product.displaySize + "'inch";
+             z = product.resolution;
+             
+             p = product.panelType.toUpperCase();
+             q = product.refreshRate + "Hz";
+             r = product.warranty;
+  
+             break;
+
+
+
+            case "expansion_network":
+              spec1 = "Brand:";  //x
+              spec2 = "Component Type:";  //y
+              spec3 = "Interface Type:";  //z
+              //spec5 = "Refresh Rate:";  //q
+              spec6 ="Warranty:";  //r
+           
+       
+             x = product.manufacturer.toUpperCase();
+             y = product.componentType.toUpperCase();
+             z = product.interfaceType.toUpperCase();
+             
              r = product.warranty;
   
              break;

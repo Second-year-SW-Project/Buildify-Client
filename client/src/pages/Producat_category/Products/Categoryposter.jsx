@@ -122,6 +122,12 @@ const Categoryposter = () => {
         break;  
 
 
+      case "monitor":
+        title = "MONITORS";
+        image = "https://res.cloudinary.com/ddstqdrhm/image/upload/v1748704205/gaming-room-dual-stacked-monitors-jjcy7wy2dh792fct_udd2kq.jpg";
+        break; 
+
+
     default:
       break;
   }

@@ -1,283 +1,338 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import Itemcard from '../../../components/ItemCard';
-
-export default function Product_item_grid({ filters, allProducts, setAllProducts }) {
-  const { categoryName } = useParams();
-  const [filteredProducts, setFilteredProducts] = useState([]);
-
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import axios from "axios";
+import Itemcard from '../../../components/ItemCard'; // Ensure path is correct
+import { useSearchParams } from 'react-router-dom';
+// ...existing code...
 
 
-  // Fetch all products for the category once
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(
-          `${backendUrl}/api/product/filter?attribute=type&value=${categoryName}`
-        );
-        setAllProducts(response.data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      }
-    };
+export default function Product_item_grid({ categoryName, currentFilters }) {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const itemsPerPage = 6;
 
-    fetchProducts();
-  }, [categoryName, setAllProducts]);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
-  // Apply filters on client-side
-  useEffect(() => {
-    let filtered = [...allProducts];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams();
 
-    // Brand filter
-    if (filters.brand && filters.brand.length > 0) {
-      filtered = filtered.filter((product) =>
-        filters.brand.includes(product.manufacturer?.toUpperCase())
-      );
+                // 1. Add category filter
+                if (categoryName) {
+                    params.append('attribute', 'type'); // Assuming 'type' is backend field for category
+                    params.append('value', categoryName);
+                }
+
+                // 2. Add manufacturer filter (currentFilters.manufacturers are lowercase values)
+                if (currentFilters && currentFilters.manufacturers && currentFilters.manufacturers.length > 0) {
+                    currentFilters.manufacturers.forEach(manufacturer => {
+                        params.append('manufacturer', manufacturer);
+                    });
+                }
+
+                // 3. Add Price Range Filter
+                if (currentFilters && currentFilters.priceRange) {
+                    const { min, max } = currentFilters.priceRange;
+                    if (min !== '' && !isNaN(Number(min))) {
+                        params.append('minPrice', Number(min));
+                    }
+                    if (max !== '' && !isNaN(Number(max))) {
+                        params.append('maxPrice', Number(max));
+                    }
+                }
+
+                ////for gpus
+                if (currentFilters && currentFilters.vrams && currentFilters.vrams.length > 0) {
+                    currentFilters.vrams.forEach(vramValue => {
+                        params.append('vram', vramValue.toString()); // Send as string, backend will parse
+                    });
+                }
+
+                if (currentFilters && currentFilters.interfaceTypes && currentFilters.interfaceTypes.length > 0) {
+                    currentFilters.interfaceTypes.forEach(interfaceTypesValue => {
+                        params.append('interfaceType', interfaceTypesValue); // Send as string, backend will parse
+                    });
+                }
+
+                //for rams
+                if (currentFilters && currentFilters.memoryCapacities && currentFilters.memoryCapacities.length > 0) {
+                    currentFilters.memoryCapacities.forEach(memorycapacityValue => {
+                        params.append('memoryCapacity', memorycapacityValue.toString()); // Send as string, backend will parse
+                    });
+                }
+
+
+                if (currentFilters && currentFilters.memoryTypes && currentFilters.memoryTypes.length > 0) {
+                    currentFilters.memoryTypes.forEach(memorycapacityValue => {
+                        params.append('memoryType', memorycapacityValue.toString()); // Send as string, backend will parse
+                    });
+                }
+
+
+
+
+
+
+
+
+
+                //for processors
+
+
+                if (currentFilters && currentFilters.coreCounts && currentFilters.coreCounts.length > 0) {
+                    currentFilters.coreCounts.forEach(memorycapac => {
+                        params.append('coreCount', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                }                
+
+
+                if (currentFilters && currentFilters.threadCounts && currentFilters.threadCounts.length > 0) {
+                    currentFilters.threadCounts.forEach(memorycapac => {
+                        params.append('threadCount', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                }  
+
+                if (currentFilters && currentFilters.socketTypes && currentFilters.socketTypes.length > 0) {
+                    currentFilters.socketTypes.forEach(memorycapac => {
+                        params.append('socketType', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+
+                //for motherboards
+                if (currentFilters && currentFilters.motherboardChipsets && currentFilters.motherboardChipsets.length > 0) {
+                    currentFilters.motherboardChipsets.forEach(memorycapac => {
+                        params.append('motherboardChipset', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+                
+                
+
+
+                //for powersupplys
+                if (currentFilters && currentFilters.wattages && currentFilters.wattages.length > 0) {
+                    currentFilters.wattages.forEach(memorycapac => {
+                        params.append('wattage', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+               
+                if (currentFilters && currentFilters.efficiencyRatings && currentFilters.efficiencyRatings.length > 0) {
+                    currentFilters.efficiencyRatings.forEach(memorycapac => {
+                        params.append('efficiencyRating', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+
+
+                //for storages
+                if (currentFilters && currentFilters.storageCapacities && currentFilters.storageCapacities.length > 0) {
+                    currentFilters.storageCapacities.forEach(memorycapac => {
+                        params.append('storageCapacity', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+                if (currentFilters && currentFilters.storageTypes && currentFilters.storageTypes.length > 0) {
+                    currentFilters.storageTypes.forEach(memorycapac => {
+                        params.append('storageType', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+                //for casings
+                if (currentFilters && currentFilters.supportedMotherboardSizes && currentFilters.supportedMotherboardSizes.length > 0) {
+                    currentFilters.supportedMotherboardSizes.forEach(memorycapac => {
+                        params.append('supportedMotherboardSizes', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+                if (currentFilters && currentFilters.maxGpuLengths && currentFilters.maxGpuLengths.length > 0) {
+                    currentFilters.maxGpuLengths.forEach(memoryc => {
+                        params.append('maxGpuLength', memoryc.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+
+                //for laptops
+                if (currentFilters && currentFilters.rams && currentFilters.rams.length > 0) {
+                    currentFilters.rams.forEach(memorycapac => {
+                        params.append('ram', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+                if (currentFilters && currentFilters.graphicCards && currentFilters.graphicCards.length > 0) {
+                    currentFilters.graphicCards.forEach(memorycapac => {
+                        params.append('graphicCard', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+                if (currentFilters && currentFilters.storages && currentFilters.storages.length > 0) {
+                    currentFilters.storages.forEach(memorycapac => {
+                        params.append('storage', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+
+                //for prebuilds
+                if (currentFilters && currentFilters.ramSizes && currentFilters.ramSizes.length > 0) {
+                    currentFilters.ramSizes.forEach(memorycapac => {
+                        params.append('ramSize', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+
+                //for expansion networks
+                if (currentFilters && currentFilters.componentTypes && currentFilters.componentTypes.length > 0) {
+                    currentFilters.componentTypes.forEach(memorycapac => {
+                        params.append('componentType', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+
+
+
+                //for monitors
+                if (currentFilters && currentFilters.displaySizes && currentFilters.displaySizes.length > 0) {
+                    currentFilters.displaySizes.forEach(memorycapac => {
+                        params.append('displaySize', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+                if (currentFilters && currentFilters.panelTypes && currentFilters.panelTypes.length > 0) {
+                    currentFilters.panelTypes.forEach(memorycapac => {
+                        params.append('panelType', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+                if (currentFilters && currentFilters.refreshRates && currentFilters.refreshRates.length > 0) {
+                    currentFilters.refreshRates.forEach(memorycapac => {
+                        params.append('refreshRate', memorycapac.toString()); // Send as string, backend will parse
+                    });
+                } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                const apiUrl = `http://localhost:8000/api/product/filter?${params.toString()}`;
+                console.log("Fetching products with URL (Grid):", apiUrl);
+
+                const response = await axios.get(apiUrl);
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                setProducts([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+        setSearchParams({ page: 1 });
+         // Reset to first page when filters change
+    }, [categoryName, currentFilters]); // Re-fetch when categoryName or currentFilters change
+
+    if (loading) {
+        return <div className="text-center py-10">Loading products...</div>;
     }
 
-
-
-
-
-//  ----- FOR VGAS ---------
-
-
-
-    //size filter/capacity filter for VGAs
-    if (filters.capacity && filters.capacity.length > 0) {
-      filtered = filtered.filter((product) =>
-        filters.capacity.includes(product.vram)
-      );
-    }
-
-
-    // VGA PCI Type filter
-if (filters.pciType && filters.pciType.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.pciType.includes(product.interfaceType?.toUpperCase())
-  );
-}
-
-
-
-//  ----- FOR RAMS ---------
-
-// RAM Memory Capacity filter
-if (filters.memoryCapacity && filters.memoryCapacity.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.memoryCapacity.includes(product.memoryCapacity?.toUpperCase())
-  );
-}
-
-// RAM Memory Speed filter
-if (filters.memorySpeed && filters.memorySpeed.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.memorySpeed.includes(product.memorySpeed?.toUpperCase())
-  );
-}
-
-
-
-//  ----- FOR PROCCESSORS ---------
-
-// Processor Core Count filter
-if (filters.coreCount && filters.coreCount.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.coreCount.includes(product.coreCount)
-  );
-}
-
-// Processor Threads filter
-if (filters.threadCount && filters.threadCount.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.threadCount.includes(product.threadCount)
-  );
-}
-
-
-
-// -----FOR MOTHERBOARDS-----
-
-
-//chipset
-if (filters.chipset && filters.chipset.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.chipset.includes(product.motherboardChipset)
-  );
-}
-
-//socket
-if (filters.socketType && filters.socketType.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.socketType.includes(product.socketType)
-  );
-}
-
-
-// ----for power supplies----
-
-//wattage
-if (filters.wattage && filters.wattage.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.wattage.includes(product.wattage)
-  );
-}
-
-//efficiency
-if (filters.efficiency && filters.efficiency.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.efficiency.includes(product.efficiencyRating)
-  );
-}
-
-
-
-
-// ----for storages----
-
-//capacity
-if (filters.storageCapacity && filters.storageCapacity.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.storageCapacity.includes(product.storageCapacity)
-  );
-}
-
-//type
-if (filters.storageType && filters.storageType.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.storageType.includes(product.storageType)
-  );
-}
-
-
-
-// ----for casings----
-
-if (filters.supportedMotherboard && filters.supportedMotherboard.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.supportedMotherboard.includes(product.supportedMotherboardSizes)
-  );
-  
-}
-
-
-
-// ----for Laptops----
-
-
-//lapram
-
-if (filters.laptopRamCapacity && filters.laptopRamCapacity.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.laptopRamCapacity.includes(product.ram)
-  );
-}
-
-
-//lapgpu
-
-if (filters.laptopGraphicCard && filters.laptopGraphicCard.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.laptopGraphicCard.includes(product.graphicCard)
-  );
-}
-
-//lapstorage
-
-if (filters.laptopStorage && filters.laptopStorage.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.laptopStorage.includes(product.storage)
-  );
-}
-
-
-
-
-
-// ----for PREBUILDS----
-
-
-//pcpram
-if (filters.prebuildRamCapacity && filters.prebuildRamCapacity.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.prebuildRamCapacity.includes(product.ram)
-  );
-}
-
-
-
-
-
-//pcgpu
-if (filters.prebuildGpu && filters.prebuildGpu.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.prebuildGpu.includes(product.graphicCard)
-  );
-}
-
-
-
-//pcstorage
-
-if (filters.prebuildStorage && filters.prebuildStorage.length > 0) {
-  filtered = filtered.filter(product =>
-    filters.prebuildStorage.includes(product.storage)
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Price range filter
-    if (filters.priceRange && filters.priceRange.length === 2) {
-      const [min, max] = filters.priceRange;
-      filtered = filtered.filter((product) => {
-        const price = parseFloat(product.price);
-        return price >= min && price <= max;
-      });
-    }
-
-    // TODO: Add other common filters here for GPU, RAM, Processor
-
-    setFilteredProducts(filtered);
-  }, [filters, allProducts]);
-
-  if (!filteredProducts) return <div>Loading...</div>;
-
-
-
-
-
-
-
-
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = products.slice(startIndex, endIndex);
+
+  // Handle page change
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setSearchParams({ page: pageNumber });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  if (!products) return <div>Loading...</div>;
 
   return (
+    <div>
+        {products.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  gap-y-10 gap-x-6 px-0 py-8">
+        {currentProducts.map(product => (
+          <Itemcard key={product._id} product={product} />
+        ))}
+      </div>
+                  ) : (
+                <div className="text-center py-10 text-gray-500">
+                    No products found matching your criteria.
+                </div>
+            )}
 
 
-    <div className=" ml-5 grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3  gap-y-10 gap-x-12 px-9 py-9">
-      {filteredProducts.map(product => (
-        <Itemcard key={product._id} product={product} />
-      ))}
+
+
+
+
+
+
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-2 mt-[200px]">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-md ${
+              currentPage === 1
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-purple-600 text-white hover:bg-purple-700'
+            }`}
+          >
+            Previous
+          </button>
+
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`px-4 py-2 rounded-md ${
+                currentPage === index + 1
+                  ? 'bg-purple-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded-md ${
+              currentPage === totalPages
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-purple-600 text-white hover:bg-purple-700'
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
-
-
   );
-
-
-
-
 }

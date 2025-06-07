@@ -38,6 +38,7 @@ export default function UserProfile() {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     address: user?.address || "",
+    district: user?.district || "",
     city: user?.city || "",
     profilePicture: user?.profilePicture || "",
   });
@@ -51,6 +52,7 @@ export default function UserProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        district: user.district,
         city: user.city,
         profilePicture: user.profilePicture,
       });
@@ -102,6 +104,7 @@ export default function UserProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        district: user.district,
         city: user.city,
         profilePicture: user.profilePicture,
       });
@@ -125,6 +128,7 @@ export default function UserProfile() {
         firstName: formData.firstName?.trim() || "",
         lastName: formData.lastName?.trim() || "",
         address: formData.address?.trim() || "",
+        district: formData.district?.trim() || "",
         city: formData.city?.trim(),
         profilePicture: formData.profilePicture || user.profilePicture || "",
       };
@@ -321,6 +325,21 @@ export default function UserProfile() {
                       onChange={wrappedHandle("address")}
                       width="86%"
                       rows={3}
+                      outlinedActive
+                      disabled={!editable}
+                    />
+                  </div>
+
+                  <div className="flex-1 mb-5 mr-1">
+                    <InputField
+                      type="text"
+                      variant="outlined"
+                      label="District"
+                      name="district"
+                      value={formData.district}
+                      onChange={wrappedHandle("district")}
+                      width="86%"
+                      rows={1}
                       outlinedActive
                       disabled={!editable}
                     />
