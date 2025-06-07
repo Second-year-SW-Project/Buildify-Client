@@ -360,7 +360,7 @@ const CreateProducts = () => {
             processor: ['socketType', 'tdp', 'coreCount', 'threadCount', 'baseClock', 'boostClock'],
             ram: ['memoryType', 'memorySpeed', 'memoryCapacity', 'tdp'],
             gpu: ['interfaceType', 'length', 'powerConnectors', 'vram', 'gpuChipset', 'gpuCores', 'tdp'],
-            motherboard: ['motherboardChipset', 'socketType', 'formFactor', 'ramSlots', 'maxRam', 'supportedMemoryTypes', 'tdp', 'pcieSlots', 'pcieVersion', 'storageInterfaces'],
+            motherboard: ['motherboardChipset', 'socketType', 'formFactor', 'ramSlots', 'maxRam', 'supportedMemoryTypes', 'tdp', 'pcieSlots', 'storageInterfaces'],
             storage: ['storageType', 'storageCapacity', 'tdp'],
             casing: ['formFactor', 'supportedMotherboardSizes', 'maxGpuLength', 'maxCoolerHeight'],
             power: ['wattage', 'efficiencyRating', 'modularType'],
