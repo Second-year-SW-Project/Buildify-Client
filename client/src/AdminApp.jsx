@@ -1,8 +1,8 @@
 import { AppProvider } from "@toolpad/core/react-router-dom";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState, useMemo } from "react";
 import { NavigationProvider } from './MoleculesComponents/Admin_components/NavigationContext';
-
+import DialogAlert from './AtomicComponents/Dialogs/Dialogs';
 import Iconset from './AtomicComponents/Icons/Iconset';
 import theme from './AtomicComponents/theme';
 import axios from 'axios';
@@ -210,24 +210,46 @@ const NAVIGATION = addBaseToSegments([
 
 //Define the AdminApp component
 function AdminApp() {
-
   const [session, setSession] = useState(null);
+  const [roleChecked, setRoleChecked] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // List of public/auth routes (relative to /adminpanel)
+  const publicRoutes = [
+    "/adminpanel/auth/login",
+    "/adminpanel/auth/signup",
+    "/adminpanel/auth/verify",
+    "/adminpanel/auth/resetpassword",
+    "/adminpanel/auth/forgetpassword"
+  ];
 
   //Fetch the admin data when the component runs
   useEffect(() => {
+    // Always allow public routes
+    if (publicRoutes.includes(location.pathname)) {
+      setRoleChecked(true);
+      setShowDialog(false);
+      return;
+    }
+
     const fetchAdminData = async () => {
       const userId = localStorage.getItem("userId");
-      if (!userId) return;
+      const token = localStorage.getItem("token");
+      if (!userId || !token) {
+        setShowDialog(true);
+        setRoleChecked(true);
+        return;
+      }
 
       try {
         const res = await axios.get(`${backendUrl}/api/v1/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
+        const { name, email, profilePicture, Role } = res.data.user;
 
-        const { name, email, profilePicture } = res.data.user;
-
-        //Set the name, email, profilePicture with the fetched data
         setSession({
           user: {
             name,
@@ -235,15 +257,26 @@ function AdminApp() {
             image: profilePicture,
           },
         });
-      } catch (error) {
-        console.error("Failed to fetch admin data:", error); //Debugging
 
-        toast.error("Failed to load admin profile");
+        if (Role != "admin") { //Check if the user has admin role
+          setShowDialog(true);
+        } else {
+          setShowDialog(false);
+        }
+      } catch (error) {
+        setShowDialog(true);
+      } finally {
+        setRoleChecked(true);
       }
     };
 
     fetchAdminData(); //Call the function
-  }, []);
+  }, [location.pathname]);
+
+  const handleDialogClose = () => {
+    setShowDialog(false);
+    navigate("/"); // Redirect to home or login
+  };
 
   //Handle the sign out process
   const handleSignOut = async () => {
@@ -267,6 +300,10 @@ function AdminApp() {
     }
   };
 
+  const handleCancle = () => {
+    setShowDialog(false);
+    navigate("/adminpanel/auth/login");
+  }
   const authentication = useMemo(
     () => ({
       signIn: () => { },
@@ -274,6 +311,22 @@ function AdminApp() {
     }),
     []
   );
+
+  if (!roleChecked) return null;
+
+  if (showDialog) {
+    return (
+      <DialogAlert
+        Title="Access Denied"
+        message="Admin access required. You do not have permission to view this page."
+        Agree="Go to Home"
+        Disagree="Login Again"
+        open={true}
+        handleClose={handleCancle}
+        handleAgree={handleDialogClose}
+      />
+    );
+  }
 
   return (
     <NavigationProvider>
