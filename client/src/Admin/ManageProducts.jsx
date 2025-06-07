@@ -111,9 +111,18 @@ function ManageProducts() {
     }, []); // Only run once on component mount
 
     // Separate useEffect for fetching products
+    const [filtersRestored, setFiltersRestored] = useState(false);
+
     useEffect(() => {
-        fetchProducts(searchTerm);
-    }, [currentPage, itemsPerPage, searchTerm, statusFilter, selectedDate, selectedMainCategory, selectedSubCategory]);
+        // ...restoring filters...
+        setFiltersRestored(true);
+    }, []);
+
+    useEffect(() => {
+        if (filtersRestored) {
+            fetchProducts(searchTerm);
+        }
+    }, [filtersRestored, currentPage, itemsPerPage, searchTerm, statusFilter, selectedDate, selectedSubCategory]);
 
     //fetch all the products 
     const fetchProducts = async (searchTerm = "") => {
