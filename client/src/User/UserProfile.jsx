@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/system";
 import SideNav from "./SideNav";
-import { Divider, Button } from "@mui/material";
+import { Divider, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../AtomicComponents/Buttons/Buttons";
@@ -11,6 +11,7 @@ import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import axios from "axios";
 import { toast } from "sonner";
 import { setAuthUser } from "../Store/authSlice";
+import { getProvinces, getDistrictsByProvince } from "../utils/locationData";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 
@@ -31,6 +32,10 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Location data
+  const provinces = getProvinces();
+  const [availableDistricts, setAvailableDistricts] = useState([]);
 
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -38,8 +43,8 @@ export default function UserProfile() {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     address: user?.address || "",
+    province: user?.province || "",
     district: user?.district || "",
-    city: user?.city || "",
     profilePicture: user?.profilePicture || "",
   });
 
@@ -52,12 +57,31 @@ export default function UserProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        province: user.province,
         district: user.district,
-        city: user.city,
         profilePicture: user.profilePicture,
       });
+      // Set available districts based on user's province
+      if (user.province) {
+        setAvailableDistricts(getDistrictsByProvince(user.province));
+      }
     }
   }, [user]);
+
+  // Update available districts when province changes
+  useEffect(() => {
+    if (formData.province) {
+      const districts = getDistrictsByProvince(formData.province);
+      setAvailableDistricts(districts);
+      // Reset district if it's not valid for the selected province
+      if (formData.district && !districts.includes(formData.district)) {
+        setFormData(prev => ({ ...prev, district: "" }));
+      }
+    } else {
+      setAvailableDistricts([]);
+      setFormData(prev => ({ ...prev, district: "" }));
+    }
+  }, [formData.province]);
 
   const wrappedHandle = (field) => (val) =>
     handleChange({ target: { name: field, value: val } });
@@ -104,8 +128,8 @@ export default function UserProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        province: user.province,
         district: user.district,
-        city: user.city,
         profilePicture: user.profilePicture,
       });
     }
@@ -128,8 +152,8 @@ export default function UserProfile() {
         firstName: formData.firstName?.trim() || "",
         lastName: formData.lastName?.trim() || "",
         address: formData.address?.trim() || "",
-        district: formData.district?.trim() || "",
-        city: formData.city?.trim(),
+        province: formData.province?.trim() || "",
+        district: formData.district?.trim(),
         profilePicture: formData.profilePicture || user.profilePicture || "",
       };
 
@@ -330,34 +354,44 @@ export default function UserProfile() {
                     />
                   </div>
 
-                  <div className="flex-1 mb-5 mr-1">
-                    <InputField
-                      type="text"
-                      variant="outlined"
-                      label="District"
-                      name="district"
-                      value={formData.district}
-                      onChange={wrappedHandle("district")}
-                      width="86%"
-                      rows={1}
-                      outlinedActive
-                      disabled={!editable}
-                    />
+                  <div className="flex-1 mb-5 mr-1" style={{ width: "86%" }}>
+                    <FormControl fullWidth variant="outlined" disabled={!editable}>
+                      <InputLabel>Province</InputLabel>
+                      <Select
+                        value={formData.province}
+                        onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                        label="Province"
+                      >
+                        <MenuItem value="">
+                          <em>Select Province</em>
+                        </MenuItem>
+                        {provinces.map((province) => (
+                          <MenuItem key={province} value={province}>
+                            {province}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
 
-                  <div className="flex-1 mb-5 mr-1">
-                    <InputField
-                      type="text"
-                      variant="outlined"
-                      label="City"
-                      name="city"
-                      value={formData.city}
-                      onChange={wrappedHandle("city")}
-                      width="86%"
-                      rows={1}
-                      outlinedActive
-                      disabled={!editable}
-                    />
+                  <div className="flex-1 mb-5 mr-1" style={{ width: "86%" }}>
+                    <FormControl fullWidth variant="outlined" disabled={!editable || !formData.province}>
+                      <InputLabel>District</InputLabel>
+                      <Select
+                        value={formData.district}
+                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        label="District"
+                      >
+                        <MenuItem value="">
+                          <em>Select District</em>
+                        </MenuItem>
+                        {availableDistricts.map((district) => (
+                          <MenuItem key={district} value={district}>
+                            {district}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </div>
 
                   <Button

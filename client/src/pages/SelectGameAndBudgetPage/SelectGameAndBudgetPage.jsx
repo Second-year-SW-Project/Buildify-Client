@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import SelectPcHeader from '../../AtomicComponents/ForCustomBuild/SelectPcHeader';
@@ -10,11 +10,20 @@ import PrebuiltPcPopup from '../../AtomicComponents/ForCustomBuild/PrebuiltPcPop
 
 function SelectGameAndBudgetPage() {
   const [budget, setBudget] = useState(800000);//Initial budget
-  const [selectedGames, setSelectedGames] = useState([]);//Initial selected games
+  const [selectedGames, setSelectedGames] = useState(() => {
+    // Initialize from localStorage if available
+    const savedGames = localStorage.getItem('selectedGames');
+    return savedGames ? JSON.parse(savedGames) : [];
+  });
   const [showPrebuiltPopup, setShowPrebuiltPopup] = useState(false);//Initial show prebuilt popup
   const [prebuiltPcs, setPrebuiltPcs] = useState([]);//Initial prebuilt PCs
   const [loading, setLoading] = useState(false);//Initial loading
   const [error, setError] = useState(null);//Initial error
+
+  // Save to localStorage whenever selectedGames changes
+  useEffect(() => {
+    localStorage.setItem('selectedGames', JSON.stringify(selectedGames));
+  }, [selectedGames]);
 
   const handleBudgetChange = (newBudget) => {
     setBudget(newBudget);

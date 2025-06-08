@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Paper, Typography, TextField, Button, Grid } from "@mui/material";
+import { Box, Paper, Typography, TextField, Button, Grid, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { useSelector, useDispatch } from "react-redux";
 import { setAuthUser } from "../Store/authSlice.js";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
+import { getProvinces, getDistrictsByProvince } from "../utils/locationData";
 
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -33,12 +34,16 @@ export default function AdminProfile() {
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     address: user?.address || "",
+    province: user?.province || "",
     district: user?.district || "",
-    city: user?.city || "",
     profilePicture: user?.profilePicture || "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Location data
+  const provinces = getProvinces();
+  const [availableDistricts, setAvailableDistricts] = useState([]);
 
 
 
@@ -51,12 +56,31 @@ export default function AdminProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        province: user.province,
         district: user.district,
-        city: user.city,
         profilePicture: user.profilePicture,
       });
+      // Set available districts based on user's province
+      if (user.province) {
+        setAvailableDistricts(getDistrictsByProvince(user.province));
+      }
     }
   }, [user]);
+
+  // Update available districts when province changes
+  useEffect(() => {
+    if (formData.province) {
+      const districts = getDistrictsByProvince(formData.province);
+      setAvailableDistricts(districts);
+      // Reset district if it's not valid for the selected province
+      if (formData.district && !districts.includes(formData.district)) {
+        setFormData(prev => ({ ...prev, district: "" }));
+      }
+    } else {
+      setAvailableDistricts([]);
+      setFormData(prev => ({ ...prev, district: "" }));
+    }
+  }, [formData.province]);
 
 
 
@@ -111,8 +135,8 @@ export default function AdminProfile() {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        province: user.province,
         district: user.district,
-        city: user.city,
         profilePicture: user.profilePicture,
       });
     }
@@ -137,8 +161,8 @@ export default function AdminProfile() {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         address: formData.address.trim(),
+        province: formData.province.trim(),
         district: formData.district.trim(),
-        city: formData.city.trim(),
         profilePicture: formData.profilePicture || user.profilePicture
       };
       const response = await axios.post(
@@ -305,31 +329,47 @@ export default function AdminProfile() {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                label="District"
-                name="district"
-                value={formData.district}
-                onChange={handleChange}
-                variant="outlined"
-                fullWidth
-                disabled={!editable}
-                InputProps={{ sx: { height: "60px" } }}
-              />
+              <FormControl fullWidth variant="outlined" disabled={!editable}>
+                <InputLabel>Province</InputLabel>
+                <Select
+                  value={formData.province}
+                  onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                  label="Province"
+                  sx={{ height: "60px" }}
+                >
+                  <MenuItem value="">
+                    <em>Select Province</em>
+                  </MenuItem>
+                  {provinces.map((province) => (
+                    <MenuItem key={province} value={province}>
+                      {province}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
 
           <Grid container spacing={3} sx={{ mt: 5 }}>
             <Grid item xs={12} sm={6}>
-              <TextField
-                label="City"
-                name="city"
-                value={formData.city}
-                onChange={handleChange}
-                variant="outlined"
-                fullWidth
-                disabled={!editable}
-                InputProps={{ sx: { height: "60px" } }}
-              />
+              <FormControl fullWidth variant="outlined" disabled={!editable || !formData.province}>
+                <InputLabel>District</InputLabel>
+                <Select
+                  value={formData.district}
+                  onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                  label="District"
+                  sx={{ height: "60px" }}
+                >
+                  <MenuItem value="">
+                    <em>Select District</em>
+                  </MenuItem>
+                  {availableDistricts.map((district) => (
+                    <MenuItem key={district} value={district}>
+                      {district}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
 
