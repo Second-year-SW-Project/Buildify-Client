@@ -25,6 +25,14 @@ export default function ContinuePurchasePage() {
   // Get build data from navigation state
   const { buildData, selectedComponents, totalPrice } = location.state || {};
 
+  // Debug logging
+  console.log('ContinuePurchasePage - Raw data:', {
+    buildData,
+    selectedComponents,
+    totalPrice,
+    locationState: location.state
+  });
+
   // Get service charges
   const serviceCharges = getServiceCharges();
 
@@ -89,15 +97,98 @@ export default function ContinuePurchasePage() {
         <section>
           <h2 className="text-xl font-semibold text-purple-700 mb-3">Your Order</h2>
           <OrderSummary 
-            buildName={buildData.name}
-            components={buildData.components}
-            totalPrice={totalPrice}
+            buildName={buildData?.name || 'Custom Build'}
+            components={(() => {
+              // Try multiple data sources for components
+              let components = [];
+              
+              console.log('Debug - selectedComponents:', selectedComponents);
+              console.log('Debug - buildData:', buildData);
+                
+              // Option 1: selectedComponents (from navigation state) - should be array now
+              if (selectedComponents && Array.isArray(selectedComponents)) {
+                console.log('Using selectedComponents array:', selectedComponents);
+                  components = selectedComponents.filter(comp => comp && comp.name);
+              }
+              // Option 2: selectedComponents as object (fallback)
+              else if (selectedComponents && typeof selectedComponents === 'object' && !Array.isArray(selectedComponents)) {
+                console.log('Converting selectedComponents object to array:', selectedComponents);
+                components = Object.entries(selectedComponents).flatMap(([type, component]) => {
+                  if (Array.isArray(component)) {
+                    return component.map(item => ({
+                      _id: item._id,
+                      name: item.name,
+                      type: type.toLowerCase() === 'case' ? 'casing' : item.type || type.toLowerCase(),
+                      manufacturer: item.manufacturer,
+                      price: typeof item.price === 'string' 
+                        ? parseFloat(item.price.replace(/[^0-9.]/g, '')) 
+                        : parseFloat(item.price) || 0,
+                      image: item.image || (item.imgUrls && item.imgUrls[0]?.url) || '',
+                      imgUrls: item.imgUrls || [],
+                      specifications: item.specifications || {}
+                    }));
+                  } else if (component) {
+                    return [{
+                      _id: component._id,
+                      name: component.name,
+                      type: type.toLowerCase() === 'case' ? 'casing' : component.type || type.toLowerCase(),
+                      manufacturer: component.manufacturer,
+                      price: typeof component.price === 'string' 
+                        ? parseFloat(component.price.replace(/[^0-9.]/g, '')) 
+                        : parseFloat(component.price) || 0,
+                      image: component.image || (component.imgUrls && component.imgUrls[0]?.url) || '',
+                      imgUrls: component.imgUrls || [],
+                      specifications: component.specifications || {}
+                    }];
+                  }
+                  return [];
+                }).filter(component => component && component.name);
+              }
+              
+              // Option 3: buildData.components (from build data)
+              if (components.length === 0 && buildData?.components) {
+                console.log('Using buildData.components:', buildData.components);
+                components = Array.isArray(buildData.components) ? 
+                  buildData.components.filter(comp => comp && comp.name) : [];
+              }
+              
+              console.log('Final components for OrderSummary:', components);
+              return components;
+            })()}
+            totalPrice={(() => {
+              // Try to get total price from multiple sources
+              let total = 0;
+              
+              if (buildData?.totalCharge) {
+                total = parseFloat(buildData.totalCharge);
+              } else if (buildData?.componentsPrice) {
+                total = parseFloat(buildData.componentsPrice);
+              } else if (buildData?.totalPrice) {
+                total = typeof buildData.totalPrice === 'string' 
+                  ? parseFloat(buildData.totalPrice.replace(/[^0-9.]/g, '')) 
+                  : parseFloat(buildData.totalPrice);
+              } else if (components.length > 0) {
+                // Calculate from components if no total is available
+                total = components.reduce((sum, comp) => {
+                  const price = typeof comp.price === 'string' 
+                    ? parseFloat(comp.price.replace(/[^0-9.]/g, '')) 
+                    : parseFloat(comp.price) || 0;
+                  return sum + price;
+                }, 0);
+              }
+              
+              return total || 0;
+            })()}
           />
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <DeliveryMethod onDeliveryMethodChange={handleDeliveryMethodChange} />
-          {deliveryMethod === 'Home Delivery' ? <AddressForm /> : <StorePickup />}
+          {deliveryMethod === 'Home Delivery' ? (
+            <AddressForm key={`${user?.province}-${user?.district}-${user?.address}`} />
+          ) : (
+            <StorePickup />
+          )}
         </section>
 
         <OrderTotal 

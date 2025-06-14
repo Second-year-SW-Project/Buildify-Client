@@ -171,5 +171,5 @@ export const getDeliveryInfo = (province, district) => {
     province,
     district
   };
-}; 
+};
 
