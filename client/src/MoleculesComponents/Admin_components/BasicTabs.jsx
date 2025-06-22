@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import theme from '../../AtomicComponents/theme';
 import { styled } from '@mui/material/styles';
 
-const statusOptions = ['All', 'Pending', 'Shipped', 'Successful', 'Delivered', 'Refunded', 'Canceled'];
+const statusOptions = ['All', 'Pending', 'Successful', 'Shipped', 'Delivered', 'Refunded', 'Canceled'];
 
 // Define unique colors for each status
 const statusColors = {

@@ -169,7 +169,6 @@ export function OrderTable({
   width,
   color,
   pagination = null,
-  customRenderers = {},
 }) {
 
   const [expandedRowId, setExpandedRowId] = React.useState(null);
