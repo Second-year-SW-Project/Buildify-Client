@@ -247,7 +247,11 @@ const CreateProducts = () => {
         if (isEditMode) {
             const fetchProduct = async () => {
                 try {
-                    const res = await axios.get(`${backendUrl}/api/product/${id}`);
+                    const res = await axios.get(`${backendUrl}/api/product/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        }
+                    });
                     if (res.data.Success) {
 
                         const fetchedProduct = res.data;
@@ -360,7 +364,7 @@ const CreateProducts = () => {
             processor: ['socketType', 'tdp', 'coreCount', 'threadCount', 'baseClock', 'boostClock'],
             ram: ['memoryType', 'memorySpeed', 'memoryCapacity', 'tdp'],
             gpu: ['interfaceType', 'length', 'powerConnectors', 'vram', 'gpuChipset', 'gpuCores', 'tdp'],
-            motherboard: ['motherboardChipset', 'socketType', 'formFactor', 'ramSlots', 'maxRam', 'supportedMemoryTypes', 'tdp', 'pcieSlots', 'pcieVersion', 'storageInterfaces'],
+            motherboard: ['motherboardChipset', 'socketType', 'formFactor', 'ramSlots', 'maxRam', 'supportedMemoryTypes', 'tdp', 'pcieSlots', 'storageInterfaces'],
             storage: ['storageType', 'storageCapacity', 'tdp'],
             casing: ['formFactor', 'supportedMotherboardSizes', 'maxGpuLength', 'maxCoolerHeight'],
             power: ['wattage', 'efficiencyRating', 'modularType'],
@@ -464,9 +468,15 @@ const CreateProducts = () => {
                 ? `${backendUrl}/api/product/${id}`
                 : `${backendUrl}/api/product/add`;
 
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            };
+
             const response = isEditMode
-                ? await axios.put(endpoint, formData)
-                : await axios.post(endpoint, formData);
+                ? await axios.put(endpoint, formData, config)
+                : await axios.post(endpoint, formData, config);
 
             if (response.data.Success) {
                 toast.success(isEditMode ? 'Product updated successfully' : 'Product created successfully');

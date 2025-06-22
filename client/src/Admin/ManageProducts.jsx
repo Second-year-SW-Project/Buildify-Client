@@ -1,5 +1,4 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -62,17 +61,20 @@ function ManageProducts() {
         setSelectedMainCategory(value);
         setSubCategoryOptions(subCategories[value] || []);
         setSelectedSubCategory('');
+        setCurrentPage(1);
     };
 
     //Set up state for selected subcategory and manufacture
     const handleSubCategoryChange = (value) => {
         setSelectedSubCategory(value);
+        setCurrentPage(1);
     };
 
     //Handle input changes for filters
     const handleInputChange = (field, value) => {
         if (field === 'statusFilter') {
             setStatusFilter(value);
+            setCurrentPage(1);
         }
         // Add more 
     };
@@ -138,7 +140,12 @@ function ManageProducts() {
             };
             // console.log("Fetching products with params:", params); // Debugging
 
-            const response = await axios.get(`${backendUrl}/api/product/all`, { params });
+            const response = await axios.get(`${backendUrl}/api/product/all`, {
+                params,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
 
             if (response.data && Array.isArray(response.data.data)) {
                 const allProducts = response.data.data;
@@ -182,7 +189,11 @@ function ManageProducts() {
     const handleDelete = async () => {
         try {
             setLoading(true)
-            const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/product/${selectedProductId}`);
+            const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/product/${selectedProductId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
             if (response.data.Success) {
                 toast.success("Product deleted successfully", selectedProductId);
                 fetchProducts();
@@ -225,17 +236,19 @@ function ManageProducts() {
     };
 
     // Table Data
-    const productData = Array.isArray(filteredProducts)
-        ? filteredProducts.map(product => ({
-            id: product._id,
-            Id: `#${product._id?.slice(-4).toUpperCase() || "----"}`,
-            productCard: <ProductCard name={product.name} type={getCategoryLabel(product.type)} src={product.imgUrls?.[0]?.url} />,
-            date: <TimeCard date={new Date(product.updatedAt).toLocaleDateString()} time={new Date(product.updatedAt).toLocaleTimeString()} />,
-            availability: <StatusCard Status={product.quantity > 5 ? "In Stock" : product.quantity <= 5 && product.quantity > 0 ? "Low Stock" : "Out of Stock"} />,
-            quantity: < QuantityCard quantity={product.quantity} unitprice={`Unit Price - ${product.price}`} />,
-            stock: `${product.quantity * product.price} LKR`,
-        }))
-        : [];
+    const productData = useMemo(() => (
+        Array.isArray(filteredProducts)
+            ? filteredProducts.map(product => ({
+                id: product._id,
+                Id: `#${product._id?.slice(-4).toUpperCase() || "----"}`,
+                productCard: <ProductCard name={product.name} type={getCategoryLabel(product.type)} src={product.imgUrls?.[0]?.url} />,
+                date: <TimeCard date={new Date(product.updatedAt).toLocaleDateString()} time={new Date(product.updatedAt).toLocaleTimeString()} />,
+                availability: <StatusCard Status={product.quantity > 5 ? "In Stock" : product.quantity <= 5 && product.quantity > 0 ? "Low Stock" : "Out of Stock"} />,
+                quantity: < QuantityCard quantity={product.quantity} unitprice={`Unit Price - ${product.price}`} />,
+                stock: `${product.quantity * product.price} LKR`,
+            }))
+            : []
+    ), [filteredProducts]);
 
     const iconTypes = ["view", "edit", "delete"];
     const iconActions = {
@@ -305,7 +318,10 @@ function ManageProducts() {
                                 width="100%"
                                 label="Date"
                                 value={selectedDate}
-                                onChange={(date) => setSelectedDate(date)}
+                                onChange={(date) => {
+                                    setSelectedDate(date);
+                                    setCurrentPage(1);
+                                }}
                             >
                             </SetDate>
                         </div>
@@ -342,6 +358,7 @@ function ManageProducts() {
                                 onChange={(e) => {
                                     const newSearchTerm = e.target.value;
                                     setSearchTerm(newSearchTerm);
+                                    setCurrentPage(1);
                                     fetchProducts(newSearchTerm);
                                 }}
                             />
