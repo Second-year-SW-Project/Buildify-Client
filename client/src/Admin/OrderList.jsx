@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -198,7 +197,48 @@ function OrderList() {
     const handleOrderIdSearch = (e) => {
         const value = e.target.value;
         setOrderIdSearch(value);
+        setCurrentPage(1);
     };
+
+    // Handle search bar change for name/email
+    const handleSearchTermChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        setCurrentPage(1);
+        fetchOrders(value);
+    };
+
+    // Handle date change
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+        setCurrentPage(1);
+    };
+
+    // Handle tab/status change
+    const handleStatusTabChange = (newStatus) => {
+        setStatus(newStatus);
+        setSelectedTab(newStatus);
+        setCurrentPage(1);
+    };
+
+    // Memoize mapped orders for the table (add computed fields or formatting here if needed)
+    const memoizedOrders = useMemo(() => {
+        return orders.map(order => {
+            const customerName = order.userDetails?.name || order.user_name || '';
+            const customerEmail = order.userDetails?.email || order.email || '';
+            return {
+                ...order,
+                shortOrderId: order._id ? `#${order._id.slice(-4).toUpperCase()}` : '',
+                formattedDate: order.createdAt ? new Date(order.createdAt).toLocaleString() : '',
+                customerName,
+                customerEmail,
+                formattedTotal: order.total ? `LKR ${order.total.toLocaleString()}` : '',
+                itemsSummary: Array.isArray(order.items)
+                    ? order.items.map(item => `${item.name} x${item.quantity}`).join(', ')
+                    : '',
+            };
+        });
+    }, [orders]);
 
     return (
         <div className='pl-6 grid grid-rows'>
@@ -216,10 +256,7 @@ function OrderList() {
                     {/* Status Tabs */}
                     <OrderStatusTabs
                         status={selectedTab || status}
-                        setStatus={(newStatus) => {
-                            setStatus(newStatus);
-                            setSelectedTab(newStatus);
-                        }}
+                        setStatus={handleStatusTabChange}
                         statusCounts={statusCounts}
                     />
                     <Divider sx={{ marginLeft: "2px" }} />
@@ -231,7 +268,7 @@ function OrderList() {
                                     width="100%"
                                     label="Date"
                                     value={selectedDate}
-                                    onChange={(date) => setSelectedDate(date)}
+                                    onChange={handleDateChange}
                                 >
                                 </SetDate>
                             </div>
@@ -240,11 +277,7 @@ function OrderList() {
                                     placeholder="Search Name or Email"
                                     width="100%"
                                     value={searchTerm}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setSearchTerm(value);
-                                        fetchOrders(value);
-                                    }}
+                                    onChange={handleSearchTermChange}
                                 />
                             </div>
                             <div className="col-span-1">
@@ -270,13 +303,9 @@ function OrderList() {
                     <div sx={{ width: '100%', borderRadius: "20px" }}>
                         <OrderTable
                             columns={orderColumns}
-                            orders={orders}
+                            orders={memoizedOrders}
                             iconTypes={iconTypes}
                             iconActions={iconActions}
-                            customRenderers={{
-                                userCard: (order) => order.userDetails,
-                                items: (order) => order.items
-                            }}
                             pagination={{
                                 currentPage,
                                 totalPages,

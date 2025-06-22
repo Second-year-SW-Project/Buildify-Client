@@ -45,17 +45,17 @@ function ViewOrder() {
             case 'Pending':
                 return 1;
             case 'Successful':
-                return 1;
-            case 'Shipped':
                 return 2;
-            case 'Delivered':
+            case 'Shipped':
                 return 3;
+            case 'Delivered':
+                return 4;
             case 'Refunded':
                 return 4;
             case 'Canceled':
-                return 1;
+                return 2;
             default:
-                return 0;
+                return 1;
         }
     };
 
