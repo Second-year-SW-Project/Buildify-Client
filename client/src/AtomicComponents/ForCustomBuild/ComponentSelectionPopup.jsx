@@ -23,19 +23,30 @@ const ComponentSelectionPopup = ({
 
         // Construct query URL
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        let url = `${backendUrl}/api/product/filter?attribute=type&value=${backendType}`;//Constructs the URL for the backend for fetching the components
+        let url = `${backendUrl}/api/product/filter?attribute=type&value=${backendType}`;
+        
+        // For expansion network components, add the component type filter
         if (isExpansionNetwork && componentTypeValue) {
-          url += `&attribute2=component_type&value2=${componentTypeValue}`;
-        }//If the component type is an expansion network and the component type value is not null, add the component type value to the URL
+          url += `&attribute2=componentType&value2=${componentTypeValue}`;
+        }
 
-        const response = await fetch(url);//Fetches the components from the backend
+        const response = await fetch(url);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch ${componentType} components`);
-        }//If the response is not ok, throw an error
+        }
         
         const data = await response.json();
-        setComponents(data);
+        
+        // Additional filtering for expansion network components
+        if (isExpansionNetwork && componentTypeValue) {
+          const filteredData = data.filter(component => 
+            component.componentType === componentTypeValue
+          );
+          setComponents(filteredData);
+        } else {
+          setComponents(data);
+        }
       } catch (err) {
         console.error("Error fetching components:", err);
         setError(err.message);

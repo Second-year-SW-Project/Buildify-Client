@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ClearIcon from '@mui/icons-material/Clear';
 import AddButton from './AddButton';
@@ -17,12 +17,21 @@ const rows = [
 ];
 
 function PartsTable({ onComponentsChanged }) {
-  const [selectedComponents, setSelectedComponents] = useState({});//Stores the selected components
+  const [selectedComponents, setSelectedComponents] = useState(() => {
+    // Initialize from localStorage if available
+    const savedComponents = localStorage.getItem('selectedComponents');
+    return savedComponents ? JSON.parse(savedComponents) : {};
+  });
   const [showPopup, setShowPopup] = useState(false);
   const [currentComponentType, setCurrentComponentType] = useState(null);//Tracks the current component type
 
+  // Save to localStorage whenever selectedComponents changes
+  useEffect(() => {
+    localStorage.setItem('selectedComponents', JSON.stringify(selectedComponents));
+  }, [selectedComponents]);
+
   // Notify parent of component changes
-  React.useEffect(() => {
+  useEffect(() => {
     onComponentsChanged(selectedComponents);
   }, [selectedComponents, onComponentsChanged]);
 

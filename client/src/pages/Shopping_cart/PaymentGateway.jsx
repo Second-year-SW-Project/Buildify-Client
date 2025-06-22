@@ -77,19 +77,32 @@ const PaymentGateway = () => {
 
   const handleCheckout = async (paymentMethodId, formData, setIsProcessing) => {
     try {
+      // Check if cart contains custom build items
+      const hasCustomBuild = cartItems.some(item => item.type === 'custom_build');
+      const customBuildItem = cartItems.find(item => item.type === 'custom_build');
+
       const sanitizedCartItems = cartItems.map((item) => ({
         _id: item._id || item.id,
         product_image: item.imgUrls?.[0]?.url || item.image || null,
         name: item.name,
         category: item.type,
+        type: item.type,
         quantity: item.quantity,
         price: item.price,
+        // Include build data for custom builds
+        buildData: item.buildData || null
       }));
 
-      const response = await fetch(`${backendUrl}/api/checkout/payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      // Choose endpoint based on cart contents
+      const endpoint = hasCustomBuild 
+        ? `${backendUrl}/api/build-transactions/checkout`
+        : `${backendUrl}/api/checkout/payment`;
+
+      console.log('Using endpoint:', endpoint);
+      console.log('Cart items:', sanitizedCartItems);
+      console.log('Has custom build:', hasCustomBuild);
+
+      const requestBody = {
           items: sanitizedCartItems,
           total: totalPrice,
           paymentMethodId,
@@ -98,16 +111,27 @@ const PaymentGateway = () => {
           customerName: formData.name,
           customerAddress: formData.address,
           customerNumber: formData.phone
-        }),
+      };
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
       console.log("Server Response:", data);
 
       if (response.ok) {
+        let successMessage = "Thank you for your purchase!";
+        
+        if (hasCustomBuild && data.pickupCode) {
+          successMessage += `\n\nYour pickup code is: ${data.pickupCode}`;
+        }
+
         Swal.fire({
           title: "Payment Successful 🎉",
-          text: "Thank you for your purchase!",
+          text: successMessage,
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
