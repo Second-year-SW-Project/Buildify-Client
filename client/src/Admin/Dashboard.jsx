@@ -233,7 +233,11 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchPieChartData = async () => {
             try {
-                const response = await fetch(`${backendUrl}/api/product/counts/by-main-category?mainCategory=${selectedMainCategory}`);
+                const response = await fetch(`${backendUrl}/api/product/counts/by-main-category?mainCategory=${selectedMainCategory}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    }
+                });
                 const data = await response.json();
                 if (data.Success) {
                     setPieChartData(
@@ -268,38 +272,49 @@ export default function Dashboard() {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
                     }
                 });
-                let { xLabels, sales, refund, cancle, other } = response.data || {};
+                let { xLabels, sales, refund, cancle, other, rawCancleOrders } = response.data || {};
                 let newXLabels = [], newSales = [], newRefund = [], newCancle = [], newOther = [];
                 const today = dayjs();
                 if (barChartRange === 'thisweek' || barChartRange === 'lastweek') {
                     const weekRef = barChartRange === 'thisweek' ? today : today.subtract(1, 'week');
                     newXLabels = getAllDaysOfWeek(weekRef);
-                    // Debug: Compare frontend and backend xLabels
-                    if (process.env.NODE_ENV !== 'production') {
-                        const missing = newXLabels.filter(l => !xLabels.includes(l));
-                        const extra = xLabels.filter(l => !newXLabels.includes(l));
-                        if (missing.length || extra.length) {
-                            // eslint-disable-next-line no-console
-                            console.warn('BarChart week/day label mismatch:', { missing, extra, frontend: newXLabels, backend: xLabels });
-                        }
-                    }
                     newXLabels.forEach((label, idx) => {
                         const i = xLabels.indexOf(label);
                         newSales.push(i !== -1 ? sales[i] : 0);
                         newRefund.push(i !== -1 ? refund[i] : 0);
-                        newCancle.push(i !== -1 ? cancle[i] : 0);
+                        // Only sum canceled orders with valid stepTimestamps.Successful
+                        if (rawCancleOrders && Array.isArray(rawCancleOrders[label])) {
+                            const validCancleSum = rawCancleOrders[label]
+                                .filter(order => {
+                                    const d = order?.stepTimestamps?.Successful ? new Date(order.stepTimestamps.Successful) : null;
+                                    return d && d.getFullYear() > 2000;
+                                })
+                                .reduce((sum, order) => sum + (order.total || 0), 0);
+                            newCancle.push(validCancleSum);
+                        } else {
+                            newCancle.push(i !== -1 ? cancle[i] : 0);
+                        }
                         newOther.push(i !== -1 ? other[i] : 0);
                     });
                 } else if (barChartRange === 'thismonth' || barChartRange === 'lastmonth') {
                     const monthRef = barChartRange === 'thismonth' ? today : today.subtract(1, 'month');
-                    // Group by day for month filters
                     const daysInMonth = monthRef.daysInMonth();
                     newXLabels = Array.from({ length: daysInMonth }, (_, i) => monthRef.date(i + 1).format('YYYY-MM-DD'));
                     newXLabels.forEach((label, idx) => {
                         const i = xLabels.indexOf(label);
                         newSales.push(i !== -1 ? sales[i] : 0);
                         newRefund.push(i !== -1 ? refund[i] : 0);
-                        newCancle.push(i !== -1 ? cancle[i] : 0);
+                        if (rawCancleOrders && Array.isArray(rawCancleOrders[label])) {
+                            const validCancleSum = rawCancleOrders[label]
+                                .filter(order => {
+                                    const d = order?.stepTimestamps?.Successful ? new Date(order.stepTimestamps.Successful) : null;
+                                    return d && d.getFullYear() > 2000;
+                                })
+                                .reduce((sum, order) => sum + (order.total || 0), 0);
+                            newCancle.push(validCancleSum);
+                        } else {
+                            newCancle.push(i !== -1 ? cancle[i] : 0);
+                        }
                         newOther.push(i !== -1 ? other[i] : 0);
                     });
                 } else if (barChartRange === 'thisyear' || barChartRange === 'lastyear') {
@@ -309,7 +324,17 @@ export default function Dashboard() {
                         const i = xLabels.indexOf(month);
                         newSales.push(i !== -1 ? sales[i] : 0);
                         newRefund.push(i !== -1 ? refund[i] : 0);
-                        newCancle.push(i !== -1 ? cancle[i] : 0);
+                        if (rawCancleOrders && Array.isArray(rawCancleOrders[month])) {
+                            const validCancleSum = rawCancleOrders[month]
+                                .filter(order => {
+                                    const d = order?.stepTimestamps?.Successful ? new Date(order.stepTimestamps.Successful) : null;
+                                    return d && d.getFullYear() > 2000;
+                                })
+                                .reduce((sum, order) => sum + (order.total || 0), 0);
+                            newCancle.push(validCancleSum);
+                        } else {
+                            newCancle.push(i !== -1 ? cancle[i] : 0);
+                        }
                         newOther.push(i !== -1 ? other[i] : 0);
                     });
                 } else {
@@ -320,8 +345,13 @@ export default function Dashboard() {
                     newOther = other;
                 }
                 setBarChartData({ xLabels: newXLabels, sales: newSales, refund: newRefund, cancle: newCancle, other: newOther });
-                const growth = newSales.reduce((a, b) => a + b, 0) - newRefund.reduce((a, b) => a + b, 0) - newCancle.reduce((a, b) => a + b, 0) - newOther.reduce((a, b) => a + b, 0);
-                setTotalGrowth(growth);
+
+                // Calculate grossProfit with the new cancled logic
+                const grossProfit = newSales.reduce((a, b) => a + b, 0)
+                    - newOther.reduce((a, b) => a + b, 0)
+                    - newRefund.reduce((a, b) => a + b, 0)
+                    - newCancle.reduce((a, b) => a + b, 0);
+                setTotalGrowth(grossProfit);
             } catch (err) {
                 setBarChartData({ sales: [], refund: [], cancle: [], other: [], xLabels: [] });
                 setTotalGrowth(0);
@@ -335,25 +365,7 @@ export default function Dashboard() {
         const startOfWeek = dayjs(date).startOf('week').add(1, 'day'); // Monday
         return Array.from({ length: 7 }, (_, i) => startOfWeek.add(i, 'day').format('YYYY-MM-DD'));
     }
-    // Helper: get all week ranges in month, only including days within the month
-    function getAllWeeksOfMonth(date) {
-        const start = dayjs(date).startOf('month');
-        const end = dayjs(date).endOf('month');
-        let weeks = [];
-        let current = start;
-        while (current.isBefore(end) || current.isSame(end, 'day')) {
-            // Start of week: current
-            let weekStart = current;
-            let weekEnd = current.endOf('week');
-            // Clamp weekStart and weekEnd to the month
-            if (weekStart.isBefore(start)) weekStart = start;
-            if (weekEnd.isAfter(end)) weekEnd = end;
-            weeks.push(`${weekStart.format('YYYY-MM-DD')} - ${weekEnd.format('YYYY-MM-DD')}`);
-            current = weekEnd.add(1, 'day');
-        }
-        console.log('BarChart getAllWeeksOfMonth (frontend):', weeks);
-        return weeks;
-    }
+
     // Helper: get all months in year
     function getAllMonthsOfYear(date) {
         return Array.from({ length: 12 }, (_, i) => dayjs(date).month(i).format('MMMM'));
@@ -428,7 +440,7 @@ export default function Dashboard() {
                             <Typography variant="h2" fontWeight="bold">{orderSummary.totalOrders}</Typography>
                         </div>
                         <div className="pt-4">
-                            <Iconset type="cart" fontSize="110px" color="primary" />
+                            <Iconset type="cart" fontSize="110px" color="primaryDark" />
                         </div>
                     </div>
 
@@ -475,7 +487,7 @@ export default function Dashboard() {
                             <Typography variant="h4" fontWeight="bold">{orderSummary.totalPrice.toLocaleString()} LKR</Typography>
                         </div>
                         <div className="pt-4">
-                            <Iconset type="money" fontSize="110px" color="primary" />
+                            <Iconset type="money" fontSize="110px" color="primaryDark" />
                         </div>
                     </div>
 
@@ -522,7 +534,7 @@ export default function Dashboard() {
                             <Typography variant="h2" fontWeight="bold">{orderSummary.pendingOrders}</Typography>
                         </div>
                         <div className="pt-4">
-                            <Iconset type="bag" fontSize="110px" color="primary" />
+                            <Iconset type="bag" fontSize="110px" color="primaryDark" />
                         </div>
                     </div>
 
