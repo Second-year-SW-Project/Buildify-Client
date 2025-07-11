@@ -16,14 +16,120 @@ const rows = [
   { component: 'Expansion Cards/Networking' },
 ];
 
-function PartsTable({ onComponentsChanged }) {
+// Map component attributes from backend snake_case to frontend camelCase
+const mapComponentAttributes = (productData) => {
+  if (!productData) return productData;
+
+  // Create a comprehensive mapping from snake_case to camelCase
+  const attributeMapping = {
+    // Common attributes
+    socket_type: 'socketType',
+    form_factor: 'formFactor',
+    
+    // CPU attributes
+    core_count: 'coreCount',
+    thread_count: 'threadCount',
+    base_clock: 'baseClock',
+    boost_clock: 'boostClock',
+    integrated_graphics: 'integratedGraphics',
+    includes_cooler: 'includesCooler',
+    graphics_model: 'graphicsModel',
+    
+    // Cooler attributes
+    cooler_type: 'coolerType',
+    supported_socket: 'supportedSocket',
+    max_tdp: 'maxTdp',
+    
+    // Motherboard attributes
+    motherboard_chipset: 'motherboardChipset',
+    ram_slots: 'ramSlots',
+    max_ram: 'maxRam',
+    supported_memory_types: 'supportedMemoryTypes',
+    pcie_slots: 'pcieSlots',
+    storage_interfaces: 'storageInterfaces',
+    
+    // RAM attributes
+    memory_type: 'memoryType',
+    memory_speed: 'memorySpeed',
+    memory_capacity: 'memoryCapacity',
+    
+    // Storage attributes
+    storage_type: 'storageType',
+    storage_capacity: 'storageCapacity',
+    
+    // GPU attributes
+    interface_type: 'interfaceType',
+    power_connectors: 'powerConnectors',
+    gpu_chipset: 'gpuChipset',
+    gpu_cores: 'gpuCores',
+    
+    // Case attributes
+    supported_motherboard_sizes: 'supportedMotherboardSizes',
+    max_gpu_length: 'maxGpuLength',
+    max_cooler_height: 'maxCoolerHeight',
+    
+    // Power Supply attributes
+    efficiency_rating: 'efficiencyRating',
+    modular_type: 'modularType',
+    
+    // Common attributes
+    img_urls: 'imgUrls'
+  };
+
+  // Create mapped object
+  const mapped = { ...productData };
+  
+  // Apply attribute mapping
+  Object.entries(attributeMapping).forEach(([snakeKey, camelKey]) => {
+    if (productData[snakeKey] !== undefined) {
+      mapped[camelKey] = productData[snakeKey];
+    }
+  });
+
+  return mapped;
+};
+
+// Format price with LKR currency
+const formatPrice = (price) => {
+  if (!price && price !== 0) return '—';
+  
+  // If price is already formatted (contains 'LKR'), return as is
+  if (typeof price === 'string' && price.includes('LKR')) {
+    return price;
+  }
+  
+  // Convert to number and format
+  const numericPrice = typeof price === 'string' ? 
+    parseFloat(price.replace(/[^0-9.]/g, '')) : 
+    parseFloat(price);
+    
+  if (isNaN(numericPrice)) return '—';
+  
+  return `LKR ${numericPrice.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
+};
+
+function PartsTable({ onComponentsChanged, initialComponents }) {
   const [selectedComponents, setSelectedComponents] = useState(() => {
-    // Initialize from localStorage if available
+    // If initial components are provided (edit mode), use them
+    if (initialComponents && Object.keys(initialComponents).length > 0) {
+      return initialComponents;
+    }
+    // Otherwise, initialize from localStorage if available
     const savedComponents = localStorage.getItem('selectedComponents');
     return savedComponents ? JSON.parse(savedComponents) : {};
   });
   const [showPopup, setShowPopup] = useState(false);
   const [currentComponentType, setCurrentComponentType] = useState(null);//Tracks the current component type
+
+  // Update selectedComponents when initialComponents prop changes (for edit mode)
+  useEffect(() => {
+    if (initialComponents && Object.keys(initialComponents).length > 0) {
+      setSelectedComponents(initialComponents);
+    }
+  }, [initialComponents]);
 
   // Save to localStorage whenever selectedComponents changes
   useEffect(() => {
@@ -46,12 +152,16 @@ function PartsTable({ onComponentsChanged }) {
     const key = typeof componentType === 'object' ? componentType.componentType : componentType;
     //Extract the key from the component type
     
+    // Map attributes from snake_case to camelCase for compatibility checking
+    const mappedOriginalData = mapComponentAttributes(selectedData.originalData);
+    
     // Special handling for RAM and Storage to allow multiple modules
     if (key === 'Memory' || key === 'Storage') {
       setSelectedComponents((prev) => {
         const existingComponents = prev[key] || [];
         const newComponent = {
-          ...selectedData.originalData,
+          // Include all the mapped product data for compatibility checking
+          ...mappedOriginalData,
           name: selectedData.name,
           image: selectedData.image,
           availability: selectedData.availability,
@@ -78,7 +188,8 @@ function PartsTable({ onComponentsChanged }) {
       setSelectedComponents((prev) => ({
         ...prev,
         [key]: {
-          ...selectedData.originalData,
+          // Include all the mapped product data for compatibility checking
+          ...mappedOriginalData,
           name: selectedData.name,
           image: selectedData.image,
           availability: selectedData.availability,
@@ -295,12 +406,12 @@ function PartsTable({ onComponentsChanged }) {
                             {Array.isArray(selectedData) ? (
                               selectedData.map((component, idx) => (
                                 <div key={idx} className="h-[38px] flex items-center">
-                                  {component.price}
+                                  {formatPrice(component.price)}
                                 </div>
                               ))
                             ) : (
                               <div className="h-[38px] flex items-center">
-                                {selectedData.price}
+                                {formatPrice(selectedData.price)}
                               </div>
                             )}
                             <div className="h-[38px] flex items-center">
@@ -309,7 +420,7 @@ function PartsTable({ onComponentsChanged }) {
                           </div>
                         ) : (
                           <div className="h-[38px] flex items-center">
-                            {selectedData.price}
+                            {formatPrice(selectedData.price)}
                           </div>
                         )
                       ) : (
@@ -320,7 +431,7 @@ function PartsTable({ onComponentsChanged }) {
                         {expansionNetworkTypes.map(({ componentType }) => (
                           selectedComponents[componentType] ? (
                             <div key={componentType} className="h-[38px] flex items-center">
-                              {selectedComponents[componentType].price}
+                              {formatPrice(selectedComponents[componentType].price)}
                             </div>
                           ) : (
                             <div key={componentType} className="h-[38px] flex items-center">—</div>
@@ -416,6 +527,7 @@ function PartsTable({ onComponentsChanged }) {
 
 PartsTable.propTypes = {
   onComponentsChanged: PropTypes.func.isRequired,
+  initialComponents: PropTypes.object,
 };
 
 export default PartsTable;

@@ -1,6 +1,7 @@
 import React from "react";
+import PropTypes from "prop-types";
 
-const ChoosePartsHeader = () => {
+const ChoosePartsHeader = ({ isEditMode = false }) => {
   return (
     <header
       className="w-full bg-[#4D0A6E] shadow-md flex items-center justify-center"
@@ -11,10 +12,14 @@ const ChoosePartsHeader = () => {
       }}
     >
       <h1 className="font-roboto font-bold text-[40.88px] text-[#ffffff]">
-        Choose Your Parts
+        {isEditMode ? "Edit Your Build" : "Choose Your Parts"}
       </h1>
     </header>
   );
+};
+
+ChoosePartsHeader.propTypes = {
+  isEditMode: PropTypes.bool,
 };
 
 export default ChoosePartsHeader;

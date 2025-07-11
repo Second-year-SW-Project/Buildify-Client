@@ -60,22 +60,20 @@ function SelectGameAndBudgetPage() {
       const highestGameScore = Math.max(...selectedGames.map((game) => game.scores.total));
       console.log('Highest Game Score:', highestGameScore);
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      const response = await axios.get(`${backendUrl}/api/product/all`, {
+      const response = await axios.get(`${backendUrl}/api/product/filter`, {
         params: {
-          subCategory: 'prebuild',
-          limit: 100 // Increased limit to get more products
+          attribute: 'type',
+          value: 'prebuild'
         }
       });
       console.log('API Response:', response.data);
-      if (response.data.Success) {
-        const allProducts = response.data.data;
-        console.log('All Products:', allProducts);
-        const prebuilds = allProducts.filter((product) => product.type === 'prebuild');
+      if (Array.isArray(response.data)) {
+        const prebuilds = response.data;
         console.log('Prebuilt PCs:', prebuilds);
         setPrebuiltPcs(prebuilds);
         setShowPrebuiltPopup(true);
       } else {
-        console.log('API Response Success flag is false');
+        console.log('API Response is not an array');
         setError('Failed to fetch prebuilt PCs');
       }
     } catch (err) {
