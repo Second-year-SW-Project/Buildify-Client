@@ -97,7 +97,7 @@ export default function CustomBuildsContent() {
       setBuilds((prev) => prev.filter((b) => b._id !== buildId));
       toast.success("Build deleted successfully.", {
         duration: 2000,
-        style: { background: '#ff6b6b', color: '#fff', fontWeight: 'bold' },
+        style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
       });
     } catch (error) {
       if (error.response?.status === 401) {
@@ -141,7 +141,7 @@ export default function CustomBuildsContent() {
       );
       toast.success(response.data.message, {
         duration: 2000,
-        style: { background: '#7315E5', color: '#fff', fontWeight: 'bold' },
+        style: { background: "#7315E5", color: "#fff", fontWeight: "bold" },
       });
     } catch (error) {
       if (error.response?.status === 401) {
@@ -178,8 +178,12 @@ export default function CustomBuildsContent() {
   if (!user) {
     return (
       <div className="text-center py-8">
-        <h3 className="text-xl text-gray-600">Please log in to view your builds</h3>
-        <p className="text-gray-500 mt-2">You need to be logged in to see your saved builds.</p>
+        <h3 className="text-xl text-gray-600">
+          Please log in to view your builds
+        </h3>
+        <p className="text-gray-500 mt-2">
+          You need to be logged in to see your saved builds.
+        </p>
       </div>
     );
   }
@@ -188,7 +192,9 @@ export default function CustomBuildsContent() {
     return (
       <div className="text-center py-8">
         <h3 className="text-xl text-gray-600">No saved builds found</h3>
-        <p className="text-gray-500 mt-2">Start creating your custom PC build!</p>
+        <p className="text-gray-500 mt-2">
+          Start creating your custom PC build!
+        </p>
       </div>
     );
   }
@@ -197,7 +203,7 @@ export default function CustomBuildsContent() {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
         {builds.map((build) => (
-      <PCBuildCard
+          <PCBuildCard
             key={build._id}
             name={build.name}
             createdAt={build.createdAt}
@@ -214,7 +220,7 @@ export default function CustomBuildsContent() {
         <BuildDetailsPopup
           build={selectedBuild}
           onClose={() => setSelectedBuild(null)}
-      />
+        />
       )}
     </>
   );

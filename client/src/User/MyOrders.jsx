@@ -155,7 +155,9 @@ export default function MyOrders() {
                     </Box>
                     <TabPanel value="1">
                       {loading ? (
-                        <p>Loading...</p>
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
                       ) : (
                         filteredOrders.map((order) => (
                           <OrderCard
@@ -184,7 +186,9 @@ export default function MyOrders() {
                     </TabPanel>
                     <TabPanel value="2">
                       {loading ? (
-                        <p>Loading...</p>
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
                       ) : (
                         filteredOrders.map((order) => (
                           <OrderCard
@@ -213,7 +217,9 @@ export default function MyOrders() {
                     </TabPanel>
                     <TabPanel value="3">
                       {loading ? (
-                        <p>Loading...</p>
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
                       ) : (
                         filteredOrders.map((order) => (
                           <OrderCard

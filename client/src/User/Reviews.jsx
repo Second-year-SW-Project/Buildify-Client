@@ -1,21 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
-import { Box } from "@mui/material";
-import Tab from "@mui/material/Tab";
+import { Box, Tab } from "@mui/material";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import ReviewsOutlinedIcon from "@mui/icons-material/ReviewsOutlined";
 import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import Reviewcard from "../AtomicComponents/Cards/Reviewcard";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Reviews() {
+  const navigate = useNavigate();
   const [value, setValue] = React.useState("1");
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [productsWithReviews, setProductsWithReviews] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const handleLeaveReviewClick = (review) => {
+    navigate(
+      `/user/orders/review-submit/${review.orderId}/${review.productId}`,
+      {
+        state: {
+          type: review.type,
+          itemName: review.name,
+          imageUrl: review.product_image,
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    async function fetchReviews() {
+      setLoading(true);
+      try {
+        const res = await axios.get(`${backendUrl}/api/review/my`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log(res.data);
+        setProductsWithReviews(res.data);
+      } catch (err) {
+        setError(err.response?.data?.message || err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReviews();
+  }, []);
+
   return (
     <div>
       <div className="flex flex-col min-h-screen">
@@ -59,9 +99,51 @@ export default function Reviews() {
                       </TabList>
                     </Box>
                     <TabPanel value="1">
-                      <Reviewcard />
+                      {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
+                      ) : error ? (
+                        <p>Error: {error}</p>
+                      ) : productsWithReviews.filter(
+                          (p) => p.status === "To Review"
+                        ).length === 0 ? (
+                        <p>No reviews to do.</p>
+                      ) : (
+                        productsWithReviews
+                          .filter((p) => p.status === "To Review")
+                          .map((review) => (
+                            <Reviewcard
+                              key={review.productId}
+                              review={review}
+                              onLeaveReviewClick={handleLeaveReviewClick}
+                            />
+                          ))
+                      )}
                     </TabPanel>
-                    <TabPanel value="2"></TabPanel>
+
+                    <TabPanel value="2">
+                      {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
+                      ) : error ? (
+                        <p>Error: {error}</p>
+                      ) : productsWithReviews.filter(
+                          (p) => p.status === "Reviewed"
+                        ).length === 0 ? (
+                        <p>No completed reviews.</p>
+                      ) : (
+                        productsWithReviews
+                          .filter((p) => p.status === "Reviewed")
+                          .map((review) => (
+                            <Reviewcard
+                              key={review.productId}
+                              review={review}
+                            />
+                          ))
+                      )}
+                    </TabPanel>
                   </TabContext>
                 </Box>
               </Box>

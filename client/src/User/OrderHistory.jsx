@@ -132,7 +132,9 @@ export default function OrderHistory() {
 
                     <TabPanel value="1">
                       {loading ? (
-                        <p>Loading...</p>
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
                       ) : filteredOrders.length > 0 ? (
                         filteredOrders.map((order) => (
                           <OrderCard
@@ -151,11 +153,12 @@ export default function OrderHistory() {
                       )}
                     </TabPanel>
 
-                    {/* Same for value 2 & 3 */}
                     <TabPanel value="2">
                       {/* Builds */}
                       {loading ? (
-                        <p>Loading...</p>
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
                       ) : filteredOrders.length > 0 ? (
                         filteredOrders.map((order) => (
                           <OrderCard
@@ -177,7 +180,9 @@ export default function OrderHistory() {
                     <TabPanel value="3">
                       {/* Components */}
                       {loading ? (
-                        <p>Loading...</p>
+                        <div className="flex justify-center items-center h-64">
+                          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                        </div>
                       ) : filteredOrders.length > 0 ? (
                         filteredOrders.map((order) => (
                           <OrderCard

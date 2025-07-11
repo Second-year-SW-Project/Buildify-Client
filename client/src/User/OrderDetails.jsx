@@ -3,45 +3,102 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
-import { Box, Button, Divider } from "@mui/material";
+import OrderStepper from "../MoleculesComponents/Admin_components/Stepper";
+import { Box, Button, Divider, Typography } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
 import { toast } from "sonner";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleRefundClick = () => {
-    navigate(`/user/rmaSupport?orderId=${orderId}`);
+  const getStepFromStatus = (status) => {
+    switch (status) {
+      case "Pending":
+        return 0;
+      case "Successful":
+        return 3;
+      case "Shipped":
+        return 2;
+      case "Delivered":
+        return 3;
+      case "Refunded":
+        return 4;
+      case "Canceled":
+        return 0;
+      default:
+        return 0;
+    }
   };
 
-  // Fetch order details by order Id
+  const fetchOrder = async () => {
+    try {
+      const res = await axios.get(
+        `${backendUrl}/api/checkout/order/${orderId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setOrder(res.data);
+      setActiveStep(getStepFromStatus(res.data.status));
+    } catch (err) {
+      console.error("Failed to fetch order", err);
+      toast.error("Failed to fetch order");
+    }
+  };
+
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const res = await axios.get(
-          `${backendUrl}/api/checkout/order/${orderId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        setOrder(res.data);
-      } catch (err) {
-        console.error("Failed to fetch order", err);
-        toast.error("Failed to fetch order");
-      }
-    };
     fetchOrder();
   }, [orderId]);
+
+  const handleStatusChange = async (newStatus) => {
+    if (newStatus === "Delivered" && order.status !== "Shipped") {
+      toast.error(
+        "Order must be 'Shipped' before it can be marked as 'Delivered'"
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.patch(
+        `${backendUrl}/api/checkout/product-orders/${orderId}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        setOrder((prev) => ({ ...prev, status: newStatus }));
+        setActiveStep(getStepFromStatus(newStatus));
+        toast.success("Order status updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
+  };
+
+  const handleRefundClick = () => {
+    navigate(`/user/rmaSupport?orderId=${orderId}`);
   };
 
   if (!order) return <p>Loading...</p>;
@@ -69,7 +126,11 @@ export default function OrderDetails() {
                     borderRadius: 2,
                   }}
                 >
-                  <h1 className="text-2xl font-bold mt-5 mb-2">Order Status</h1>
+                  <Typography variant="h5" fontWeight={"bold"} gutterBottom>
+                    Order #{order._id?.slice(-4).toUpperCase() || "----"} -{" "}
+                    {order.status}
+                  </Typography>
+
                   <div className="mb-3">
                     <Button
                       variant="contained"
@@ -79,9 +140,17 @@ export default function OrderDetails() {
                         textTransform: "none",
                         px: 2,
                       }}
+                      onClick={() => {
+                        const trackerSection =
+                          document.getElementById("order-tracker");
+                        if (trackerSection) {
+                          trackerSection.scrollIntoView({ behavior: "smooth" });
+                        }
+                      }}
                     >
                       Track Order
                     </Button>
+
                     <Button
                       variant="outlined"
                       sx={{ borderRadius: 900, textTransform: "none", px: 2 }}
@@ -90,6 +159,8 @@ export default function OrderDetails() {
                     </Button>
                   </div>
                   <Divider />
+
+                  {/* User and Order info */}
                   <div className="flex items-stretch justify-between pb-4 pt-4 rounded-md shadow-sm gap-4">
                     <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
                       <div className="flex items-center mb-2">
@@ -104,7 +175,7 @@ export default function OrderDetails() {
                       <p className="text-sm">
                         {order.addressLine || "Address not available"}
                       </p>
-                      <p className="text-sm mt-1">{order.email} </p>
+                      <p className="text-sm mt-1">{order.email}</p>
                     </div>
 
                     <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
@@ -122,6 +193,7 @@ export default function OrderDetails() {
                         </p>
                       </div>
 
+                      {/* Dates and payment */}
                       <p className="text-sm mt-1">
                         <span className="font-medium">Order placed on:</span>{" "}
                         {order.createdAt
@@ -129,34 +201,13 @@ export default function OrderDetails() {
                           : "N/A"}
                       </p>
                       <p className="text-sm mt-1">
-                        <span className="font-medium">
-                          Payment completed on:
-                        </span>{" "}
-                        {order.paymentDate
-                          ? new Date(order.paymentDate).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                      <p className="text-sm mt-1">
-                        <span className="font-medium">
-                          Shipment completed on:
-                        </span>{" "}
-                        {order.shipmentDate
-                          ? new Date(order.shipmentDate).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                      <p className="text-sm mt-1">
-                        <span className="font-medium">Order completed on:</span>{" "}
-                        {order.completionDate
-                          ? new Date(order.completionDate).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                      <p className="text-sm mt-1">
                         <span className="font-medium">Payment method:</span>{" "}
-                        {order?.paymentMethod || "Not provided"}
+                        {order.paymentMethod || "Not provided"}
                       </p>
                     </div>
                   </div>
 
+                  {/* Items */}
                   {order.items.map((item, index) => (
                     <div
                       key={index}
@@ -210,13 +261,43 @@ export default function OrderDetails() {
                     </div>
                   ))}
 
-                  <hr className="my-4" />
+                  <Divider sx={{ my: 3 }} />
 
                   <div className="flex justify-end">
                     <div className="text-right">
                       <p className="text-sm text-gray-400">Subtotal</p>
                       <p className="text-lg font-semibold">LKR {order.total}</p>
                     </div>
+                  </div>
+
+                  <Divider sx={{ my: 3 }} />
+
+                  <div className="border-2 border-purple-600 rounded-2xl p-4">
+                    <Typography
+                      id="order-tracker"
+                      variant="h6"
+                      sx={{ mb: 2, fontWeight: "bold" }}
+                    >
+                      Order Tracking
+                    </Typography>
+
+                    <OrderStepper
+                      activeStep={activeStep}
+                      orderStatus={order.status}
+                      editable={false}
+                    />
+
+                    {order.status === "Shipped" && (
+                      <Button
+                        variant="contained"
+                        color="success"
+                        sx={{ mt: 3 }}
+                        disabled={loading}
+                        onClick={() => handleStatusChange("Delivered")}
+                      >
+                        {loading ? "Updating..." : "Mark as Delivered"}
+                      </Button>
+                    )}
                   </div>
                 </Box>
               </Box>
