@@ -30,7 +30,6 @@ const BuildConfirmationPopup = ({
           fontWeight: 'bold',
         },
       });
-      navigate('/auth/login');
       return;
     }
 
@@ -59,7 +58,6 @@ const BuildConfirmationPopup = ({
           fontWeight: 'bold',
         },
       });
-      navigate('/auth/login');
       return;
     }
 
@@ -267,37 +265,6 @@ const BuildConfirmationPopup = ({
                 try {
                   setIsSaving(true);
 
-                  // Check if user is logged in
-                  if (!user) {
-                    toast.error("Please log in to continue with purchase", {
-                      duration: 3000,
-                      style: {
-                        background: '#ff6b6b',
-                        color: '#fff',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                      },
-                    });
-                    navigate('/auth/login');
-                    return;
-                  }
-
-                  // Get token for authentication
-                  const token = localStorage.getItem("token");
-                  if (!token) {
-                    toast.error("Please log in to continue with purchase", {
-                      duration: 3000,
-                      style: {
-                        background: '#ff6b6b',
-                        color: '#fff',
-                        fontSize: '16px',
-                        fontWeight: 'bold',
-                      },
-                    });
-                    navigate('/auth/login');
-                    return;
-                  }
-
                   // Calculate total price
                   const componentsPrice = Object.values(selectedComponents).reduce((total, component) => {
                     if (Array.isArray(component)) {
@@ -317,14 +284,15 @@ const BuildConfirmationPopup = ({
                     }
                   }, 0);
 
-                  // Prepare build data for saving to database
-                  const buildDataForSaving = {
+                  // Prepare build data for navigation (no saving to database)
+                  const buildDataForNavigation = {
+                    _id: `temp_build_${Date.now()}`, // Generate temporary ID for continue purchase flow
                     name: buildName,
-                    userId: user._id,
-                    userName: user.name,
-                    userEmail: user.email,
-                    userAddress: user.address || '',
-                    userPhone: user.phone || '',
+                    userId: user?._id || 'guest',
+                    userName: user?.name || 'Guest User',
+                    userEmail: user?.email || '',
+                    userAddress: user?.address || '',
+                    userPhone: user?.phone || '',
                     image: selectedComponents.Case?.image || selectedComponents.case?.image || 
                            selectedComponents.casing?.image || 
                            (selectedComponents.Case?.imgUrls && selectedComponents.Case.imgUrls[0]?.url) ||
@@ -332,57 +300,6 @@ const BuildConfirmationPopup = ({
                            (selectedComponents.casing?.imgUrls && selectedComponents.casing.imgUrls[0]?.url) || '',
                     buildStatus: 'pending',
                     published: false,
-                    components: Object.entries(selectedComponents).flatMap(([type, component]) => {
-                      if (Array.isArray(component)) {
-                        return component.map(item => ({
-                          componentId: item._id,
-                          quantity: 1
-                        }));
-                      } else {
-                        return [{
-                          componentId: component._id,
-                          quantity: 1
-                        }];
-                      }
-                    }),
-                    componentsPrice: componentsPrice,
-                    paymentMethod: '',
-                    deliveryMethod: '',
-                    serviceCharge: 0,
-                    deliveryCharge: 0,
-                    totalCharge: componentsPrice
-                  };
-
-                  console.log('Saving build data for continue purchase:', buildDataForSaving);
-
-                  // Save build to database first
-                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/build/builds`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(buildDataForSaving),
-                  });
-
-                  if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to save build');
-                  }
-
-                  const savedBuildResponse = await response.json();
-                  console.log('Build saved successfully:', savedBuildResponse);
-
-                  if (!savedBuildResponse.success || !savedBuildResponse.build || !savedBuildResponse.build._id) {
-                    throw new Error('Invalid response from server');
-                  }
-
-                  const savedBuild = savedBuildResponse.build;
-
-                  // Prepare build data for navigation with the saved _id
-                  const buildDataForNavigation = {
-                    ...buildDataForSaving,
-                    _id: savedBuild._id, // Important: Include the _id from saved build
                     components: Object.entries(selectedComponents).flatMap(([type, component]) => {
                       if (Array.isArray(component)) {
                         return component.map(item => ({
@@ -412,11 +329,17 @@ const BuildConfirmationPopup = ({
                         }];
                       }
                       return [];
-                    })
+                    }),
+                    componentsPrice: componentsPrice,
+                    paymentMethod: '',
+                    deliveryMethod: '',
+                    serviceCharge: 0,
+                    deliveryCharge: 0,
+                    totalCharge: componentsPrice
                   };
 
                   // Show success message
-                  toast.success("Build saved successfully! Proceeding to purchase...", {
+                  toast.success("Proceeding to purchase...", {
                     duration: 2000,
                     style: {
                       background: '#a036b2',
@@ -426,7 +349,7 @@ const BuildConfirmationPopup = ({
                     },
                   });
 
-                  // Navigate to continue purchase with the saved build data (including _id)
+                  // Navigate to continue purchase with build data (including temporary _id)
                   navigate('/continuepurchase', { 
                     state: { 
                       buildData: buildDataForNavigation,
@@ -468,8 +391,8 @@ const BuildConfirmationPopup = ({
                   onClose();
 
                 } catch (error) {
-                  console.error('Error saving build and continuing to purchase:', error);
-                  toast.error(`Failed to save build: ${error.message}`, {
+                  console.error('Error preparing for purchase:', error);
+                  toast.error(`Failed to prepare purchase: ${error.message}`, {
                     duration: 5000,
                     style: {
                       background: '#ff6b6b',
@@ -485,7 +408,7 @@ const BuildConfirmationPopup = ({
               className="px-6 py-2 bg-[#7315E5] text-white rounded-md hover:bg-[#5A0DB2] transition-colors disabled:opacity-50"
               disabled={isSaving}
             >
-              {isSaving ? 'Saving & Preparing...' : 'Continue Purchase'}
+              {isSaving ? 'Preparing...' : 'Continue Purchase'}
             </button>
           </div>
         </div>
