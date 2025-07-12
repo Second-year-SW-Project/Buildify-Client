@@ -11,6 +11,11 @@ const compatibilityCheckers = {
   checkCpuMotherboard: (cpu, motherboard) => {
     const warnings = [];
 
+    // Check if required properties exist
+    if (!cpu?.socketType || !motherboard?.socketType) {
+      return warnings; // Return empty warnings if properties are missing
+    }
+
     // Socket compatibility
     if (cpu.socketType !== motherboard.socketType) {
       warnings.push({
@@ -25,6 +30,11 @@ const compatibilityCheckers = {
   // CPU and Cooler compatibility
   checkCpuCooler: (cpu, cooler) => {
     const warnings = [];
+
+    // Check if required properties exist
+    if (!cpu?.socketType || !cooler) {
+      return warnings; // Return empty warnings if properties are missing
+    }
 
     // Socket compatibility
     if (cooler.supportedSocket) {
@@ -58,6 +68,11 @@ const compatibilityCheckers = {
   checkCoolerCase: (cooler, pcCase) => {
     const warnings = [];
 
+    // Check if required properties exist
+    if (!cooler?.height || !pcCase?.maxCoolerHeight) {
+      return warnings; // Return empty warnings if properties are missing
+    }
+
     // Height compatibility
     if (parseInt(cooler.height) > parseInt(pcCase.maxCoolerHeight)) {
       warnings.push({
@@ -72,6 +87,11 @@ const compatibilityCheckers = {
   // RAM and Motherboard compatibility
   checkRamMotherboard: (ram, motherboard) => {
     const warnings = [];
+
+    // Check if required properties exist
+    if (!ram || !motherboard) {
+      return warnings; // Return empty warnings if properties are missing
+    }
 
     // Handle both single RAM and array of RAM modules
     const ramModules = Array.isArray(ram) ? ram : [ram];
@@ -121,6 +141,11 @@ const compatibilityCheckers = {
   // Storage and Motherboard compatibility
   checkStorageMotherboard: (storage, motherboard) => {
     const warnings = [];
+
+    // Check if required properties exist
+    if (!storage || !motherboard) {
+      return warnings; // Return empty warnings if properties are missing
+    }
 
     // Handle both single storage and array of storage devices
     const storageDevices = Array.isArray(storage) ? storage : [storage];
@@ -211,6 +236,11 @@ const compatibilityCheckers = {
   // GPU and Motherboard compatibility
   checkGpuMotherboard: (gpu, motherboard) => {
     const warnings = [];
+
+    // Check if required properties exist
+    if (!gpu || !motherboard) {
+      return warnings; // Return empty warnings if properties are missing
+    }
 
     // Check if motherboard has PCIe slots
     if (!motherboard.pcieSlots || motherboard.pcieSlots.length === 0) {
@@ -305,6 +335,11 @@ const compatibilityCheckers = {
   checkCaseMotherboard: (pcCase, motherboard) => {
     const warnings = [];
 
+    // Check if required properties exist
+    if (!pcCase?.supportedMotherboardSizes || !motherboard?.formFactor) {
+      return warnings; // Return empty warnings if properties are missing
+    }
+
     // Form factor sizes in order from smallest to largest
     const formFactorSizes = {
       'mini_itx': 1,
@@ -332,6 +367,11 @@ const compatibilityCheckers = {
   // CPU integrated graphics and cooler check
   checkCpuGraphics: (cpu, components) => {
     const warnings = [];
+
+    // Check if required properties exist
+    if (!cpu) {
+      return warnings; // Return empty warnings if cpu is missing
+    }
 
     // Check if there's a GPU component (either as GPU or Video Card)
     const hasGpu = components.GPU || components["Video Card"];
@@ -371,6 +411,12 @@ const compatibilityCheckers = {
   // Power Supply wattage check
   checkPowerSupplyWattage: (psu, totalTdp) => {
     const warnings = [];
+    
+    // Check if required properties exist
+    if (!psu?.wattage) {
+      return warnings; // Return empty warnings if properties are missing
+    }
+    
     const recommendedWattage = totalTdp * 1.3; // 30% overhead for system stability
 
     // Power supply efficiency ratings in order from lowest to highest
@@ -445,9 +491,58 @@ export const checkCompatibility = (components) => {
   let tdp = 0;
   let compatibilityWarnings = [...BASE_MESSAGES];
 
+  // Check if components is valid
+  if (!components || typeof components !== 'object') {
+    return {
+      messages: compatibilityWarnings,
+      totalTDP: '0W',
+      hasCompatibilityIssues: false
+    };
+  }
+
+  // Debug logging to see what components and attributes we're receiving
+  console.log('=== COMPATIBILITY CHECKER DEBUG ===');
+  console.log('Components received:', Object.keys(components));
+  
+  Object.entries(components).forEach(([key, component]) => {
+    if (component) {
+      if (Array.isArray(component)) {
+        console.log(`${key} (array with ${component.length} items):`, component.map(c => ({
+          name: c.name,
+          socketType: c.socketType,
+          ramSlots: c.ramSlots,
+          memoryType: c.memoryType,
+          formFactor: c.formFactor,
+          interfaceType: c.interfaceType,
+          storageType: c.storageType
+        })));
+      } else {
+        console.log(`${key}:`, {
+          name: component.name,
+          socketType: component.socketType,
+          ramSlots: component.ramSlots,
+          maxRam: component.maxRam,
+          supportedMemoryTypes: component.supportedMemoryTypes,
+          memoryType: component.memoryType,
+          memoryCapacity: component.memoryCapacity,
+          formFactor: component.formFactor,
+          supportedMotherboardSizes: component.supportedMotherboardSizes,
+          interfaceType: component.interfaceType,
+          storageType: component.storageType,
+          pcieSlots: component.pcieSlots,
+          storageInterfaces: component.storageInterfaces,
+          maxGpuLength: component.maxGpuLength,
+          maxCoolerHeight: component.maxCoolerHeight,
+          wattage: component.wattage
+        });
+      }
+    }
+  });
+  console.log('=====================================');
+
   // Calculate total TDP
   Object.values(components).forEach((component) => {
-    if (component.tdp) {
+    if (component && component.tdp) {
       tdp += parseInt(component.tdp);
     }
   });

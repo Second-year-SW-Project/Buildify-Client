@@ -1,7 +1,7 @@
 import { Card } from "@mui/material";
 import PropTypes from "prop-types";
 
-const PCBuildCard = ({ name, createdAt, image, published, onClick, onDelete, onPublishToggle }) => {
+const PCBuildCard = ({ name, createdAt, image, published, onClick, onDelete, onPublishToggle, onEdit }) => {
   // Format the creation date
   const formattedDate = createdAt ? new Date(createdAt).toLocaleDateString() : "N/A";
   const imageUrl = image || "https://buildmypc.lk/wp-content/uploads/2024/05/Amethyst-GAming-PC-Build-MY-PC-600x600.jpg";
@@ -25,8 +25,8 @@ const PCBuildCard = ({ name, createdAt, image, published, onClick, onDelete, onP
         <button
           className={
             published
-              ? "w-full sm:w-auto flex-1 border border-[#7315E5] text-[#7315E5] font-semibold rounded-lg px-4 py-2 bg-white transition-colors duration-200 hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-[#7315E5]"
-              : "w-full sm:w-auto flex-1 bg-[#7315E5] text-white font-semibold rounded-lg px-4 py-2 transition-colors duration-200 hover:bg-[#5A0DB2] focus:outline-none focus:ring-2 focus:ring-[#7315E5]"
+              ? "w-full sm:w-auto flex-1 border border-[#7315E5] text-[#7315E5] font-semibold rounded-lg px-2 py-2 bg-white transition-colors duration-200 hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-[#7315E5] text-sm"
+              : "w-full sm:w-auto flex-1 bg-[#7315E5] text-white font-semibold rounded-lg px-2 py-2 transition-colors duration-200 hover:bg-[#5A0DB2] focus:outline-none focus:ring-2 focus:ring-[#7315E5] text-sm"
           }
           onClick={e => { e.stopPropagation(); onPublishToggle && onPublishToggle(); }}
           tabIndex={0}
@@ -34,7 +34,14 @@ const PCBuildCard = ({ name, createdAt, image, published, onClick, onDelete, onP
           {published ? "Unpublish" : "Publish"}
         </button>
         <button
-          className="w-full sm:w-auto flex-1 border border-[#e53e3e] text-[#e53e3e] font-semibold rounded-lg px-4 py-2 bg-white transition-colors duration-200 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-[#e53e3e]"
+          className="w-full sm:w-auto flex-1 border border-[#28a745] text-[#28a745] font-semibold rounded-lg px-2 py-2 bg-white transition-colors duration-200 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-[#28a745] text-sm"
+          onClick={e => { e.stopPropagation(); onEdit && onEdit(); }}
+          tabIndex={0}
+        >
+          Edit
+        </button>
+        <button
+          className="w-full sm:w-auto flex-1 border border-[#e53e3e] text-[#e53e3e] font-semibold rounded-lg px-2 py-2 bg-white transition-colors duration-200 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-[#e53e3e] text-sm"
           onClick={e => { e.stopPropagation(); onDelete && onDelete(); }}
           tabIndex={0}
         >
@@ -53,6 +60,7 @@ PCBuildCard.propTypes = {
   onClick: PropTypes.func,
   onDelete: PropTypes.func,
   onPublishToggle: PropTypes.func,
+  onEdit: PropTypes.func,
 };
 
 export default PCBuildCard;

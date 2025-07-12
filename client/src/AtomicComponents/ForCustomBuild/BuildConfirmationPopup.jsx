@@ -30,12 +30,26 @@ const BuildConfirmationPopup = ({
           fontWeight: 'bold',
         },
       });
-      navigate('/auth/login');
       return;
     }
 
     if (!buildName.trim()) {
       toast.error("Please enter a name for your build", {
+        duration: 3000,
+        style: {
+          background: '#ff6b6b',
+          color: '#fff',
+          fontSize: '16px',
+          fontWeight: 'bold',
+        },
+      });
+      return;
+    }
+
+    // Check if token exists
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please log in to save your build", {
         duration: 3000,
         style: {
           background: '#ff6b6b',
@@ -270,33 +284,51 @@ const BuildConfirmationPopup = ({
                     }
                   }, 0);
 
-                  // Prepare build data for saving to database
-                const buildData = {
-                  name: buildName,
-                  userId: user._id,
-                    userName: user.name,
-                    userEmail: user.email,
-                    userAddress: user.address || '',
-                    userPhone: user.phone || '',
-                  image: selectedComponents.Case?.image || selectedComponents.case?.image || 
-                         selectedComponents.casing?.image || 
-                         (selectedComponents.Case?.imgUrls && selectedComponents.Case.imgUrls[0]?.url) ||
-                         (selectedComponents.case?.imgUrls && selectedComponents.case.imgUrls[0]?.url) ||
-                         (selectedComponents.casing?.imgUrls && selectedComponents.casing.imgUrls[0]?.url) || '',
+                  // Prepare build data for navigation (no saving to database)
+                  const buildDataForNavigation = {
+                    _id: `temp_build_${Date.now()}`, // Generate temporary ID for continue purchase flow
+                    name: buildName,
+                    userId: user?._id || 'guest',
+                    userName: user?.name || 'Guest User',
+                    userEmail: user?.email || '',
+                    userAddress: user?.address || '',
+                    userPhone: user?.phone || '',
+                    image: selectedComponents.Case?.image || selectedComponents.case?.image || 
+                           selectedComponents.casing?.image || 
+                           (selectedComponents.Case?.imgUrls && selectedComponents.Case.imgUrls[0]?.url) ||
+                           (selectedComponents.case?.imgUrls && selectedComponents.case.imgUrls[0]?.url) ||
+                           (selectedComponents.casing?.imgUrls && selectedComponents.casing.imgUrls[0]?.url) || '',
                     buildStatus: 'pending',
                     published: false,
                     components: Object.entries(selectedComponents).flatMap(([type, component]) => {
-                    if (Array.isArray(component)) {
-                      return component.map(item => ({
-                        componentId: item._id,
-                          quantity: 1
-                      }));
-                      } else {
-                    return [{
-                      componentId: component._id,
-                          quantity: 1
+                      if (Array.isArray(component)) {
+                        return component.map(item => ({
+                          _id: item._id,
+                          name: item.name,
+                          type: type.toLowerCase() === 'case' ? 'casing' : item.type || type.toLowerCase(),
+                          manufacturer: item.manufacturer,
+                          price: typeof item.price === 'string' 
+                            ? parseFloat(item.price.replace(/[^0-9.]/g, '')) 
+                            : parseFloat(item.price) || 0,
+                          image: item.image || (item.imgUrls && item.imgUrls[0]?.url) || '',
+                          imgUrls: item.imgUrls || [],
+                          specifications: item.specifications || {}
+                        }));
+                      } else if (component) {
+                        return [{
+                          _id: component._id,
+                          name: component.name,
+                          type: type.toLowerCase() === 'case' ? 'casing' : component.type || type.toLowerCase(),
+                          manufacturer: component.manufacturer,
+                          price: typeof component.price === 'string' 
+                            ? parseFloat(component.price.replace(/[^0-9.]/g, '')) 
+                            : parseFloat(component.price) || 0,
+                          image: component.image || (component.imgUrls && component.imgUrls[0]?.url) || '',
+                          imgUrls: component.imgUrls || [],
+                          specifications: component.specifications || {}
                         }];
                       }
+                      return [];
                     }),
                     componentsPrice: componentsPrice,
                     paymentMethod: '',
@@ -306,64 +338,21 @@ const BuildConfirmationPopup = ({
                     totalCharge: componentsPrice
                   };
 
-                  console.log('Saving build data:', buildData);
-
-                  // Send to backend
-                  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/build/builds`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
+                  // Show success message
+                  toast.success("Proceeding to purchase...", {
+                    duration: 2000,
+                    style: {
+                      background: '#a036b2',
+                      color: '#fff',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
                     },
-                    body: JSON.stringify(buildData),
                   });
 
-                  const savedBuildResponse = await response.json();
-                  console.log('Build save response:', savedBuildResponse);
-
-                  if (!response.ok || !savedBuildResponse.success) {
-                    throw new Error(savedBuildResponse.message || 'Failed to save build');
-                  }
-
-                  const savedBuild = savedBuildResponse.build;
-                  console.log('Build saved successfully with ID:', savedBuild._id);
-
-                  // Navigate to continue purchase with complete build data including _id and totalPrice
-                navigate('/continuepurchase', { 
-                  state: { 
-                      buildData: {
-                        ...buildData,
-                        _id: savedBuild._id,
-                        components: Object.entries(selectedComponents).flatMap(([type, component]) => {
-                          if (Array.isArray(component)) {
-                            return component.map(item => ({
-                              _id: item._id,
-                              name: item.name,
-                              type: type.toLowerCase() === 'case' ? 'casing' : item.type || type.toLowerCase(),
-                              manufacturer: item.manufacturer,
-                              price: typeof item.price === 'string' 
-                                ? parseFloat(item.price.replace(/[^0-9.]/g, '')) 
-                                : parseFloat(item.price) || 0,
-                              image: item.image || (item.imgUrls && item.imgUrls[0]?.url) || '',
-                              imgUrls: item.imgUrls || [],
-                              specifications: item.specifications || {}
-                            }));
-                          } else if (component) {
-                            return [{
-                              _id: component._id,
-                              name: component.name,
-                              type: type.toLowerCase() === 'case' ? 'casing' : component.type || type.toLowerCase(),
-                              manufacturer: component.manufacturer,
-                              price: typeof component.price === 'string' 
-                                ? parseFloat(component.price.replace(/[^0-9.]/g, '')) 
-                                : parseFloat(component.price) || 0,
-                              image: component.image || (component.imgUrls && component.imgUrls[0]?.url) || '',
-                              imgUrls: component.imgUrls || [],
-                              specifications: component.specifications || {}
-                            }];
-                          }
-                          return [];
-                        })
-                      },
+                  // Navigate to continue purchase with build data (including temporary _id)
+                  navigate('/continuepurchase', { 
+                    state: { 
+                      buildData: buildDataForNavigation,
                       selectedComponents: Object.entries(selectedComponents).flatMap(([type, component]) => {
                         if (Array.isArray(component)) {
                           return component.map(item => ({
@@ -397,9 +386,13 @@ const BuildConfirmationPopup = ({
                       totalPrice: componentsPrice
                     }
                   });
+
+                  // Close the popup
+                  onClose();
+
                 } catch (error) {
-                  console.error('Error saving build:', error);
-                  toast.error(error.message || 'Failed to save build. Please try again.', {
+                  console.error('Error preparing for purchase:', error);
+                  toast.error(`Failed to prepare purchase: ${error.message}`, {
                     duration: 5000,
                     style: {
                       background: '#ff6b6b',
@@ -415,7 +408,7 @@ const BuildConfirmationPopup = ({
               className="px-6 py-2 bg-[#7315E5] text-white rounded-md hover:bg-[#5A0DB2] transition-colors disabled:opacity-50"
               disabled={isSaving}
             >
-              {isSaving ? 'Saving...' : 'Continue Purchase'}
+              {isSaving ? 'Preparing...' : 'Continue Purchase'}
             </button>
           </div>
         </div>
