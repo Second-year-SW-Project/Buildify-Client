@@ -718,6 +718,265 @@ export function TopProductsTable({
   );
 }
 
+export function BuildTable({
+  columns,
+  builds,
+  iconTypes = [],
+  iconActions = {},
+  width,
+  color,
+  pagination = null,
+}) {
+  const [expandedRowId, setExpandedRowId] = React.useState(null);
+
+  const toggleRow = (buildId) => {
+    setExpandedRowId((prev) => (prev === buildId ? null : buildId));
+  };
+
+  const isRowOpen = (rowId) => expandedRowId === rowId;
+
+  const statusColorMap = {
+    Successful: "success",
+    Pending: "warning",
+    Refunded: "ternary",
+    Canceled: "error",
+    Shipped: "info",
+    Delivered: "primary",
+    Completed: "success",
+    InProgress: "info",
+    Draft: "default",
+    pending: "warning",
+    confirmed: "info",
+    "in-progress": "primary",
+    completed: "success",
+    cancelled: "error",
+    delivered: "success",
+  };
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  // Handle pagination changes
+  const handleChangePage = (event, newPage) => {
+    if (pagination) {
+      pagination.onPageChange(newPage + 1); // Convert to 1-based index for API
+    } else {
+      setPage(newPage);
+    }
+  };
+
+  // Handle rows per page changes
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    if (pagination) {
+      pagination.onItemsPerPageChange(newRowsPerPage);
+    } else {
+      setRowsPerPage(newRowsPerPage);
+      setPage(0);
+    }
+  };
+
+  const autoSizeCellStyle = {
+    padding: "8px 16px",
+    whiteSpace: "nowrap",
+    Maxwidth: "50%",
+  };
+
+  // Use pagination props if provided, otherwise use local state
+  const currentPage = pagination ? pagination.currentPage - 1 : page; // Convert to 0-based index for MUI
+  const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
+  const totalCount = pagination ? pagination.totalItems : builds.length;
+
+  return (
+    <Paper sx={{ width: width || "100%", overflow: "hidden", mt: 4 }}>
+      <TableContainer>
+        <Table sx={{ borderRadius: "20px" }}>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: theme.palette.primary100.main }}>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  style={{
+                    ...autoSizeCellStyle,
+                    color: color || "gray",
+                    fontWeight: "bold",
+                    padding: column.padding,
+                  }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+              <TableCell />
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {builds.map((build, index) => {
+              const isOpen = isRowOpen(build._id);
+              return (
+                <React.Fragment key={build._id}>
+                  <TableRow
+                    sx={{
+                      backgroundColor: isOpen
+                        ? theme.palette.black200.main
+                        : theme.palette.white.main,
+                    }}
+                    hover
+                  >
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      {build._id
+                        ? `#${build._id.slice(-4).toUpperCase()}`
+                        : "#----"}
+                    </TableCell>
+                    <TableCell>
+                      {build.userId ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Avatar
+                            src={build.profilePicture}
+                            alt={build.userName}
+                            sx={{ width: 40, height: 40 }}
+                          />
+                          <Box>
+                            <Typography variant="subtitle2" fontWeight={"bold"}>{build.userName}</Typography>
+                            <Typography variant="caption" color="textSecondary">{build.userEmail}</Typography>
+                          </Box>
+                        </Box>
+                      ) : (
+                        <UserCard
+                          name={build.userName}
+                          email={build.userEmail}
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Typography>
+                        {build.createdAt ? format(new Date(build.createdAt), "dd MMM yyyy") : "-"}
+                      </Typography>
+                      <Typography fontSize="small" color="gray">
+                        {build.createdAt ? format(new Date(build.createdAt), "p") : "-"}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                      {build.components?.length || 0}
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      {build.componentsPrice !== undefined
+                        ? build.componentsPrice.toLocaleString()
+                        : "0"} LKR
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={build.buildStatus || "pending"}
+                        color={statusColorMap[build.buildStatus] || "default"}
+                        size="small"
+                        sx={{
+                          padding: "5px",
+                          height: "30px",
+                          width: "100px",
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          textTransform: "capitalize"
+                        }}
+                      />
+                    </TableCell>
+                    {iconTypes.length > 0 && (
+                      <TableCell style={autoSizeCellStyle}>
+                        {iconTypes.map((type, idx) => (
+                          <IconButton
+                            key={idx}
+                            disableRipple
+                            onClick={() =>
+                              type === "toggle"
+                                ? toggleRow(build._id)
+                                : iconActions[type] &&
+                                iconActions[type](build._id)
+                            }
+                            translate="3s"
+                            sx={{
+                              "&:hover": {
+                                color: theme.palette.primary.main,
+                                opacity: 0.9,
+                              },
+                            }}
+                          >
+                            <Iconset
+                              type={type}
+                              isOpen={
+                                type === "toggle"
+                                  ? isRowOpen(build._id)
+                                  : undefined
+                              }
+                            />
+                          </IconButton>
+                        ))}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell
+                      style={{ paddingBottom: 0, paddingTop: 0 }}
+                      colSpan={8}
+                    >
+                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                        <Box margin={1} p={1}>
+                          {build.components && build.components.length > 0 ? build.components.map((comp, i) => (
+                            <Stack
+                              key={comp.componentId || i}
+                              direction="row"
+                              alignItems="center"
+                              justifyContent="space-between"
+                              bgcolor="#e9f7ff"
+                              borderRadius={2}
+                              width="100%"
+                              mb={1}
+                              p={1}
+                            >
+                              <Box flex={3} display="flex" alignItems="center">
+                                <OrderItemCard
+                                  name={comp.name}
+                                  type={comp.type}
+                                  src={comp.product_image}
+                                />
+                              </Box>
+                              <Box
+                                flex={1}
+                                display="flex"
+                                flexDirection="column"
+                                justifyContent="flex-end"
+                                textAlign="right"
+                              >
+                                <Typography fontWeight="bold" flex={1}>
+                                  x {comp.quantity}
+                                </Typography>
+                              </Box>
+                            </Stack>
+                          )) : <Typography>No components</Typography>}
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={totalCount}
+        rowsPerPage={currentRowsPerPage}
+        page={currentPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        labelDisplayedRows={({ from, to, count }) => {
+          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / currentRowsPerPage);
+          return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
+        }}
+      />
+    </Paper>
+  );
+}
+
 // How to Use
 
 // const userColumns = [
