@@ -336,17 +336,29 @@ function AdminApp() {
         navigation={NAVIGATION}
         branding={{
           logo: (
-            <img
-              src="/src/assets/images/Logos/logo-white.png"
-              alt="Logo"
-              style={{
-                marginLeft: "8px",
-                marginTop: "4px",
-                maxWidth: "100%",
-                height: "auto",
-                width: "140px",
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                navigate('/adminpanel/dashboard');
               }}
-            />
+              style={{
+                cursor: "pointer",
+                display: "inline-block",
+              }}
+            >
+              <img
+                src="/src/assets/images/Logos/logo-white.png"
+                alt="Logo"
+                style={{
+                  marginLeft: "8px",
+                  marginTop: "4px",
+                  maxWidth: "100%",
+                  height: "auto",
+                  width: "140px",
+                }}
+              />
+            </div>
           ),
           title: "",
         }}
