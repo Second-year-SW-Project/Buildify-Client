@@ -384,26 +384,56 @@ useEffect(() => {
             handleCheckboxChange(e.target.value, selectedMotherboardChipsets, setSelectedMotherboardChipsets, 'motherboardChipsets');
     
 
-    const handleWattageChange = (e) =>
-            handleCheckboxChange(Number(e.target.value), selectedWattages, setSelectedWattages, 'wattages');
+    const handleWattageChange = (e) => {
+        const wattage = Number(e.target.value);
+        const newWattages = selectedWattages.includes(wattage)
+            ? selectedWattages.filter(w => w !== wattage)
+            : [...selectedWattages, wattage];
+        setSelectedWattages(newWattages);
+        emitFilterChange({ wattages: newWattages });
+    };
 
 
-    const handleEfficiencyRatingChange = (e) =>
-      handleCheckboxChange(e.target.value, selectedEfficiencyRatings, setSelectedEfficiencyRatings, 'efficiencyRatings');
+    const handleEfficiencyRatingChange = (e) => {
+        const rating = e.target.value;
+        const newRatings = selectedEfficiencyRatings.includes(rating)
+            ? selectedEfficiencyRatings.filter(r => r !== rating)
+            : [...selectedEfficiencyRatings, rating];
+        setSelectedEfficiencyRatings(newRatings);
+        emitFilterChange({ efficiencyRatings: newRatings });
+    };
 
 
-    const handleStorageCapacityChange = (e) =>
-      handleCheckboxChange(Number(e.target.value), selectedStorageCapacities, setSelectedStorageCapacities, 'storageCapacities');
+    const handleStorageCapacityChange = (e) => {
+        const capacity = Number(e.target.value);
+        const newCapacities = selectedStorageCapacities.includes(capacity)
+            ? selectedStorageCapacities.filter(c => c !== capacity)
+            : [...selectedStorageCapacities, capacity];
+        setSelectedStorageCapacities(newCapacities);
+        emitFilterChange({ storageCapacities: newCapacities });
+    };
 
-    const handleStorageTypeChange = (e) =>
-      handleCheckboxChange(e.target.value, selectedStorageTypes, setSelectedStorageTypes, 'storageTypes');
+    const handleStorageTypeChange = (e) => {
+        const type = e.target.value;
+        const newTypes = selectedStorageTypes.includes(type)
+            ? selectedStorageTypes.filter(t => t !== type)
+            : [...selectedStorageTypes, type];
+        setSelectedStorageTypes(newTypes);
+        emitFilterChange({ storageTypes: newTypes });
+    };
 
 
     const handleMotherboardSizeChange = (e) =>
       handleCheckboxChange(e.target.value, selectedMotherboardSizes, setSelectedMotherboardSizes, 'supportedMotherboardSizes');
 
-      const handleMaxGpuLengthChange = (e) =>
-        handleCheckboxChange(Number(e.target.value), selectedMaxGpuLength, setSelectedMaxGpuLength, 'maxGpuLengths');
+      const handleMaxGpuLengthChange = (e) => {
+        const length = Number(e.target.value);
+        const newLengths = selectedMaxGpuLength.includes(length)
+            ? selectedMaxGpuLength.filter(l => l !== length)
+            : [...selectedMaxGpuLength, length];
+        setSelectedMaxGpuLength(newLengths);
+        emitFilterChange({ maxGpuLengths: newLengths });
+    };
 
       const handleRamChange = (e) =>
         handleCheckboxChange(Number(e.target.value), selectedRam, setSelectedRam, 'rams');
@@ -429,8 +459,14 @@ useEffect(() => {
       const handlePanelTypeChange = (e) =>
         handleCheckboxChange(e.target.value, selectedPanelTypes, setSelectedPanelTypes, 'panelTypes');
 
-      const handleRefreshRateChange = (e) =>
-        handleCheckboxChange(Number(e.target.value), selectedRefreshRates, setSelectedRefreshRates, 'refreshRates');
+      const handleRefreshRateChange = (e) => {
+        const rate = Number(e.target.value);
+        const newRates = selectedRefreshRates.includes(rate)
+            ? selectedRefreshRates.filter(r => r !== rate)
+            : [...selectedRefreshRates, rate];
+        setSelectedRefreshRates(newRates);
+        emitFilterChange({ refreshRates: newRates });
+    };
 
 
 
@@ -720,7 +756,7 @@ useEffect(() => {
                     <input
                         type="checkbox"
                         value={w.value}
-                        checked={selectedWattages.includes(w.value)}
+                        checked={selectedWattages.includes(Number(w.value))}
                         onChange={handleWattageChange}
                         className="form-checkbox h-5 w-5 text-red-500 border-gray-300"
                     />
@@ -761,7 +797,7 @@ useEffect(() => {
                   <input
                     type="checkbox"
                     value={cap.value}
-                    checked={selectedStorageCapacities.includes(cap.value)}
+                    checked={selectedStorageCapacities.includes(Number(cap.value))}
                     onChange={handleStorageCapacityChange}
                     className="form-checkbox h-5 w-5 text-red-500 border-gray-300"
                   />
@@ -784,7 +820,7 @@ useEffect(() => {
                     value={type.value}
                     checked={selectedStorageTypes.includes(type.value)}
                     onChange={handleStorageTypeChange}
-                    className="form-checkbox h-5 w-5 text-blue-500 border-gray-300"
+                    className="form-checkbox h-5 w-5 text-red-500 border-gray-300"
                   />
                   <span>{type.display}</span>
                 </label>
@@ -823,9 +859,9 @@ useEffect(() => {
                   <input
                     type="checkbox"
                     value={length.value}
-                    checked={selectedMaxGpuLength.includes(length.value)}
+                    checked={selectedMaxGpuLength.includes(Number(length.value))}
                     onChange={handleMaxGpuLengthChange}
-                    className="form-checkbox h-5 w-5 text-blue-500 border-gray-300"
+                    className="form-checkbox h-5 w-5 text-red-500 border-gray-300"
                   />
                   <span>{length.display}</span>
                 </label>
@@ -878,24 +914,24 @@ useEffect(() => {
       )}
 
       {categoryName === 'prebuild' && availableRamSizesData.length > 0 && (
-  <div className="mb-6">
-    <h3 className="text-lg font-bold text-gray-800 mb-3">RAM Size</h3>
-    {availableRamSizesData.map((option) => (
-      <div key={option.value} className="mb-3">
-        <label className="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            value={option.value}
-            checked={selectedRamSizes.includes(option.value)}
-            onChange={handleRamSizeChange}
-            className="form-checkbox h-5 w-5 text-blue-500 border-gray-300"
-          />
-          <span>{option.display}</span>
-        </label>
-      </div>
-    ))}
-  </div>
-)}
+        <div className="mb-6">
+          <h3 className="text-lg font-bold text-gray-800 mb-3">RAM Size</h3>
+          {availableRamSizesData.map((option) => (
+            <div key={option.value} className="mb-3">
+              <label className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  value={option.value}
+                  checked={selectedRamSizes.includes(Number(option.value))}
+                  onChange={handleRamSizeChange}
+                  className="form-checkbox h-5 w-5 text-blue-500 border-gray-300"
+                />
+                <span>{option.display}</span>
+              </label>
+            </div>
+          ))}
+        </div>
+      )}
 
 
 
@@ -993,9 +1029,9 @@ useEffect(() => {
           <input
             type="checkbox"
             value={rate.value}
-            checked={selectedRefreshRates.includes(rate.value)}
+            checked={selectedRefreshRates.includes(Number(rate.value))}
             onChange={handleRefreshRateChange}
-            className="form-checkbox h-5 w-5 text-blue-500 border-gray-300"
+            className="form-checkbox h-5 w-5 text-red-500 border-gray-300"
           />
           <span>{rate.display}</span>
         </label>

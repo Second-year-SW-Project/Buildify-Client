@@ -257,6 +257,18 @@ export default function Productcategorypage() {
     });
 
     const [availableManufacturersForFilter, setAvailableManufacturersForFilter] = useState([]);
+    const [availablePrebuildRamSizes, setAvailablePrebuildRamSizes] = useState([]);
+    const [availableLaptopGraphicCards, setAvailableLaptopGraphicCards] = useState([]);
+    const [availableMotherboardChipsets, setAvailableMotherboardChipsets] = useState([]);
+    const [availablePowerWattages, setAvailablePowerWattages] = useState([]);
+    const [availablePowerEfficiencyRatings, setAvailablePowerEfficiencyRatings] = useState([]);
+    const [availableStorageCapacities, setAvailableStorageCapacities] = useState([]);
+    const [availableStorageTypes, setAvailableStorageTypes] = useState([]);
+    const [availableMaxGpuLengths, setAvailableMaxGpuLengths] = useState([]);
+    const [availableMonitorDisplaySizes, setAvailableMonitorDisplaySizes] = useState([]);
+    const [availableMonitorPanelTypes, setAvailableMonitorPanelTypes] = useState([]);
+    const [availableMonitorRefreshRates, setAvailableMonitorRefreshRates] = useState([]);
+    const [availableExpansionComponentTypes, setAvailableExpansionComponentTypes] = useState([]);
 
     const fetchCategoryManufacturers = async (category) => {
         try {
@@ -265,6 +277,126 @@ export default function Productcategorypage() {
         } catch (error) {
             console.error('Error fetching manufacturers:', error);
             setAvailableManufacturersForFilter([]);
+        }
+    };
+
+    const fetchPrebuildRamSizes = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/prebuild-ram-sizes');
+            setAvailablePrebuildRamSizes(response.data);
+        } catch (error) {
+            console.error('Error fetching prebuild RAM sizes:', error);
+            setAvailablePrebuildRamSizes([]);
+        }
+    };
+
+    const fetchLaptopGraphicCards = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/laptop-graphic-cards');
+            setAvailableLaptopGraphicCards(response.data);
+        } catch (error) {
+            console.error('Error fetching laptop graphic cards:', error);
+            setAvailableLaptopGraphicCards([]);
+        }
+    };
+
+    const fetchMotherboardChipsets = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/motherboard-chipsets');
+            setAvailableMotherboardChipsets(response.data);
+        } catch (error) {
+            console.error('Error fetching motherboard chipsets:', error);
+            setAvailableMotherboardChipsets([]);
+        }
+    };
+
+    const fetchPowerWattages = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/power-wattages');
+            setAvailablePowerWattages(response.data);
+        } catch (error) {
+            console.error('Error fetching power wattages:', error);
+            setAvailablePowerWattages([]);
+        }
+    };
+
+    const fetchPowerEfficiencyRatings = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/power-efficiency-ratings');
+            setAvailablePowerEfficiencyRatings(response.data);
+        } catch (error) {
+            console.error('Error fetching power efficiency ratings:', error);
+            setAvailablePowerEfficiencyRatings([]);
+        }
+    };
+
+    const fetchStorageCapacities = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/storage-capacities');
+            setAvailableStorageCapacities(response.data);
+        } catch (error) {
+            console.error('Error fetching storage capacities:', error);
+            setAvailableStorageCapacities([]);
+        }
+    };
+
+    const fetchStorageTypes = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/storage-types');
+            setAvailableStorageTypes(response.data);
+        } catch (error) {
+            console.error('Error fetching storage types:', error);
+            setAvailableStorageTypes([]);
+        }
+    };
+
+    const fetchMaxGpuLengths = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/max-gpu-lengths');
+            setAvailableMaxGpuLengths(response.data);
+        } catch (error) {
+            console.error('Error fetching max GPU lengths:', error);
+            setAvailableMaxGpuLengths([]);
+        }
+    };
+
+    const fetchMonitorDisplaySizes = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/monitor-display-sizes');
+            setAvailableMonitorDisplaySizes(response.data);
+        } catch (error) {
+            console.error('Error fetching monitor display sizes:', error);
+            setAvailableMonitorDisplaySizes([]);
+        }
+    };
+
+    const fetchMonitorPanelTypes = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/monitor-panel-types');
+            setAvailableMonitorPanelTypes(response.data);
+        } catch (error) {
+            console.error('Error fetching monitor panel types:', error);
+            setAvailableMonitorPanelTypes([]);
+        }
+    };
+
+    const fetchMonitorRefreshRates = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/monitor-refresh-rates');
+            setAvailableMonitorRefreshRates(response.data);
+        } catch (error) {
+            console.error('Error fetching monitor refresh rates:', error);
+            setAvailableMonitorRefreshRates([]);
+        }
+    };
+
+    const fetchExpansionComponentTypes = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/product/expansion-component-types');
+            setAvailableExpansionComponentTypes(response.data);
+        } catch (error) {
+            console.error('Error fetching expansion component types:', error);
+            setAvailableExpansionComponentTypes([]);
         }
     };
 
@@ -447,8 +579,113 @@ export default function Productcategorypage() {
 
         if (categoryName) {
             fetchCategoryManufacturers(categoryName);
+            if (categoryName === 'prebuild') {
+                fetchPrebuildRamSizes();
+                setAvailableLaptopGraphicCards([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+                setAvailableMaxGpuLengths([]);
+            } else if (categoryName === 'laptop') {
+                fetchLaptopGraphicCards();
+                setAvailablePrebuildRamSizes([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+                setAvailableMaxGpuLengths([]);
+            } else if (categoryName === 'motherboard') {
+                fetchMotherboardChipsets();
+                setAvailablePrebuildRamSizes([]);
+                setAvailableLaptopGraphicCards([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+                setAvailableMaxGpuLengths([]);
+            } else if (categoryName === 'power') {
+                fetchPowerWattages();
+                fetchPowerEfficiencyRatings();
+                setAvailablePrebuildRamSizes([]);
+                setAvailableLaptopGraphicCards([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+                setAvailableMaxGpuLengths([]);
+            } else if (categoryName === 'storage') {
+                fetchStorageCapacities();
+                fetchStorageTypes();
+                setAvailablePrebuildRamSizes([]);
+                setAvailableLaptopGraphicCards([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableMaxGpuLengths([]);
+            } else if (categoryName === 'casing') {
+                fetchMaxGpuLengths();
+                setAvailablePrebuildRamSizes([]);
+                setAvailableLaptopGraphicCards([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+            } else if (categoryName === 'monitor') {
+                fetchMonitorDisplaySizes();
+                fetchMonitorPanelTypes();
+                fetchMonitorRefreshRates();
+                setAvailablePrebuildRamSizes([]);
+                setAvailableLaptopGraphicCards([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+                setAvailableMaxGpuLengths([]);
+            } else if (categoryName === 'expansion_network') {
+                fetchExpansionComponentTypes();
+                setAvailablePrebuildRamSizes([]);
+                setAvailableLaptopGraphicCards([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+                setAvailableMaxGpuLengths([]);
+                setAvailableMonitorDisplaySizes([]);
+                setAvailableMonitorPanelTypes([]);
+                setAvailableMonitorRefreshRates([]);
+            } else {
+                setAvailablePrebuildRamSizes([]);
+                setAvailableLaptopGraphicCards([]);
+                setAvailableMotherboardChipsets([]);
+                setAvailablePowerWattages([]);
+                setAvailablePowerEfficiencyRatings([]);
+                setAvailableStorageCapacities([]);
+                setAvailableStorageTypes([]);
+                setAvailableMaxGpuLengths([]);
+                setAvailableMonitorDisplaySizes([]);
+                setAvailableMonitorPanelTypes([]);
+                setAvailableMonitorRefreshRates([]);
+                setAvailableExpansionComponentTypes([]);
+            }
         } else {
             setAvailableManufacturersForFilter([]);
+            setAvailablePrebuildRamSizes([]);
+            setAvailableLaptopGraphicCards([]);
+            setAvailableMotherboardChipsets([]);
+            setAvailablePowerWattages([]);
+            setAvailablePowerEfficiencyRatings([]);
+            setAvailableStorageCapacities([]);
+            setAvailableStorageTypes([]);
+            setAvailableMaxGpuLengths([]);
+            setAvailableMonitorDisplaySizes([]);
+            setAvailableMonitorPanelTypes([]);
+            setAvailableMonitorRefreshRates([]);
+            setAvailableExpansionComponentTypes([]);
         }
     }, [categoryName]);
 
@@ -498,23 +735,23 @@ export default function Productcategorypage() {
                         initialSelectedSocketTypes={filters.socketTypes}
 
                         // Motherboard-specific
-                        availableMotherboardChipsetsData={categoryName === 'motherboard' ? MOTHERBOARD_CHIPSET_OPTIONS : []}
+                        availableMotherboardChipsetsData={categoryName === 'motherboard' ? availableMotherboardChipsets : []}
                         initialSelectedMotherboardChipsets={filters.motherboardChipsets}
 
                         // Power-specific
-                        availableWattageData={categoryName === 'power' ? POWER_WATTAGE_OPTIONS : []}
+                        availableWattageData={categoryName === 'power' ? availablePowerWattages : []}
                         initialSelectedWattages={filters.wattages}
 
-                        availableEfficiencyRatingsData={categoryName === 'power' ? POWER_EFFICIENCY_RATINGS : []}
+                        availableEfficiencyRatingsData={categoryName === 'power' ? availablePowerEfficiencyRatings : []}
                         initialSelectedEfficiencyRatings={filters.efficiencyRatings}
 
 
                         // Storage-specific
-                        availableStorageCapacitiesData={categoryName === 'storage' ? STORAGE_CAPACITY_OPTIONS : []}
+                        availableStorageCapacitiesData={categoryName === 'storage' ? availableStorageCapacities : []}
                         initialSelectedStorageCapacities={filters.storageCapacities}
 
 
-                        availableStorageTypesData={categoryName === 'storage' ? STORAGE_TYPE_OPTIONS : []}
+                        availableStorageTypesData={categoryName === 'storage' ? availableStorageTypes : []}
                         initialSelectedStorageTypes={filters.storageTypes}
 
 
@@ -522,7 +759,7 @@ export default function Productcategorypage() {
                         availableMotherboardSizesData={categoryName === 'casing' ? MOTHERBOARD_SIZE_OPTIONS : []}
                         initialSelectedMotherboardSizes={filters.supportedMotherboardSizes}
                         
-                        availableMaxGpuLengthData={categoryName === 'casing' ? CASING_MAX_GPU_LENGTH_OPTIONS : []}
+                        availableMaxGpuLengthData={categoryName === 'casing' ? availableMaxGpuLengths : []}
                         initialSelectedMaxGpuLength={filters.maxGpuLengths}
 
 
@@ -531,7 +768,7 @@ export default function Productcategorypage() {
                         availableRamData={categoryName === 'laptop' ? LAPTOP_RAM_OPTIONS : []}
                         initialSelectedRam={filters.rams}
 
-                        availableGraphicCardData={categoryName === 'laptop' ? LAPTOP_GRAPHIC_CARD_OPTIONS : []}
+                        availableGraphicCardData={categoryName === 'laptop' ? availableLaptopGraphicCards : []}
                         initialSelectedGraphicCard={filters.graphicCards}
 
 
@@ -543,23 +780,23 @@ export default function Productcategorypage() {
 
                         
                         // Prebuild-specific
-                        availableRamSizesData={categoryName === 'prebuild' ? PREBUILD_RAM_SIZE_OPTIONS : []}
+                        availableRamSizesData={categoryName === 'prebuild' ? availablePrebuildRamSizes : []}
                         initialSelectedRamSizes={filters.ramSizes}
 
 
 
 
                         // Expansion / Network-specific
-                        availableComponentTypesData={categoryName === 'expansion_network' ? EXPANSION_COMPONENT_TYPE_OPTIONS : []}
+                        availableComponentTypesData={categoryName === 'expansion_network' ? availableExpansionComponentTypes : []}
                         initialSelectedComponentTypes={filters.componentTypes}
 
 
                         // Monitor-specific
-                        availableDisplaySizesData={categoryName === 'monitor' ? MONITOR_DISPLAY_SIZE_OPTIONS : []}
+                        availableDisplaySizesData={categoryName === 'monitor' ? availableMonitorDisplaySizes : []}
                         initialSelectedDisplaySizes={filters.displaySizes}
-                        availablePanelTypesData={categoryName === 'monitor' ? MONITOR_PANEL_TYPE_OPTIONS : []}
+                        availablePanelTypesData={categoryName === 'monitor' ? availableMonitorPanelTypes : []}
                         initialSelectedPanelTypes={filters.panelTypes}
-                        availableRefreshRatesData={categoryName === 'monitor' ? MONITOR_REFRESH_RATE_OPTIONS : []}
+                        availableRefreshRatesData={categoryName === 'monitor' ? availableMonitorRefreshRates : []}
                         initialSelectedRefreshRates={filters.refreshRates}
 
 
