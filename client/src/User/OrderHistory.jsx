@@ -30,18 +30,27 @@ export default function OrderHistory() {
 
     const fetchOrders = async () => {
       try {
-        const res = await axios.get(
-          `${backendUrl}/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
-          {
+        const [productRes, buildRes] = await Promise.all([
+          axios.get(
+            `${backendUrl}/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              signal: controller.signal,
+            }
+          ),
+          axios.get(`${backendUrl}/api/build-transactions?userId=${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
             signal: controller.signal,
-          }
-        );
+          }),
+        ]);
 
         if (isMounted) {
-          const completedOrders = res.data
+          // Filter and format completed product orders
+          const completedProductOrders = productRes.data
             .filter((order) =>
               ["Successful", "Refunded"].includes(order.status)
             )
@@ -61,16 +70,36 @@ export default function OrderHistory() {
                 orderDate: new Date(order.createdAt).toDateString(),
                 orderId: order._id,
                 imageUrl: order.items[0]?.product_image,
-                itemCount: itemCount,
+                itemCount,
+                status: order.status,
               };
             });
 
-          setOrders(completedOrders);
+          // Filter and format completed build transactions
+          const completedBuildOrders = buildRes.data.data
+            .filter((order) =>
+              ["Successful", "Refunded"].includes(order.buildStatus)
+            )
+            .map((order) => ({
+              type: "pc_build",
+              itemName: order.buildName || "Custom Build",
+              totalAmount: Number(order.totalCharge).toLocaleString("en-LK", {
+                style: "currency",
+                currency: "LKR",
+              }),
+              orderDate: new Date(order.createdAt).toDateString(),
+              orderId: order._id,
+              imageUrl: order.buildImage,
+              itemCount: order.components.length,
+              status: order.buildStatus,
+            }));
+
+          setOrders([...completedProductOrders, ...completedBuildOrders]);
           setLoading(false);
         }
       } catch (err) {
         if (isMounted && err.name !== "AbortError") {
-          console.error("Failed to fetch product orders", err);
+          console.error("Failed to fetch orders", err);
           setLoading(false);
         }
       }

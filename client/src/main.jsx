@@ -65,7 +65,7 @@ import LaptopCategoryPage from "./pages/Laptop_category/Laptopcategorypage.jsx";
 import SelectGameAndBudgetpage from "./pages/SelectGameAndBudgetPage/SelectGameAndBudgetPage.jsx";
 import ChoosePartsPage from "./pages/ChoosePartsPage/ChoosePartsPage.jsx";
 import ModelSelectPage from "./pages/ModeSelectPage/ModelSelectPage.jsx";
-import ContinuePurchasePage from "./pages/ContinuePurchasePage/ContinuePurchasePage.jsx"
+import ContinuePurchasePage from "./pages/ContinuePurchasePage/ContinuePurchasePage.jsx";
 import ErrorStatus from "./Login/Errorstatus.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -104,9 +104,7 @@ const router = createBrowserRouter([
           { path: "products/manageproduct", element: <ManageProducts /> },
           {
             path: "products/createproduct",
-            children: [
-              { index: true, element: <CreateProducts /> },
-            ],
+            children: [{ index: true, element: <CreateProducts /> }],
           },
           {
             path: "products/editproduct/:id",
@@ -129,7 +127,7 @@ const router = createBrowserRouter([
           },
           {
             path: "orders/vieworder/:id",
-            element: <ViewOrder />
+            element: <ViewOrder />,
           },
           { path: "usermanage", element: <Usermanage /> },
           { path: "feedbackmanage", element: <Complaints /> },
@@ -178,7 +176,7 @@ const router = createBrowserRouter([
           { path: "orders", element: <MyOrders /> },
           { path: "orders/:orderId", element: <OrderDetails /> },
           {
-            path: "orders/review-submit/:orderId/:productId",
+            path: "orders/review-submit/:orderId/:productId?",
             element: <ReviewSubmitPage />,
           },
           { path: "reviews", element: <Reviews /> },

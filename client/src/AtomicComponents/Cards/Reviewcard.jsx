@@ -1,8 +1,12 @@
 import React from "react";
 import { Card, CardContent, Button, Divider, Rating } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function Reviewcard({ review, onLeaveReviewClick }) {
   const {
+    reviewId,
+    type,
+    orderId,
     productId,
     name,
     price,
@@ -13,11 +17,18 @@ export default function Reviewcard({ review, onLeaveReviewClick }) {
     status,
   } = review;
 
+  const navigate = useNavigate();
+
   return (
     <Card className="p-4 rounded-2xl shadow-2xl bg-white flex flex-col w-full max-w-3xl mb-6">
       <CardContent>
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-          <p className="text-xl font-bold text-gray-900">{name}</p>
+          <p
+            className="text-xl font-bold text-gray-900 cursor-pointer"
+            onClick={() => navigate(`/itempage/${productId}`)}
+          >
+            {name}
+          </p>
           {status === "Reviewed" && (
             <div>
               <p className="text-sm text-gray-500">
@@ -33,12 +44,15 @@ export default function Reviewcard({ review, onLeaveReviewClick }) {
           <img
             src={product_image}
             alt={name}
-            className="w-24 h-24 rounded-lg object-cover"
+            className="w-24 h-24 rounded-lg object-cover cursor-pointer"
+            onClick={() => navigate(`/itempage/${productId}`)}
           />
 
           <div className="flex-1 text-left space-y-1">
             <h3 className="text-base font-bold text-gray-900">
-              Price: ${price.toFixed(2)}
+              {typeof price === "number"
+                ? `Price: LKR ${price.toFixed(2)}`
+                : "Price: N/A"}
             </h3>
             {status === "Reviewed" && (
               <div className="space-y-1">
@@ -77,6 +91,24 @@ export default function Reviewcard({ review, onLeaveReviewClick }) {
                   height: 40,
                   width: 140,
                 }}
+                onClick={() =>
+                  navigate(
+                    `/user/orders/review-submit/${orderId}/${productId}`,
+                    {
+                      state: {
+                        type,
+                        itemName: name,
+                        imageUrl: product_image,
+                        isEdit: true,
+                        existingReview: {
+                          _id: review.reviewId,
+                          rating: review.rating,
+                          comment: review.comment,
+                        },
+                      },
+                    }
+                  )
+                }
               >
                 Edit Review
               </Button>
