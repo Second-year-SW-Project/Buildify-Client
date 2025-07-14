@@ -220,7 +220,7 @@ export function OrderTable({
   // Use pagination props if provided, otherwise use local state
   const currentPage = pagination ? pagination.currentPage - 1 : page; // Convert to 0-based index for MUI
   const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
-  const totalCount = pagination ? pagination.totalItems : data.length;
+  const totalCount = pagination ? pagination.totalItems : orders.length;
 
   return (
     <Paper sx={{ width: width || "100%", overflow: "hidden", mt: 4 }}>
@@ -736,21 +736,19 @@ export function BuildTable({
   const isRowOpen = (rowId) => expandedRowId === rowId;
 
   const statusColorMap = {
-    Successful: "success",
     Pending: "warning",
-    Refunded: "ternary",
-    Canceled: "error",
+    Confirmed: "ternary",
+    Building: "secondary",
+    Completed: "success",
     Shipped: "info",
     Delivered: "primary",
-    Completed: "success",
-    InProgress: "info",
-    Draft: "default",
-    pending: "warning",
-    confirmed: "info",
-    "in-progress": "primary",
-    completed: "success",
-    cancelled: "error",
-    delivered: "success",
+    Canceled: "error",
+  };
+
+  // Delivery method color mapping
+  const deliveryMethodColorMap = {
+    "Home Delivery": "primary",
+    "Pick up at store": "info",
   };
 
   const [page, setPage] = React.useState(0);
@@ -782,6 +780,7 @@ export function BuildTable({
     Maxwidth: "50%",
   };
 
+
   // Use pagination props if provided, otherwise use local state
   const currentPage = pagination ? pagination.currentPage - 1 : page; // Convert to 0-based index for MUI
   const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
@@ -810,7 +809,7 @@ export function BuildTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {builds.map((build, index) => {
+            {builds && builds.length > 0 ? builds.map((build, index) => {
               const isOpen = isRowOpen(build._id);
               return (
                 <React.Fragment key={build._id}>
@@ -836,8 +835,12 @@ export function BuildTable({
                             sx={{ width: 40, height: 40 }}
                           />
                           <Box>
-                            <Typography variant="subtitle2" fontWeight={"bold"}>{build.userName}</Typography>
-                            <Typography variant="caption" color="textSecondary">{build.userEmail}</Typography>
+                            <Typography variant="subtitle2" fontWeight={"bold"}>
+                              {build.userName}
+                            </Typography>
+                            <Typography variant="caption" color="textSecondary">
+                              {build.userEmail}
+                            </Typography>
                           </Box>
                         </Box>
                       ) : (
@@ -847,7 +850,7 @@ export function BuildTable({
                         />
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ minWidth: 120 }}>
                       <Typography>
                         {build.createdAt ? format(new Date(build.createdAt), "dd MMM yyyy") : "-"}
                       </Typography>
@@ -856,16 +859,36 @@ export function BuildTable({
                       </Typography>
                     </TableCell>
                     <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
-                      {build.components?.length || 0}
+                      <Chip
+                        label={
+                          build.deliveryMethod === "Home Delivery"
+                            ? "By Delivery"
+                            : build.deliveryMethod === "Pick up at store"
+                              ? "By Store"
+                              : build.deliveryMethod
+                        }
+                        color={deliveryMethodColorMap[build.deliveryMethod] || "default"}
+                        size="small"
+                        sx={{
+                          padding: "8px 16px",
+                          height: "32px",
+                          minWidth: "120px",
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          fontSize: "12px",
+                          letterSpacing: "0.5px",
+                        }}
+                      />
                     </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {build.componentsPrice !== undefined
-                        ? build.componentsPrice.toLocaleString()
-                        : "0"} LKR
+                    <TableCell sx={{ fontWeight: "bold", minWidth: 130, fontSize: "15px" }}>
+                      {build.TotalPrice !== undefined
+                        ? build.TotalPrice.toLocaleString()
+                        : "0"}{" "}
+                      LKR
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={build.buildStatus || "pending"}
+                        label={build.buildStatus}
                         color={statusColorMap[build.buildStatus] || "default"}
                         size="small"
                         sx={{
@@ -874,7 +897,6 @@ export function BuildTable({
                           width: "100px",
                           textAlign: "center",
                           fontWeight: "bold",
-                          textTransform: "capitalize"
                         }}
                       />
                     </TableCell>
@@ -920,7 +942,7 @@ export function BuildTable({
                         <Box margin={1} p={1}>
                           {build.components && build.components.length > 0 ? build.components.map((comp, i) => (
                             <Stack
-                              key={comp.componentId || i}
+                              key={comp.componentId || comp._id || i}
                               direction="row"
                               alignItems="center"
                               justifyContent="space-between"
@@ -947,6 +969,27 @@ export function BuildTable({
                                 <Typography fontWeight="bold" flex={1}>
                                   x {comp.quantity}
                                 </Typography>
+                                <Typography
+                                  fontSize={14}
+                                  flex={1}
+                                  color="black500"
+                                >
+                                  Unit Price - {comp.price || "N/A"}
+                                </Typography>
+                              </Box>
+                              <Box
+                                flex={1}
+                                display="flex"
+                                justifyContent="flex-end"
+                                alignItems="center"
+                                textAlign="right"
+                                marginRight={2}
+                              >
+                                <Typography fontWeight="bold" flex={1}>
+                                  {comp.price && comp.quantity
+                                    ? (comp.price * comp.quantity).toLocaleString()
+                                    : comp.price || "N/A"} LKR
+                                </Typography>
                               </Box>
                             </Stack>
                           )) : <Typography>No components</Typography>}
@@ -956,7 +999,13 @@ export function BuildTable({
                   </TableRow>
                 </React.Fragment>
               );
-            })}
+            }) : (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} align="center">
+                  <Typography>No builds found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -977,38 +1026,3 @@ export function BuildTable({
   );
 }
 
-// How to Use
-
-// const userColumns = [
-//   { id: "userCard", label: "User" },
-//   { id: "phone", label: "Phone Number" },
-//   { id: "registrationDate", label: "Registration Date" },
-//   { id: "status", label: "Status" },
-// ];
-
-// const userData = [
-//   {
-//     userCard: <Usercard name='Gethmi Rathnyaka' email='gethmirathnayaka@gmai.com' src='yourprofile image' ></Usercard>,
-//     phone: "+46 8 123 456",
-//     registrationDate: "2024-11-07",
-//     status: "Banned",
-//   },
-//   {
-//     userCard: <Usercard name='Sahan Tharaka' email='sahantharaka@gmai.com' src='yourprofile image' ></Usercard>,
-//     phone: "+54 11 1234-5678",
-//     registrationDate: "2024-11-08",
-//     status: "Inactive",
-//   },
-// ];
-
-// const iconTypes = ["edit", "more"];
-
-//   return (
-//  <Box sx={{ width: '100%', maxWidth: 1000, borderRadius: "20px" }}>
-//     <UserTable
-//       columns={userColumns}
-//       data={userData}
-//       iconTypes={iconTypes}
-//     />
-//   </Box>
-//   );

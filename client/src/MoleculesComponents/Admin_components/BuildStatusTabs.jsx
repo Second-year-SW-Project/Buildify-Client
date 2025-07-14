@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import theme from '../../AtomicComponents/theme';
 import { styled } from '@mui/material/styles';
 
-const buildStatusOptions = ['All', 'Pending', 'Confirmed', 'Building', 'Completed', 'Cancelled', 'Shipped', 'Delivered'];
+const buildStatusOptions = ['All', 'Pending', 'Confirmed', 'Building', 'Completed', 'Shipped', 'Delivered', 'Cancelled',];
 
 // Define unique colors for each build status
 const buildStatusColors = {
@@ -14,10 +14,9 @@ const buildStatusColors = {
     Confirmed: theme.palette.info.main,
     Building: theme.palette.primary.main,
     Completed: theme.palette.success.main,
-    Cancelled: theme.palette.error.main,
-    Picked: theme.palette.secondary.light,
-    Shipped: theme.palette.secondary.main,
+    Shipped: theme.palette.info.main,
     Delivered: theme.palette.success.main,
+    Cancelled: theme.palette.error.main,
 };
 
 const CountBox = styled(Box, {
@@ -36,12 +35,8 @@ const CountBox = styled(Box, {
 
 const CustomTabLabel = ({ label, count, selected }) => (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <span style={{
-            fontWeight: 'bold',
-            color: selected ? buildStatusColors[label] : theme.palette.black500.main,
-            textTransform: 'capitalize'
-        }}>
-            {label === 'in-progress' ? 'In Progress' : label}
+        <span style={{ fontWeight: 'bold', color: selected ? buildStatusColors[label] : theme.palette.black500.main }}>
+            {label.charAt(0) + label.slice(1)}
         </span>
         <CountBox selected={selected} status={label}>{count}</CountBox>
     </Box>

@@ -102,7 +102,6 @@ function OrderList() {
                 setTotalOrders(response.data.pagination.total);
                 setStatusCounts(response.data.statusCounts || {});
             } else {
-                console.error("Expected an array but got:", response.data);
                 setOrders([]);
             }
         } catch (error) {

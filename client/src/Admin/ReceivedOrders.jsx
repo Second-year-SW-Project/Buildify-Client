@@ -39,6 +39,8 @@ function ReceivedOrders() {
     const [buildIdSearch, setBuildIdSearch] = useState('');
     const [status, setStatus] = useState('');
     const [statusCounts, setStatusCounts] = useState({});
+
+    // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalBuilds, setTotalBuilds] = useState(0);
@@ -70,25 +72,22 @@ function ReceivedOrders() {
                 date: selectedDate ? selectedDate.toISOString() : null,
                 search: searchTerm,
                 buildId: buildIdSearch,
-                status: selectedTab || status
+                buildStatus: selectedTab || status
             };
-            const response = await axios.get(`${backendUrl}/api/build/builds`, {
+            const response = await axios.get(`${backendUrl}/api/build-transactions`, {
                 params,
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 }
             });
-            console.log(response.data);
-            if (response.data && Array.isArray(response.data.builds)) {
-                setBuilds(response.data.builds);
+            if (response.data && response.data.Success && Array.isArray(response.data.data)) {
+                const allReceivedOrders = response.data.data;
+                setBuilds(allReceivedOrders);
                 setTotalBuilds(response.data.pagination?.total || 0);
                 setTotalPages(response.data.pagination?.totalPages || 1);
                 setStatusCounts(response.data.statusCounts || {});
             } else {
                 setBuilds([]);
-                setTotalBuilds(0);
-                setTotalPages(1);
-                setStatusCounts({});
             }
         } catch (error) {
             console.error("Error fetching builds:", error);
@@ -117,7 +116,7 @@ function ReceivedOrders() {
 
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`${backendUrl}/api/builds/${selectedBuildId}`, {
+            const response = await axios.delete(`${backendUrl}/api/build-transactions/${selectedBuildId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
@@ -141,11 +140,11 @@ function ReceivedOrders() {
     };
 
     const buildColumns = [
-        { id: "_id", label: "BuildID" },
+        { id: "Id", label: "BuildID" },
         { id: "userCard", label: "Customer" },
         { id: "createdAt", label: "Ordered at" },
-        { id: "components", label: "Components" },
-        { id: "componentsPrice", label: "Price" },
+        { id: "deliveryMethod", label: "Delivery Method" },
+        { id: "TotalPrice", label: "Total Price" },
         { id: "buildStatus", label: "Status" },
     ];
 
@@ -185,18 +184,19 @@ function ReceivedOrders() {
 
     const memoizedBuilds = useMemo(() => {
         return builds.map(build => {
-            const customerName = build.userName || '';
-            const customerEmail = build.userEmail || '';
+            const customerName = build.userName || build.userDetails?.name || '';
+            const customerEmail = build.userEmail || build.userDetails?.email || '';
             return {
                 ...build,
                 shortBuildId: build._id ? `#${build._id.slice(-4).toUpperCase()}` : '',
                 formattedDate: build.createdAt ? new Date(build.createdAt).toLocaleString() : '',
                 customerName,
                 customerEmail,
-                formattedTotal: build.componentsPrice ? `LKR ${build.componentsPrice.toLocaleString()}` : '',
+                formattedTotal: build.TotalPrice ? `LKR ${build.TotalPrice.toLocaleString()}` : '',
                 componentsSummary: Array.isArray(build.components)
-                    ? build.components.map(comp => `${comp.name || comp.componentId} x${comp.quantity}`).join(', ')
+                    ? build.components.map(comp => `${comp.name} x${comp.quantity}`).join(', ')
                     : '',
+                status: build.buildStatus// Map buildStatus to status for table compatibility
             };
         });
     }, [builds]);
