@@ -21,6 +21,8 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import CallIcon from '@mui/icons-material/Call';
 import QuizIcon from '@mui/icons-material/Quiz';
 import HelpIcon from '@mui/icons-material/Help';
+import Swal from "sweetalert2";
+
 
 export default function Navbar() {
   const cartItems = useSelector(state => state.cart?.cartItems) || [];
@@ -168,9 +170,18 @@ export default function Navbar() {
       <>
         <button
           onClick={() => {
-            alert("You're not logged in");
+            //alert("You're not logged in");
+                             Swal.fire({
+                   title: "",
+                   text: "Please log in to the site to continue..",
+                   icon: 'warning',
+                   confirmButtonText: "OK",
+                 }).then(() => {
+                   
+                   navigate("/adminpanel/auth/login");
+                 });
             setOpenDropdown(null);
-            navigate("/adminpanel/auth/login");
+            //navigate("/adminpanel/auth/login");
           }}
           className="block text-left px-4 py-2 hover:bg-blue-400 w-full"
         >

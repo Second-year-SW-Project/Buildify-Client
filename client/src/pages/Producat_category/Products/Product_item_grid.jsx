@@ -247,13 +247,27 @@ export default function Product_item_grid({ categoryName, currentFilters }) {
         };
 
         fetchProducts();
-        setSearchParams({ page: 1 });
-         // Reset to first page when filters change
     }, [categoryName, currentFilters]); // Re-fetch when categoryName or currentFilters change
 
-    if (loading) {
-        return <div className="text-center py-10">Loading products...</div>;
-    }
+    // Add this useEffect to reset page to 1 when filters or category change, but only if not already on page 1
+    useEffect(() => {
+        if (currentPage !== 1) {
+            setSearchParams({ page: 1 });
+        }
+    }, [categoryName, currentFilters]);
+
+    // if (loading) {
+    //     return <div className="text-center py-10">Loading products...</div>;
+    // }
+
+      if (loading) {
+        return (
+    <div className="flex flex-col items-center justify-center flex-grow">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-6 mt-[250px]"></div>
+      <p className="text-xl font-semibold">Loading search results...</p>
+    </div>
+  );
+}
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -293,7 +307,7 @@ export default function Product_item_grid({ categoryName, currentFilters }) {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center space-x-2 mt-[200px]">
+        <div className="flex justify-center items-center space-x-3 mt-[170px] mb-[40px]">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}

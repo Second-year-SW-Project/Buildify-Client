@@ -59,12 +59,12 @@ export default function SearchResults() {
         <br></br>
 
         <h2 className="text-2xl font-semibold mb-4">
-          Search results for: {query}
+          Search Results For : {query}
         </h2>
         <br></br>
         <br></br>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className=" ml-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-14">
           {products.map((product) => (
             <ItemCard key={product._id} product={product} />
           ))}

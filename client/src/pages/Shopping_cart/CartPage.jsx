@@ -5,6 +5,9 @@ import { Button, IconButton } from "@mui/material";
 import { Add, Remove, Delete } from "@mui/icons-material";
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
+import Swal from "sweetalert2";
+
 import PaymentGateway from "./PaymentGateway";
 import Navbar from "../../MoleculesComponents/User_navbar_and_footer/Navbar"
 import Footer from "../../MoleculesComponents/User_navbar_and_footer/Footer"
@@ -62,7 +65,28 @@ const CartPage = () => {
 
   const handleClick = () => {
     if (!userId) {         
-      alert("Please log in to the site to continue the transaction.");  //checking the user has logged in
+      //alert("Please log in to the site to continue the transaction.");  //checking the user has logged in
+        // Redirect to login page
+          // toast("Please log in to the site to continue the transaction.", {
+          //   duration: 2000,
+          //   style: {
+          //     background: '#a036b2	',
+          //     color: '#fff',
+          //     fontSize: '16px',
+          //     fontWeight: 'bold',
+          //   },
+          // });
+         // navigate(`/login`); 
+
+                 Swal.fire({
+                   title: "",
+                   text: "Please log in to the site to continue the transaction.",
+                   icon: 'warning',
+                   confirmButtonText: "OK",
+                 }).then(() => {
+                   
+                   navigate("/adminpanel/auth/login");
+                 });
     } else {
       navigate(`/paymentgateway`);   // Redirect to ItemPage
     }

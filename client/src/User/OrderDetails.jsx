@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
@@ -13,6 +13,9 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function OrderDetails() {
   const { orderId } = useParams();
+  const location = useLocation();
+  const orderType = location.state?.type || "product";
+
   const [order, setOrder] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -21,34 +24,92 @@ export default function OrderDetails() {
   const getStepFromStatus = (status) => {
     switch (status) {
       case "Pending":
+      case "pending":
         return 0;
       case "Successful":
+      case "successful":
         return 3;
       case "Shipped":
+      case "shipped":
         return 2;
       case "Delivered":
+      case "delivered":
         return 3;
       case "Refunded":
+      case "refunded":
         return 4;
       case "Canceled":
+      case "canceled":
         return 0;
       default:
         return 0;
     }
   };
 
+  const mapItems = (items, type) =>
+    items.map((item) =>
+      type === "product"
+        ? {
+            name: item.name || "Product",
+            product_image: item.product_image || item.imageUrl || "",
+            price: item.price || item.componentPrice || 0,
+            quantity: item.quantity,
+          }
+        : {
+            name: item.name || "Component",
+            product_image: item.product_image || "",
+            price: item.price || 0,
+            quantity: item.quantity,
+          }
+    );
+
   const fetchOrder = async () => {
     try {
-      const res = await axios.get(
-        `${backendUrl}/api/checkout/order/${orderId}`,
-        {
+      let res;
+      if (orderType === "product") {
+        res = await axios.get(`${backendUrl}/api/checkout/order/${orderId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+        });
+        const normalizedProductOrder = {
+          ...res.data,
+          items: mapItems(res.data.items, "product"),
+        };
+        setOrder(normalizedProductOrder);
+        setActiveStep(getStepFromStatus(res.data.status));
+      } else if (orderType === "pc_build") {
+        res = await axios.get(
+          `${backendUrl}/api/build-transactions/${orderId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        const data = res.data.data;
+        if (!data) {
+          toast.error("Build transaction not found");
+          return;
         }
-      );
-      setOrder(res.data);
-      setActiveStep(getStepFromStatus(res.data.status));
+        // Normalize keys to match the UI expectations
+        const normalizedOrder = {
+          ...data,
+          status: data.buildStatus,
+          user_name: data.userName,
+          phone: data.userPhone || "",
+          addressLine: data.userAddress,
+          email: data.userEmail,
+          items: mapItems(data.components, "pc_build"),
+          total: data.totalCharge,
+          paymentMethod: data.paymentMethod,
+          _id: data._id,
+          createdAt: data.createdAt,
+        };
+
+        setOrder(normalizedOrder);
+        setActiveStep(getStepFromStatus(normalizedOrder.status));
+      }
     } catch (err) {
       console.error("Failed to fetch order", err);
       toast.error("Failed to fetch order");
@@ -57,10 +118,15 @@ export default function OrderDetails() {
 
   useEffect(() => {
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, orderType]);
 
   const handleStatusChange = async (newStatus) => {
-    if (newStatus === "Delivered" && order.status !== "Shipped") {
+    // For product orders, enforce shipped before delivered
+    if (
+      orderType === "product" &&
+      newStatus === "Delivered" &&
+      order.status !== "Shipped"
+    ) {
       toast.error(
         "Order must be 'Shipped' before it can be marked as 'Delivered'"
       );
@@ -69,18 +135,40 @@ export default function OrderDetails() {
 
     try {
       setLoading(true);
-      const response = await axios.patch(
-        `${backendUrl}/api/checkout/product-orders/${orderId}`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+      let response;
+      if (orderType === "product") {
+        response = await axios.patch(
+          `${backendUrl}/api/checkout/product-orders/${orderId}`,
+          {
+            status: newStatus,
+            stepTimestamp: { [newStatus]: new Date().toISOString() },
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      } else if (orderType === "pc_build") {
+        response = await axios.patch(
+          `${backendUrl}/api/build-transactions/${orderId}/status`,
+          {
+            buildStatus: newStatus,
+            stepTimestamp: { [newStatus]: new Date().toISOString() },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      }
 
       if (response.data) {
-        setOrder((prev) => ({ ...prev, status: newStatus }));
+        setOrder((prev) => ({
+          ...prev,
+          status: newStatus,
+        }));
         setActiveStep(getStepFromStatus(newStatus));
         toast.success("Order status updated successfully");
       }
@@ -208,7 +296,7 @@ export default function OrderDetails() {
                   </div>
 
                   {/* Items */}
-                  {order.items.map((item, index) => (
+                  {order.items?.map((item, index) => (
                     <div
                       key={index}
                       className="bg-white p-4 rounded-md shadow-sm border mb-4"
@@ -216,7 +304,7 @@ export default function OrderDetails() {
                       <div className="flex items-start justify-between">
                         <div className="flex gap-4">
                           <img
-                            src={item.product_image}
+                            src={item.product_image || item.imageUrl || ""}
                             alt="Product"
                             className="w-20 h-20 object-cover rounded"
                           />
@@ -224,7 +312,7 @@ export default function OrderDetails() {
                             <p className="text-sm font-semibold">{item.name}</p>
                             <p className="text-sm mt-1">
                               <span className="font-medium">
-                                LKR {item.price}
+                                LKR {item.price || item.componentPrice || 0}
                               </span>{" "}
                               <span className="text-gray-600">
                                 x{item.quantity}

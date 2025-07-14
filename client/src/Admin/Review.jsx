@@ -19,6 +19,8 @@ const Review = () => {
     productId: "",
     rating: "",
     userId: "",
+    type: "",
+    orderId: "",
   });
   const [response, setResponse] = useState({});
   const [stats, setStats] = useState({
@@ -407,12 +409,12 @@ const Review = () => {
 
             <p className="text-sm text-gray-500">
               <span className="font-medium text-gray-700">Product:</span>{' '}
-              {review.productName}
+              {review.orderId.name}
             </p>
 
             <p className="text-sm text-gray-500">
               <span className="font-medium text-gray-700">Category:</span>{' '}
-              {review.productCategory}
+              {review.type}
             </p>
 
           </div>

@@ -55,6 +55,14 @@ export default function ReviewSubmitPage() {
   const [reviewText, setReviewText] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
+  const { isEdit, existingReview } = location.state || {};
+
+  useEffect(() => {
+    if (isEdit && existingReview) {
+      setRating(existingReview.rating);
+      setReviewText(existingReview.comment);
+    }
+  }, [isEdit, existingReview]);
 
   // Set tag options based on the product type
   useEffect(() => {
@@ -91,18 +99,31 @@ export default function ReviewSubmitPage() {
   };
 
   // Update order status to complete upon review submission
-  const markAsSuccessful = async (orderId) => {
+  const markAsSuccessful = async (orderId, type) => {
     try {
-      await axios.patch(
-        `${backendUrl}/api/checkout/product-orders/${orderId}`,
-        { status: "Successful" },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      if (type === "product") {
+        await axios.patch(
+          `${backendUrl}/api/checkout/product-orders/${orderId}`,
+          { status: "Successful", stepTimestamp: { Successful: new Date() } },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log(`Product order ${orderId} marked as Successful!`);
+      }
+
+      if (type === "pc_build") {
+        await axios.patch(
+          `${backendUrl}/api/build-transactions/${orderId}/status`,
+          {
+            buildStatus: "Successful",
+            stepTimestamp: { Successful: new Date() },
           },
-        }
-      );
-      console.log(`Order ${orderId} marked as Successful!`);
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        console.log(`PC Build order ${orderId} marked as Successful!`);
+      }
     } catch (error) {
       console.error("Failed to update order status", error);
     }
@@ -122,34 +143,43 @@ export default function ReviewSubmitPage() {
         return;
       }
 
-      if (type !== "product" && type !== "pc_build") {
-        console.error("Invalid review type");
-        return;
-      }
+      const payload = {
+        productId,
+        orderId,
+        rating,
+        comment: reviewText,
+        type,
+      };
 
-      const response = await axios.post(
-        `${backendUrl}/api/review/`,
-        {
-          productId,
-          orderId,
-          rating,
-          comment: reviewText,
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      };
 
-      toast.success("Review submitted successfully!");
-      console.log("Review submitted:", response.data);
-      markAsSuccessful(orderId);
-      navigate(`/user/orders`);
+      let response;
+      if (isEdit) {
+        response = await axios.put(
+          `${backendUrl}/api/review/${existingReview._id}`,
+          payload,
+          config
+        );
+        toast.success("Review updated successfully!");
+      } else {
+        response = await axios.post(
+          `${backendUrl}/api/review/`,
+          payload,
+          config
+        );
+        toast.success("Review submitted successfully!");
+        await markAsSuccessful(orderId, type);
+        navigate(`/user/orders`);
+      }
     } catch (error) {
       const message =
-        error.response?.data?.message || "Error submitting review.";
+        error.response?.data?.message ||
+        (isEdit ? "Error updating review." : "Error submitting review.");
       toast.error(message);
       console.error("Submission failed:", error);
     }
@@ -262,7 +292,7 @@ export default function ReviewSubmitPage() {
                           textTransform: "none",
                         }}
                       >
-                        Submit
+                        {isEdit ? "Update Review" : "Submit"}
                       </Button>
                     </Box>
                   </Box>

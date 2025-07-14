@@ -11,6 +11,7 @@ const handleCopy = (text) => {
 function OrderCard({
   status,
   totalAmount,
+  type,
   orderDate,
   orderId,
   imageUrl,
@@ -46,7 +47,7 @@ function OrderCard({
             </div>
             <p
               className="text-purple-500 cursor-pointer"
-              onClick={onDetailsClick}
+              onClick={() => onDetailsClick(orderId, type)}
             >
               Order Details &gt;
             </p>

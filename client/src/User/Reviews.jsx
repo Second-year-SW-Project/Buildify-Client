@@ -25,16 +25,28 @@ export default function Reviews() {
   };
 
   const handleLeaveReviewClick = (review) => {
-    navigate(
-      `/user/orders/review-submit/${review.orderId}/${review.productId}`,
-      {
+    if (review.type === "pc_build") {
+      navigate(`/user/orders/review-submit/${review.orderId}`, {
         state: {
           type: review.type,
           itemName: review.name,
           imageUrl: review.product_image,
+          isEdit: false,
         },
-      }
-    );
+      });
+    } else {
+      navigate(
+        `/user/orders/review-submit/${review.orderId}/${review.productId}`,
+        {
+          state: {
+            type: review.type,
+            itemName: review.name,
+            imageUrl: review.product_image,
+            isEdit: false,
+          },
+        }
+      );
+    }
   };
 
   useEffect(() => {
@@ -114,7 +126,7 @@ export default function Reviews() {
                           .filter((p) => p.status === "To Review")
                           .map((review) => (
                             <Reviewcard
-                              key={review.productId}
+                              key={`${review.type}-${review.productId || review.reviewId || review.orderId}`}
                               review={review}
                               onLeaveReviewClick={handleLeaveReviewClick}
                             />
@@ -138,7 +150,7 @@ export default function Reviews() {
                           .filter((p) => p.status === "Reviewed")
                           .map((review) => (
                             <Reviewcard
-                              key={review.productId}
+                              key={`${review.type}-${review.productId || review.reviewId || review.orderId}`}
                               review={review}
                             />
                           ))

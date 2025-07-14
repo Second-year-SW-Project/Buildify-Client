@@ -29,22 +29,48 @@ export default function MyOrders() {
   };
 
   // Mark as Delivered
-  const markAsDelivered = async (orderId) => {
+  const markAsDelivered = async (orderId, orderType) => {
     try {
-      await axios.patch(
-        `${backendUrl}/api/checkout/product-orders/${orderId}`,
-        { status: "Delivered" },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+      if (orderType == "product") {
+        await axios.patch(
+          `${backendUrl}/api/checkout/product-orders/${orderId}`,
+          {
+            status: "Delivered",
+            stepTimestamp: { Delivered: new Date().toISOString() },
           },
-        }
-      );
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      } else if (orderType == "pc_build") {
+        await axios.patch(
+          `${backendUrl}/api/build-transactions/${orderId}/status`,
+          {
+            buildStatus: "Delivered",
+            stepTimestamp: { Delivered: new Date().toISOString() },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      }
+
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order.orderId === orderId ? { ...order, status: "Delivered" } : order
+          order.orderId === orderId
+            ? {
+                ...order,
+                status: "Delivered",
+              }
+            : order
         )
       );
+
+      toast.success("Order marked as Delivered!");
     } catch (error) {
       console.error("Failed to update order status", error);
       toast.error("Failed to update order status", error);
@@ -56,20 +82,28 @@ export default function MyOrders() {
     let isMounted = true;
     const controller = new AbortController();
 
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `${backendUrl}/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
-          {
+        const [productRes, buildRes] = await Promise.all([
+          axios.get(
+            `${backendUrl}/api/checkout/product-orders${userId ? `?userId=${userId}` : ""}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              signal: controller.signal,
+            }
+          ),
+          axios.get(`${backendUrl}/api/build-transactions?userId=${userId}`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
             signal: controller.signal,
-          }
-        );
+          }),
+        ]);
 
         if (isMounted) {
-          const formatted = res.data.map((order) => {
+          const formattedProductOrders = productRes.data.map((order) => {
             const itemCount = order.items.reduce(
               (total, item) => total + item.quantity,
               0
@@ -85,23 +119,40 @@ export default function MyOrders() {
               orderDate: new Date(order.createdAt).toDateString(),
               orderId: order._id,
               imageUrl: order.items[0]?.product_image,
-              itemCount: itemCount,
+              itemCount,
+              status: order.status,
+              items: order.items,
             };
           });
 
-          setOrders(formatted);
+          const formattedBuildOrders = buildRes.data.data.map((order) => ({
+            type: "pc_build",
+            itemName: order.buildName || "Custom Build",
+            totalAmount: Number(order.totalCharge).toLocaleString("en-LK", {
+              style: "currency",
+              currency: "LKR",
+            }),
+            orderDate: new Date(order.createdAt).toDateString(),
+            orderId: order._id,
+            imageUrl: order.buildImage,
+            itemCount: order.components.length,
+            status: order.buildStatus,
+            items: order.components,
+          }));
+
+          setOrders([...formattedProductOrders, ...formattedBuildOrders]);
           setLoading(false);
         }
       } catch (err) {
         if (isMounted && err.name !== "AbortError") {
-          console.error("Failed to fetch product orders", err);
-          toast.error("Failed to fetch product orders", err);
+          console.error("Failed to fetch orders", err);
+          toast.error("Failed to fetch orders");
           setLoading(false);
         }
       }
     };
 
-    fetchOrders();
+    fetchData();
 
     return () => {
       isMounted = false;
@@ -167,18 +218,38 @@ export default function MyOrders() {
                             orderDate={order.orderDate}
                             orderId={order.orderId}
                             imageUrl={order.imageUrl}
+                            type={order.type}
                             itemCount={order.itemCount}
-                            onDetailsClick={() => navigate(`${order.orderId}`)}
-                            onDelivered={() => markAsDelivered(order.orderId)}
+                            onDetailsClick={() =>
+                              navigate(`/user/orders/${order.orderId}`, {
+                                state: { type: order.type },
+                              })
+                            }
+                            onDelivered={() =>
+                              markAsDelivered(order.orderId, order.type)
+                            }
                             onLeaveReview={() => {
-                              setSeletcedOrderId(order.orderId);
-                              setOpenReview(true);
-                              setSelectedOrderItems(
-                                order.items.map((item) => ({
-                                  ...item,
-                                  type: order.type,
-                                }))
-                              );
+                              if (order.type === "pc_build") {
+                                navigate(
+                                  `/user/orders/review-submit/${order.orderId}`,
+                                  {
+                                    state: {
+                                      type: order.type,
+                                      itemName: order.itemName,
+                                      imageUrl: order.imageUrl,
+                                    },
+                                  }
+                                );
+                              } else {
+                                setSeletcedOrderId(order.orderId);
+                                setOpenReview(true);
+                                setSelectedOrderItems(
+                                  order.items.map((item) => ({
+                                    ...item,
+                                    type: order.type,
+                                  }))
+                                );
+                              }
                             }}
                           />
                         ))
@@ -198,18 +269,38 @@ export default function MyOrders() {
                             orderDate={order.orderDate}
                             orderId={order.orderId}
                             imageUrl={order.imageUrl}
+                            type={order.type}
                             itemCount={order.itemCount}
-                            onDetailsClick={() => navigate(`/${order.orderId}`)}
-                            onDelivered={() => markAsDelivered(order.orderId)}
+                            onDetailsClick={() =>
+                              navigate(`/user/orders/${order.orderId}`, {
+                                state: { type: order.type },
+                              })
+                            }
+                            onDelivered={() =>
+                              markAsDelivered(order.orderId, order.type)
+                            }
                             onLeaveReview={() => {
-                              setSeletcedOrderId(order.orderId);
-                              setOpenReview(true);
-                              setSelectedOrderItems(
-                                order.items.map((item) => ({
-                                  ...item,
-                                  type: order.type,
-                                }))
-                              );
+                              if (order.type === "pc_build") {
+                                navigate(
+                                  `/user/orders/review-submit/${order.orderId}`,
+                                  {
+                                    state: {
+                                      type: order.type,
+                                      itemName: order.itemName,
+                                      imageUrl: order.imageUrl,
+                                    },
+                                  }
+                                );
+                              } else {
+                                setSeletcedOrderId(order.orderId);
+                                setOpenReview(true);
+                                setSelectedOrderItems(
+                                  order.items.map((item) => ({
+                                    ...item,
+                                    type: order.type,
+                                  }))
+                                );
+                              }
                             }}
                           />
                         ))
@@ -229,18 +320,38 @@ export default function MyOrders() {
                             orderDate={order.orderDate}
                             orderId={order.orderId}
                             imageUrl={order.imageUrl}
+                            type={order.type}
                             itemCount={order.itemCount}
-                            onDetailsClick={() => navigate(`${order.orderId}`)}
-                            onDelivered={() => markAsDelivered(order.orderId)}
+                            onDetailsClick={() =>
+                              navigate(`/user/orders/${order.orderId}`, {
+                                state: { type: order.type },
+                              })
+                            }
+                            onDelivered={() =>
+                              markAsDelivered(order.orderId, order.type)
+                            }
                             onLeaveReview={() => {
-                              setSeletcedOrderId(order.orderId);
-                              setOpenReview(true);
-                              setSelectedOrderItems(
-                                order.items.map((item) => ({
-                                  ...item,
-                                  type: order.type,
-                                }))
-                              );
+                              if (order.type === "pc_build") {
+                                navigate(
+                                  `/user/orders/review-submit/${order.orderId}`,
+                                  {
+                                    state: {
+                                      type: order.type,
+                                      itemName: order.itemName,
+                                      imageUrl: order.imageUrl,
+                                    },
+                                  }
+                                );
+                              } else {
+                                setSeletcedOrderId(order.orderId);
+                                setOpenReview(true);
+                                setSelectedOrderItems(
+                                  order.items.map((item) => ({
+                                    ...item,
+                                    type: order.type,
+                                  }))
+                                );
+                              }
                             }}
                           />
                         ))
