@@ -120,9 +120,27 @@ export const deliveryCharges = {
 
 // Service charges
 export const serviceCharges = {
-  fixedServiceCharge: 0, // No service charge
+  fixedServiceCharge: 0, // No service charge (deprecated - use calculateServiceCharge instead)
   assemblyCharge: 0,     // No assembly charge
   warrantyExtension: 0   // No warranty extension charge
+};
+
+// Calculate service charge based on component count
+export const calculateServiceCharge = async (componentCount) => {
+  try {
+    const response = await fetch(`http://localhost:8000/api/build-transactions/calculate-service-charge?componentCount=${componentCount}`);
+    const data = await response.json();
+    
+    if (response.ok) {
+      return data.serviceCharge;
+    } else {
+      console.error('Error calculating service charge:', data.message);
+      return 0; // Fallback to 0 if API fails
+    }
+  } catch (error) {
+    console.error('Error fetching service charge:', error);
+    return 0; // Fallback to 0 if API fails
+  }
 };
 
 export const getProvinces = () => {
