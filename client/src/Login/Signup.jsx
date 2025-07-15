@@ -1,18 +1,32 @@
 import React, { useState } from "react";
-import {TextField, Button, Checkbox, FormControlLabel,CircularProgress, Box, Typography, Divider} from "@mui/material";
-import { Google as GoogleIcon } from "@mui/icons-material";
+import {
+  TextField,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  CircularProgress,
+  Box,
+  Typography,
+  Divider,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+import {
+  Google as GoogleIcon,
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import axios from "axios";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { setAuthUser } from "../Store/authSlice";
-import logo from '../assets/logo.png';
+import logo from "../assets/logo.png";
 import pcImage from "../assets/images/pc3.jpg";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Signup = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,39 +35,37 @@ const Signup = () => {
     name: "",
     email: "",
     password: "",
-    passwordConfirm: ""
+    passwordConfirm: "",
   });
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const handleChange = (e) => {
+  // Separate states for toggling visibility of each password field
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-
   };
 
   const validateEmail = (email) => {
-
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
-
   };
-  
-  const validatePassword = (password) => {
 
+  const validatePassword = (password) => {
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
     const isValidLength = password.length >= 8;
 
-    return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength;
-
+    return (
+      hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength
+    );
   };
 
-  // Frontend Validation of signup
   const submitHandler = async (e) => {
-
     e.preventDefault();
     setLoading(true);
 
@@ -62,37 +74,39 @@ const Signup = () => {
       setLoading(false);
       return;
     }
-  
+
     if (formData.name.trim().length < 3) {
       toast.error("Name must be at least 3 characters");
       setLoading(false);
       return;
     }
-  
+
     if (!formData.email.trim()) {
       toast.error("Email is required");
       setLoading(false);
       return;
     }
-  
+
     if (!validateEmail(formData.email)) {
       toast.error("Invalid email format");
       setLoading(false);
       return;
     }
-  
+
     if (!formData.password) {
       toast.error("Password is required");
       setLoading(false);
       return;
     }
-  
+
     if (!validatePassword(formData.password)) {
-      toast.error("Password must be at least 8 characters and include uppercase, lowercase, number, and special character");
+      toast.error(
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character"
+      );
       setLoading(false);
       return;
     }
-  
+
     if (formData.password !== formData.passwordConfirm) {
       toast.error("Passwords do not match");
       setLoading(false);
@@ -105,15 +119,7 @@ const Signup = () => {
       return;
     }
 
-    if (formData.password !== formData.passwordConfirm) {
-      toast.error("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
     try {
-
-      //Sending the response to backend via api to respond after the validation of frontend
       const response = await axios.post(
         `${backendUrl}/api/v1/users/signup`,
         formData,
@@ -126,23 +132,18 @@ const Signup = () => {
 
       dispatch(setAuthUser(user));
 
-      navigate('/adminpanel/auth/verify');
-
+      navigate("/adminpanel/auth/verify");
     } catch (error) {
-
       if (error.response) {
         toast.error(error.response.data.message);
-      } 
-      else {
+      } else {
         toast.error("An error occurred during signup");
       }
-    }
-     finally {
+    } finally {
       setLoading(false);
     }
   };
 
-  //Google login curretly in progress
   const handleGoogleLogin = () => {
     window.location.href = `${backendUrl}/auth/google`;
   };
@@ -152,51 +153,41 @@ const Signup = () => {
       className="w-screen h-screen bg-cover bg-center flex items-center justify-center"
       sx={{
         backgroundImage: `url(${pcImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
-      
       <Box className="absolute inset-0 bg-black/50 backdrop-blur-sm z-0" />
 
       <Box className="relative z-10 w-full max-w-4xl flex flex-col md:flex-row items-center justify-between rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md border border-white/20">
-        
         {/* Left side part */}
         <Box className="hidden md:flex flex-col justify-center items-center p-10 text-white w-1/2">
-
           <img src={logo} alt="Buildify Logo" className="h-18 mb-4" />
           <Typography variant="h6" className="text-center font-light">
             Get compatible recommendations <br /> Pick your ideal components
           </Typography>
-
         </Box>
 
         {/* Right side part */}
         <Box className="w-full md:w-1/2 p-8">
-
           <Box className="flex flex-col items-center mb-6">
-
             <img src={logo} alt="Logo" className="w-16 mb-2 md:hidden" />
             <Typography variant="h5" className="!text-white font-bold">
               Sign Up
             </Typography>
-
           </Box>
 
           <form onSubmit={submitHandler} className="space-y-4">
-
-            {["name", "email", "password", "passwordConfirm"].map((field, idx) => (
-
+            {/* Name and Email fields */}
+            {["name", "email"].map((field, idx) => (
               <div key={idx}>
-
                 <label className="text-white text-xs font-medium capitalize">
-                  {field.replace("Confirm", " Confirm")}
+                  {field}
                 </label>
 
                 <TextField
                   fullWidth
-                  type={field.includes("password") ? "password" : "text"}
+                  type="text"
                   variant="outlined"
                   size="small"
                   name={field}
@@ -205,39 +196,118 @@ const Signup = () => {
                   className="!bg-white !rounded-lg"
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      borderRadius: '8px', 
+                      borderRadius: "8px",
                     },
                     "& .MuiInputBase-root": {
                       borderColor: "#9b4de5",
                       color: "#6a2c9c",
                     },
                     "& .MuiOutlinedInput-input": {
-                      padding: "8px 12px", 
+                      padding: "8px 12px",
                     },
                   }}
                 />
               </div>
             ))}
 
+            {/* Password field */}
+            <div>
+              <label className="text-white text-xs font-medium capitalize">
+                Password
+              </label>
+              <TextField
+                fullWidth
+                variant="outlined"
+                size="small"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                type={showPassword ? "text" : "password"}
+                className="!bg-white !rounded-lg"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "8px",
+                  },
+                  "& .MuiInputBase-root": {
+                    borderColor: "#9b4de5",
+                    color: "#6a2c9c",
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    padding: "8px 12px",
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword((show) => !show)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+
+            {/* Password Confirm field */}
+            <div>
+              <label className="text-white text-xs font-medium capitalize">
+                Password Confirm
+              </label>
+              <TextField
+                fullWidth
+                variant="outlined"
+                size="small"
+                name="passwordConfirm"
+                value={formData.passwordConfirm}
+                onChange={handleChange}
+                type={showPasswordConfirm ? "text" : "password"}
+                className="!bg-white !rounded-lg"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "8px",
+                  },
+                  "& .MuiInputBase-root": {
+                    borderColor: "#9b4de5",
+                    color: "#6a2c9c",
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    padding: "8px 12px",
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password confirmation visibility"
+                        onClick={() => setShowPasswordConfirm((show) => !show)}
+                        edge="end"
+                      >
+                        {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+
             <FormControlLabel
-
               control={
-
                 <Checkbox
                   className="!text-white"
                   size="small"
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
                 />
-
               }
-
               label={
                 <span className="text-white text-xs">
                   Accept the T&C and have read the Privacy Policy
                 </span>
               }
-              
             />
 
             <Button
@@ -252,10 +322,10 @@ const Signup = () => {
             <Divider
               sx={{
                 my: 3,
-                color: 'white',
-                '&.MuiDivider-root::before, &.MuiDivider-root::after': {
-                  borderColor: 'rgba(255,255,255,0.3)'
-                }
+                color: "white",
+                "&.MuiDivider-root::before, &.MuiDivider-root::after": {
+                  borderColor: "rgba(255,255,255,0.3)",
+                },
               }}
             >
               <span className="text-xs text-white">or</span>
@@ -274,7 +344,10 @@ const Signup = () => {
 
             <Typography className="!text-white !text-center !mt-4 !text-xs">
               Already have an account?{" "}
-              <Link to="/adminpanel/auth/login" className="!text-[#9b4de5] hover:!no-underline">
+              <Link
+                to="/adminpanel/auth/login"
+                className="!text-[#9b4de5] hover:!no-underline"
+              >
                 Sign in
               </Link>
             </Typography>
