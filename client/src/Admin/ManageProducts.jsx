@@ -15,6 +15,7 @@ import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import StatusCard from "../AtomicComponents/Cards/StatusCard";
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
+import ProductDetailsDialog from "../AtomicComponents/Dialogs/ProductDetailsDialog";
 
 function ManageProducts() {
 
@@ -28,6 +29,10 @@ function ManageProducts() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState(null);
+    
+    // Product details dialog state
+    const [openProductDialog, setOpenProductDialog] = useState(false);
+    const [selectedProductForView, setSelectedProductForView] = useState(null);
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -185,6 +190,18 @@ function ManageProducts() {
         navigate(`/adminpanel/products/editproduct/${id}`);
     };
 
+    //Handle view product function
+    const handleView = (id) => {
+        setSelectedProductForView(id);
+        setOpenProductDialog(true);
+    };
+
+    //Handle close product dialog
+    const handleCloseProductDialog = () => {
+        setOpenProductDialog(false);
+        setSelectedProductForView(null);
+    };
+
     //Delete product function
     const handleDelete = async () => {
         try {
@@ -252,7 +269,7 @@ function ManageProducts() {
 
     const iconTypes = ["view", "edit", "delete"];
     const iconActions = {
-        // view: handleView,
+        view: (_id) => handleView(_id),
         edit: (_id) => handleEdit(_id),
         delete: (_id) => {
             openDeleteDialog(_id);
@@ -403,6 +420,13 @@ function ManageProducts() {
                 handleClose={() => setOpenDialog(false)}
                 handleAgree={handleDelete}
                 loading={loading}
+            />
+            
+            {/* Product Details Dialog */}
+            <ProductDetailsDialog
+                open={openProductDialog}
+                onClose={handleCloseProductDialog}
+                productId={selectedProductForView}
             />
         </div>
 
