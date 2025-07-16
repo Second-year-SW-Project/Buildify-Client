@@ -5,18 +5,18 @@ import Box from '@mui/material/Box';
 import theme from '../../AtomicComponents/theme';
 import { styled } from '@mui/material/styles';
 
-const buildStatusOptions = ['All', 'Pending', 'Confirmed', 'Building', 'Completed', 'Shipped', 'Delivered', 'Cancelled',];
+const buildStatusOptions = ['All', 'Pending', 'Confirmed', 'Building', 'Completed', 'Shipped', 'Delivered', 'Canceled',];
 
 // Define unique colors for each build status
 const buildStatusColors = {
     All: theme.palette.primary400.main,
     Pending: theme.palette.warning.main,
-    Confirmed: theme.palette.info.main,
-    Building: theme.palette.primary.main,
+    Confirmed: theme.palette.primaryLight.main,
+    Building: theme.palette.primaryDark.main,
     Completed: theme.palette.success.main,
     Shipped: theme.palette.info.main,
-    Delivered: theme.palette.success.main,
-    Cancelled: theme.palette.error.main,
+    Delivered: theme.palette.primary.main,
+    Canceled: theme.palette.error.main,
 };
 
 const CountBox = styled(Box, {

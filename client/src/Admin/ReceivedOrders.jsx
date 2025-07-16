@@ -110,7 +110,7 @@ function ReceivedOrders() {
     }, [currentPage, itemsPerPage, searchTerm, selectedDate, buildIdSearch, status, selectedTab]);
 
     const handleView = (id) => {
-        showOrderView(id);
+        console.log('Viewing build with ID:', id);
         navigate(`/adminpanel/orders/viewbuild/${id}`);
     };
 
@@ -148,9 +148,9 @@ function ReceivedOrders() {
         { id: "buildStatus", label: "Status" },
     ];
 
-    const iconTypes = ["view", "delete", "toggle"];
+    const iconTypes = ["buildView", "delete", "toggle"];
     const iconActions = {
-        view: (_id) => handleView(_id),
+        buildView: (_id) => handleView(_id),
         delete: (_id) => openDeleteDialog(_id)
     };
 

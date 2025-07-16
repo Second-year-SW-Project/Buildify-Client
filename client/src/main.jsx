@@ -34,6 +34,7 @@ import OrderList from "./Admin/OrderList.jsx";
 import ReceivedOrders from "./Admin/ReceivedOrders.jsx";
 import Comment from "./Admin/Comment.jsx";
 import ViewOrder from "./Admin/ViewOrder.jsx";
+import ViewBuild from "./Admin/ViewBuild.jsx";
 //Login pages
 import Signup from "./Login/Signup.jsx";
 import Login from "./Login/Login.jsx";
@@ -128,6 +129,10 @@ const router = createBrowserRouter([
           {
             path: "orders/vieworder/:id",
             element: <ViewOrder />,
+          },
+          {
+            path: "orders/viewbuild/:id",
+            element: <ViewBuild />,
           },
           { path: "usermanage", element: <Usermanage /> },
           { path: "feedbackmanage", element: <Complaints /> },
