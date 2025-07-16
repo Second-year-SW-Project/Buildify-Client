@@ -471,7 +471,7 @@ export default function Dashboard() {
                                 variant="body2"
                                 fontWeight="bold"
                                 color="primary"
-                                className="cursor-pointer hover:underline"
+                                className="cursor-pointer"
                             >
                                 View All
                             </Typography>
@@ -513,12 +513,12 @@ export default function Dashboard() {
                         />
 
                         {/* Right: View All link */}
-                        <Link to="/adminpanel/products">
+                        <Link to="/adminpanel/orders/orderlist" state={{ selectedTab: 'Successful' }}>
                             <Typography
                                 variant="body2"
                                 fontWeight="bold"
                                 color="primary"
-                                className="cursor-pointer hover:underline"
+                                className="cursor-pointer"
                             >
                                 View All
                             </Typography>
@@ -558,12 +558,12 @@ export default function Dashboard() {
                         />
 
                         {/* Right: View All link */}
-                        <Link to="/adminpanel/products">
+                        <Link to="/adminpanel/orders/orderlist" state={{ selectedTab: 'Pending' }}>
                             <Typography
                                 variant="body2"
                                 fontWeight="bold"
                                 color="primary"
-                                className="cursor-pointer hover:underline"
+                                className="cursor-pointer"
                             >
                                 View All
                             </Typography>
@@ -730,7 +730,7 @@ export default function Dashboard() {
                                 variant="body2"
                                 fontWeight="bold"
                                 color="primary"
-                                className="cursor-pointer hover:underline"
+                                className="cursor-pointer"
                             >
                                 View All
                             </Typography>
@@ -757,7 +757,7 @@ export default function Dashboard() {
                                 variant="body1"
                                 fontWeight="bold"
                                 color="primary"
-                                className="cursor-pointer hover:underline"
+                                className="cursor-pointer"
                             >
                                 View All
                             </Typography>
