@@ -84,7 +84,7 @@ function ViewBuild() {
         setLoading(true);
         console.log("Fetching build:", id);
         const response = await axios.get(
-          `${backendUrl}/api/build-transactions/${id}`,
+          `${backendUrl}/api/build-transactions/builds/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

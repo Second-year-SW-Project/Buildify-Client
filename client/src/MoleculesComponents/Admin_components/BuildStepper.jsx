@@ -63,7 +63,7 @@ const BuildStepper = ({
     const fetchBuildTimestamps = async () => {
       try {
         const response = await axios.get(
-          `${backendUrl}/api/build-transactions/${buildId}`,
+          `${backendUrl}/api/build-transactions/builds/${buildId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
