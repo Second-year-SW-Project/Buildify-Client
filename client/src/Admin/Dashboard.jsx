@@ -8,7 +8,7 @@ import Iconset from '../AtomicComponents/Icons/Iconset';
 import { Link } from 'react-router-dom';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts/BarChart';
-import { OrderSummary, GameTable, TopProductsTable, TopBuildsTable } from '../MoleculesComponents/Table';
+import { OrderSummary, GameTable, TopProductsTable, TopBuildsTable, BuildSummary } from '../MoleculesComponents/Table';
 import { GameCard, TopProductCard } from "../AtomicComponents/Cards/Productcard";
 import BuildCard from "../AtomicComponents/Cards/BuildCard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
@@ -23,10 +23,8 @@ import Product from '../assets/images/DashboadSlider/product.png';
 import Order from '../assets/images/DashboadSlider/Order.png';
 import Games from '../assets/images/DashboadSlider/Games.png';
 import { InputField } from '../AtomicComponents/Inputs/Input';
-import { Margin } from '@mui/icons-material';
+import { Margin, Padding } from '@mui/icons-material';
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
-
-import test from '../assets/images/pc1.png';
 
 export default function Dashboard() {
 
@@ -55,22 +53,24 @@ export default function Dashboard() {
         { id: "date", label: "Delivered On" },
     ];
 
-    const TopCard = {
-        topProductCard: (
-            <TopProductCard
-                name="Intel 14th Gen Pro X Gaming PC Nvidia g force"
-                orderCount={10}
-                src={test}
-                sales={"150,000"}
-                rate={4.5}
-            />
-        ),
-    };
+    const buildColumns = [
+        { id: "Id", label: "BuildID" },
+        { id: "userCard", label: "Customer" },
+        { id: "date", label: "Ordered at" },
+        { id: "buildName", label: "Build Name" },
+        { id: "totalCharge", label: "Total Charge" },
+        { id: "buildStatus", label: "Status" },
+    ];
 
     const [orderFilter, setOrderFilter] = useState('All');
     const [salesFilter, setSalesFilter] = useState('All');
     const [pendingFilter, setPendingFilter] = useState('All');
-    const [growthFilter, setgrowthFilter] = useState('thisweek');
+    const [growthFilter, setgrowthFilter] = useState('All');
+
+    // Build summary filters
+    const [buildOrderFilter, setBuildOrderFilter] = useState('All');
+    const [buildRevenueFilter, setBuildRevenueFilter] = useState('All');
+    const [buildPendingFilter, setBuildPendingFilter] = useState('All');
 
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -78,11 +78,19 @@ export default function Dashboard() {
     const [totalOrders, setTotalOrders] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
+    // Build table pagination states
+    const [buildCurrentPage, setBuildCurrentPage] = useState(1);
+    const [buildTotalPages, setBuildTotalPages] = useState(1);
+    const [totalBuilds, setTotalBuilds] = useState(0);
+    const [buildItemsPerPage, setBuildItemsPerPage] = useState(5);
+
     const palette = ['#7B16AE', '#8A00FC', '#de1aff', '#1cbab7', '#2C87C3', '#80d1ff', '#E8CCFE'];
 
     const [pendingOrders, setPendingOrders] = useState([]);
+    const [pendingBuilds, setPendingBuilds] = useState([]);
     const [games, setGames] = useState([]);
     const [topBuilds, setTopBuilds] = useState([]);
+    const [topProducts, setTopProducts] = useState([]);
     const [pieChartData, setPieChartData] = useState([]);
     const [selectedMainCategory, setSelectedMainCategory] = useState('Necessary');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -91,10 +99,9 @@ export default function Dashboard() {
         try {
             const response = await axios.get(`${backendUrl}/api/game/games`);//Fetches the games from the backend.
 
-            console.log("API Response:", response.data);
-
             if (response.data && Array.isArray(response.data.games)) {
                 const allGames = response.data.games;
+                console.log("Fetched games:", allGames);
                 setGames(allGames);//if the response is successful, the games are set to the allGames array
             } else {
                 console.error("Expected an array but got:", response.data);//if the response is not successful, the games are set to an empty array and the filtered games are set to an empty array
@@ -115,8 +122,6 @@ export default function Dashboard() {
                 },
             });
 
-            console.log("Top Builds API Response:", response.data);
-
             if (response.data && Array.isArray(response.data.data)) {
                 setTopBuilds(response.data.data);
             } else {
@@ -129,11 +134,77 @@ export default function Dashboard() {
         }
     };
 
+    const getDateRange = (filter) => {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        switch (filter) {
+            case 'today':
+                return {
+                    startDate: today.toISOString(),
+                    endDate: new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString()
+                };
+            case 'week':
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                return {
+                    startDate: weekAgo.toISOString(),
+                    endDate: now.toISOString()
+                };
+            case 'month':
+                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                return {
+                    startDate: monthAgo.toISOString(),
+                    endDate: now.toISOString()
+                };
+            default: // 'All'
+                return {
+                    startDate: null,
+                    endDate: null
+                };
+        }
+    };
+
+    const fetchTopProducts = async () => {
+        try {
+            // Convert growthFilter to date range
+            const dateRange = getDateRange(growthFilter);
+
+            const response = await axios.get(`${backendUrl}/api/product/top-products`, {
+                params: {
+                    startDate: dateRange.startDate,
+                    endDate: dateRange.endDate,
+                    limit: 5
+                },
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            console.log("Top Products API Response:", response.data);
+
+            if (response.data && Array.isArray(response.data.data)) {
+                setTopProducts(response.data.data);
+            } else {
+                console.error("Expected an array but got:", response.data);
+                setTopProducts([]);
+            }
+        } catch (error) {
+            console.error("Error fetching top products:", error);
+            setTopProducts([]);
+        }
+    };
+
     //Fetches the games when the component is mounted
     useEffect(() => {
         fetchGames();
         fetchTopBuilds();
+        fetchTopProducts();
     }, []);
+
+    // Refetch top products when growthFilter changes
+    useEffect(() => {
+        fetchTopProducts();
+    }, [growthFilter]);
 
     //Maps the games to the game data
     const gameData = Array.isArray(games)
@@ -144,7 +215,7 @@ export default function Dashboard() {
         : [];
 
     // Get top 5 games
-    const topFiveGames = gameData.slice(0, 5);
+    const topGames = gameData.slice(0, 6);
 
     //Maps the top builds to the build data
     const topBuildsData = Array.isArray(topBuilds)
@@ -161,7 +232,21 @@ export default function Dashboard() {
         }))
         : [];
 
+    //Maps the top products to the product data
+    const topProductsData = Array.isArray(topProducts)
+        ? topProducts.map(product => ({
+            topProductCard: <TopProductCard
+                name={product.name}
+                orderCount={product.reviewCount}
+                src={product.image}
+                sales={product.sales.toLocaleString()}
+                rate={product.rating}
+            />,
+        }))
+        : [];
+
     const [orderSummary, setOrderSummary] = useState({ totalOrders: 0, pendingOrders: 0, totalPrice: 0 });
+    const [buildSummary, setBuildSummary] = useState({ totalBuildOrders: 0, pendingBuildOrders: 0, totalBuildRevenue: 0 });
 
     // Fetch order summary total based on filter
     const fetchOrderSummary = async (filter, type) => {
@@ -182,6 +267,25 @@ export default function Dashboard() {
         }
     };
 
+    // Fetch build summary total based on filter
+    const fetchBuildSummary = async (filter, type) => {
+        try {
+            const res = await axios.get(`${backendUrl}/api/build-transactions/build-summary-total?filter=${filter}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    }
+                }
+            );
+            setBuildSummary(prev => ({
+                ...prev,
+                [type]: res.data[type]
+            }));
+        } catch (err) {
+            console.error('Error fetching build summary:', err);
+        }
+    };
+
     useEffect(() => {
         fetchOrderSummary(orderFilter, 'totalOrders');
     }, [orderFilter]);
@@ -194,10 +298,22 @@ export default function Dashboard() {
         fetchOrderSummary(salesFilter, 'totalPrice');
     }, [salesFilter]);
 
+    // Build summary useEffect hooks
+    useEffect(() => {
+        fetchBuildSummary(buildOrderFilter, 'totalBuildOrders');
+    }, [buildOrderFilter]);
+
+    useEffect(() => {
+        fetchBuildSummary(buildPendingFilter, 'pendingBuildOrders');
+    }, [buildPendingFilter]);
+
+    useEffect(() => {
+        fetchBuildSummary(buildRevenueFilter, 'totalBuildRevenue');
+    }, [buildRevenueFilter]);
+
     // Fetch pending orders
     const fetchPendingOrders = async () => {
         try {
-            console.log('Fetching pending orders...');
             const params = {
                 page: currentPage,
                 limit: itemsPerPage,
@@ -211,17 +327,10 @@ export default function Dashboard() {
                 }
             });
 
-            console.log('Received data:', response.data);
-
             if (response.data && Array.isArray(response.data.data)) {
                 setPendingOrders(response.data.data);
                 setTotalOrders(response.data.pagination.total);
                 setTotalPages(response.data.pagination.totalPages);
-                console.log('Updated state with:', {
-                    orders: response.data.data,
-                    total: response.data.pagination.total,
-                    pages: response.data.pagination.totalPages
-                });
             } else {
                 console.error('API returned unexpected data structure:', response.data);
             }
@@ -230,19 +339,37 @@ export default function Dashboard() {
         }
     };
 
+    // Fetch pending builds
+    const fetchPendingBuilds = async () => {
+        try {
+            const params = {
+                page: buildCurrentPage,
+                limit: buildItemsPerPage,
+            };
+
+            const response = await axios.get(`${backendUrl}/api/build-transactions/build-summary`, {
+                params,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
+
+            if (response.data && Array.isArray(response.data.data)) {
+                setPendingBuilds(response.data.data);
+                setTotalBuilds(response.data.pagination.total);
+                setBuildTotalPages(response.data.pagination.totalPages);
+            } else {
+                console.error('API returned unexpected build data structure:', response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching pending builds:", error);
+        }
+    };
+
     useEffect(() => {
-        console.log('Dashboard mounted, fetching orders...');
         fetchPendingOrders();
-    }, [currentPage, itemsPerPage]);
-
-    const handlePageChange = (newPage) => {
-        setCurrentPage(newPage);
-    };
-
-    const handleItemsPerPageChange = (newItemsPerPage) => {
-        setItemsPerPage(newItemsPerPage);
-        setCurrentPage(1);
-    };
+        fetchPendingBuilds();
+    }, [currentPage, itemsPerPage, buildCurrentPage, buildItemsPerPage]);
 
     // Slides content for Summary section
     const summarySlides = [
@@ -425,7 +552,7 @@ export default function Dashboard() {
 
     return (
         <div className="mt-2 m-2 max-w-full">
-            <div className='Summary relative rounded-lg h-72 grid gap-4 flex flex-row m-2'>
+            <div className='Swipper relative rounded-lg h-72 grid gap-4 flex flex-row m-2'>
                 <Swiper
                     modules={[Autoplay, EffectFade]}
                     slidesPerView={1}
@@ -475,7 +602,7 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            <div className='Summary grid gap-4 grid-cols-3 flex flex-row mt-6 mb-6 pl-2 pr-2'>
+            <div className='OrderSummary grid gap-4 grid-cols-3 flex flex-row mt-6 mb-6 pl-2 pr-2'>
 
                 <div className="TotalOrders relative border-2 border-stone-200 rounded-2xl pb-2 pt-4 pr-6 pl-6">
                     {/* Top content */}
@@ -579,7 +706,7 @@ export default function Dashboard() {
                             <Typography variant="h2" fontWeight="bold">{orderSummary.pendingOrders}</Typography>
                         </div>
                         <div className="pt-4">
-                            <Iconset type="bag" fontSize="110px" color="primaryDark" />
+                            <Iconset type="pending" fontSize="110px" color="primaryDark" />
                         </div>
                     </div>
 
@@ -617,6 +744,143 @@ export default function Dashboard() {
                 </div>
 
 
+            </div>
+
+            <div className='BuildSummary grid gap-4 grid-cols-3 flex flex-row mt-6 mb-6 pl-2 pr-2'>
+                <div className="TotalBuilds relative border-2 border-stone-200 rounded-2xl pb-2 pt-4 pr-6 pl-6">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <Typography variant="h5" fontWeight="bold" color="primary">Build Orders</Typography>
+                            <Typography variant="h2" fontWeight="bold">{buildSummary.totalBuildOrders}</Typography>
+                        </div>
+                        <div className="pt-4">
+                            <Iconset type="archive" fontSize="110px" color="primaryDark" />
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        {/* Left: Filter */}
+                        <InputField
+                            type="select"
+                            variant="standard"
+                            label="Filter"
+                            size="small"
+                            width="110px"
+                            value={buildOrderFilter}
+                            onChange={(val) => setBuildOrderFilter(val)}
+                            options={[
+                                { value: 'All', label: 'All' },
+                                { value: 'today', label: 'Today' },
+                                { value: 'yesterday', label: 'Yesterday' },
+                                { value: 'lastweek', label: 'Last Week' },
+                                { value: 'thisweek', label: 'This Week' },
+                                { value: 'lastmonth', label: 'Last Month' },
+                                { value: 'thismonth', label: 'This Month' },
+                            ]}
+                        />
+
+                        {/* Right: View All link */}
+                        <Link to="/adminpanel/orders/buildorderlist">
+                            <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="primary"
+                                className="cursor-pointer"
+                            >
+                                View All
+                            </Typography>
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="TotalBuidRevenue relative border-2 border-stone-200 rounded-2xl pb-2 pt-4 pr-6 pl-6">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <Typography variant="h5" fontWeight="bold" color="primary">Build Revenue</Typography>
+                            <Typography variant="h4" fontWeight="bold">{buildSummary.totalBuildRevenue.toLocaleString()} LKR</Typography>
+                        </div>
+                        <div className="pt-4">
+                            <Iconset type="money" fontSize="110px" color="primaryDark" />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        {/* Left: Filter */}
+                        <InputField
+                            type="select"
+                            variant="standard"
+                            label="Filter"
+                            size="small"
+                            width="110px"
+                            value={buildRevenueFilter}
+                            onChange={(val) => setBuildRevenueFilter(val)}
+                            options={[
+                                { value: 'All', label: 'All' },
+                                { value: 'today', label: 'Today' },
+                                { value: 'yesterday', label: 'Yesterday' },
+                                { value: 'lastweek', label: 'Last Week' },
+                                { value: 'thisweek', label: 'This Week' },
+                                { value: 'lastmonth', label: 'Last Month' },
+                                { value: 'thismonth', label: 'This Month' },
+                            ]}
+                        />
+
+                        {/* Right: View All link */}
+                        <Link to="/adminpanel/orders/buildorderlist" state={{ selectedTab: 'Delivered' }}>
+                            <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="primary"
+                                className="cursor-pointer"
+                            >
+                                View All
+                            </Typography>
+                        </Link>
+                    </div>
+                </div>
+
+                <div className="PendingBuilds relative border-2 border-stone-200 rounded-2xl pb-2 pt-4 pr-6 pl-6">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <Typography variant="h5" fontWeight="bold" color="primary">Pending Builds</Typography>
+                            <Typography variant="h2" fontWeight="bold">{buildSummary.pendingBuildOrders}</Typography>
+                        </div>
+                        <div className="pt-4">
+                            <Iconset type="workHistory" fontSize="110px" color="primaryDark" />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        {/* Left: Filter */}
+                        <InputField
+                            type="select"
+                            variant="standard"
+                            label="Filter"
+                            size="small"
+                            width="110px"
+                            value={buildPendingFilter}
+                            onChange={(val) => setBuildPendingFilter(val)}
+                            options={[
+                                { value: 'All', label: 'All' },
+                                { value: 'today', label: 'Today' },
+                                { value: 'yesterday', label: 'Yesterday' },
+                                { value: 'lastweek', label: 'Last Week' },
+                                { value: 'thisweek', label: 'This Week' },
+                            ]}
+                        />
+
+                        {/* Right: View All link */}
+                        <Link to="/adminpanel/orders/buildorderlist" state={{ selectedTab: 'Pending' }}>
+                            <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="primary"
+                                className="cursor-pointer"
+                            >
+                                View All
+                            </Typography>
+                        </Link>
+                    </div>
+                </div>
             </div>
 
             <div className='Analytics grid gap-4 grid-cols-3 flex flex-row mt-8 mb-8 pl-2 pr-2'>
@@ -736,14 +1000,15 @@ export default function Dashboard() {
 
             <div className='TopDetails grid gap-4 grid-cols-3 flex flex-row mt-8 mb-8 pl-2 pr-2'>
                 <div className='TopBuilds grid border-2 border-stone-200 rounded-2xl flex flex-row h-300'>
-                    <div className='flex flex-row justify-between items-center ml-4 mr-4 mt-4 mb-4'>
-                        <Typography variant="body1" fontWeight="bold" color='primary' sx={{ justifyContent: "end" }}>Top Builds</Typography>
+                    <div className='flex flex-row justify-between mr-4 ml-4 mt-4 min-h-10'>
+                        <Typography variant="h6" fontWeight="bold" color='primary'>Top Builds</Typography>
                         <Link to="/adminpanel/orders/buildorderlist" state={{ selectedTab: 'Delivered' }}>
                             <Typography
                                 variant="body2"
                                 fontWeight="bold"
                                 color="primary"
                                 className="cursor-pointer"
+                                sx={{ marginTop: 1 }}
                             >
                                 View All
                             </Typography>
@@ -757,14 +1022,14 @@ export default function Dashboard() {
                         />
                     </div>
                 </div>
-                <div className='Topproducts grid border-2 border-purple-600 rounded-lg flex flex-row h-fit'>
-                    <div className='flex flex-row justify-between items-center ml-4 mr-4'>
-                        <Typography variant="body1" fontWeight="bold" color='primary' sx={{ justifyContent: "end" }}>Top Products</Typography>
-                        <div className='mt-2'>
+                <div className='Topproducts grid border-2 border-stone-200 rounded-2xl flex flex-row h-300'>
+                    <div className='flex flex-row justify-between ml-4 mr-4 min-h-10'>
+                        <Typography variant="h6" fontWeight="bold" color='primary' sx={{ marginTop: 2 }}>Top Products</Typography>
+                        <div className='mt-3'>
                             <InputField
                                 type="select"
                                 size="small"
-                                width="110px"
+                                width="140px"
                                 value={growthFilter}
                                 onChange={(val) => setgrowthFilter(val)}
                                 options={[
@@ -777,23 +1042,24 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className='p-2 mb-2 overflow-x-auto w-full' sx={{ width: '100%' }}>
+                    <div className='p-2 overflow-x-auto w-full' sx={{ width: '100%' }}>
                         <TopProductsTable
                             columns={topProductColumns}
-                            cardDetails={[TopCard]}
+                            cardDetails={topProductsData}
                         />
                     </div>
 
                 </div>
                 <div className='Recentgames grid border-2 border-stone-200 rounded-2xl flex flex-row h-300'>
-                    <div className='flex flex-row justify-between items-center mb-2 mr-6 ml-4'>
-                        <Typography variant="body1" fontWeight="bold" color='primary' sx={{ justifyContent: "end" }}>Recent Added Games</Typography>
+                    <div className='flex flex-row justify-between mr-4 ml-4 mt-4 min-h-10'>
+                        <Typography variant="h6" fontWeight="bold" color='primary'>Recent Added Games</Typography>
                         <Link to="/adminpanel/games/managegames" state={{ selectedTab: 'Pending' }}>
                             <Typography
                                 variant="body2"
                                 fontWeight="bold"
                                 color="primary"
                                 className="cursor-pointer"
+                                sx={{ marginTop: 1 }}
                             >
                                 View All
                             </Typography>
@@ -803,7 +1069,7 @@ export default function Dashboard() {
                     <div className='p-2 mb-2' sx={{ width: '100%' }}>
                         <GameTable
                             columns={gameColumns}
-                            data={topFiveGames}
+                            data={topGames}
                         />
                     </div>
 
@@ -837,8 +1103,6 @@ export default function Dashboard() {
                                     totalPages,
                                     totalItems: totalOrders,
                                     itemsPerPage,
-                                    onPageChange: handlePageChange,
-                                    onItemsPerPageChange: handleItemsPerPageChange
                                 }}
                             />
                         ) : (
@@ -847,10 +1111,44 @@ export default function Dashboard() {
                             </Typography>
                         )}
                     </div>
+
                 </div>
             </div>
-
+            <div className='recentBuilds grid gap-4 grid-cols-1 border-2 border-stone-200 rounded-2xl flex flex-row mt-8 mb-8 ml-2 mr-2'>
+                <div className='flex flex-col justify-between mt-2'>
+                    <div className='flex flex-row justify-between items-center mb-4 mr-6 ml-4'>
+                        <Typography variant="h6" fontWeight="bold" color='primary' sx={{ justifyContent: "end" }}>Recent Builds</Typography>
+                        <Link to="/adminpanel/orders/buildorderlist" state={{ selectedTab: 'Pending' }}>
+                            <Typography
+                                variant="body1"
+                                fontWeight="bold"
+                                color="primary"
+                                className="cursor-pointer"
+                            >
+                                View All
+                            </Typography>
+                        </Link>
+                    </div>
+                    <div sx={{ width: '100%' }}>
+                        {pendingBuilds.length > 0 ? (
+                            <BuildSummary
+                                columns={buildColumns}
+                                builds={pendingBuilds}
+                                pagination={{
+                                    currentPage: buildCurrentPage,
+                                    totalPages: buildTotalPages,
+                                    totalItems: totalBuilds,
+                                    itemsPerPage: buildItemsPerPage,
+                                }}
+                            />
+                        ) : (
+                            <Typography variant="body1" color="textSecondary" sx={{ p: 2 }}>
+                                No pending builds found
+                            </Typography>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
-
     );
 }
