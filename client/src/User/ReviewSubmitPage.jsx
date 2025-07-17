@@ -173,7 +173,7 @@ export default function ReviewSubmitPage() {
         );
         toast.success("Review submitted successfully!");
         await markAsCompleted(orderId, type);
-        navigate(`/user/orders`);
+        navigate(`/user/reviews`);
       }
     } catch (error) {
       const message =

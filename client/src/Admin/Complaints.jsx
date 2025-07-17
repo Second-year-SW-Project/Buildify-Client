@@ -23,6 +23,9 @@ const Complaints = () => {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [nameSearch, setNameSearch] = useState('');
+const [emailSearch, setEmailSearch] = useState('');
+
 
 
   const handleChangePage = (event, newPage) => setPage(newPage);
@@ -37,7 +40,8 @@ const Complaints = () => {
     try {
 
       const response = await axios.get(`${backendUrl}/api/complaints/admin`, {
-        params: { search: searchTerm, status: statusFilter }
+        params: {  name: nameSearch,
+        email: emailSearch, status: statusFilter }
       });
       setComplaints(response.data);
 
@@ -60,7 +64,7 @@ const Complaints = () => {
 
       debouncedFetch.cancel();
     };
-  }, [searchTerm, statusFilter]);
+  }, [nameSearch, emailSearch, statusFilter]);
   
 
   const handleRespond = async () => {
@@ -108,48 +112,60 @@ const Complaints = () => {
 
         </div>
 
-<Box className="mb-10 border-2 border-black-200 rounded-md mt-6">
+<Box className="mb-10 pb-10 border-2 border-black-200 rounded-md mt-6">
         {/* Search and Filter Section */}
-        <div className="flex gap-4 mb-2 items-center p-5">
+     <div className="flex gap-4 mb-2 items-center p-5 flex-wrap">
 
-          <TextField
-            placeholder="Search"
-            className="w-96"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                height: 56,
-                borderRadius: '8px',
-              }
-            }}
-          />
+  <TextField
+    label="Search by Name"
+    className="w-72"
+    value={nameSearch}
+    onChange={(e) => setNameSearch(e.target.value)}
+    sx={{
+      '& .MuiOutlinedInput-root': {
+        height: 56,
+        borderRadius: '4px',
+      }
+    }}
+  />
 
-          <FormControl className="w-48">
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              label="Status"
-              sx={{
-                height: 56,
-                borderRadius: '8px',
-                '& .MuiSelect-select': {
-                  paddingTop: '16px',
-                  paddingBottom: '16px'
-                }
-              }}
-            >
-              <MenuItem value="">All Status</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Resolved">Resolved</MenuItem>
-              <MenuItem value="In Progress">In Progress</MenuItem>
+  <TextField
+    label="Search by Email"
+    className="w-72"
+    value={emailSearch}
+    onChange={(e) => setEmailSearch(e.target.value)}
+    sx={{
+      '& .MuiOutlinedInput-root': {
+        height: 56,
+        borderRadius: '4px',
+      }
+    }}
+  />
 
-            </Select>
+  <FormControl sx={{ width: 300 }}>
+    <InputLabel>Status</InputLabel>
+    <Select
+      value={statusFilter}
+      onChange={(e) => setStatusFilter(e.target.value)}
+      label="Status"
+      sx={{
+        height: 58,
+        borderRadius: '4px',
+        '& .MuiSelect-select': {
+          paddingTop: '16px',
+          paddingBottom: '16px'
+        }
+      }}
+    >
+      <MenuItem value="">All Status</MenuItem>
+      <MenuItem value="Pending">Pending</MenuItem>
+      <MenuItem value="Resolved">Resolved</MenuItem>
+      <MenuItem value="In Progress">In Progress</MenuItem>
+    </Select>
+  </FormControl>
 
-          </FormControl>
+</div>
 
-      </div>
 
     
       <Paper className="rounded-lg shadow">
@@ -162,7 +178,7 @@ const Complaints = () => {
 
               <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
 
-                {['User Details', 'Date', 'Complaint', 'Complaint Type', 'Status', 'Action'].map(header => (
+                {['User Details', 'Date', 'Complaint Type', 'Status', 'Action'].map(header => (
                   <TableCell key={header} style={{
                     padding: "8px 16px",
                     textAlign: "left",
@@ -200,8 +216,8 @@ const Complaints = () => {
                         </Avatar>
 
                         <Box>
-                          <Typography className="font-bold text-black">{complaint.user?.name}</Typography>
-                          <Typography className="text-sm text-black font-semibold">{complaint.user?.email}</Typography>
+                          <Typography sx={{ fontWeight: 700, color: 'black' }}>{complaint.user?.name}</Typography>
+                          <Typography className="text-sm text-black font-bold">{complaint.user?.email}</Typography>
                         </Box>
 
                       </Box>
@@ -224,12 +240,12 @@ const Complaints = () => {
 
                     </TableCell>
 
-                    <TableCell className="text-black font-bold">{complaint.description}</TableCell>
+                    {/* <TableCell className="text-black font-bold">{complaint.description}</TableCell> */}
 
                     <TableCell className="text-black font-bold">{complaint.complaintType}</TableCell>
 
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-sm whitespace-nowrap ${
+                      <span className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
                         complaint.status === 'Resolved' ? 'bg-green-100 text-green-800' :
                         complaint.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-blue-100 text-blue-800'

@@ -15,6 +15,7 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const Usermanage = () => {
 
+
   //states
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -427,9 +428,9 @@ const Usermanage = () => {
 
             fontWeight: "bold",
             fontSize: "12px",
-            padding: "4px 12px",
+            padding: "4px 20px",
             minWidth: "auto",
-            borderRadius: "8px",
+            borderRadius: '9999px',
             textTransform: "none",
             display: "flex",
             justifyContent: "center",
@@ -469,9 +470,9 @@ const Usermanage = () => {
               color: user.Role === "admin" ? "#1B5E20" : "#0D47A1",
               fontWeight: "bold",
               fontSize: "12px",
-              padding: "2px 8px",
+              padding: "2px 20px",
               minWidth: "auto",
-              borderRadius: "8px",
+              borderRadius: '9999px',
               textTransform: "none",
               display: "flex",
               justifyContent: "center",

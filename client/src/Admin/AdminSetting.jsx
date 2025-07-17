@@ -298,7 +298,7 @@ export default function AdminSettings() {
       </Paper>
 
       {/* 2FA Section */}
-      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+      {/* <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
         <Typography variant="h5" className="mb-8 font-bold pb-5">
           Two-Factor Authentication
         </Typography>
@@ -435,7 +435,7 @@ export default function AdminSettings() {
             )}
           </Box>
         )}
-      </Paper>
+      </Paper> */}
 
       {/* Danger Zone - Delete Account */}
       <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
