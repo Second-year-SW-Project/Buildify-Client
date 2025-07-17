@@ -51,6 +51,7 @@ import LocalAtmOutlinedIcon from '@mui/icons-material/LocalAtmOutlined';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import StarIcon from '@mui/icons-material/Star';
+import ViewInArSharpIcon from '@mui/icons-material/ViewInArSharp';
 
 export default function Iconset({ type = 'notification', fontSize = '30px', color, isOpen }) {
     const renderIcon = () => {
@@ -106,6 +107,7 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'gamesCreate': return <VideogameAssetSharpIcon color={color} sx={{ fontSize }} />;
             case 'preview': return <PreviewIcon color={color} sx={{ fontSize }} />
             case 'star': return <StarIcon color={color} sx={{ fontSize }} />;
+            case 'buildView': return <ViewInArSharpIcon color={color} sx={{ fontSize: 36 }} />;
 
             case 'toggle':
                 return isOpen
