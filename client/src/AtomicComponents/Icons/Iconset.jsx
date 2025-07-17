@@ -72,7 +72,7 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'productList': return <ListAltIcon color={color} sx={{ fontSize }} />;
             case 'productCreate': return <PlaylistAddIcon color={color} sx={{ fontSize }} />;
             case 'orderList': return <PlaylistAddCheckIcon color={color} sx={{ fontSize }} />;
-            case 'receivedOrders': return <EventNoteIcon color={color} sx={{ fontSize }} />;
+            case 'buildOrderList': return <EventNoteIcon color={color} sx={{ fontSize }} />;
             case 'comments': return <QuestionAnswerIcon color={color} sx={{ fontSize }} />;
             case 'RMA': return <TryIcon color={color} sx={{ fontSize }} />;
             case 'user-manage': return <GroupIcon color={color} sx={{ fontSize }} />;

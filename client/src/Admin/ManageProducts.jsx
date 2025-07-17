@@ -29,7 +29,6 @@ function ManageProducts() {
     const [selectedDate, setSelectedDate] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedProductId, setSelectedProductId] = useState(null);
-    
     // Product details dialog state
     const [openProductDialog, setOpenProductDialog] = useState(false);
     const [selectedProductForView, setSelectedProductForView] = useState(null);
@@ -421,7 +420,6 @@ function ManageProducts() {
                 handleAgree={handleDelete}
                 loading={loading}
             />
-            
             {/* Product Details Dialog */}
             <ProductDetailsDialog
                 open={openProductDialog}

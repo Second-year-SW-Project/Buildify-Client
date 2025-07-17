@@ -76,7 +76,7 @@ function ViewBuild() {
     const fetchBuild = async () => {
       if (!id) {
         toast.error("No build ID provided");
-        navigate("/adminpanel/orders/receivedorders");
+        navigate("/adminpanel/orders/buildorderlist");
         return;
       }
 
@@ -98,12 +98,12 @@ function ViewBuild() {
           setActiveStep(getStepFromStatus(response.data.data.buildStatus));
         } else {
           toast.error("Failed to load Build");
-          navigate("/adminpanel/orders/receivedorders");
+          navigate("/adminpanel/orders/buildorderlist");
         }
       } catch (error) {
         console.error("Error fetching build:", error);
         toast.error("Failed to load build data");
-        navigate("/adminpanel/orders/receivedorders");
+        navigate("/adminpanel/orders/buildorderlist");
       } finally {
         setLoading(false);
       }
@@ -206,7 +206,7 @@ function ViewBuild() {
 
   // Update the cancel button handler
   const handleCancel = () => {
-    navigate("/adminpanel/orders/receivedorders");
+    navigate("/adminpanel/orders/buildorderlist");
   };
 
   if (!build) {
@@ -630,7 +630,7 @@ function ViewBuild() {
         <div className="float-right flex flex-row gap-x-2">
           <PrimaryButton
             fontSize="16px"
-            name="Back to Builds"
+            name="Save Build"
             buttonSize="medium"
             isBold={1}
             color="primary"
