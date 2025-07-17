@@ -40,12 +40,15 @@ export default function OrderHistory() {
               signal: controller.signal,
             }
           ),
-          axios.get(`${backendUrl}/api/build-transactions?userId=${userId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            signal: controller.signal,
-          }),
+          axios.get(
+            `${backendUrl}/api/build-transactions/user-builds/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              signal: controller.signal,
+            }
+          ),
         ]);
 
         if (isMounted) {
