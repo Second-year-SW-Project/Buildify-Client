@@ -151,6 +151,9 @@ function OrderCard({
                     px: 2,
                     mt: 2,
                   }}
+                  onClick={() =>
+                    navigate(`/user/orders/${orderId}#order-tracker`)
+                  }
                 >
                   Track Order
                 </Button>

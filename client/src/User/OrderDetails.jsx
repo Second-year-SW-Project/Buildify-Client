@@ -137,6 +137,17 @@ export default function OrderDetails() {
     fetchOrder();
   }, [orderId, orderType]);
 
+  useEffect(() => {
+    if (location.hash) {
+      const section = document.querySelector(location.hash);
+      if (section) {
+        setTimeout(() => {
+          section.scrollIntoView({ behavior: "smooth" });
+        }, 300);
+      }
+    }
+  }, [location.hash, order]);
+
   // Handle status change from stepper
   const handleStepperStatusChange = async (newStatus) => {
     try {
