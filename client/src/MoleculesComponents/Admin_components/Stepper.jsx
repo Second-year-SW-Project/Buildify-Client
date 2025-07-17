@@ -26,23 +26,23 @@ const OrderStepper = ({
   const steps = [
     {
       label: "Order Placed",
-      description:
-        "Your order has been successfully placed and is being processed.",
+      description: "",
       status: "Pending",
     },
     {
       label: "Processing",
-      description: "Your Order is being processed and prepared for shipment.",
+      description:
+        "Your order has been successfully placed and is being processed.",
       status: "Successful",
     },
     {
       label: "Shipped",
-      description: "Your Order has been shipped and is on its way.",
+      description: "Your Order is being processed and prepared for shipment.",
       status: "Shipped",
     },
     {
       label: "Delivered",
-      description: "",
+      description: "Your Order has been shipped and is on its way.",
       status: "Delivered",
     },
   ];
