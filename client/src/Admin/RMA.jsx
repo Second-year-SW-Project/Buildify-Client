@@ -195,10 +195,10 @@ const RMA = () => {
             <TableRow>
 
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Order ID</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Email</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Information</TableCell>
+              {/* <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>User Email</TableCell> */}
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Subject</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Reason</TableCell>
+              {/* <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Reason</TableCell> */}
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Status</TableCell>
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Created Date</TableCell>
               <TableCell sx={{ fontWeight: 'bold', color: 'gray' }}>Action</TableCell>
@@ -241,18 +241,28 @@ const RMA = () => {
               paginatedRequests.map((request) => (
                 <TableRow key={request._id} hover>
                   <TableCell style={{fontWeight:"bold"}}>{request.orderId}</TableCell>
-                  <TableCell style={{fontWeight:"bold"}}>{request.userId?.name || 'N/A'}</TableCell>
-                  <TableCell style={{fontWeight:"bold"}}>{request.userId?.email || 'N/A'}</TableCell>
+                  <TableCell>
+  <Box display="flex" flexDirection="column">
+    <Typography sx={{ fontWeight: 'bold', color: 'black' }}>
+      {request.userId?.name || 'N/A'}
+    </Typography>
+    <Typography sx={{ fontSize: '14px', color: '#555' }}>
+      {request.userId?.email || 'N/A'}
+    </Typography>
+  </Box>
+</TableCell>
+                  {/* <TableCell style={{fontWeight:"bold"}}>{request.userId?.name || 'N/A'}</TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>{request.userId?.email || 'N/A'}</TableCell> */}
                   <TableCell style={{fontWeight:"bold"}}>{request.subject}</TableCell>
-                  <TableCell style={{fontWeight:"bold"}}>{request.reason}</TableCell>
+                  {/* <TableCell style={{fontWeight:"bold"}}>{request.reason}</TableCell> */}
                   <TableCell>
 
                     <Typography
                       variant="caption"
                       sx={{
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: '8px',
+                        px: 3,
+                        py: 1,
+                        borderRadius: '9999px',
                         fontWeight: 600,
                         display: 'inline-block',
                         minWidth: 90,
@@ -327,7 +337,7 @@ const RMA = () => {
     color: '#4b0082', py: 2.5, px: 4, letterSpacing: '0.5px', borderRadius: '16px', marginBottom: '10px'
   }}>
 
-    Manage RMA Request - {selectedRequest?.orderId}
+    RMA Request - {selectedRequest?.orderId}
 
   </DialogTitle>
 

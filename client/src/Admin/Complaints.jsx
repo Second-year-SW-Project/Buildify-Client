@@ -112,7 +112,7 @@ const Complaints = () => {
         {/* Search and Filter Section */}
         <div className="flex gap-4 mb-2 items-center p-5">
 
-          <TextField
+          {/* <TextField
             placeholder="Search"
             className="w-96"
             value={searchTerm}
@@ -123,16 +123,16 @@ const Complaints = () => {
                 borderRadius: '8px',
               }
             }}
-          />
+          /> */}
 
-          <FormControl className="w-48">
+          <FormControl sx={{ width: 350 }}>
             <InputLabel>Status</InputLabel>
             <Select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               label="Status"
               sx={{
-                height: 56,
+                height: 58,
                 borderRadius: '8px',
                 '& .MuiSelect-select': {
                   paddingTop: '16px',
@@ -162,7 +162,7 @@ const Complaints = () => {
 
               <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
 
-                {['User Details', 'Date', 'Complaint', 'Complaint Type', 'Status', 'Action'].map(header => (
+                {['User Details', 'Date', 'Complaint Type', 'Status', 'Action'].map(header => (
                   <TableCell key={header} style={{
                     padding: "8px 16px",
                     textAlign: "left",
@@ -200,8 +200,8 @@ const Complaints = () => {
                         </Avatar>
 
                         <Box>
-                          <Typography className="font-bold text-black">{complaint.user?.name}</Typography>
-                          <Typography className="text-sm text-black font-semibold">{complaint.user?.email}</Typography>
+                          <Typography sx={{ fontWeight: 700, color: 'black' }}>{complaint.user?.name}</Typography>
+                          <Typography className="text-sm text-black font-bold">{complaint.user?.email}</Typography>
                         </Box>
 
                       </Box>
@@ -224,12 +224,12 @@ const Complaints = () => {
 
                     </TableCell>
 
-                    <TableCell className="text-black font-bold">{complaint.description}</TableCell>
+                    {/* <TableCell className="text-black font-bold">{complaint.description}</TableCell> */}
 
                     <TableCell className="text-black font-bold">{complaint.complaintType}</TableCell>
 
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-sm whitespace-nowrap ${
+                      <span className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
                         complaint.status === 'Resolved' ? 'bg-green-100 text-green-800' :
                         complaint.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-blue-100 text-blue-800'
