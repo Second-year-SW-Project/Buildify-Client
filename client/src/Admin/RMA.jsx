@@ -18,9 +18,11 @@ const RMA = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    orderId: '',
-    status: ''
-  });
+  orderId: '',
+  status: '',
+  name: '',
+  email: ''
+});
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [responseText, setResponseText] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
@@ -138,9 +140,40 @@ const RMA = () => {
       </div>
 
 <Box className="mb-10 border-2 border-black-200 rounded-md mt-6">
+ 
+
 
       {/* Filters */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, mt: 3, alignItems: 'center', ml:3 }}>
+         <TextField
+  label="User Name"
+  value={filters.name}
+  onChange={(e) =>
+    setFilters((prev) => ({ ...prev, name: e.target.value }))
+  }
+  sx={{
+    '& .MuiOutlinedInput-root': {
+      height: 56,
+      width: 260,
+      borderRadius: '4px'
+    }
+  }}
+/>
+
+<TextField
+  label="User Email"
+  value={filters.email}
+  onChange={(e) =>
+    setFilters((prev) => ({ ...prev, email: e.target.value }))
+  }
+  sx={{
+    '& .MuiOutlinedInput-root': {
+      height: 56,
+      width: 260,
+      borderRadius: '4px'
+    }
+  }}
+/>
 
         <TextField
           label="Order ID"
@@ -149,7 +182,7 @@ const RMA = () => {
           sx={{
             '& .MuiOutlinedInput-root': {
               height: 56,
-              width: 350,
+              width: 260,
               borderRadius: '4px'
             }
           }}
@@ -165,7 +198,7 @@ const RMA = () => {
             label="Status"
             sx={{
               height: 56,
-              width: 350,
+              width: 260,
               borderRadius: '4px',
               '& .MuiSelect-select': {
                 paddingTop: '16px',
