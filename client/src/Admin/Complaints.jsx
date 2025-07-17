@@ -117,7 +117,7 @@ const [emailSearch, setEmailSearch] = useState('');
      <div className="flex gap-4 mb-2 items-center p-5 flex-wrap">
 
   <TextField
-    placeholder="Search by Name"
+    label="Search by Name"
     className="w-72"
     value={nameSearch}
     onChange={(e) => setNameSearch(e.target.value)}
@@ -130,7 +130,7 @@ const [emailSearch, setEmailSearch] = useState('');
   />
 
   <TextField
-    placeholder="Search by Email"
+    label="Search by Email"
     className="w-72"
     value={emailSearch}
     onChange={(e) => setEmailSearch(e.target.value)}
