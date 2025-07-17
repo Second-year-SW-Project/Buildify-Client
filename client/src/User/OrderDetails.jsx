@@ -242,8 +242,9 @@ export default function OrderDetails() {
                     <Button
                       variant="outlined"
                       sx={{ borderRadius: 900, textTransform: "none", px: 2 }}
+                      onClick={handleRefundClick}
                     >
-                      Order Again
+                      Return/refund
                     </Button>
                   </div>
                   <Divider />
@@ -342,7 +343,7 @@ export default function OrderDetails() {
                               px: 2,
                             }}
                           >
-                            Returns/refunds
+                            Return/refund
                           </Button>
                         </div>
                       </div>

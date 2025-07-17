@@ -57,8 +57,10 @@ export default function AdminSettings() {
 
   const validatePasswordForm = () => {
     const newErrors = {};
-    if (!passwordForm.currentPassword) newErrors.currentPassword = "Current password is required";
-    if (!passwordForm.newPassword) newErrors.newPassword = "New password is required";
+    if (!passwordForm.currentPassword)
+      newErrors.currentPassword = "Current password is required";
+    if (!passwordForm.newPassword)
+      newErrors.newPassword = "New password is required";
     else if (passwordForm.newPassword.length < 8)
       newErrors.newPassword = "Password must be at least 8 characters";
     if (passwordForm.newPassword !== passwordForm.confirmPassword)
@@ -96,7 +98,8 @@ export default function AdminSettings() {
         confirmPassword: "",
       });
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Password change failed";
+      const errorMessage =
+        error.response?.data?.message || "Password change failed";
       const validationErrors = error.response?.data?.errors;
       if (validationErrors) {
         setErrors({ password: validationErrors });
@@ -115,7 +118,9 @@ export default function AdminSettings() {
       const response = await axios.post(
         `${backendUrl}/api/v1/users/2fa/generate`,
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
 
       const otpUrl = response.data?.otpauth_url || response.data?.qr;
@@ -128,7 +133,9 @@ export default function AdminSettings() {
       setQrCode(otpUrl);
       toast.success("Scan the QR code with your authenticator app");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to generate QR code");
+      toast.error(
+        error.response?.data?.message || "Failed to generate QR code"
+      );
     } finally {
       setLoading({ ...loading, twoFAEnable: false });
     }
@@ -146,7 +153,9 @@ export default function AdminSettings() {
       await axios.post(
         `${backendUrl}/api/v1/users/2fa/enable`,
         { token: twoFAForm.token },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
 
       toast.success("2FA enabled successfully");
@@ -167,7 +176,9 @@ export default function AdminSettings() {
       await axios.post(
         `${backendUrl}/api/v1/users/2fa/disable`,
         {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
       dispatch(setAuthUser({ ...user, is2FAEnabled: false }));
 
@@ -192,7 +203,8 @@ export default function AdminSettings() {
       dispatch(setAuthUser(null));
       window.location.href = "/";
     } catch (error) {
-      const errorMsg = error.response?.data?.message || "Failed to delete account.";
+      const errorMsg =
+        error.response?.data?.message || "Failed to delete account.";
       toast.error(errorMsg);
     }
   };
@@ -455,18 +467,27 @@ export default function AdminSettings() {
       </Paper>
 
       {/* Delete Account Confirmation Dialog */}
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
         <DialogTitle>Confirm Account Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to permanently delete your account? This action cannot be undone.
+            Are you sure you want to permanently delete your account? This
+            action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDeleteAccount} color="error" variant="contained" autoFocus>
+          <Button
+            onClick={handleDeleteAccount}
+            color="error"
+            variant="contained"
+            autoFocus
+          >
             Yes, Delete
           </Button>
         </DialogActions>

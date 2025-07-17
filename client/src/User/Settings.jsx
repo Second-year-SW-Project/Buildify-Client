@@ -11,6 +11,11 @@ import {
   Button,
   CircularProgress,
   Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import axios from "axios";
 import { toast } from "sonner";
@@ -20,6 +25,25 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export default function Settings() {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setOpenDeleteDialog(false);
+    try {
+      await axios.delete(`${backendUrl}/api/v1/users/delete-account`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      toast.success("Your account has been permanently deleted.");
+      localStorage.removeItem("token");
+      dispatch(setAuthUser(null));
+      window.location.href = "/";
+    } catch (error) {
+      const errorMsg =
+        error.response?.data?.message || "Failed to delete account.";
+      toast.error(errorMsg);
+    }
+  };
 
   // State management
   const [passwordForm, setPasswordForm] = useState({
@@ -319,7 +343,7 @@ export default function Settings() {
                       </Paper>
 
                       {/* 2FA Section */}
-                      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+                      {/* <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
                         <Typography
                           variant="h5"
                           className="mb-8 font-bold pb-5"
@@ -468,6 +492,67 @@ export default function Settings() {
                             )}
                           </Box>
                         )}
+                      </Paper> */}
+                      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+                        <Typography
+                          variant="h5"
+                          className="mb-8 font-bold pb-5 text-black"
+                        >
+                          Danger Zone
+                        </Typography>
+
+                        <Typography variant="body1" className="mb-4">
+                          Deleting your account is permanent and cannot be
+                          undone.
+                        </Typography>
+
+                        <Box mt={2}>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => setOpenDeleteDialog(true)}
+                            style={{
+                              padding: "14px 18px",
+                              textTransform: "none",
+                              fontSize: "16px",
+                              borderRadius: "10px",
+                              fontWeight: "bold",
+                              width: "250px",
+                            }}
+                          >
+                            Delete My Account
+                          </Button>
+                        </Box>
+
+                        {/* Confirmation Dialog */}
+                        <Dialog
+                          open={openDeleteDialog}
+                          onClose={() => setOpenDeleteDialog(false)}
+                        >
+                          <DialogTitle>Confirm Account Deletion</DialogTitle>
+                          <DialogContent>
+                            <DialogContentText>
+                              Are you sure you want to permanently delete your
+                              account? This action cannot be undone.
+                            </DialogContentText>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button
+                              onClick={() => setOpenDeleteDialog(false)}
+                              color="primary"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={handleDeleteAccount}
+                              color="error"
+                              variant="contained"
+                              autoFocus
+                            >
+                              Yes, Delete
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
                       </Paper>
                     </Box>
                   </Box>

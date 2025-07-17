@@ -3,7 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/system";
 import SideNav from "./SideNav";
-import { Divider, Button, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {
+  Divider,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { OutlinedButton } from "../AtomicComponents/Buttons/Buttons";
@@ -19,6 +26,7 @@ export default function UserProfile() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
+  const [errors, setErrors] = useState({});
 
   // Redirect unauthenticated users
   useEffect(() => {
@@ -32,7 +40,7 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // Location data
   const provinces = getProvinces();
   const [availableDistricts, setAvailableDistricts] = useState([]);
@@ -75,11 +83,11 @@ export default function UserProfile() {
       setAvailableDistricts(districts);
       // Reset district if it's not valid for the selected province
       if (formData.district && !districts.includes(formData.district)) {
-        setFormData(prev => ({ ...prev, district: "" }));
+        setFormData((prev) => ({ ...prev, district: "" }));
       }
     } else {
       setAvailableDistricts([]);
-      setFormData(prev => ({ ...prev, district: "" }));
+      setFormData((prev) => ({ ...prev, district: "" }));
     }
   }, [formData.province]);
 
@@ -141,11 +149,20 @@ export default function UserProfile() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
+      newErrors.email = "Invalid email format";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error("Please fix the errors before submitting");
+      setLoading(false);
+      return;
+    }
     try {
-      // Validate required fields
-      if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        throw new Error("Invalid email format");
-      }
       const updateData = {
         name: formData.name?.trim() || "",
         email: formData.email?.trim() || "",
@@ -296,6 +313,8 @@ export default function UserProfile() {
                         width="70%"
                         outlinedActive
                         disabled={!editable}
+                        error={!!errors.name}
+                        helperText={errors.name}
                       />
                     </div>
                     <div className="flex-1 mb-5">
@@ -335,6 +354,8 @@ export default function UserProfile() {
                         width="70%"
                         outlinedActive
                         disabled={!editable}
+                        error={!!errors.email}
+                        helperText={errors.email}
                       />
                     </div>
                   </div>
@@ -355,11 +376,17 @@ export default function UserProfile() {
                   </div>
 
                   <div className="flex-1 mb-5 mr-1" style={{ width: "86%" }}>
-                    <FormControl fullWidth variant="outlined" disabled={!editable}>
+                    <FormControl
+                      fullWidth
+                      variant="outlined"
+                      disabled={!editable}
+                    >
                       <InputLabel>Province</InputLabel>
                       <Select
                         value={formData.province}
-                        onChange={(e) => setFormData({ ...formData, province: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, province: e.target.value })
+                        }
                         label="Province"
                       >
                         <MenuItem value="">
@@ -375,11 +402,17 @@ export default function UserProfile() {
                   </div>
 
                   <div className="flex-1 mb-5 mr-1" style={{ width: "86%" }}>
-                    <FormControl fullWidth variant="outlined" disabled={!editable || !formData.province}>
+                    <FormControl
+                      fullWidth
+                      variant="outlined"
+                      disabled={!editable || !formData.province}
+                    >
                       <InputLabel>District</InputLabel>
                       <Select
                         value={formData.district}
-                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, district: e.target.value })
+                        }
                         label="District"
                       >
                         <MenuItem value="">

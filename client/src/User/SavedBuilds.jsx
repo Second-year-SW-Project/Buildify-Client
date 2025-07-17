@@ -1,22 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import CustomBuildsContent from "./CustomBuildsContent";
-import PublishedBuildsContent from "./PublishedBuildsContent";
-import { Box } from "@mui/material";
-import Tab from "@mui/material/Tab";
-import TabContext from "@mui/lab/TabContext";
-import TabList from "@mui/lab/TabList";
-import TabPanel from "@mui/lab/TabPanel";
-import BuildIcon from "@mui/icons-material/Build";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { Box, Divider } from "@mui/material";
 
 export default function SavedBuilds() {
-  const [value, setValue] = React.useState("1");
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
   return (
     <div>
       <div className="flex flex-col min-h-screen">
@@ -41,31 +29,10 @@ export default function SavedBuilds() {
                   }}
                 >
                   <h1 className="text-3xl font-bold mt-5 mb-6">Your Builds</h1>
-
-                  <TabContext value={value}>
-                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                      <TabList onChange={handleChange} aria-label="Build tabs">
-                        <Tab
-                          icon={<BuildIcon />}
-                          label="Custom Builds"
-                          iconPosition="start"
-                          value="1"
-                        />
-                        <Tab
-                          icon={<CheckCircleIcon />}
-                          iconPosition="start"
-                          label="Published Builds"
-                          value="2"
-                        />
-                      </TabList>
-                    </Box>
-                    <TabPanel value="1">
-                      <CustomBuildsContent />
-                    </TabPanel>
-                    <TabPanel value="2">
-                      <PublishedBuildsContent />
-                    </TabPanel>
-                  </TabContext>
+                  <Divider />
+                  <Box sx={{ pt: 3 }}>
+                    <CustomBuildsContent />
+                  </Box>
                 </Box>
               </Box>
             </Box>

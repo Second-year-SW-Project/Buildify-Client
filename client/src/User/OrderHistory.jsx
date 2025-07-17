@@ -23,7 +23,7 @@ export default function OrderHistory() {
     setValue(newValue);
   };
 
-  // Fetch Successful orders for the user
+  // Fetch Completed orders for the user
   useEffect(() => {
     let isMounted = true;
     const controller = new AbortController();
@@ -52,7 +52,7 @@ export default function OrderHistory() {
           // Filter and format completed product orders
           const completedProductOrders = productRes.data
             .filter((order) =>
-              ["Successful", "Refunded"].includes(order.status)
+              ["Completed", "Refunded", "Cancelled"].includes(order.status)
             )
             .map((order) => {
               const itemCount = order.items.reduce(
@@ -78,7 +78,7 @@ export default function OrderHistory() {
           // Filter and format completed build transactions
           const completedBuildOrders = buildRes.data.data
             .filter((order) =>
-              ["Successful", "Refunded"].includes(order.buildStatus)
+              ["Completed", "Refunded", "Cancelled"].includes(order.buildStatus)
             )
             .map((order) => ({
               type: "pc_build",
@@ -178,7 +178,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No Successful orders found.</p>
+                        <p>No Completed orders found.</p>
                       )}
                     </TabPanel>
 
@@ -202,7 +202,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No Successful build orders found.</p>
+                        <p>No Completed build orders found.</p>
                       )}
                     </TabPanel>
 
@@ -226,7 +226,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No Successful component orders found.</p>
+                        <p>No Completed component orders found.</p>
                       )}
                     </TabPanel>
                   </TabContext>
