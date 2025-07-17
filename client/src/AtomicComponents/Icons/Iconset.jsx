@@ -48,10 +48,12 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PreviewIcon from '@mui/icons-material/Preview';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import LocalAtmOutlinedIcon from '@mui/icons-material/LocalAtmOutlined';
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
 import StarIcon from '@mui/icons-material/Star';
 import ViewInArSharpIcon from '@mui/icons-material/ViewInArSharp';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 
 export default function Iconset({ type = 'notification', fontSize = '30px', color, isOpen }) {
     const renderIcon = () => {
@@ -96,10 +98,10 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'money': return <MonetizationOnIcon color={color} sx={{ fontSize }} />;
             case 'attachMoney': return <MonetizationOnOutlinedIcon color={color} sx={{ fontSize }} />;
             case 'payment': return <LocalAtmOutlinedIcon color={color} sx={{ fontSize }} />;
-            case 'pending': return <HourglassEmptyIcon color={color} sx={{ fontSize }} />;
             case 'cart': return <ShoppingCartIcon color={color} sx={{ fontSize }} />;
             case 'checkout': return <ShoppingCartCheckoutIcon color={color} sx={{ fontSize }} />;
-            case 'bag': return <ShoppingBagOutlinedIcon color={color} sx={{ fontSize }} />;
+            case 'pending': return <PendingActionsIcon color={color} sx={{ fontSize }} />;
+            case 'workHistory': return <WorkHistoryIcon color={color} sx={{ fontSize }} />;
             case 'admin': return <AdminPanelSettingsIcon color={color} sx={{ fontSize }} />;
             case 'profile': return <AccountCircleIcon color={color} sx={{ fontSize }} />;
             case 'games': return <SportsEsportsIcon color={color} sx={{ fontSize }} />;
@@ -108,6 +110,7 @@ export default function Iconset({ type = 'notification', fontSize = '30px', colo
             case 'preview': return <PreviewIcon color={color} sx={{ fontSize }} />
             case 'star': return <StarIcon color={color} sx={{ fontSize }} />;
             case 'buildView': return <ViewInArSharpIcon color={color} sx={{ fontSize: 36 }} />;
+            case 'archive': return <ArchiveIcon color={color} sx={{ fontSize }} />;
 
             case 'toggle':
                 return isOpen

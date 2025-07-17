@@ -18,13 +18,15 @@ const BuildStepper = ({
   buildId,
   onStatusChange,
   buildStatus,
+  deliveryMethod,
   editable = true,
 }) => {
   const [loading, setLoading] = useState(false);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [stepTimestamps, setStepTimestamps] = useState({});
 
-  const steps = [
+  // Define steps based on delivery method
+  const allSteps = [
     {
       label: "Build Placed",
       description: "",
@@ -58,6 +60,11 @@ const BuildStepper = ({
       status: "Delivered",
     },
   ];
+
+  // Filter out Shipped step if delivery method is "Pick up at store"
+  const steps = deliveryMethod === "Pick up at store"
+    ? allSteps.filter(step => step.status !== "Shipped")
+    : allSteps;
 
   // Fetch build timestamps when component mounts or activeStep changes
   useEffect(() => {
@@ -132,23 +139,38 @@ const BuildStepper = ({
 
   // Update activeStep based on buildStatus
   useEffect(() => {
-    // Map status to correct step index
-    const statusToStepMap = {
-      Pending: 1, // Show Build Confirmed as active (step 0 completed)
-      Confirmed: 2, // Show Building in Progress as active (steps 0,1 completed)
-      Building: 3, // Show Build Completed as active (steps 0,1,2 completed)
-      Completed: 4, // Show Shipped as active (steps 0,1,2,3 completed)
-      Shipped: 5, // Show Delivered as active (steps 0,1,2,3,4 completed)
-      Delivered: 6, // All steps completed
-      Canceled: 1, // Default to Build Confirmed step
-    };
+    // Map status to correct step index based on delivery method
+    let statusToStepMap;
+
+    if (deliveryMethod === "Pick up at store") {
+      // Skip Shipped step for store pickup
+      statusToStepMap = {
+        Pending: 1,     // Show Build Confirmed as active (step 0 completed)
+        Confirmed: 2,   // Show Building in Progress as active (steps 0,1 completed)
+        Building: 3,    // Show Build Completed as active (steps 0,1,2 completed)
+        Completed: 4,   // Show Delivered as active (steps 0,1,2,3 completed)
+        Delivered: 5,   // All steps completed
+        Canceled: 1     // Default to Build Confirmed step
+      };
+    } else {
+      // Include Shipped step for home delivery
+      statusToStepMap = {
+        Pending: 1,     // Show Build Confirmed as active (step 0 completed)
+        Confirmed: 2,   // Show Building in Progress as active (steps 0,1 completed)
+        Building: 3,    // Show Build Completed as active (steps 0,1,2 completed)
+        Completed: 4,   // Show Shipped as active (steps 0,1,2,3 completed)
+        Shipped: 5,     // Show Delivered as active (steps 0,1,2,3,4 completed)
+        Delivered: 6,   // All steps completed
+        Canceled: 1     // Default to Build Confirmed step
+      };
+    }
 
     const adjustedStepIndex = statusToStepMap[buildStatus] || 1;
 
     if (adjustedStepIndex !== activeStep) {
       setActiveStep(adjustedStepIndex);
     }
-  }, [buildStatus, setActiveStep, activeStep]);
+  }, [buildStatus, deliveryMethod, setActiveStep, activeStep]);
 
   const formatDateTime = (date) => {
     if (!date) return "";
