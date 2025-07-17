@@ -1070,3 +1070,64 @@ export function BuildTable({
   );
 }
 
+export function TopBuildsTable({
+  columns,
+  builds,
+  width,
+  color,
+}) {
+  // Only show the first 5 rows, no pagination (same as TopProductsTable)
+  const autoSizeCellStyle = {
+    padding: "8px 10px",
+    whiteSpace: "normal", // Allow wrapping
+    wordBreak: "break-word", // Break long words
+    maxWidth: 220, // Limit cell width for wrapping
+  };
+
+  return (
+    <Paper sx={{ width: width || "100%", overflow: "hidden" }}>
+      <TableContainer>
+        <Table sx={{ borderRadius: "16px" }}>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: theme.palette.primary100.main }}>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  style={{
+                    ...autoSizeCellStyle,
+                    color: color || "gray",
+                    fontWeight: "bold",
+                    width: column.width || 'auto',
+                    padding: "12px",
+                  }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {builds && builds.length > 0 ? builds.slice(0, 5).map((build, index) => (
+              <TableRow key={index} hover>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    style={{ ...autoSizeCellStyle, color: color || "black", fontWeight: "bold" }}
+                  >
+                    {build[column.id]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            )) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  <Typography>No builds found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  );
+}

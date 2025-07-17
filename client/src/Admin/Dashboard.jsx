@@ -8,8 +8,9 @@ import Iconset from '../AtomicComponents/Icons/Iconset';
 import { Link } from 'react-router-dom';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts/BarChart';
-import { OrderSummary, GameTable, TopProductsTable } from '../MoleculesComponents/Table';
+import { OrderSummary, GameTable, TopProductsTable, TopBuildsTable } from '../MoleculesComponents/Table';
 import { GameCard, TopProductCard } from "../AtomicComponents/Cards/Productcard";
+import BuildCard from "../AtomicComponents/Cards/BuildCard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import { subCategories } from '../AtomicComponents/ForAdminForms/Category';
 import axios from 'axios';
@@ -49,6 +50,11 @@ export default function Dashboard() {
         { id: "topProductCard", label: "Top Products" },
     ];
 
+    const topBuildsColumns = [
+        { id: "buildCard", label: "Build" },
+        { id: "date", label: "Delivered On" },
+    ];
+
     const TopCard = {
         topProductCard: (
             <TopProductCard
@@ -76,6 +82,7 @@ export default function Dashboard() {
 
     const [pendingOrders, setPendingOrders] = useState([]);
     const [games, setGames] = useState([]);
+    const [topBuilds, setTopBuilds] = useState([]);
     const [pieChartData, setPieChartData] = useState([]);
     const [selectedMainCategory, setSelectedMainCategory] = useState('Necessary');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -100,9 +107,32 @@ export default function Dashboard() {
         }
     };
 
+    const fetchTopBuilds = async () => {
+        try {
+            const response = await axios.get(`${backendUrl}/api/build-transactions/top-builds?limit=5`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+
+            console.log("Top Builds API Response:", response.data);
+
+            if (response.data && Array.isArray(response.data.data)) {
+                setTopBuilds(response.data.data);
+            } else {
+                console.error("Expected an array but got:", response.data);
+                setTopBuilds([]);
+            }
+        } catch (error) {
+            console.error("Error fetching top builds:", error);
+            setTopBuilds([]);
+        }
+    };
+
     //Fetches the games when the component is mounted
     useEffect(() => {
         fetchGames();
+        fetchTopBuilds();
     }, []);
 
     //Maps the games to the game data
@@ -115,6 +145,21 @@ export default function Dashboard() {
 
     // Get top 5 games
     const topFiveGames = gameData.slice(0, 5);
+
+    //Maps the top builds to the build data
+    const topBuildsData = Array.isArray(topBuilds)
+        ? topBuilds.map(build => ({
+            buildCard: <BuildCard
+                name={build.buildName}
+                src={build.buildImage}
+                totalCharge={build.totalCharge}
+            />,
+            date: <TimeCard
+                date={build.deliveredDate ? new Date(build.deliveredDate).toLocaleDateString() : 'N/A'}
+                time={build.deliveredDate ? new Date(build.deliveredDate).toLocaleTimeString() : ''}
+            />,
+        }))
+        : [];
 
     const [orderSummary, setOrderSummary] = useState({ totalOrders: 0, pendingOrders: 0, totalPrice: 0 });
 
@@ -417,7 +462,7 @@ export default function Dashboard() {
                                 <PrimaryButton buttonSize="small" name={summarySlides[currentSummaryIndex].button.text} fontSize={"14px"} isBold={1} />
                             </Link>
                             {summarySlides[currentSummaryIndex].title === 'Manage Orders' && (
-                                <Link to="/adminpanel/orders/receivedorders">
+                                <Link to="/adminpanel/orders/buildorderlist">
                                     <PrimaryButton buttonSize="small" name={"View Builds"} fontSize={"14px"} isBold={1} />
                                 </Link>
                             )}
@@ -690,9 +735,27 @@ export default function Dashboard() {
             </div>
 
             <div className='TopDetails grid gap-4 grid-cols-3 flex flex-row mt-8 mb-8 pl-2 pr-2'>
-                <div className='Builds grid border-2 border-purple-600 rounded-lg p-2 flex flex-row h-fit'>
+                <div className='TopBuilds grid border-2 border-stone-200 rounded-2xl flex flex-row h-300'>
+                    <div className='flex flex-row justify-between items-center ml-4 mr-4 mt-4 mb-4'>
+                        <Typography variant="body1" fontWeight="bold" color='primary' sx={{ justifyContent: "end" }}>Top Builds</Typography>
+                        <Link to="/adminpanel/orders/buildorderlist" state={{ selectedTab: 'Delivered' }}>
+                            <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="primary"
+                                className="cursor-pointer"
+                            >
+                                View All
+                            </Typography>
+                        </Link>
+                    </div>
 
-
+                    <div className='p-2 mb-2' sx={{ width: '100%' }}>
+                        <TopBuildsTable
+                            columns={topBuildsColumns}
+                            builds={topBuildsData}
+                        />
+                    </div>
                 </div>
                 <div className='Topproducts grid border-2 border-purple-600 rounded-lg flex flex-row h-fit'>
                     <div className='flex flex-row justify-between items-center ml-4 mr-4'>
@@ -722,8 +785,8 @@ export default function Dashboard() {
                     </div>
 
                 </div>
-                <div className='Recentgames grid border-2 border-stone-200 rounded-2xl flex flex-row h-fit'>
-                    <div className='flex flex-row justify-between items-center mb-4 mr-6 ml-4 mt-4'>
+                <div className='Recentgames grid border-2 border-stone-200 rounded-2xl flex flex-row h-300'>
+                    <div className='flex flex-row justify-between items-center mb-2 mr-6 ml-4'>
                         <Typography variant="body1" fontWeight="bold" color='primary' sx={{ justifyContent: "end" }}>Recent Added Games</Typography>
                         <Link to="/adminpanel/games/managegames" state={{ selectedTab: 'Pending' }}>
                             <Typography
