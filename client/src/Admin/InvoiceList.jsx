@@ -198,7 +198,7 @@ function InvoiceList() {
 
         <div className="mr-4 border-2 border-black-200 rounded-md">
           <div className="filterForm grid gap-4 grid-cols-1 p-4">
-            <div className="filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-4 ">
+            <div className="filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-3 ">
               <div>
                 <InputField
                   type="text"
@@ -221,9 +221,6 @@ function InvoiceList() {
                   label="End Date"
                   onChange={(val) => setEndDate(val)}
                 ></SetDate>
-              </div>
-              <div>
-                <SearchBar placeholder="Search" width="100%"></SearchBar>
               </div>
             </div>
           </div>

@@ -10,7 +10,7 @@ import OrderTotal from '../../AtomicComponents/ForCustomBuild/OrderTotal';
 import Navbar from '../../MoleculesComponents/User_navbar_and_footer/Navbar';
 import Footer from '../../MoleculesComponents/User_navbar_and_footer/Footer';
 import { toast } from 'sonner';
-import { calculateDeliveryTotal, getServiceCharges, getDeliveryInfo } from '../../utils/locationData';
+import { calculateDeliveryTotal, getServiceCharges, getDeliveryInfo, calculateServiceCharge } from '../../utils/locationData';
 
 export default function ContinuePurchasePage() {
   const location = useLocation();
@@ -18,6 +18,7 @@ export default function ContinuePurchasePage() {
   const [deliveryMethod, setDeliveryMethod] = useState('Home Delivery');
   const [deliveryCharge, setDeliveryCharge] = useState(0);
   const [deliveryInfo, setDeliveryInfo] = useState(null);
+  const [serviceCharge, setServiceCharge] = useState(0);
 
   // Get user data from Redux store
   const user = useSelector((state) => state.auth.user);
@@ -33,8 +34,23 @@ export default function ContinuePurchasePage() {
     locationState: location.state
   });
 
-  // Get service charges
+  // Get service charges (deprecated - kept for backwards compatibility)
   const serviceCharges = getServiceCharges();
+
+  // Calculate service charge based on number of components
+  useEffect(() => {
+    const calculateDynamicServiceCharge = async () => {
+      if (selectedComponents && Array.isArray(selectedComponents)) {
+        const componentCount = selectedComponents.length;
+        const dynamicServiceCharge = await calculateServiceCharge(componentCount);
+        setServiceCharge(dynamicServiceCharge);
+      } else {
+        setServiceCharge(0);
+      }
+    };
+
+    calculateDynamicServiceCharge();
+  }, [selectedComponents]);
 
   // Calculate delivery charges based on user's location
   useEffect(() => {
@@ -62,7 +78,7 @@ export default function ContinuePurchasePage() {
   }, [user?.province, user?.district, deliveryMethod]);
 
   // Calculate final total
-  const finalTotal = totalPrice + serviceCharges.fixedServiceCharge + (deliveryMethod === 'Home Delivery' ? deliveryCharge : 0);
+  const finalTotal = totalPrice + serviceCharge + (deliveryMethod === 'Home Delivery' ? deliveryCharge : 0);
 
   // Redirect if no build data
   useEffect(() => {
@@ -193,7 +209,7 @@ export default function ContinuePurchasePage() {
 
         <OrderTotal 
           componentCost={totalPrice}
-          serviceCharge={serviceCharges.fixedServiceCharge}
+          serviceCharge={serviceCharge}
           deliveryCharge={deliveryMethod === 'Home Delivery' ? deliveryCharge : 0}
           deliveryMethod={deliveryMethod}
           deliveryInfo={deliveryInfo}

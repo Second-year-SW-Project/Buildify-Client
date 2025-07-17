@@ -94,12 +94,15 @@ export default function MyOrders() {
               signal: controller.signal,
             }
           ),
-          axios.get(`${backendUrl}/api/build-transactions?userId=${userId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            signal: controller.signal,
-          }),
+          axios.get(
+            `${backendUrl}/api/build-transactions/user-builds/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              signal: controller.signal,
+            }
+          ),
         ]);
 
         if (isMounted) {
@@ -158,11 +161,11 @@ export default function MyOrders() {
       isMounted = false;
       controller.abort();
     };
-  }, []);
+  }, [userId]);
 
   const filteredOrders = orders
     .filter(
-      (order) => order.status !== "Successful" && order.status !== "Refunded"
+      (order) => order.status !== "Completed" && order.status !== "Refunded"
     )
     .filter((order) => {
       if (value === "1") return true;

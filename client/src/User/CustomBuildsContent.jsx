@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import Swal from "sweetalert2";
 import BuildDetailsPopup from "../AtomicComponents/Cards/BuildDetailsPopup";
 
 export default function CustomBuildsContent() {
@@ -24,18 +25,21 @@ export default function CustomBuildsContent() {
       try {
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
         const token = localStorage.getItem("token");
-        
+
         if (!token) {
-          throw new Error('Authentication required');
+          throw new Error("Authentication required");
         }
 
         console.log("Fetching builds for user:", user._id);
-        const response = await axios.get(`${backendUrl}/api/build/builds/user/${user._id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        
+        const response = await axios.get(
+          `${backendUrl}/api/build/builds/user/${user._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
         if (response.data.success) {
           console.log("Builds fetched successfully:", response.data.builds);
           setBuilds(response.data.builds);
@@ -43,26 +47,32 @@ export default function CustomBuildsContent() {
           throw new Error(response.data.message || "Failed to fetch builds");
         }
       } catch (error) {
-        console.error("Error fetching builds:", error.response?.data || error.message);
-        
-        if (error.response?.status === 401 || error.message.includes('Authentication required')) {
+        console.error(
+          "Error fetching builds:",
+          error.response?.data || error.message
+        );
+
+        if (
+          error.response?.status === 401 ||
+          error.message.includes("Authentication required")
+        ) {
           toast.error("Please login to view your builds", {
             duration: 3000,
             style: {
-              background: '#ff6b6b',
-              color: '#fff',
-              fontSize: '16px',
-              fontWeight: 'bold',
+              background: "#ff6b6b",
+              color: "#fff",
+              fontSize: "16px",
+              fontWeight: "bold",
             },
           });
         } else {
           toast.error("Failed to load your builds. Please try again.", {
             duration: 3000,
             style: {
-              background: '#ff6b6b',
-              color: '#fff',
-              fontSize: '16px',
-              fontWeight: 'bold',
+              background: "#ff6b6b",
+              color: "#fff",
+              fontSize: "16px",
+              fontWeight: "bold",
             },
           });
         }
@@ -76,24 +86,35 @@ export default function CustomBuildsContent() {
 
   // Delete build handler
   const handleDelete = async (buildId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this build? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#e53e3e",
+      cancelButtonColor: "#9D00FF",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const token = localStorage.getItem("token");
-      
+
       if (!token) {
         toast.error("Please login to delete builds", {
           duration: 2000,
-          style: { background: '#ff6b6b', color: '#fff', fontWeight: 'bold' },
+          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
         return;
       }
 
       await axios.delete(`${backendUrl}/api/build/builds/delete/${buildId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      
+
       setBuilds((prev) => prev.filter((b) => b._id !== buildId));
       toast.success("Build deleted successfully.", {
         duration: 2000,
@@ -103,12 +124,12 @@ export default function CustomBuildsContent() {
       if (error.response?.status === 401) {
         toast.error("Please login to delete builds", {
           duration: 2000,
-          style: { background: '#ff6b6b', color: '#fff', fontWeight: 'bold' },
+          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
       } else {
         toast.error("Failed to delete build.", {
           duration: 2000,
-          style: { background: '#ff6b6b', color: '#fff', fontWeight: 'bold' },
+          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
       }
     }
@@ -119,21 +140,25 @@ export default function CustomBuildsContent() {
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const token = localStorage.getItem("token");
-      
+
       if (!token) {
         toast.error("Please login to publish builds", {
           duration: 2000,
-          style: { background: '#ff6b6b', color: '#fff', fontWeight: 'bold' },
+          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
         return;
       }
 
-      const response = await axios.patch(`${backendUrl}/api/build/builds/publish/${buildId}`, {}, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      
+      const response = await axios.patch(
+        `${backendUrl}/api/build/builds/publish/${buildId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       setBuilds((prev) =>
         prev.map((b) =>
           b._id === buildId ? { ...b, published: response.data.published } : b
@@ -147,12 +172,12 @@ export default function CustomBuildsContent() {
       if (error.response?.status === 401) {
         toast.error("Please login to publish builds", {
           duration: 2000,
-          style: { background: '#ff6b6b', color: '#fff', fontWeight: 'bold' },
+          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
       } else {
         toast.error("Failed to update publish status.", {
           duration: 2000,
-          style: { background: '#ff6b6b', color: '#fff', fontWeight: 'bold' },
+          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
       }
     }
@@ -161,10 +186,10 @@ export default function CustomBuildsContent() {
   // Edit handler
   const handleEdit = (build) => {
     // Store the build data in localStorage to pass to the ChoosePartsPage
-    localStorage.setItem('editingBuild', JSON.stringify(build));
-    
+    localStorage.setItem("editingBuild", JSON.stringify(build));
+
     // Navigate to the choose parts page
-    navigate('/chooseparts?edit=true');
+    navigate("/chooseparts?edit=true");
   };
 
   if (loading) {
@@ -213,7 +238,7 @@ export default function CustomBuildsContent() {
             onDelete={() => handleDelete(build._id)}
             onPublishToggle={() => handlePublishToggle(build._id)}
             onEdit={() => handleEdit(build)}
-      />
+          />
         ))}
       </div>
       {selectedBuild && (

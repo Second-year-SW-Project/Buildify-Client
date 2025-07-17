@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 export default function RMAsupport() {
   const location = useLocation();
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     subject: "",
@@ -49,8 +50,16 @@ export default function RMAsupport() {
   const handleSubmit = async () => {
     const { subject, orderId, reason, message, userId } = formData;
 
-    if (!subject || !orderId || !reason || !message) {
-      toast.error("Please fill all fields.");
+    const newErrors = {};
+
+    if (!subject) newErrors.subject = "Subject is required";
+    if (!orderId) newErrors.orderId = "Order ID is required";
+    if (!reason) newErrors.reason = "Please select a reason";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error("Please fill required fields and try again.");
       return;
     }
 
@@ -64,6 +73,7 @@ export default function RMAsupport() {
         message: "",
         userId,
       });
+      setErrors({});
       fetchRMARequests(userId);
     } catch (error) {
       console.error("Error submitting RMA:", error);
@@ -118,6 +128,8 @@ export default function RMAsupport() {
                       name="subject"
                       value={formData.subject}
                       onChange={(value) => handleChange("subject", value)}
+                      error={!!errors.subject}
+                      helperText={errors.subject}
                     />
 
                     <InputField
@@ -129,6 +141,8 @@ export default function RMAsupport() {
                       name="orderId"
                       value={formData.orderId}
                       onChange={(value) => handleChange("orderId", value)}
+                      error={!!errors.orderId}
+                      helperText={errors.orderId}
                     />
                   </div>
 
@@ -162,6 +176,8 @@ export default function RMAsupport() {
                         { value: "support", label: "Support Request" },
                         { value: "other", label: "Other" },
                       ]}
+                      error={!!errors.reason}
+                      helperText={errors.reason}
                     />
                   </div>
 

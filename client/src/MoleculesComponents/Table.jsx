@@ -95,7 +95,7 @@ export function UserTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row, index) => (
+            {data && data.length > 0 ? data.map((row, index) => (
               <TableRow key={index} hover>
                 {columns.map((column) => (
                   <TableCell
@@ -140,7 +140,13 @@ export function UserTable({
                   </TableCell>
                 )}
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={columns.length + (iconTypes.length > 0 ? 1 : 0)} align="center">
+                  <Typography>No data found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -245,7 +251,7 @@ export function OrderTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order, index) => {
+            {orders && orders.length > 0 ? orders.map((order, index) => {
               const isOpen = isRowOpen(order._id);
               return (
                 <React.Fragment key={order._id}>
@@ -359,11 +365,18 @@ export function OrderTable({
                               direction="row"
                               alignItems="center"
                               justifyContent="space-between"
-                              bgcolor="#f8e9ff"
+                              bgcolor="#e9f7ff"
                               borderRadius={2}
                               width="100%"
                               mb={1}
                               p={1}
+                              sx={{
+                                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                                transition: "background-color 0.3s ease",
+                                "&:hover": {
+                                  backgroundColor: "#a8def3ff",
+                                },
+                              }}
                             >
                               <Box flex={3} display="flex" alignItems="center">
                                 <OrderItemCard
@@ -410,7 +423,13 @@ export function OrderTable({
                   </TableRow>
                 </React.Fragment>
               );
-            })}
+            }) : (
+              <TableRow>
+                <TableCell colSpan={columns.length + (iconTypes.length > 0 ? 1 : 0)} align="center">
+                  <Typography>No orders found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -501,7 +520,7 @@ export function OrderSummary({
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order) => (
+            {orders && orders.length > 0 ? orders.map((order) => (
               <TableRow key={order._id}>
                 <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 85 }}>
                   {order._id ? `#${order._id.slice(-4).toUpperCase()}` : "#----"}
@@ -560,7 +579,13 @@ export function OrderSummary({
                   />
                 </TableCell>
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  <Typography>Currently Not Available</Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -617,7 +642,7 @@ export function GameTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.slice(0, 5).map((row, index) => (
+            {data && data.length > 0 ? data.slice(0, 5).map((row, index) => (
               <TableRow key={index} hover>
                 {columns.map((column) => (
                   <TableCell
@@ -629,7 +654,13 @@ export function GameTable({
                 ))}
 
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  <Typography>No games found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -685,7 +716,7 @@ export function TopProductsTable({
       <TableContainer>
         <Table sx={{ borderRadius: "16px" }}>
           <TableBody>
-            {rows.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((row, index) => (
+            {rows && rows.length > 0 ? rows.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((row, index) => (
               <TableRow key={index} hover>
                 {columns.map((column) => (
                   <TableCell
@@ -696,7 +727,13 @@ export function TopProductsTable({
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  <Typography>No products found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -716,6 +753,7 @@ export function TopProductsTable({
       />
     </Paper>
   );
+
 }
 
 export function BuildTable({
@@ -737,8 +775,8 @@ export function BuildTable({
 
   const statusColorMap = {
     Pending: "warning",
-    Confirmed: "ternary",
-    Building: "secondary",
+    Confirmed: "primaryLight",
+    Building: "primaryDark",
     Completed: "success",
     Shipped: "info",
     Delivered: "primary",
@@ -826,7 +864,7 @@ export function BuildTable({
                         ? `#${build._id.slice(-4).toUpperCase()}`
                         : "#----"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ paddingRight: 0 }}>
                       {build.userId ? (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Avatar
@@ -858,7 +896,7 @@ export function BuildTable({
                         {build.createdAt ? format(new Date(build.createdAt), "p") : "-"}
                       </Typography>
                     </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
+                    <TableCell sx={{ fontWeight: "bold", textAlign: "center", paddingRight: 1 }}>
                       <Chip
                         label={
                           build.deliveryMethod === "Home Delivery"
@@ -871,11 +909,10 @@ export function BuildTable({
                         size="small"
                         sx={{
                           padding: "8px 16px",
-                          height: "32px",
+                          height: "30px",
                           minWidth: "120px",
                           textAlign: "center",
                           fontWeight: "bold",
-                          fontSize: "12px",
                           letterSpacing: "0.5px",
                         }}
                       />
@@ -886,7 +923,7 @@ export function BuildTable({
                         : "0"}{" "}
                       LKR
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ paddingRight: 0 }}>
                       <Chip
                         label={build.buildStatus}
                         color={statusColorMap[build.buildStatus] || "default"}
@@ -951,6 +988,13 @@ export function BuildTable({
                               width="100%"
                               mb={1}
                               p={1}
+                              sx={{
+                                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                                transition: "background-color 0.3s ease",
+                                "&:hover": {
+                                  backgroundColor: "#a8def3ff",
+                                },
+                              }}
                             >
                               <Box flex={3} display="flex" alignItems="center">
                                 <OrderItemCard
@@ -1026,3 +1070,64 @@ export function BuildTable({
   );
 }
 
+export function TopBuildsTable({
+  columns,
+  builds,
+  width,
+  color,
+}) {
+  // Only show the first 5 rows, no pagination (same as TopProductsTable)
+  const autoSizeCellStyle = {
+    padding: "8px 10px",
+    whiteSpace: "normal", // Allow wrapping
+    wordBreak: "break-word", // Break long words
+    maxWidth: 220, // Limit cell width for wrapping
+  };
+
+  return (
+    <Paper sx={{ width: width || "100%", overflow: "hidden" }}>
+      <TableContainer>
+        <Table sx={{ borderRadius: "16px" }}>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: theme.palette.primary100.main }}>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  style={{
+                    ...autoSizeCellStyle,
+                    color: color || "gray",
+                    fontWeight: "bold",
+                    width: column.width || 'auto',
+                    padding: "12px",
+                  }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {builds && builds.length > 0 ? builds.slice(0, 5).map((build, index) => (
+              <TableRow key={index} hover>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    style={{ ...autoSizeCellStyle, color: color || "black", fontWeight: "bold" }}
+                  >
+                    {build[column.id]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            )) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  <Typography>No builds found</Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+  );
+}

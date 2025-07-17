@@ -74,7 +74,8 @@ function OrderCard({
             </h3>
           </div>
           <div className="flex flex-col">
-            {status === "Delivered" ? (
+            {status === "Cancelled" || status === "Refunded" ? null : status ===
+              "Delivered" ? (
               <>
                 <Button
                   variant="contained"
@@ -111,7 +112,7 @@ function OrderCard({
                     px: 2,
                     mt: 2,
                   }}
-                  onClick={() => navigate(`/user/reviews?orderId=${orderId}`)}
+                  onClick={() => navigate("/user/reviews")}
                 >
                   Your Reviews
                 </Button>

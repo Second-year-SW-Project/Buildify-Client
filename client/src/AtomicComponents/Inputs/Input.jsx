@@ -53,9 +53,15 @@ export function InputField({
         width={width}
         disabled={disabled}
         helperText={
-          showRequiredHelper && !value
-            ? <span style={{ color: "red", fontWeight: 500, fontStyle: 'italic' }}>*Required</span>
-            : helperText
+          showRequiredHelper && !value ? (
+            <span
+              style={{ color: "red", fontWeight: 500, fontStyle: "italic" }}
+            >
+              *Required
+            </span>
+          ) : (
+            helperText
+          )
         }
         error={!!error}
         onChange={(e) => {
@@ -135,7 +141,7 @@ export function InputField({
           min: 0,
           inputMode: "numeric",
           pattern: "[0-9]*",
-          style: hideSpinner ? { MozAppearance: 'textfield' } : undefined,
+          style: hideSpinner ? { MozAppearance: "textfield" } : undefined,
         }}
         slotProps={{
           inputLabel: {
@@ -144,18 +150,25 @@ export function InputField({
         }}
         disabled={disabled}
         helperText={
-          showRequiredHelper && (value === "" || value === undefined)
-            ? <span style={{ color: "red", fontWeight: 500, fontStyle: 'italic' }}>*Required</span>
-            : helperText
+          showRequiredHelper && (value === "" || value === undefined) ? (
+            <span
+              style={{ color: "red", fontWeight: 500, fontStyle: "italic" }}
+            >
+              *Required
+            </span>
+          ) : (
+            helperText
+          )
         }
         sx={{
           width: width,
           marginBottom: "10px",
           ...(hideSpinner && {
-            "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button": {
-              WebkitAppearance: "none",
-              margin: 0,
-            },
+            "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
+              {
+                WebkitAppearance: "none",
+                margin: 0,
+              },
             "& input[type=number]": {
               MozAppearance: "textfield",
             },
@@ -190,9 +203,15 @@ export function InputField({
         error={!!error}
         size={size}
         helperText={
-          showRequiredHelper && !value
-            ? <span style={{ color: "red", fontWeight: 500, fontStyle: 'italic' }}>*Required</span>
-            : helperText
+          showRequiredHelper && !value ? (
+            <span
+              style={{ color: "red", fontWeight: 500, fontStyle: "italic" }}
+            >
+              *Required
+            </span>
+          ) : (
+            helperText
+          )
         }
         onChange={(e) => {
           if (onChange) onChange(e.target.value);

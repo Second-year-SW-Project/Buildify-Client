@@ -9,73 +9,82 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import { Chip, Box, Stack, Typography, Avatar } from "@mui/material";
-import OrderItemCard from "../AtomicComponents/Cards/OrderItemCard";
+import BuildItemCard from "../AtomicComponents/Cards/BuildItemCard";
 import FullScreenLoader from "../AtomicComponents/FullScreenLoader";
-import OrderStepper from "../MoleculesComponents/Admin_components/Stepper";
+import BuildStepper from "../MoleculesComponents/Admin_components/BuildStepper";
 import { PrimaryButton } from "../AtomicComponents/Buttons/Buttons";
 import { useNavigation } from "../MoleculesComponents/Admin_components/NavigationContext";
 
-function ViewOrder() {
+function ViewBuild() {
   const { id } = useParams();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
   const { selectedTab } = useNavigation();
 
-  const [order, setOrder] = useState(null);
+  const [build, setBuild] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
 
   const StatusOptions = [
     { value: "Pending", label: "Pending" },
-    { value: "Successful", label: "Successful" },
+    { value: "Confirmed", label: "Confirmed" },
+    { value: "Building", label: "Building" },
+    { value: "Completed", label: "Completed" },
     { value: "Shipped", label: "Shipped" },
-    { value: "Refunded", label: "Refunded" },
-    { value: "Canceled", label: "Canceled" },
     { value: "Delivered", label: "Delivered" },
+    { value: "Canceled", label: "Canceled" },
   ];
 
   const statusColorMap = {
-    Successful: "success",
     Pending: "warning",
-    Refunded: "ternary",
-    Canceled: "error",
+    Confirmed: "primaryLight",
+    Building: "primaryDark",
+    Completed: "success",
     Shipped: "info",
     Delivered: "primary",
+    Canceled: "error",
+  };
+
+  const deliveryMethodColorMap = {
+    "Home Delivery": "primary",
+    "Pick up at store": "info",
   };
 
   const getStepFromStatus = (status) => {
     switch (status) {
       case "Pending":
-        return 1;
-      case "Successful":
+        return 1; // Start from step 1 (Build Confirmed) when order is pending
+      case "Confirmed":
         return 2;
-      case "Shipped":
+      case "Building":
         return 3;
+      case "Completed":
+        return 4;
+      case "Shipped":
+        return 5;
       case "Delivered":
-        return 4;
-      case "Refunded":
-        return 4;
+        return 6;
       case "Canceled":
-        return 2;
+        return 1;
       default:
         return 1;
     }
   };
 
-  // Fetch order details
+  // Fetch build details
   useEffect(() => {
-    const fetchOrder = async () => {
+    const fetchBuild = async () => {
       if (!id) {
-        toast.error("No order ID provided");
-        navigate("/adminpanel/orders/orderlist");
+        toast.error("No build ID provided");
+        navigate("/adminpanel/orders/buildorderlist");
         return;
       }
 
       try {
         setLoading(true);
-        console.log("Fetching order:", id);
+        console.log("Fetching build:", id);
         const response = await axios.get(
-          `${backendUrl}/api/checkout/order/${id}`,
+          `${backendUrl}/api/build-transactions/builds/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -83,33 +92,50 @@ function ViewOrder() {
           }
         );
 
-        if (response.data) {
-          setOrder(response.data);
-          // Set active step based on order status
-          setActiveStep(getStepFromStatus(response.data.status));
+        if (response.data && response.data.success) {
+          setBuild(response.data.data);
+          // Set active step based on build status
+          setActiveStep(getStepFromStatus(response.data.data.buildStatus));
         } else {
-          toast.error("Failed to load Order");
-          navigate("/adminpanel/orders/orderlist");
+          toast.error("Failed to load Build");
+          navigate("/adminpanel/orders/buildorderlist");
         }
       } catch (error) {
-        console.error("Error fetching order:", error);
-        toast.error("Failed to load order data");
-        navigate("/adminpanel/orders/orderlist");
+        console.error("Error fetching build:", error);
+        toast.error("Failed to load build data");
+        navigate("/adminpanel/orders/buildorderlist");
       } finally {
         setLoading(false);
       }
     };
-    fetchOrder();
+    fetchBuild();
   }, [id, backendUrl, navigate]);
 
   // Handle status change from stepper
   const handleStepperStatusChange = async (newStatus) => {
     try {
       setLoading(true);
+      const currentTime = new Date();
+
+      // Determine the step based on status
+      let newStep = getStepFromStatus(newStatus);
+      let currentStep = getStepFromStatus(build.buildStatus);
+
+      // Prepare timestamp updates
+      const stepTimestamp = {
+        [newStatus]: currentTime,
+      };
+
+      // If going back to a previous status, set the current status timestamp to null
+      if (newStep < currentStep) {
+        stepTimestamp[build.buildStatus] = null;
+      }
+
       const response = await axios.patch(
-        `${backendUrl}/api/checkout/product-orders/${id}`,
+        `${backendUrl}/api/build-transactions/${id}/status`,
         {
-          status: newStatus,
+          buildStatus: newStatus,
+          stepTimestamp,
         },
         {
           headers: {
@@ -119,12 +145,13 @@ function ViewOrder() {
       );
 
       if (response.data) {
-        setOrder((prev) => ({ ...prev, status: newStatus }));
-        toast.success("Order status updated successfully");
+        setBuild((prev) => ({ ...prev, buildStatus: newStatus }));
+        setActiveStep(newStep);
+        toast.success("Build status updated successfully");
       }
     } catch (error) {
-      console.error("Error updating order status:", error);
-      toast.error("Failed to update order status");
+      console.error("Error updating build status:", error);
+      toast.error("Failed to update build status");
     } finally {
       setLoading(false);
     }
@@ -137,51 +164,8 @@ function ViewOrder() {
       const currentTime = new Date();
 
       // Determine the step based on status
-      let newStep;
-      switch (newStatus) {
-        case "Pending":
-          newStep = 1;
-          break;
-        case "Successful":
-          newStep = 2;
-          break;
-        case "Shipped":
-          newStep = 3;
-          break;
-        case "Delivered":
-          newStep = 4;
-          break;
-        case "Canceled":
-          newStep = 2;
-          break;
-        case "Refunded":
-          newStep = 4;
-          break;
-        default:
-          newStep = 1;
-      }
-
-      // Get current step from current status
-      let currentStep;
-      switch (order.status) {
-        case "Pending":
-          currentStep = 1;
-          break;
-        case "Successful":
-          currentStep = 2;
-          break;
-        case "Shipped":
-          currentStep = 3;
-          break;
-        case "Delivered":
-          currentStep = 4;
-          break;
-        case "Canceled":
-          currentStep = 2;
-          break;
-        default:
-          currentStep = 1;
-      }
+      let newStep = getStepFromStatus(newStatus);
+      let currentStep = getStepFromStatus(build.buildStatus);
 
       // Prepare timestamp updates
       const stepTimestamp = {
@@ -190,14 +174,14 @@ function ViewOrder() {
 
       // If going back to a previous status, set the current status timestamp to null
       if (newStep < currentStep) {
-        stepTimestamp[order.status] = null;
+        stepTimestamp[build.buildStatus] = null;
       }
 
       // Update both status and timestamp
       const response = await axios.patch(
-        `${backendUrl}/api/checkout/product-orders/${id}`,
+        `${backendUrl}/api/build-transactions/${id}/status`,
         {
-          status: newStatus,
+          buildStatus: newStatus,
           stepTimestamp,
         },
         {
@@ -208,13 +192,13 @@ function ViewOrder() {
       );
 
       if (response.data) {
-        setOrder((prev) => ({ ...prev, status: newStatus }));
+        setBuild((prev) => ({ ...prev, buildStatus: newStatus }));
         setActiveStep(newStep);
-        toast.success("Order status updated successfully");
+        toast.success("Build status updated successfully");
       }
     } catch (error) {
-      console.error("Error updating order status:", error);
-      toast.error("Failed to update order status");
+      console.error("Error updating build status:", error);
+      toast.error("Failed to update build status");
     } finally {
       setLoading(false);
     }
@@ -222,11 +206,11 @@ function ViewOrder() {
 
   // Update the cancel button handler
   const handleCancel = () => {
-    navigate("/adminpanel/orders/orderlist");
+    navigate("/adminpanel/orders/buildorderlist");
   };
 
-  if (!order) {
-    return <div>Order not found</div>;
+  if (!build) {
+    return <div>Build not found</div>;
   }
 
   return (
@@ -235,11 +219,11 @@ function ViewOrder() {
       <div className="mt-3">
         <div className="flex items-center gap-2 ">
           <PageTitle
-            value={`Order #${order._id?.slice(-4).toUpperCase() || "----"}`}
+            value={`Build #${build._id?.slice(-4).toUpperCase() || "----"}`}
           />
           <Chip
-            label={order.status}
-            color={statusColorMap[order.status] || "default"}
+            label={build.buildStatus}
+            color={statusColorMap[build.buildStatus] || "default"}
             size="small"
             sx={{
               padding: "5px",
@@ -249,13 +233,13 @@ function ViewOrder() {
         </div>
         <PageSubtitle
           value={
-            new Date(order.createdAt).toLocaleDateString("en-GB", {
+            new Date(build.createdAt).toLocaleDateString("en-GB", {
               day: "2-digit",
               month: "short",
               year: "numeric",
             }) +
             " " +
-            new Date(order.createdAt).toLocaleTimeString([], {
+            new Date(build.createdAt).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit",
               hour12: true,
@@ -269,24 +253,32 @@ function ViewOrder() {
           <InputField
             type="select"
             options={StatusOptions}
-            value={order.status}
+            value={build.buildStatus}
             onChange={(value) => handleStatusChange(value)}
             width="100%"
           />
         </div>
       </div>
 
-      {/* Order Details */}
+      {/* Build Details */}
       <div className="mb-10 gap-4 w-full pr-4 flex items-start">
         <div className="w-2/3">
-          <div className="orderDetails border-2 border-violet-600 rounded-lg p-4 mb-4">
+          <div className="buildDetails border-2 border-violet-600 rounded-lg p-4 mb-4">
             <Box sx={{ mb: 3 }}>
               <Typography variant="h5" sx={{ mb: 1, fontWeight: "bold" }}>
-                Order Details
+                Build Details
               </Typography>
-              {order.items?.map((item, i) => (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h6" fontWeight="bold" color="primary">
+                  Build Name: {build.buildName || "Custom Build"}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  Build Type: {build.buildType || "Custom"}
+                </Typography>
+              </Box>
+              {build.components?.map((component, i) => (
                 <Stack
-                  key={item._id}
+                  key={component._id || component.componentId || i}
                   direction="row"
                   alignItems="center"
                   justifyContent="space-between"
@@ -299,10 +291,12 @@ function ViewOrder() {
                   pr={0}
                 >
                   <Box flex={3} display="flex" alignItems="center">
-                    <OrderItemCard
-                      name={item.name}
-                      type={item.type?.toUpperCase()}
-                      src={item.product_image}
+                    <BuildItemCard
+                      name={component.name}
+                      type={component.type?.toUpperCase()}
+                      src={component.product_image}
+                      componentId={component.componentId}
+                      manufacturer={component.manufacturer}
                     />
                   </Box>
                   <Box
@@ -312,7 +306,7 @@ function ViewOrder() {
                     justifyContent="flex-end"
                     textAlign="right"
                   >
-                    <Typography>x {item.quantity}</Typography>
+                    <Typography>x {component.quantity || 1}</Typography>
                   </Box>
                   <Box
                     flex={1}
@@ -323,7 +317,9 @@ function ViewOrder() {
                     marginRight={2}
                   >
                     <Typography variant="body1" fontWeight="bold" flex={1}>
-                      {item.price * item.quantity} LKR
+                      {component.price ?
+                        (component.price * (component.quantity || 1)).toLocaleString() :
+                        "N/A"} LKR
                     </Typography>
                   </Box>
                 </Stack>
@@ -345,7 +341,15 @@ function ViewOrder() {
                     color="primary"
                     sx={{ mb: 1 }}
                   >
-                    Subtotal:
+                    Total Price:
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    color="primary"
+                    sx={{ mb: 1 }}
+                  >
+                    Service Charge:
                   </Typography>
                   <Typography
                     variant="h6"
@@ -363,7 +367,15 @@ function ViewOrder() {
                 {/* Value column */}
                 <Box sx={{ textAlign: "right" }}>
                   <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                    {order.total?.toLocaleString() || 0} LKR
+                    {(build.TotalPrice - (build.serviceCharge || 0) - (build.deliveryCharge || 0))?.toLocaleString() || 0} LKR
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    color="info"
+                    sx={{ mb: 1 }}
+                  >
+                    + {build.serviceCharge?.toLocaleString() || 0} LKR
                   </Typography>
                   <Typography
                     variant="h6"
@@ -371,80 +383,42 @@ function ViewOrder() {
                     color="warning"
                     sx={{ mb: 1 }}
                   >
-                    + {order.shipping?.toLocaleString() || 0} LKR
+                    + {build.deliveryCharge?.toLocaleString() || 0} LKR
                   </Typography>
                   <Typography variant="h5" fontWeight="bold">
-                    {(
-                      (order.total || 0) + (order.shipping || 0)
-                    ).toLocaleString()}{" "}
-                    LKR
+                    {build.TotalPrice?.toLocaleString() || 0} LKR
                   </Typography>
                 </Box>
               </Box>
             </Box>
           </div>
-          <div className="orderTracking border-2 border-violet-600 rounded-lg p-4 mt-4 bg-purple-100">
+          <div className="buildTracking border-2 border-violet-600 rounded-lg p-4 mt-4 bg-purple-100">
             <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
-              Order Tracking
+              Build Tracking
             </Typography>
-            <OrderStepper
+            <BuildStepper
               activeStep={activeStep}
               setActiveStep={setActiveStep}
-              orderId={order._id}
+              buildId={build._id}
               onStatusChange={handleStepperStatusChange}
-              orderStatus={order.status}
+              buildStatus={build.buildStatus}
               editable={true}
             />
-            {order.status === "Refunded" && (
-              <Box sx={{ mt: 2, textAlign: "center" }}>
-                <Typography
-                  variant="h6"
-                  color="ternary"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  Order Refunded
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  {order.stepTimestamps?.Refunded ? (
-                    <>
-                      This order has been refunded on{" "}
-                      {new Date(
-                        order.stepTimestamps.Refunded
-                      ).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}{" "}
-                      at{" "}
-                      {new Date(
-                        order.stepTimestamps.Refunded
-                      ).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </>
-                  ) : (
-                    "This order has been refunded"
-                  )}
-                </Typography>
-              </Box>
-            )}
-            {order.status === "Canceled" && (
+            {build.buildStatus === "Canceled" && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <Typography
                   variant="h6"
                   color="error"
                   sx={{ fontWeight: "bold" }}
                 >
-                  Order Canceled
+                  Build Canceled
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  {order.stepTimestamps?.Canceled ? (
+                  {build.stepTimestamps?.Canceled ? (
                     <>
-                      This order has been Canceled on{" "}
+                      This build has been Canceled on{" "}
                       {new Date(
-                        order.stepTimestamps.Canceled
+                        build.stepTimestamps.Canceled
                       ).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -452,7 +426,7 @@ function ViewOrder() {
                       })}{" "}
                       at{" "}
                       {new Date(
-                        order.stepTimestamps.Canceled
+                        build.stepTimestamps.Canceled
                       ).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -460,26 +434,26 @@ function ViewOrder() {
                       })}
                     </>
                   ) : (
-                    "This order has been Canceled"
+                    "This build has been Canceled"
                   )}
                 </Typography>
               </Box>
             )}
-            {order.status === "Delivered" && (
+            {build.buildStatus === "Delivered" && (
               <Box sx={{ mt: 2, textAlign: "center" }}>
                 <Typography
                   variant="h6"
                   color="success"
                   sx={{ fontWeight: "bold" }}
                 >
-                  Order Delivered Successfully
+                  Build Delivered Successfully
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  {order.stepTimestamps?.Delivered ? (
+                  {build.stepTimestamps?.Delivered ? (
                     <>
-                      This order has been Delivered on{" "}
+                      This build has been Delivered on{" "}
                       {new Date(
-                        order.stepTimestamps.Delivered
+                        build.stepTimestamps.Delivered
                       ).toLocaleDateString("en-GB", {
                         day: "2-digit",
                         month: "short",
@@ -487,7 +461,7 @@ function ViewOrder() {
                       })}{" "}
                       at{" "}
                       {new Date(
-                        order.stepTimestamps.Delivered
+                        build.stepTimestamps.Delivered
                       ).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -495,7 +469,7 @@ function ViewOrder() {
                       })}
                     </>
                   ) : (
-                    "This order has been Delivered"
+                    "This build has been Delivered"
                   )}
                 </Typography>
               </Box>
@@ -524,8 +498,8 @@ function ViewOrder() {
                 }}
               >
                 <Avatar
-                  src={order.profilePicture || "../../client/public/logo.png"}
-                  alt={order.user_name}
+                  src={build.profilePicture || "../../client/public/logo.png"}
+                  alt={build.userName}
                   sx={{ width: 50, height: 50, flexShrink: 0 }}
                 />
                 <Box
@@ -538,14 +512,14 @@ function ViewOrder() {
                     variant="subtitle1"
                     sx={{ wordBreak: "break-word", fontWeight: "bold" }}
                   >
-                    {order.user_name}
+                    {build.userName}
                   </Typography>
                   <Typography
                     variant="body2"
                     color="textSecondary"
                     sx={{ wordBreak: "break-word" }}
                   >
-                    {order.email}
+                    {build.userEmail}
                   </Typography>
                 </Box>
               </Box>
@@ -564,25 +538,45 @@ function ViewOrder() {
                 gap: 1,
               }}
             >
-              {/* Address Row */}
-              <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-                <Typography
-                  variant="body1"
-                  fontWeight="bold"
-                  color="gray"
-                  sx={{ minWidth: "80px" }}
-                >
-                  Address
-                </Typography>
-                <Typography
-                  variant="body1"
-                  sx={{ whiteSpace: "normal", wordBreak: "break-word" }}
-                >
-                  :{order.address || "null"}
-                </Typography>
-              </Box>
+              {/* Conditionally display Address and District only for Home Delivery */}
+              {(build.deliveryMethod === "Home Delivery") && (
+                <>
+                  {/* Address Row */}
+                  <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="gray"
+                      sx={{ minWidth: "80px" }}
+                    >
+                      Address
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                    >
+                      :{build.userAddress || "N/A"}
+                    </Typography>
+                  </Box>
 
-              {/* Contact Row */}
+                  {/* District Row */}
+                  <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      color="gray"
+                      sx={{ minWidth: "80px" }}
+                    >
+                      District
+                    </Typography>
+                    <Typography variant="body1">
+                      :{build.district || "N/A"}
+                    </Typography>
+                  </Box>
+                </>
+              )}
+
+              {/* Delivery Method Row - Always displayed */}
               <Box sx={{ display: "flex", alignItems: "flex-start" }}>
                 <Typography
                   variant="body1"
@@ -590,17 +584,45 @@ function ViewOrder() {
                   color="gray"
                   sx={{ minWidth: "80px" }}
                 >
-                  Contact
+                  Method :
                 </Typography>
-                <Typography variant="body1">
-                  :{order.number || "null"}
-                </Typography>
+                <Box sx={{ ml: 0 }}>
+                  <Chip
+                    label={
+                      build.deliveryMethod === "Home Delivery"
+                        ? "By Delivery"
+                        : build.deliveryMethod === "Pick up at store"
+                          ? "By Store"
+                          : build.deliveryMethod || "N/A"
+                    }
+                    color={deliveryMethodColorMap[build.deliveryMethod] || "default"}
+                    size="small"
+                    sx={{
+                      height: "24px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                    }}
+                  />
+                </Box>
               </Box>
             </Box>
 
             <Typography variant="h6" sx={{ mb: 2, mt: 4, fontWeight: "bold" }}>
               Payment
             </Typography>
+            <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+              <Typography
+                variant="body1"
+                fontWeight="bold"
+                color="gray"
+                sx={{ minWidth: "80px" }}
+              >
+                Method :
+              </Typography>
+              <Typography variant="body1">
+                {build.paymentMethod || "Stripe"}
+              </Typography>
+            </Box>
           </div>
         </div>
       </div>
@@ -608,7 +630,7 @@ function ViewOrder() {
         <div className="float-right flex flex-row gap-x-2">
           <PrimaryButton
             fontSize="16px"
-            name="Save Order"
+            name="Save Build"
             buttonSize="medium"
             isBold={1}
             color="primary"
@@ -623,4 +645,4 @@ function ViewOrder() {
   );
 }
 
-export default ViewOrder;
+export default ViewBuild;

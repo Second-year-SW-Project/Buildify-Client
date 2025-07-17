@@ -163,7 +163,7 @@ export default function OrderTotal({
         </div>
         
         <div className="flex justify-between">
-          <span className="font-medium">Fixed service charge:</span>
+          <span className="font-medium">Service charge:</span>
           <span className="font-semibold">{formatPrice(serviceCharge)}</span>
         </div>
         

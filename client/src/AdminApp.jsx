@@ -118,9 +118,9 @@ const NAVIGATION = addBaseToSegments([
         icon: <Iconset type="orderList" />,
       },
       {
-        segment: 'receivedorders',
-        title: 'Received Orders',
-        icon: <Iconset type="receivedOrders" />,
+        segment: 'buildorderlist',
+        title: 'Build Order List',
+        icon: <Iconset type="buildOrderList" />,
       },
     ],
   },

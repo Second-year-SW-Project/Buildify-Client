@@ -31,9 +31,10 @@ import InvoiceEdit from "./Admin/InvoiceEdit.jsx";
 import CreateGames from "./Admin/CreateGames.jsx";
 import ManageGames from "./Admin/ManageGames.jsx";
 import OrderList from "./Admin/OrderList.jsx";
-import ReceivedOrders from "./Admin/ReceivedOrders.jsx";
+import BuildOrderList from "./Admin/BuildOrderList.jsx";
 import Comment from "./Admin/Comment.jsx";
 import ViewOrder from "./Admin/ViewOrder.jsx";
+import ViewBuild from "./Admin/ViewBuild.jsx";
 //Login pages
 import Signup from "./Login/Signup.jsx";
 import Login from "./Login/Login.jsx";
@@ -119,15 +120,19 @@ const router = createBrowserRouter([
             ],
           },
           {
-            path: "orders/receivedorders",
+            path: "orders/buildorderlist",
             children: [
-              { index: true, element: <ReceivedOrders /> },
-              { path: ":id", element: <ReceivedOrders /> },
+              { index: true, element: <BuildOrderList /> },
+              { path: ":id", element: <BuildOrderList /> },
             ],
           },
           {
             path: "orders/vieworder/:id",
             element: <ViewOrder />,
+          },
+          {
+            path: "orders/viewbuild/:id",
+            element: <ViewBuild />,
           },
           { path: "usermanage", element: <Usermanage /> },
           { path: "feedbackmanage", element: <Complaints /> },

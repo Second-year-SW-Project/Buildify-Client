@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
-import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import { InvoiceStatus } from "../AtomicComponents/ForAdminForms/Category";
 import SetDate from "../AtomicComponents/Inputs/date";
@@ -269,9 +268,7 @@ function InvoiceEdit() {
                     label="Sub Category"
                     value={item.subCategory}
                     fullWidth
-                    InputProps={{
-                      readOnly: true,
-                    }}
+                    InputLabelProps={{ shrink: true }}
                   />
 
                   <InputField
@@ -296,9 +293,7 @@ function InvoiceEdit() {
                         color="error"
                         startIcon={<Iconset type="delete" />}
                         onClick={() => removeItem(index)}
-                      >
-                        Remove
-                      </Button>
+                      ></Button>
                     </div>
                   )}
                 </div>
@@ -354,13 +349,45 @@ function InvoiceEdit() {
         <div className="pb-4 mr-4">
           <div className="float-right">
             <div className="flex gap-2">
-              <AddButton
-                name="Save Changes"
-                isBold={1}
-                buttonSize="medium"
-                fontSize="16px"
+              <Button
+                variant="contained"
                 onClick={handleSubmit}
-              />
+                sx={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  borderRadius: "10px",
+                  padding: "10px 20px",
+                  backgroundColor: "#9333ea",
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: "#7e22ce",
+                  },
+                }}
+              >
+                Save Changes
+              </Button>
+
+              {/* Cancel button - outlined default look */}
+              <Button
+                variant="outlined"
+                onClick={() => navigate("/adminpanel/invoice/invoicelist")}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                  borderRadius: "10px",
+                  padding: "10px 20px",
+                  color: "#6b7280", // Tailwind's gray-500
+                  borderColor: "#d1d5db", // Tailwind's gray-300
+                  "&:hover": {
+                    backgroundColor: "#f9fafb", // subtle gray hover
+                    borderColor: "#9ca3af", // Tailwind's gray-400
+                  },
+                }}
+              >
+                Cancel
+              </Button>
             </div>
           </div>
         </div>

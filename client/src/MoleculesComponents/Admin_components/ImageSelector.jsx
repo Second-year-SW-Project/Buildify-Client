@@ -24,6 +24,17 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
+        // Check if adding new files would exceed the limit of 4
+        if (images.length + files.length > 4) {
+            toast.error('You can only select up to 4 images.', {
+                style: {
+                    background: '#fe0132',
+                    color: '#fff',
+                },
+            });
+            return;
+        }
+
         //Image validation limits
         const maxSize = 1 * 1024 * 1024;
         const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];

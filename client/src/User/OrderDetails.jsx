@@ -4,6 +4,7 @@ import axios from "axios";
 import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import OrderStepper from "../MoleculesComponents/Admin_components/Stepper";
+import BuildStepper from "../MoleculesComponents/Admin_components/BuildStepper";
 import { Box, Button, Divider, Typography } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
@@ -19,30 +20,46 @@ export default function OrderDetails() {
   const [order, setOrder] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [build, setBuild] = useState(null);
+  const [buildactiveStep, setBuildActiveStep] = useState(0);
   const navigate = useNavigate();
 
   const getStepFromStatus = (status) => {
     switch (status) {
       case "Pending":
-      case "pending":
-        return 0;
+        return 1;
       case "Successful":
-      case "successful":
-        return 3;
-      case "Shipped":
-      case "shipped":
         return 2;
-      case "Delivered":
-      case "delivered":
+      case "Shipped":
         return 3;
+      case "Delivered":
+        return 4;
       case "Refunded":
-      case "refunded":
         return 4;
       case "Canceled":
-      case "canceled":
-        return 0;
+        return 2;
       default:
-        return 0;
+        return 1;
+    }
+  };
+  const getBuildStepFromStatus = (status) => {
+    switch (status) {
+      case "Pending":
+        return 1;
+      case "Confirmed":
+        return 2;
+      case "Building":
+        return 3;
+      case "Completed":
+        return 4;
+      case "Shipped":
+        return 5;
+      case "Delivered":
+        return 6;
+      case "Canceled":
+        return 1;
+      default:
+        return 1;
     }
   };
 
@@ -77,7 +94,7 @@ export default function OrderDetails() {
           items: mapItems(res.data.items, "product"),
         };
         setOrder(normalizedProductOrder);
-        setActiveStep(getStepFromStatus(res.data.status));
+        setActiveStep(getStepFromStatus(normalizedProductOrder.status));
       } else if (orderType === "pc_build") {
         res = await axios.get(
           `${backendUrl}/api/build-transactions/${orderId}`,
@@ -108,7 +125,7 @@ export default function OrderDetails() {
         };
 
         setOrder(normalizedOrder);
-        setActiveStep(getStepFromStatus(normalizedOrder.status));
+        setBuildActiveStep(getBuildStepFromStatus(normalizedOrder.status));
       }
     } catch (err) {
       console.error("Failed to fetch order", err);
@@ -120,61 +137,210 @@ export default function OrderDetails() {
     fetchOrder();
   }, [orderId, orderType]);
 
-  const handleStatusChange = async (newStatus) => {
-    // For product orders, enforce shipped before delivered
-    if (
-      orderType === "product" &&
-      newStatus === "Delivered" &&
-      order.status !== "Shipped"
-    ) {
-      toast.error(
-        "Order must be 'Shipped' before it can be marked as 'Delivered'"
-      );
-      return;
-    }
-
+  // Handle status change from stepper
+  const handleStepperStatusChange = async (newStatus) => {
     try {
       setLoading(true);
-      let response;
-      if (orderType === "product") {
-        response = await axios.patch(
-          `${backendUrl}/api/checkout/product-orders/${orderId}`,
-          {
-            status: newStatus,
-            stepTimestamp: { [newStatus]: new Date().toISOString() },
+      const response = await axios.patch(
+        `${backendUrl}/api/checkout/product-orders/${orderId}`,
+        {
+          status: newStatus,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-      } else if (orderType === "pc_build") {
-        response = await axios.patch(
-          `${backendUrl}/api/build-transactions/${orderId}/status`,
-          {
-            buildStatus: newStatus,
-            stepTimestamp: { [newStatus]: new Date().toISOString() },
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-      }
+        }
+      );
 
       if (response.data) {
-        setOrder((prev) => ({
-          ...prev,
-          status: newStatus,
-        }));
-        setActiveStep(getStepFromStatus(newStatus));
+        setOrder((prev) => ({ ...prev, status: newStatus }));
         toast.success("Order status updated successfully");
       }
     } catch (error) {
       console.error("Error updating order status:", error);
       toast.error("Failed to update order status");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      setLoading(true);
+      const currentTime = new Date();
+
+      // Determine the step based on status
+      let newStep;
+      switch (newStatus) {
+        case "Pending":
+          newStep = 1;
+          break;
+        case "Successful":
+          newStep = 2;
+          break;
+        case "Shipped":
+          newStep = 3;
+          break;
+        case "Delivered":
+          newStep = 4;
+          break;
+        case "Canceled":
+          newStep = 2;
+          break;
+        case "Refunded":
+          newStep = 4;
+          break;
+        default:
+          newStep = 1;
+      }
+
+      // Get current step from current status
+      let currentStep;
+      switch (order.status) {
+        case "Pending":
+          currentStep = 1;
+          break;
+        case "Successful":
+          currentStep = 2;
+          break;
+        case "Shipped":
+          currentStep = 3;
+          break;
+        case "Delivered":
+          currentStep = 4;
+          break;
+        case "Canceled":
+          currentStep = 2;
+          break;
+        default:
+          currentStep = 1;
+      }
+
+      // Prepare timestamp updates
+      const stepTimestamp = {
+        [newStatus]: currentTime,
+      };
+
+      // If going back to a previous status, set the current status timestamp to null
+      if (newStep < currentStep) {
+        stepTimestamp[order.status] = null;
+      }
+
+      // Update both status and timestamp
+      const response = await axios.patch(
+        `${backendUrl}/api/checkout/product-orders/${orderId}`,
+        {
+          status: newStatus,
+          stepTimestamp,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        setOrder((prev) => ({ ...prev, status: newStatus }));
+        setActiveStep(newStep);
+        toast.success("Order status updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBuildStepperStatusChange = async (newStatus) => {
+    try {
+      setLoading(true);
+      const currentTime = new Date();
+
+      // Determine the step based on status
+      let newStep = getBuildStepFromStatus(newStatus);
+      let currentStep = getBuildStepFromStatus(order.status);
+
+      // Prepare timestamp updates
+      const stepTimestamp = {
+        [newStatus]: currentTime,
+      };
+
+      // If going back to a previous status, set the current status timestamp to null
+      if (newStep < currentStep) {
+        stepTimestamp[order.status] = null;
+      }
+
+      const response = await axios.patch(
+        `${backendUrl}/api/build-transactions/${orderId}/status`,
+        {
+          buildStatus: newStatus,
+          stepTimestamp,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        setOrder((prev) => ({ ...prev, status: newStatus }));
+        setBuildActiveStep(newStep);
+        toast.success("Build status updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating build status:", error);
+      toast.error("Failed to update build status");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle status change from dropdown
+  const handleBuildStatusChange = async (newStatus) => {
+    try {
+      setLoading(true);
+      const currentTime = new Date();
+
+      // Determine the step based on status
+      let newStep = getBuildStepFromStatus(newStatus);
+      let currentStep = getBuildStepFromStatus(order.status);
+
+      // Prepare timestamp updates
+      const stepTimestamp = {
+        [newStatus]: currentTime,
+      };
+
+      // If going back to a previous status, set the current status timestamp to null
+      if (newStep < currentStep) {
+        stepTimestamp[order.status] = null;
+      }
+
+      // Update both status and timestamp
+      const response = await axios.patch(
+        `${backendUrl}/api/build-transactions/${orderId}/status`,
+        {
+          buildStatus: newStatus,
+          stepTimestamp,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        setOrder((prev) => ({ ...prev, status: newStatus }));
+        setBuildActiveStep(newStep);
+        toast.success("Build status updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating build status:", error);
+      toast.error("Failed to update build status");
     } finally {
       setLoading(false);
     }
@@ -242,8 +408,9 @@ export default function OrderDetails() {
                     <Button
                       variant="outlined"
                       sx={{ borderRadius: 900, textTransform: "none", px: 2 }}
+                      onClick={handleRefundClick}
                     >
-                      Order Again
+                      Return/refund
                     </Button>
                   </div>
                   <Divider />
@@ -342,7 +509,7 @@ export default function OrderDetails() {
                               px: 2,
                             }}
                           >
-                            Returns/refunds
+                            Return/refund
                           </Button>
                         </div>
                       </div>
@@ -368,20 +535,37 @@ export default function OrderDetails() {
                     >
                       Order Tracking
                     </Typography>
-
-                    <OrderStepper
-                      activeStep={activeStep}
-                      orderStatus={order.status}
-                      editable={false}
-                    />
+                    {orderType === "product" ? (
+                      <OrderStepper
+                        activeStep={activeStep}
+                        setActiveStep={setActiveStep}
+                        orderId={orderId}
+                        onStatusChange={handleStepperStatusChange}
+                        orderStatus={order.status}
+                        editable={false}
+                      />
+                    ) : (
+                      <BuildStepper
+                        activeStep={buildactiveStep}
+                        setActiveStep={setBuildActiveStep}
+                        buildId={orderId}
+                        onStatusChange={handleBuildStepperStatusChange}
+                        buildStatus={order.status}
+                        editable={false}
+                      />
+                    )}
 
                     {order.status === "Shipped" && (
                       <Button
                         variant="contained"
-                        color="success"
+                        color="primary"
                         sx={{ mt: 3 }}
                         disabled={loading}
-                        onClick={() => handleStatusChange("Delivered")}
+                        onClick={() =>
+                          orderType === "product"
+                            ? handleStatusChange("Delivered")
+                            : handleBuildStatusChange("Delivered")
+                        }
                       >
                         {loading ? "Updating..." : "Mark as Delivered"}
                       </Button>
