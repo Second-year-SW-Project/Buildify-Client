@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ClearIcon from '@mui/icons-material/Clear';
 import { InputField } from '../Inputs/Input';
@@ -11,12 +11,23 @@ const BuildConfirmationPopup = ({
   onClose, 
   selectedComponents,
   onConfirm,
-  totalPrice
+  totalPrice,
+  isEditMode = false,
+  existingBuildName = ''
 }) => {
   const [buildName, setBuildName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
+
+  // Initialize build name when component mounts or when existingBuildName changes
+  useEffect(() => {
+    if (isEditMode && existingBuildName) {
+      setBuildName(existingBuildName);
+    } else {
+      setBuildName('');
+    }
+  }, [isEditMode, existingBuildName]);
 
   const handleConfirm = async () => {
     // Check if user is logged in
@@ -422,7 +433,9 @@ BuildConfirmationPopup.propTypes = {
   onClose: PropTypes.func.isRequired,
   selectedComponents: PropTypes.object.isRequired,
   onConfirm: PropTypes.func.isRequired,
-  totalPrice: PropTypes.number.isRequired
+  totalPrice: PropTypes.number.isRequired,
+  isEditMode: PropTypes.bool,
+  existingBuildName: PropTypes.string
 };
 
 export default BuildConfirmationPopup;
