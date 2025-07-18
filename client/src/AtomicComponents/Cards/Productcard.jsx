@@ -37,9 +37,9 @@ export function GameCard({ name, type, src }) {
 
 export function TopProductCard({ name, orderCount, src, sales, rate }) {
     return (
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center space-x-3">
             <div className="flex justify-center items-center">
-                <img className="max-w-16 max-h-16" src={src} alt="image" />
+                <img className="max-w-14 max-h-14" src={src} alt="image" />
             </div>
             <div className="flex flex-col">
                 <Typography variant="body2" fontWeight="bold" style={{
@@ -47,9 +47,9 @@ export function TopProductCard({ name, orderCount, src, sales, rate }) {
                     whiteSpace: "normal", // Enable wrapping
                 }}>{name}</Typography>
                 <div className="flex flex-row items-center space-x-1">
-                    <Iconset type="attachMoney" fontSize="30px" color="primary"></Iconset>
+                    <Iconset type="attachMoney" fontSize="24px" color="primary"></Iconset>
                     <Typography variant="caption" color="ternary">Sales: {sales} LKR</Typography>
-                    <Iconset type="star" fontSize="30px" color="warning"></Iconset>
+                    <Iconset type="star" fontSize="24px" color="warning"></Iconset>
                     <Typography variant="caption" fontWeight="bold" >{rate}</Typography>
                 </div>
             </div>

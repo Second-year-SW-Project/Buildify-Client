@@ -289,7 +289,7 @@ export function OrderTable({
                       )}
                     </TableCell>
                     <TableCell>
-                      <Typography>
+                      <Typography sx={{ fontWeight: "bold" }}>
                         {format(new Date(order.createdAt), "dd MMM yyyy")}
                       </Typography>
                       <Typography fontSize="small" color="gray">
@@ -595,12 +595,156 @@ export function OrderSummary({
         count={totalCount}
         rowsPerPage={currentRowsPerPage}
         page={currentPage}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        labelDisplayedRows={({ from, to, count }) => {
-          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / currentRowsPerPage);
-          return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
-        }}
+      />
+    </Paper>
+  );
+}
+
+export function BuildSummary({
+  columns,
+  builds,
+  width,
+  color,
+  pagination = null,
+}) {
+  const statusColorMap = {
+    Pending: "warning",
+    Confirmed: "info",
+    Building: "secondary",
+    Completed: "success",
+    Shipped: "primary",
+    Delivered: "success",
+    Canceled: "error"
+  };
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  // Handle pagination changes
+  const handleChangePage = (event, newPage) => {
+    if (pagination) {
+      pagination.onPageChange(newPage + 1); // Convert to 1-based index for API
+    } else {
+      setPage(newPage);
+    }
+  };
+
+  // Handle rows per page changes
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    if (pagination) {
+      pagination.onItemsPerPageChange(newRowsPerPage);
+    } else {
+      setRowsPerPage(newRowsPerPage);
+      setPage(0);
+    }
+  };
+
+  const autoSizeCellStyle = {
+    padding: "8px 16px",
+    whiteSpace: "nowrap",
+  };
+
+  // Use pagination props if provided, otherwise use local state
+  const currentPage = pagination ? pagination.currentPage - 1 : page;
+  const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
+  const totalCount = pagination ? pagination.totalItems : builds.length;
+
+  return (
+    <Paper sx={{ width: width || "100%", overflow: "hidden" }}>
+      <TableContainer>
+        <Table sx={{ borderRadius: "20px" }}>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: theme.palette.primary100.main, borderRadius: "50px" }}>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  style={{
+                    ...autoSizeCellStyle,
+                    color: color || "gray",
+                    fontWeight: "bold",
+                    width: column.width || 'auto',
+                    padding: column.padding,
+                  }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {builds && builds.length > 0 ? builds.map((build) => (
+              <TableRow key={build._id}>
+                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 85 }}>
+                  {build._id ? `#${build._id.slice(-4).toUpperCase()}` : "#----"}
+                </TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} style={{ minWidth: 230 }}>
+                    <Avatar
+                      src={build.profilePicture || build.userDetails?.profilePicture}
+                      alt={build.userName || build.userDetails?.name}
+                      sx={{ width: 40, height: 40 }}
+                    />
+                    <Box sx={{
+                      wordBreak: 'break-word'
+                    }}>
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        {build.userName || build.userDetails?.name}
+                      </Typography>
+                      <Typography variant="caption" color="textSecondary">
+                        {build.userEmail || build.userDetails?.email}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </TableCell>
+                <TableCell>
+                  <Typography style={{ minWidth: 130 }}>
+                    {format(new Date(build.createdAt), "dd MMM yyyy")}
+                  </Typography>
+                  <Typography fontSize="small" color="gray">
+                    {format(new Date(build.createdAt), "p")}
+                  </Typography>
+                </TableCell>
+                <TableCell style={{ minWidth: 150 }}>
+                  {build.buildName || "Custom Build"}
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 120 }}>
+                  {build.totalCharge !== undefined
+                    ? build.totalCharge.toLocaleString()
+                    : "0"}{" "}
+                  LKR
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={build.buildStatus}
+                    color={statusColorMap[build.buildStatus] || "default"}
+                    size="small"
+                    sx={{
+                      padding: "5px",
+                      height: "30px",
+                      width: "100px",
+                      textAlign: "center",
+                      fontWeight: "bold",
+                    }}
+                  />
+                </TableCell>
+              </TableRow>
+            )) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} align="center">
+                  <Typography>Currently Not Available</Typography>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={totalCount}
+        rowsPerPage={currentRowsPerPage}
+        page={currentPage}
       />
     </Paper>
   );
@@ -642,7 +786,7 @@ export function GameTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data && data.length > 0 ? data.slice(0, 5).map((row, index) => (
+            {data && data.length > 0 ? data.slice(0, 7).map((row, index) => (
               <TableRow key={index} hover>
                 {columns.map((column) => (
                   <TableCell
@@ -674,8 +818,6 @@ export function TopProductsTable({
   width,
   color,
   pagination = null, // for future API-based pagination
-  onPageChange, // callback for page change (future API)
-  onRowsPerPageChange, // callback for rows per page change (future API)
 }) {
   // Ensure cardDetails is always an array
   const rows = Array.isArray(cardDetails) ? cardDetails : [cardDetails];
@@ -686,24 +828,6 @@ export function TopProductsTable({
   // Use pagination props if provided, otherwise use local state
   const currentPage = pagination ? pagination.currentPage - 1 : page; // 0-based for MUI
   const totalCount = pagination ? pagination.totalItems : rows.length;
-
-  // Handler for page change
-  const handleChangePage = (event, newPage) => {
-    if (pagination && onPageChange) {
-      onPageChange(newPage + 1); // 1-based for API
-    } else {
-      setPage(newPage);
-    }
-  };
-
-  // Handler for rows per page change (future-proof, but always 5 for now)
-  const handleChangeRowsPerPage = (event) => {
-    if (pagination && onRowsPerPageChange) {
-      onRowsPerPageChange(5); // Always 5
-    } else {
-      setPage(0);
-    }
-  };
 
   const autoSizeCellStyle = {
     padding: "8px 10px",
@@ -737,20 +861,6 @@ export function TopProductsTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5]}
-        component="div"
-        count={totalCount}
-        rowsPerPage={rowsPerPage}
-        page={currentPage}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage={"Rows per page"}
-        labelDisplayedRows={({ from, to, count }) => {
-          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / rowsPerPage);
-          return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
-        }}
-      />
     </Paper>
   );
 
@@ -889,7 +999,7 @@ export function BuildTable({
                       )}
                     </TableCell>
                     <TableCell sx={{ minWidth: 120 }}>
-                      <Typography>
+                      <Typography sx={{ fontWeight: "bold" }}>
                         {build.createdAt ? format(new Date(build.createdAt), "dd MMM yyyy") : "-"}
                       </Typography>
                       <Typography fontSize="small" color="gray">

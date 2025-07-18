@@ -25,15 +25,29 @@ function ViewBuild() {
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
 
-  const StatusOptions = [
-    { value: "Pending", label: "Pending" },
-    { value: "Confirmed", label: "Confirmed" },
-    { value: "Building", label: "Building" },
-    { value: "Completed", label: "Completed" },
-    { value: "Shipped", label: "Shipped" },
-    { value: "Delivered", label: "Delivered" },
-    { value: "Canceled", label: "Canceled" },
-  ];
+  // Generate status options based on delivery method
+  const getStatusOptions = (deliveryMethod) => {
+    const baseOptions = [
+      { value: "Pending", label: "Pending" },
+      { value: "Confirmed", label: "Confirmed" },
+      { value: "Building", label: "Building" },
+      { value: "Completed", label: "Completed" },
+    ];
+
+    // Add Shipped option only for home delivery
+    if (deliveryMethod !== "Pick up at store") {
+      baseOptions.push({ value: "Shipped", label: "Shipped" });
+    }
+
+    baseOptions.push(
+      { value: "Delivered", label: "Delivered" },
+      { value: "Canceled", label: "Canceled" }
+    );
+
+    return baseOptions;
+  };
+
+  const StatusOptions = getStatusOptions(build?.deliveryMethod);
 
   const statusColorMap = {
     Pending: "warning",
@@ -50,24 +64,45 @@ function ViewBuild() {
     "Pick up at store": "info",
   };
 
-  const getStepFromStatus = (status) => {
-    switch (status) {
-      case "Pending":
-        return 1; // Start from step 1 (Build Confirmed) when order is pending
-      case "Confirmed":
-        return 2;
-      case "Building":
-        return 3;
-      case "Completed":
-        return 4;
-      case "Shipped":
-        return 5;
-      case "Delivered":
-        return 6;
-      case "Canceled":
-        return 1;
-      default:
-        return 1;
+  const getStepFromStatus = (status, deliveryMethod) => {
+    if (deliveryMethod === "Pick up at store") {
+      // Skip Shipped step for store pickup
+      switch (status) {
+        case "Pending":
+          return 1; // Start from step 1 (Build Confirmed) when order is pending
+        case "Confirmed":
+          return 2;
+        case "Building":
+          return 3;
+        case "Completed":
+          return 4;
+        case "Delivered":
+          return 5;
+        case "Canceled":
+          return 1;
+        default:
+          return 1;
+      }
+    } else {
+      // Include Shipped step for home delivery
+      switch (status) {
+        case "Pending":
+          return 1; // Start from step 1 (Build Confirmed) when order is pending
+        case "Confirmed":
+          return 2;
+        case "Building":
+          return 3;
+        case "Completed":
+          return 4;
+        case "Shipped":
+          return 5;
+        case "Delivered":
+          return 6;
+        case "Canceled":
+          return 1;
+        default:
+          return 1;
+      }
     }
   };
 
@@ -95,7 +130,7 @@ function ViewBuild() {
         if (response.data && response.data.success) {
           setBuild(response.data.data);
           // Set active step based on build status
-          setActiveStep(getStepFromStatus(response.data.data.buildStatus));
+          setActiveStep(getStepFromStatus(response.data.data.buildStatus, response.data.data.deliveryMethod));
         } else {
           toast.error("Failed to load Build");
           navigate("/adminpanel/orders/buildorderlist");
@@ -118,8 +153,8 @@ function ViewBuild() {
       const currentTime = new Date();
 
       // Determine the step based on status
-      let newStep = getStepFromStatus(newStatus);
-      let currentStep = getStepFromStatus(build.buildStatus);
+      let newStep = getStepFromStatus(newStatus, build.deliveryMethod);
+      let currentStep = getStepFromStatus(build.buildStatus, build.deliveryMethod);
 
       // Prepare timestamp updates
       const stepTimestamp = {
@@ -164,8 +199,8 @@ function ViewBuild() {
       const currentTime = new Date();
 
       // Determine the step based on status
-      let newStep = getStepFromStatus(newStatus);
-      let currentStep = getStepFromStatus(build.buildStatus);
+      let newStep = getStepFromStatus(newStatus, build.deliveryMethod);
+      let currentStep = getStepFromStatus(build.buildStatus, build.deliveryMethod);
 
       // Prepare timestamp updates
       const stepTimestamp = {
@@ -402,6 +437,7 @@ function ViewBuild() {
               buildId={build._id}
               onStatusChange={handleStepperStatusChange}
               buildStatus={build.buildStatus}
+              deliveryMethod={build.deliveryMethod}
               editable={true}
             />
             {build.buildStatus === "Canceled" && (
