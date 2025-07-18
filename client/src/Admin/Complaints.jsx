@@ -245,13 +245,18 @@ const [emailSearch, setEmailSearch] = useState('');
                     <TableCell className="text-black font-bold">{complaint.complaintType}</TableCell>
 
                     <TableCell>
-                      <span className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                        complaint.status === 'Resolved' ? 'bg-green-100 text-green-800' :
-                        complaint.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
-                        {complaint.status}
-                      </span>
+                    <span
+  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap text-center w-[100px] inline-block ${
+    complaint.status === 'Resolved'
+      ? 'bg-green-100 text-green-800'
+      : complaint.status === 'Pending'
+      ? 'bg-yellow-100 text-yellow-800'
+      : 'bg-blue-100 text-blue-800'
+  }`}
+>
+  {complaint.status}
+</span>
+
                     </TableCell>
 
                     <TableCell>

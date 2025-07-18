@@ -273,7 +273,7 @@ const RMA = () => {
 
               paginatedRequests.map((request) => (
                 <TableRow key={request._id} hover>
-                  <TableCell style={{fontWeight:"bold"}}>{request.orderId}</TableCell>
+                  <TableCell style={{fontWeight:"bold"}}>#{request.orderId.slice(-4).toUpperCase()}</TableCell>
                   <TableCell>
   <Box display="flex" flexDirection="column">
     <Typography sx={{ fontWeight: 'bold', color: 'black' }}>
@@ -298,7 +298,7 @@ const RMA = () => {
                         borderRadius: '9999px',
                         fontWeight: 600,
                         display: 'inline-block',
-                        minWidth: 90,
+                        minWidth: '130px',
                         textAlign: 'center',
                         color:
                           request.status === 'Resolved'
