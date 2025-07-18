@@ -7,14 +7,21 @@ export default function Reviewcardhome({ review }) {
       <div className="flex justify-between">
         <div className="flex gap-3">
           <img
-            src={review?.imgUrl || "https://cdn-icons-png.freepik.com/256/3135/3135768.png"}
-            alt={review.name}
+            src={
+              review?.userId?.profilePicture && review.userId.profilePicture !== ""
+                ? review.userId.profilePicture
+                : "https://cdn-icons-png.freepik.com/256/3135/3135768.png"
+            }
+            alt={review?.userId?.name || review.name}
             className="w-12 h-12 rounded-full object-cover"
           />
           <div>
             <h3 className="text-sm font-semibold text-gray-800 ml-2 ">{review.type}</h3>
-            <p className="text-xs text-blue-600 font-medium ml-2 ">
-              Purchased: {review.type}
+            <p className="text-xs text-purple-600 font-medium ml-2 ">
+              {review?.userId?.name ? `By: ${review.userId.name}` : null}
+            </p>
+            <p className="text-xs text-gray-600 ml-2 ">
+              Purchased: {review.productName || review.name}
             </p>
           </div>
         </div>

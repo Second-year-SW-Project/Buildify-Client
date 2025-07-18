@@ -30,13 +30,13 @@ export default function PCBuilderBanners() {
         >
           <div className="w-full lg:w-1/2">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">ADVANCED MODE</h2>
-            <p className="mb-4 text-sm md:text-base leading-relaxed">Build your ultimate custom PC—choose your components, and we'll ensure everything fits and works perfectly!
+            <p className="mb-8 text-sm md:text-base leading-relaxed">Build your ultimate custom PC—choose your components, and we'll ensure everything fits and works perfectly!
             </p>
             <button
               onClick={() => navigate('/chooseparts')}
-              className="bg-white text-red-700 font-semibold text-sm px-4 py-2 rounded hover:bg-gray-200 transition"
+              className="w-52 border border-white/80 text-white/90 font-semibold text-base py-2 bg-transparent hover:bg-white/10 transition rounded"
             >
-              Start
+              Customize Now
             </button>
           </div>
           <div className="w-full lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">
@@ -55,14 +55,14 @@ export default function PCBuilderBanners() {
         >
           <div className="w-full lg:w-1/2">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">EASY MODE</h2>
-            <p className="mb-4 text-sm md:text-base leading-relaxed">
+            <p className="mb-8 text-sm md:text-base leading-relaxed">
               Find your perfect gaming PC—choose your favorite games, set your budget, and let us do the rest!
             </p>
             <button
               onClick={() => navigate('/selectgame')}
-              className="bg-white text-red-700 font-semibold text-sm px-4 py-2 rounded hover:bg-gray-200 transition"
+              className="w-52 border border-white/80 text-white/90 font-semibold text-base py-2 bg-transparent hover:bg-white/10 transition rounded"
             >
-              Start
+              Customize Now
             </button>
           </div>
           <div className="w-full lg:w-1/2 mt-6 lg:mt-0 flex justify-center items-center">

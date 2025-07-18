@@ -15,7 +15,21 @@ export default function Home_part4() {
     const fetchReviews = async () => {
       try {
         const response = await axios.get(`${backendUrl}/api/review/admin/all`); 
-        setReviews(response.data.slice(0, 6)); //show only 6 reviews
+        const reviews = response.data.slice(0, 6); //show only 6 reviews
+
+        // Fetch product names for each review
+        const productNamePromises = reviews.map(async (review) => {
+          try {
+            const productRes = await axios.get(`${backendUrl}/api/product/${review.productId}`);
+            // If productRes.data.Success, use productRes.data.data.name, else fallback
+            let productName = productRes.data.name || productRes.data.data?.name || null;
+            return { ...review, productName };
+          } catch (err) {
+            return { ...review, productName: null };
+          }
+        });
+        const reviewsWithProductNames = await Promise.all(productNamePromises);
+        setReviews(reviewsWithProductNames);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
