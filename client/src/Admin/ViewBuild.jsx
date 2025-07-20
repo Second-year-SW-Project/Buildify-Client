@@ -53,9 +53,10 @@ function ViewBuild() {
     Pending: "warning",
     Confirmed: "primaryLight",
     Building: "primaryDark",
-    Completed: "success",
+    Completed: "delete",
     Shipped: "info",
     Delivered: "primary",
+    Successful: "success",
     Canceled: "error",
   };
 
@@ -78,6 +79,8 @@ function ViewBuild() {
           return 4;
         case "Delivered":
           return 5;
+        case "Successful":
+          return 6;
         case "Canceled":
           return 1;
         default:
@@ -98,6 +101,8 @@ function ViewBuild() {
           return 5;
         case "Delivered":
           return 6;
+        case "Successful":
+          return 7;
         case "Canceled":
           return 1;
         default:
