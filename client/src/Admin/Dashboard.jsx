@@ -15,15 +15,13 @@ import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import { subCategories } from '../AtomicComponents/ForAdminForms/Category';
 import axios from 'axios';
 import dayjs from 'dayjs';
-
 import slide1 from '../assets/images/DashboadSlider/1.png';
 import slide2 from '../assets/images/DashboadSlider/3.png';
 import slide3 from '../assets/images/DashboadSlider/4.png';
-import Product from '../assets/images/DashboadSlider/product.png';
+import Product from '../assets/images/DashboadSlider/Product.png';
 import Order from '../assets/images/DashboadSlider/Order.png';
 import Games from '../assets/images/DashboadSlider/Games.png';
 import { InputField } from '../AtomicComponents/Inputs/Input';
-import { Margin, Padding } from '@mui/icons-material';
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 
 export default function Dashboard() {

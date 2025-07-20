@@ -166,22 +166,31 @@ const theme = createTheme({
     },
     info: {
       main: "#2C87C3",
-      contrastText: "#edeff1",
+      contrastText: "#dbe7f6ff",
+    },
+    info: {
+      main: "#2C87C3",
+      contrastText: "#dbe7f6ff",
+    },
+    infoprimary: {
+      main: "#2C87C3",
+      contrastText: "#FFFFFF",
     },
     delete: {
-      main: '#ff5630',
+      main: '#ff7433ff',
+      contrastText: "#f6e7dbff",
     },
     primaryprimary: {
       main: '#961AFD',
-      contrastText: '#FFFFFF',
+      contrastText: '#efe7faff',
     },
     primaryLight: {
       main: '#B966FD',
-      contrastText: '#FFFFFF',
+      contrastText: '#f0eaf8ff',
     },
     primaryDark: {
       main: '#7B16AE',
-      contrastText: '#FFFFFF',
+      contrastText: '#efe7faff',
     },
     secondary: {
       main: '#FFFFFF',
