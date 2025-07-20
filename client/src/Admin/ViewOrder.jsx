@@ -27,32 +27,35 @@ function ViewOrder() {
 
   const StatusOptions = [
     { value: "Pending", label: "Pending" },
-    { value: "Successful", label: "Successful" },
+    { value: "Completed", label: "Completed" },
     { value: "Shipped", label: "Shipped" },
-    { value: "Refunded", label: "Refunded" },
-    { value: "Canceled", label: "Canceled" },
     { value: "Delivered", label: "Delivered" },
+    { value: "Refunded", label: "Refunded" },
+    { value: "Canceled", label: "Canceled" }
   ];
 
   const statusColorMap = {
-    Successful: "success",
+    Completed: "delete",
     Pending: "warning",
     Refunded: "ternary",
     Canceled: "error",
     Shipped: "info",
-    Delivered: "primary",
+    Delivered: "primaryprimary",
+    Successful: "success",
   };
 
   const getStepFromStatus = (status) => {
     switch (status) {
       case "Pending":
         return 1;
-      case "Successful":
+      case "Completed":
         return 2;
       case "Shipped":
         return 3;
       case "Delivered":
         return 4;
+      case "Successful":
+        return 5;
       case "Refunded":
         return 4;
       case "Canceled":
@@ -142,7 +145,7 @@ function ViewOrder() {
         case "Pending":
           newStep = 1;
           break;
-        case "Successful":
+        case "Completed":
           newStep = 2;
           break;
         case "Shipped":
@@ -150,6 +153,9 @@ function ViewOrder() {
           break;
         case "Delivered":
           newStep = 4;
+          break;
+        case "Successful":
+          newStep = 5;
           break;
         case "Canceled":
           newStep = 2;
@@ -167,7 +173,7 @@ function ViewOrder() {
         case "Pending":
           currentStep = 1;
           break;
-        case "Successful":
+        case "Completed":
           currentStep = 2;
           break;
         case "Shipped":
@@ -175,6 +181,9 @@ function ViewOrder() {
           break;
         case "Delivered":
           currentStep = 4;
+          break;
+        case "Successful":
+          currentStep = 5;
           break;
         case "Canceled":
           currentStep = 2;
