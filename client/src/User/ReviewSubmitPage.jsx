@@ -111,19 +111,19 @@ export default function ReviewSubmitPage() {
           { status: "Successful", stepTimestamp },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`Product order ${orderId} marked as Sucessful!`);
+        console.log(`Product order ${orderId} marked as Successful!`);
       }
 
       if (type === "pc_build") {
         await axios.patch(
           `${backendUrl}/api/build-transactions/${orderId}/status`,
           {
-            buildStatus: "Sucessful",
+            buildStatus: "Successful",
             stepTimestamp,
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`PC Build order ${orderId} marked as Sucessful!`);
+        console.log(`PC Build order ${orderId} marked as Successful!`);
       }
     } catch (error) {
       console.error("Failed to update order status", error);

@@ -348,7 +348,7 @@ function AdminApp() {
               }}
             >
               <img
-                src="/src/assets/images/Logos/logo-white.png"
+                src="https://res.cloudinary.com/dfdjzbfjn/image/upload/v1753081773/aqvxhx0leqp93vtkvdm0.png"
                 alt="Logo"
                 style={{
                   marginLeft: "8px",

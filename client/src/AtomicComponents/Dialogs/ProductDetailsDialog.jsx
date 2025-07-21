@@ -468,8 +468,8 @@ const ProductDetailsDialog = ({ open, onClose, productId }) => {
 
                         {/* Stock Status */}
                         <Chip
-                            label={product.quantity > 10 ? "In Stock" : product.quantity > 0 ? "Low Stock" : "Out of Stock"}
-                            color={product.quantity > 10 ? "primary" : product.quantity > 0 ? "info" : "error"}
+                            label={product.quantity > 5 ? "In Stock" : product.quantity > 0 ? "Low Stock" : "Out of Stock"}
+                            color={product.quantity > 5 ? "primary" : product.quantity > 0 ? "info" : "error"}
                             sx={{ mb: 2 }}
                         />
 

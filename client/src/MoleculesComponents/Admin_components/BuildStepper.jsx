@@ -156,7 +156,8 @@ const BuildStepper = ({
         Confirmed: 2,   // Show Building in Progress as active (steps 0,1 completed)
         Building: 3,    // Show Build Completed as active (steps 0,1,2 completed)
         Completed: 4,   // Show Delivered as active (steps 0,1,2,3 completed)
-        Delivered: 5,   // All steps completed
+        Delivered: 5,   // Show Successful as active (steps 0,1,2,3,4 completed)
+        Successful: 6,  // All steps completed (steps 0,1,2,3,4,5 completed)
         Canceled: 1     // Default to Build Confirmed step
       };
     } else {
@@ -167,7 +168,8 @@ const BuildStepper = ({
         Building: 3,    // Show Build Completed as active (steps 0,1,2 completed)
         Completed: 4,   // Show Shipped as active (steps 0,1,2,3 completed)
         Shipped: 5,     // Show Delivered as active (steps 0,1,2,3,4 completed)
-        Delivered: 6,   // All steps completed
+        Delivered: 6,   // Show Successful as active (steps 0,1,2,3,4,5 completed)
+        Successful: 7,  // All steps completed (steps 0,1,2,3,4,5,6 completed)
         Canceled: 1     // Default to Build Confirmed step
       };
     }
@@ -205,10 +207,21 @@ const BuildStepper = ({
         "Shipped",
         "Delivered",
       ];
-      const currentStatusIndex = statusProgression.indexOf(buildStatus);
 
-      if (currentStatusIndex < statusProgression.length - 1) {
-        const nextStatus = statusProgression[currentStatusIndex + 1];
+      let nextStatus;
+      
+      // Special case: For store pickup, skip "Shipped" and go directly from "Completed" to "Delivered"
+      if (buildStatus === "Completed" && deliveryMethod === "Pick up at store") {
+        nextStatus = "Delivered";
+      } else {
+        // Normal progression
+        const currentStatusIndex = statusProgression.indexOf(buildStatus);
+        if (currentStatusIndex < statusProgression.length - 1) {
+          nextStatus = statusProgression[currentStatusIndex + 1];
+        }
+      }
+
+      if (nextStatus) {
         const currentTime = new Date();
 
         // Update both status and timestamp - save timestamp for the current status being completed
