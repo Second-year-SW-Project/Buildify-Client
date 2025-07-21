@@ -55,7 +55,7 @@ export default function OrderHistory() {
           // Filter and format completed product orders
           const completedProductOrders = productRes.data
             .filter((order) =>
-              ["Completed", "Refunded", "Cancelled"].includes(order.status)
+              ["Successful", "Refunded", "Cancelled"].includes(order.status)
             )
             .map((order) => {
               const itemCount = order.items.reduce(
@@ -81,7 +81,9 @@ export default function OrderHistory() {
           // Filter and format completed build transactions
           const completedBuildOrders = buildRes.data.data
             .filter((order) =>
-              ["Completed", "Refunded", "Cancelled"].includes(order.buildStatus)
+              ["Successful", "Refunded", "Cancelled"].includes(
+                order.buildStatus
+              )
             )
             .map((order) => ({
               type: "pc_build",
@@ -181,7 +183,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No Completed orders found.</p>
+                        <p>No Successful orders found.</p>
                       )}
                     </TabPanel>
 
@@ -205,7 +207,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No Completed build orders found.</p>
+                        <p>No Successful build orders found.</p>
                       )}
                     </TabPanel>
 
@@ -229,7 +231,7 @@ export default function OrderHistory() {
                           />
                         ))
                       ) : (
-                        <p>No Completed component orders found.</p>
+                        <p>No Successful component orders found.</p>
                       )}
                     </TabPanel>
                   </TabContext>

@@ -56,8 +56,15 @@ const BuildStepper = ({
     },
     {
       label: "Delivered",
-      description: "Your completed build has been shipped and is on its way.",
+      description: deliveryMethod === "Pick up at store"
+        ? "Build was received from store"
+        : "Your completed build has been shipped and is on its way.",
       status: "Delivered",
+    },
+    {
+      label: "Successful",
+      description: "Your PC build has been successfully delivered and now you can add a review.",
+      status: "Successful",
     },
   ];
 
@@ -378,21 +385,24 @@ const BuildStepper = ({
 
                 {editable && (
                   <Box sx={{ mb: 2 }}>
-                    <Button
-                      variant="contained"
-                      onClick={handleNext}
-                      sx={{ mt: 1, mr: 1 }}
-                      disabled={
-                        loading ||
-                        activeStep === steps.length - 1 ||
-                        buildStatus === "Canceled"
-                      }
-                    >
-                      {activeStep === steps.length - 1 ? "Finish" : "Continue"}
-                    </Button>
+                    {buildStatus !== "Delivered" && buildStatus !== "Successful" && (
+                      <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        sx={{ mt: 1, mr: 1 }}
+                        disabled={
+                          loading ||
+                          buildStatus === "Canceled" ||
+                          buildStatus === "Shipped"
+                        }
+                      >
+                        {(buildStatus == "Completed" && deliveryMethod === "Pick up at store") || buildStatus == "Shipped" ? "Make as Delivered" : "Continue"}
+                      </Button>
+                    )}
 
                     {buildStatus !== "Pending" &&
-                      buildStatus !== "Delivered" && (
+                      buildStatus !== "Delivered" &&
+                      buildStatus !== "Successful" && (
                         <Button
                           onClick={handleBack}
                           sx={{ mt: 1, mr: 1 }}
@@ -413,7 +423,7 @@ const BuildStepper = ({
           <Typography>All steps completed - Build process finished!</Typography>
         </Paper>
       )} */}
-    </Box>
+    </Box >
   );
 };
 

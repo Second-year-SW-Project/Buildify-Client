@@ -13,6 +13,7 @@ import BuildStatusTabs from '../MoleculesComponents/Admin_components/BuildStatus
 import { Box, Divider } from '@mui/material';
 import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import { useNavigation } from '../MoleculesComponents/Admin_components/NavigationContext';
+import dayjs from 'dayjs';
 
 const debounce = (func, wait) => {
     let timeout;
@@ -46,20 +47,49 @@ function BuildOrderList() {
     const [totalBuilds, setTotalBuilds] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [loading, setLoading] = useState(false);
-    const { showOrderView, selectedTab, setSelectedTab } = useNavigation();
+    const { showOrderView, selectedBuildTab, setSelectedBuildTab } = useNavigation();
+
+    // Separate useEffect for filter restoration
+    const [filtersRestored, setFiltersRestored] = useState(false);
 
     useEffect(() => {
-        if (!selectedTab && location.state && location.state.selectedTab) {
-            setSelectedTab(location.state.selectedTab);
+        const savedFilters = sessionStorage.getItem('buildFilters');
+        console.log("Restoring build filters from sessionStorage:", savedFilters); // Debugging
+        if (savedFilters) {
+            try {
+                const filterState = JSON.parse(savedFilters);
+                setSearchTerm(filterState.searchTerm || '');
+                setBuildIdSearch(filterState.buildIdSearch || '');
+                setStatus(filterState.status || '');
+                setSelectedDate(filterState.selectedDate ? dayjs(filterState.selectedDate) : null);
+                setSelectedBuildTab(filterState.selectedBuildTab || '');
+                setCurrentPage(filterState.currentPage || 1);
+                setItemsPerPage(filterState.itemsPerPage || 5);
+
+                // Only remove after successful restoration
+                sessionStorage.removeItem('buildFilters');
+                console.log("Build filters restored successfully"); // Debugging
+            } catch (error) {
+                console.error('Error restoring build filters:', error);
+                sessionStorage.removeItem('buildFilters');
+            }
         }
-    }, [selectedTab, location.state, setSelectedTab]);
+        setFiltersRestored(true);
+    }, []); // Only run once on component mount
+
+    useEffect(() => {
+        // If selectedBuildTab is not set in context, try to get it from location.state (after filter restoration)
+        if (filtersRestored && !selectedBuildTab && location.state && location.state.selectedTab) {
+            setSelectedBuildTab(location.state.selectedTab);
+        }
+    }, [filtersRestored, selectedBuildTab, location.state, setSelectedBuildTab]);
 
     const clearFilters = () => {
         setSelectedDate(null);
         setSearchTerm('');
         setBuildIdSearch('');
         setStatus('');
-        setSelectedTab('');
+        setSelectedBuildTab('');
         setCurrentPage(1);
     };
 
@@ -69,10 +99,10 @@ function BuildOrderList() {
             const params = {
                 page: currentPage,
                 limit: itemsPerPage,
-                date: selectedDate ? selectedDate.toISOString() : null,
+                date: selectedDate && dayjs.isDayjs(selectedDate) ? selectedDate.toISOString() : null,
                 search: searchTerm,
                 buildId: buildIdSearch,
-                buildStatus: selectedTab || status
+                buildStatus: selectedBuildTab || status
             };
             const response = await axios.get(`${backendUrl}/api/build-transactions`, {
                 params,
@@ -102,14 +132,29 @@ function BuildOrderList() {
         debounce(() => {
             fetchBuilds();
         }, 300),
-        [currentPage, itemsPerPage, searchTerm, selectedDate, buildIdSearch, status, selectedTab]
+        [currentPage, itemsPerPage, searchTerm, selectedDate, buildIdSearch, status, selectedBuildTab]
     );
 
     useEffect(() => {
-        debouncedFetchBuilds();
-    }, [currentPage, itemsPerPage, searchTerm, selectedDate, buildIdSearch, status, selectedTab]);
+        if (filtersRestored) {
+            debouncedFetchBuilds();
+        }
+    }, [filtersRestored, debouncedFetchBuilds]);
 
     const handleView = (id) => {
+        // Store current filter state in sessionStorage
+        const filterState = {
+            searchTerm,
+            buildIdSearch,
+            status,
+            selectedDate: selectedDate && dayjs.isDayjs(selectedDate) ? selectedDate.toISOString() : null,
+            selectedBuildTab,
+            currentPage,
+            itemsPerPage
+        };
+        sessionStorage.setItem('buildFilters', JSON.stringify(filterState));
+        console.log("Stored build filter state:", filterState); // Debugging
+
         console.log('Viewing build with ID:', id);
         navigate(`/adminpanel/orders/viewbuild/${id}`);
     };
@@ -170,7 +215,8 @@ function BuildOrderList() {
         const value = e.target.value;
         setSearchTerm(value);
         setCurrentPage(1);
-        fetchBuilds(value);
+        // Trigger fetch with debounced function
+        debouncedFetchBuilds();
     };
     const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -178,7 +224,7 @@ function BuildOrderList() {
     };
     const handleStatusTabChange = (newStatus) => {
         setStatus(newStatus);
-        setSelectedTab(newStatus);
+        setSelectedBuildTab(newStatus);
         setCurrentPage(1);
     };
 
@@ -215,7 +261,7 @@ function BuildOrderList() {
             <Box>
                 <div className="mt-5 mb-10 mr-4 border-2 border-black-200 rounded-md">
                     <BuildStatusTabs
-                        status={selectedTab || status}
+                        status={selectedBuildTab || status}
                         setStatus={handleStatusTabChange}
                         statusCounts={statusCounts}
                     />

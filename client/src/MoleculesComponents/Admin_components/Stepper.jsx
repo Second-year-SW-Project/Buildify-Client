@@ -33,7 +33,7 @@ const OrderStepper = ({
       label: "Processing",
       description:
         "Your order has been successfully placed and is being processed.",
-      status: "Successful",
+      status: "Completed",
     },
     {
       label: "Shipped",
@@ -44,6 +44,11 @@ const OrderStepper = ({
       label: "Delivered",
       description: "Your Order has been shipped and is on its way.",
       status: "Delivered",
+    },
+    {
+      label: "Successful",
+      description: "Your Order has been delivered and you can add a review.",
+      status: "Successful",
     },
   ];
 
@@ -178,39 +183,56 @@ const OrderStepper = ({
   const handleBack = async () => {
     try {
       setLoading(true);
-      const prevStep = activeStep - 1;
-      const currentStep = steps[prevStep];
-      const currentTime = new Date();
 
-      // Update both status and timestamp
-      const response = await axios.patch(
-        `${backendUrl}/api/checkout/product-orders/${orderId}`,
-        {
-          status: currentStep.status,
-          stepTimestamp: {
-            [currentStep.status]: currentTime,
-            // Delete the timestamp of the step we're going back from
-            [steps[activeStep].status]: null,
-            [steps[prevStep].status]: null,
+      // Define the correct status progression order (same as BuildStepper)
+      const statusProgression = [
+        "Pending",
+        "Completed",
+        "Shipped",
+        "Delivered",
+        "Successful",
+      ];
+
+      const currentStatusIndex = statusProgression.indexOf(orderStatus);
+
+      // Don't allow going back from Pending (first status)
+      if (currentStatusIndex > 0) {
+        const prevStatus = statusProgression[currentStatusIndex - 1];
+        const currentTime = new Date();
+
+        // Update both status and timestamp
+        const response = await axios.patch(
+          `${backendUrl}/api/checkout/product-orders/${orderId}`,
+          {
+            status: prevStatus, // Use previous status from progression
+            stepTimestamp: {
+              [prevStatus]: currentTime,
+              // Clear the timestamp of the current status
+              [orderStatus]: null,
+            },
           },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.data) {
+          // Update local state
+          setStepTimestamps((prev) => ({
+            ...prev,
+            [prevStatus]: currentTime,
+            [orderStatus]: null,
+          }));
+
+          // Update active step based on new status
+          const newStepIndex = statusProgression.indexOf(prevStatus) + 1;
+          setActiveStep(newStepIndex);
+
+          // Call onStatusChange with previous status
+          onStatusChange(prevStatus);
         }
-      );
-
-      if (response.data) {
-        // Update local state
-        setStepTimestamps((prev) => ({
-          ...prev,
-          [currentStep.status]: currentTime,
-          [steps[activeStep].status]: null,
-        }));
-        setActiveStep(prevStep);
-        // Call onStatusChange with previous step's status
-        onStatusChange(currentStep.status);
       }
     } catch (error) {
       console.error("Error updating order step:", error);
@@ -281,26 +303,32 @@ const OrderStepper = ({
 
               {editable && (
                 <Box sx={{ mb: 2 }}>
-                  <Button
-                    variant="contained"
-                    onClick={handleNext}
-                    sx={{ mt: 1, mr: 1 }}
-                    disabled={
-                      index === steps.length - 1 || orderStatus === "Canceled"
-                    }
-                  >
-                    {index === steps.length - 1 ? "Finish" : "Continue"}
-                  </Button>
-
-                  {index > 1 && orderStatus !== "Delivered" && (
+                  {orderStatus !== "Delivered" && orderStatus !== "Successful" && (
                     <Button
-                      onClick={handleBack}
+                      variant="contained"
+                      onClick={handleNext}
                       sx={{ mt: 1, mr: 1 }}
-                      disabled={orderStatus === "Canceled"}
+                      disabled={
+                        loading ||
+                        orderStatus === "Canceled" ||
+                        orderStatus === "Shipped"
+                      }
                     >
-                      Back
+                      {orderStatus == "Shipped" ? "Make as Delivered" : "Continue"}
                     </Button>
                   )}
+
+                  {index > 1 &&
+                    orderStatus !== "Delivered" &&
+                    orderStatus !== "Successful" && (
+                      <Button
+                        onClick={handleBack}
+                        sx={{ mt: 1, mr: 1 }}
+                        disabled={loading || orderStatus === "Canceled"}
+                      >
+                        Back
+                      </Button>
+                    )}
                 </Box>
               )}
             </StepContent>

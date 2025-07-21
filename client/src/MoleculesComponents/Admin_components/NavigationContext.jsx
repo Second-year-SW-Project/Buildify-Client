@@ -5,7 +5,8 @@ const NavigationContext = createContext();
 export const NavigationProvider = ({ children }) => {
     const [isOrderViewVisible, setIsOrderViewVisible] = useState(false);
     const [selectedOrderId, setSelectedOrderId] = useState(null);
-    const [selectedTab, setSelectedTab] = useState('');
+    const [selectedOrderTab, setSelectedOrderTab] = useState('');
+    const [selectedBuildTab, setSelectedBuildTab] = useState('');
 
     const showOrderView = (id) => {
         setSelectedOrderId(id);
@@ -16,8 +17,13 @@ export const NavigationProvider = ({ children }) => {
         <NavigationContext.Provider value={{
             showOrderView,
             selectedOrderId,
-            selectedTab,
-            setSelectedTab
+            selectedOrderTab,
+            setSelectedOrderTab,
+            selectedBuildTab,
+            setSelectedBuildTab,
+            // Keep backward compatibility
+            selectedTab: selectedOrderTab,
+            setSelectedTab: setSelectedOrderTab
         }}>
             {children}
         </NavigationContext.Provider>

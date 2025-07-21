@@ -99,29 +99,31 @@ export default function ReviewSubmitPage() {
   };
 
   // Update order status to complete upon review submission
-  const markAsCompleted = async (orderId, type) => {
+  const markAsSuccessful = async (orderId, type) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
+      const stepTimestamp = new Date().toISOString();
 
       if (type === "product") {
         await axios.patch(
           `${backendUrl}/api/checkout/product-orders/${orderId}`,
-          { status: "Completed" },
+          { status: "Successful", stepTimestamp },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`Product order ${orderId} marked as Completed!`);
+        console.log(`Product order ${orderId} marked as Sucessful!`);
       }
 
       if (type === "pc_build") {
         await axios.patch(
           `${backendUrl}/api/build-transactions/${orderId}/status`,
           {
-            buildStatus: "Completed",
+            buildStatus: "Sucessful",
+            stepTimestamp,
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`PC Build order ${orderId} marked as Completedl!`);
+        console.log(`PC Build order ${orderId} marked as Sucessful!`);
       }
     } catch (error) {
       console.error("Failed to update order status", error);
@@ -172,7 +174,7 @@ export default function ReviewSubmitPage() {
           config
         );
         toast.success("Review submitted successfully!");
-        await markAsCompleted(orderId, type);
+        await markAsSuccessful(orderId, type);
         navigate(`/user/reviews`);
       }
     } catch (error) {
