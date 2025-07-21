@@ -111,7 +111,7 @@ export default function ReviewSubmitPage() {
           { status: "Successful", stepTimestamp },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`Product order ${orderId} marked as Sucessful!`);
+        console.log(`Product order ${orderId} marked as Successful!`);
       }
 
       if (type === "pc_build") {
@@ -123,7 +123,7 @@ export default function ReviewSubmitPage() {
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`PC Build order ${orderId} marked as Sucessful!`);
+        console.log(`PC Build order ${orderId} marked as Successful!`);
       }
     } catch (error) {
       console.error("Failed to update order status", error);
