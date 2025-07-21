@@ -15,7 +15,6 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const CLOUDINARY_UPLOAD_URL = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
 
 
-
 export default function AdminProfile() {
 
 
