@@ -38,7 +38,7 @@ function AdminBranding() {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                     }}>
-                    <Box component="img" src="/src/assets/images/Logos/logo-white.png" alt="Logo"
+                    <Box component="img" src="/logo-white.png" alt="Logo"
                         sx={{
                             height: 40,
                             width: 'auto',
