@@ -485,30 +485,12 @@ export default function OrderDetails() {
     });
   };
 
-  // const handleAddToCart = (item) => {
-  //   dispatch(
-  //     addToCart({
-  //       _id: item._id || item.id,
-  //       name: item.name,
-  //       type: item.type,
-  //       price: item.price || item.componentPrice,
-  //       image: item.product_image || item.imageUrl,
-  //       quantity: item.quantity,
-  //     })
+  // if (!order)
+  //   return (
+  //     <div className="flex justify-center items-center h-64">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+  //     </div>
   //   );
-
-  //   toast.success(`${item.quantity}x ${item.name} added to cart`, {
-  //     duration: 2000,
-  //     style: {
-  //       background: "#a036b2",
-  //       color: "#fff",
-  //       fontSize: "16px",
-  //       fontWeight: "bold",
-  //     },
-  //   });
-  // };
-
-  if (!order) return <p>Loading...</p>;
 
   return (
     <div>
@@ -533,214 +515,240 @@ export default function OrderDetails() {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography variant="h5" fontWeight={"bold"} gutterBottom>
-                    Order #{order._id?.slice(-4).toUpperCase() || "----"} -{" "}
-                    {order.status}
-                  </Typography>
-
-                  <div className="mb-3">
-                    <Button
-                      variant="contained"
-                      sx={{
-                        mr: 1,
-                        borderRadius: 900,
-                        textTransform: "none",
-                        px: 2,
-                      }}
-                      onClick={() => {
-                        const trackerSection =
-                          document.getElementById("order-tracker");
-                        if (trackerSection) {
-                          trackerSection.scrollIntoView({ behavior: "smooth" });
-                        }
-                      }}
-                    >
-                      Track Order
-                    </Button>
-
-                    <Button
-                      variant="outlined"
-                      sx={{ borderRadius: 900, textTransform: "none", px: 2 }}
-                      onClick={handleRefundClick}
-                    >
-                      Return/refund
-                    </Button>
-                  </div>
-                  <Divider />
-
-                  {/* User and Order info */}
-                  <div className="flex items-stretch justify-between pb-4 pt-4 rounded-md shadow-sm gap-4">
-                    <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
-                      <div className="flex items-center mb-2">
-                        <PlaceOutlinedIcon />
-                        <span className="text-lg font-medium ml-2">
-                          {order.user_name || "N/A"}
-                        </span>
-                        <span className="ml-2 text-sm text-purple-600">
-                          {order.phone || "N/A"}
-                        </span>
-                      </div>
-                      <p className="text-sm">
-                        {order.addressLine || "Address not available"}
-                      </p>
-                      <p className="text-sm mt-1">{order.email}</p>
+                  {loading ? (
+                    <div className="flex justify-center items-center h-64">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
                     </div>
+                  ) : order ? (
+                    <>
+                      <Typography variant="h5" fontWeight={"bold"} gutterBottom>
+                        Order #{order._id?.slice(-4).toUpperCase() || "----"} -{" "}
+                        {order.status}
+                      </Typography>
 
-                    <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
-                      <div className="flex items-center mb-2">
-                        <AssignmentOutlinedIcon />
-                        <p className="text-sm mr-3 ml-2">
-                          <span className="font-medium">Order ID:</span>{" "}
-                          <span className="text-purple-600">{order._id}</span>{" "}
-                          <button
-                            className="text-purple-500 hover:underline text-xs ml-1"
-                            onClick={() => handleCopy(order._id)}
-                          >
-                            Copy
-                          </button>
-                        </p>
-                      </div>
-
-                      {/* Dates and payment */}
-                      <p className="text-sm mt-1">
-                        <span className="font-medium">Order placed on:</span>{" "}
-                        {order.createdAt
-                          ? new Date(order.createdAt).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                      <p className="text-sm mt-1">
-                        <span className="font-medium">Payment method:</span>{" "}
-                        {order.paymentMethod || "Not provided"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Items */}
-                  {order.items?.map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-white p-4 rounded-md shadow-sm border mb-4"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex gap-4">
-                          <img
-                            src={item.product_image || item.imageUrl || ""}
-                            alt="Product"
-                            className="w-20 h-20 object-cover rounded"
-                          />
-                          <div>
-                            <p className="text-sm font-semibold">{item.name}</p>
-                            <p className="text-sm mt-1">
-                              <span className="font-medium">
-                                LKR {item.price || item.componentPrice || 0}
-                              </span>{" "}
-                              <span className="text-gray-600">
-                                x{item.quantity}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            sx={{
-                              borderRadius: 999,
-                              textTransform: "none",
-                              px: 2,
-                            }}
-                            onClick={() => handleAddToCart(item)}
-                          >
-                            Add to cart
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={handleRefundClick}
-                            sx={{
-                              borderRadius: 999,
-                              textTransform: "none",
-                              px: 2,
-                            }}
-                          >
-                            Return/refund
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  <Divider sx={{ my: 3 }} />
-
-                  <div className="flex justify-end">
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">Subtotal</p>
-                      <p className="text-lg font-semibold">LKR {order.total}</p>
-                    </div>
-                  </div>
-
-                  <Divider sx={{ my: 3 }} />
-
-                  <div className="border-2 border-purple-600 rounded-2xl p-4">
-                    <Typography
-                      id="order-tracker"
-                      variant="h6"
-                      sx={{ mb: 2, fontWeight: "bold" }}
-                    >
-                      Order Tracking
-                    </Typography>
-                    {orderType === "product" ? (
-                      <OrderStepper
-                        activeStep={activeStep}
-                        setActiveStep={setActiveStep}
-                        orderId={orderId}
-                        onStatusChange={handleStepperStatusChange}
-                        orderStatus={order.status}
-                        editable={false}
-                      />
-                    ) : (
-                      <BuildStepper
-                        activeStep={buildactiveStep}
-                        setActiveStep={setBuildActiveStep}
-                        buildId={orderId}
-                        onStatusChange={handleBuildStepperStatusChange}
-                        buildStatus={order.status}
-                        editable={false}
-                      />
-                    )}
-
-                    <Box sx={{ mt: 2 }}>
-                      {order.status === "Shipped" && (
+                      <div className="mb-3">
                         <Button
                           variant="contained"
-                          color="primary"
-                          sx={{ mr: 2 }}
-                          disabled={loading}
-                          onClick={() =>
-                            orderType === "product"
-                              ? handleStatusChange("Delivered")
-                              : handleBuildStatusChange("Delivered")
-                          }
-                        >
-                          {loading ? "Updating..." : "Mark as Delivered"}
-                        </Button>
-                      )}
-
-                      {order.status === "Delivered" && (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          sx={{ mr: 2 }}
-                          disabled={loading}
+                          sx={{
+                            mr: 1,
+                            borderRadius: 900,
+                            textTransform: "none",
+                            px: 2,
+                          }}
                           onClick={() => {
-                            onLeaveReview();
+                            const trackerSection =
+                              document.getElementById("order-tracker");
+                            if (trackerSection) {
+                              trackerSection.scrollIntoView({
+                                behavior: "smooth",
+                              });
+                            }
                           }}
                         >
-                          Leave a Review
+                          Track Order
                         </Button>
-                      )}
-                    </Box>
-                  </div>
+
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            borderRadius: 900,
+                            textTransform: "none",
+                            px: 2,
+                          }}
+                          onClick={handleRefundClick}
+                        >
+                          Return/refund
+                        </Button>
+                      </div>
+                      <Divider />
+
+                      {/* User and Order info */}
+                      <div className="flex items-stretch justify-between pb-4 pt-4 rounded-md shadow-sm gap-4">
+                        <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
+                          <div className="flex items-center mb-2">
+                            <PlaceOutlinedIcon />
+                            <span className="text-lg font-medium ml-2">
+                              {order.user_name || "N/A"}
+                            </span>
+                            <span className="ml-2 text-sm text-purple-600">
+                              {order.phone || "N/A"}
+                            </span>
+                          </div>
+                          <p className="text-sm">
+                            {order.addressLine || "Address not available"}
+                          </p>
+                          <p className="text-sm mt-1">{order.email}</p>
+                        </div>
+
+                        <div className="w-1/2 p-4 border bg-white rounded-md shadow-sm">
+                          <div className="flex items-center mb-2">
+                            <AssignmentOutlinedIcon />
+                            <p className="text-sm mr-3 ml-2">
+                              <span className="font-medium">Order ID:</span>{" "}
+                              <span className="text-purple-600">
+                                {order._id}
+                              </span>{" "}
+                              <button
+                                className="text-purple-500 hover:underline text-xs ml-1"
+                                onClick={() => handleCopy(order._id)}
+                              >
+                                Copy
+                              </button>
+                            </p>
+                          </div>
+
+                          {/* Dates and payment */}
+                          <p className="text-sm mt-1">
+                            <span className="font-medium">
+                              Order placed on:
+                            </span>{" "}
+                            {order.createdAt
+                              ? new Date(order.createdAt).toLocaleDateString()
+                              : "N/A"}
+                          </p>
+                          <p className="text-sm mt-1">
+                            <span className="font-medium">Payment method:</span>{" "}
+                            {order.paymentMethod || "Not provided"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Items */}
+                      {order.items?.map((item, index) => (
+                        <div
+                          key={index}
+                          className="bg-white p-4 rounded-md shadow-sm border mb-4"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex gap-4">
+                              <img
+                                src={item.product_image || item.imageUrl || ""}
+                                alt="Product"
+                                className="w-20 h-20 object-cover rounded"
+                              />
+                              <div>
+                                <p className="text-sm font-semibold">
+                                  {item.name}
+                                </p>
+                                <p className="text-sm mt-1">
+                                  <span className="font-medium">
+                                    LKR {item.price || item.componentPrice || 0}
+                                  </span>{" "}
+                                  <span className="text-gray-600">
+                                    x{item.quantity}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-2">
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                  borderRadius: 999,
+                                  textTransform: "none",
+                                  px: 2,
+                                }}
+                                onClick={() => handleAddToCart(item)}
+                              >
+                                Add to cart
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={handleRefundClick}
+                                sx={{
+                                  borderRadius: 999,
+                                  textTransform: "none",
+                                  px: 2,
+                                }}
+                              >
+                                Return/refund
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      <Divider sx={{ my: 3 }} />
+
+                      <div className="flex justify-end">
+                        <div className="text-right">
+                          <p className="text-sm text-gray-400">Subtotal</p>
+                          <p className="text-lg font-semibold">
+                            LKR {order.total}
+                          </p>
+                        </div>
+                      </div>
+
+                      <Divider sx={{ my: 3 }} />
+
+                      <div className="border-2 border-purple-600 rounded-2xl p-4">
+                        <Typography
+                          id="order-tracker"
+                          variant="h6"
+                          sx={{ mb: 2, fontWeight: "bold" }}
+                        >
+                          Order Tracking
+                        </Typography>
+                        {orderType === "product" ? (
+                          <OrderStepper
+                            activeStep={activeStep}
+                            setActiveStep={setActiveStep}
+                            orderId={orderId}
+                            onStatusChange={handleStepperStatusChange}
+                            orderStatus={order.status}
+                            editable={false}
+                          />
+                        ) : (
+                          <BuildStepper
+                            activeStep={buildactiveStep}
+                            setActiveStep={setBuildActiveStep}
+                            buildId={orderId}
+                            onStatusChange={handleBuildStepperStatusChange}
+                            buildStatus={order.status}
+                            editable={false}
+                          />
+                        )}
+
+                        <Box sx={{ mt: 2 }}>
+                          {order.status === "Shipped" && (
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              sx={{ mr: 2 }}
+                              disabled={loading}
+                              onClick={() =>
+                                orderType === "product"
+                                  ? handleStatusChange("Delivered")
+                                  : handleBuildStatusChange("Delivered")
+                              }
+                            >
+                              {loading ? "Updating..." : "Mark as Delivered"}
+                            </Button>
+                          )}
+
+                          {order.status === "Delivered" && (
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              sx={{ mr: 2 }}
+                              disabled={loading}
+                              onClick={() => {
+                                onLeaveReview();
+                              }}
+                            >
+                              Leave a Review
+                            </Button>
+                          )}
+                        </Box>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-center items-center h-64">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                    </div>
+                  )}
                 </Box>
               </Box>
               <ReviewPopup

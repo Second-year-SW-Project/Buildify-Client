@@ -118,7 +118,7 @@ export default function ReviewSubmitPage() {
         await axios.patch(
           `${backendUrl}/api/build-transactions/${orderId}/status`,
           {
-            buildStatus: "Sucessful",
+            buildStatus: "Successful",
             stepTimestamp,
           },
           { headers: { Authorization: `Bearer ${token}` } }
