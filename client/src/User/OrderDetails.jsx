@@ -102,14 +102,16 @@ export default function OrderDetails() {
     items.map((item) =>
       type === "product"
         ? {
-            _id: item._id || item.id, // Add _id here
+            _id: item._id || item.id,
+            type: item.type,
             name: item.name || "Product",
             product_image: item.product_image || item.imageUrl || "",
             price: item.price || item.componentPrice || 0,
             quantity: item.quantity,
           }
         : {
-            _id: item._id || item.id, // Add _id here too
+            _id: item._id || item.componentId || `temp-id-${Math.random()}`, // fallback if missing
+            type: item.type || "component", // fallback type
             name: item.name || "Component",
             product_image: item.product_image || "",
             price: item.price || 0,
@@ -142,6 +144,8 @@ export default function OrderDetails() {
           }
         );
         const data = res.data.data;
+        console.log("Build components raw:", data.components);
+
         if (!data) {
           toast.error("Build transaction not found");
           return;
@@ -438,13 +442,34 @@ export default function OrderDetails() {
   };
 
   const handleAddToCart = (item) => {
+    console.log("Adding to cart:", item);
+
+    const image = item.product_image || item.imageUrl || item.image || "";
+    const price = item.price ?? item.componentPrice ?? 0;
+    const id = item.componentId || item._id;
+
+    if (!id) {
+      toast.error("Item ID is missing. Cannot add to cart.");
+      return;
+    }
+
+    if (!item.name) {
+      toast.error("Item name is missing. Cannot add to cart.");
+      return;
+    }
+
+    if (item.quantity == null || item.quantity === 0) {
+      toast.error("Item quantity is missing or zero. Cannot add to cart.");
+      return;
+    }
+
     dispatch(
       addToCart({
-        _id: item._id || item.id,
+        _id: id,
         name: item.name,
-        type: orderType,
-        price: item.price,
-        image: item.product_image,
+        type: item.type || "pc_build",
+        price: price,
+        image: image,
         quantity: item.quantity,
       })
     );
@@ -459,6 +484,29 @@ export default function OrderDetails() {
       },
     });
   };
+
+  // const handleAddToCart = (item) => {
+  //   dispatch(
+  //     addToCart({
+  //       _id: item._id || item.id,
+  //       name: item.name,
+  //       type: item.type,
+  //       price: item.price || item.componentPrice,
+  //       image: item.product_image || item.imageUrl,
+  //       quantity: item.quantity,
+  //     })
+  //   );
+
+  //   toast.success(`${item.quantity}x ${item.name} added to cart`, {
+  //     duration: 2000,
+  //     style: {
+  //       background: "#a036b2",
+  //       color: "#fff",
+  //       fontSize: "16px",
+  //       fontWeight: "bold",
+  //     },
+  //   });
+  // };
 
   if (!order) return <p>Loading...</p>;
 
