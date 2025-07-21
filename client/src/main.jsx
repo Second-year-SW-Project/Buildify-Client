@@ -56,8 +56,10 @@ import ReviewSubmitPage from "./User/ReviewSubmitPage.jsx";
 import Reviews from "./User/Reviews.jsx";
 import Home from "./pages/Home/Home.jsx";
 import About from "./pages/About_page/About.jsx";
+import Contact from "./pages/Contact.jsx";
 import LoginPage from "./pages/Login_page/Login_page.jsx";
 import CartPage from "./pages/Shopping_cart/CartPage.jsx";
+import Supportus from "./pages/Support_us/Supportus.jsx";
 import PaymentGateway from "./pages/Shopping_cart/PaymentGateway.jsx";
 import ProductCategoryPage from "./pages/Producat_category/Productcategorypage.jsx";
 import ItemPage from "./pages/Single_Item/Itempage.jsx";
@@ -156,6 +158,8 @@ const router = createBrowserRouter([
       { path: "", element: <Home /> },
       { path: "home", element: <Home /> },
       { path: "about", element: <About /> },
+      { path: "contact", element: <Contact /> },
+      { path: "supportus", element: <Supportus /> },
       { path: "cartpage", element: <CartPage /> },
       { path: "paymentgateway", element: <PaymentGateway /> },
       { path: "productcategorypage", element: <ProductCategoryPage /> },

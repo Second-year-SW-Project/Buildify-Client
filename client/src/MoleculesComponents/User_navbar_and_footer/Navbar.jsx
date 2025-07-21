@@ -115,7 +115,7 @@ export default function Navbar() {
 
 
 
-{/* {openDropdown === "profile" && (
+              {/* {openDropdown === "profile" && (
   <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
     <a href="http://localhost:5173/user/profile" className="block px-4 py-2 hover:bg-blue-400">
       Profile
@@ -142,62 +142,62 @@ export default function Navbar() {
 )} */}
 
 
-{openDropdown === "profile" && (
-  <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-    {currentUser ? (
-      <>
-        <Link
-          to="/user/profile"
-          className="block px-4 py-2 hover:bg-blue-400"
-          onClick={() => setOpenDropdown(null)}
-        >
-          Profile
-        </Link>
-        <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("userId");
-            setCurrentUser(null);
-            setOpenDropdown(null);
-            navigate("/home");
-          }}
-          className="block text-left px-4 py-2 hover:bg-blue-400 w-full"
-        >
-          Logout
-        </button>
-      </>
-    ) : (
-      <>
-        <button
-          onClick={() => {
-            //alert("You're not logged in");
-                             Swal.fire({
-                   title: "",
-                   text: "Please log in to the site to continue..",
-                   icon: 'warning',
-                   confirmButtonText: "OK",
-                 }).then(() => {
-                   
-                   navigate("/adminpanel/auth/login");
-                 });
-            setOpenDropdown(null);
-            //navigate("/adminpanel/auth/login");
-          }}
-          className="block text-left px-4 py-2 hover:bg-blue-400 w-full"
-        >
-          Profile
-        </button>
-        <Link
-          to="/adminpanel/auth/login"
-          className="block px-4 py-2 hover:bg-blue-400"
-          onClick={() => setOpenDropdown(null)}
-        >
-          Login
-        </Link>
-      </>
-    )}
-  </div>
-)}
+              {openDropdown === "profile" && (
+                <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
+                  {currentUser ? (
+                    <>
+                      <Link
+                        to="/user/profile"
+                        className="block px-4 py-2 hover:bg-blue-400"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem("token");
+                          localStorage.removeItem("userId");
+                          setCurrentUser(null);
+                          setOpenDropdown(null);
+                          navigate("/home");
+                        }}
+                        className="block text-left px-4 py-2 hover:bg-blue-400 w-full"
+                      >
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          //alert("You're not logged in");
+                          Swal.fire({
+                            title: "",
+                            text: "Please log in to the site to continue..",
+                            icon: 'warning',
+                            confirmButtonText: "OK",
+                          }).then(() => {
+
+                            navigate("/adminpanel/auth/login");
+                          });
+                          setOpenDropdown(null);
+                          //navigate("/adminpanel/auth/login");
+                        }}
+                        className="block text-left px-4 py-2 hover:bg-blue-400 w-full"
+                      >
+                        Profile
+                      </button>
+                      <Link
+                        to="/adminpanel/auth/login"
+                        className="block px-4 py-2 hover:bg-blue-400"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        Login
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
 
 
 
@@ -273,13 +273,10 @@ export default function Navbar() {
           </button>
           {openDropdown === "contact" && (
             <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
-                <MailOutlineIcon fontSize="small" className="mr-2" /> Email Us
+              <Link to="/contact" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
+                <CallIcon fontSize="small" className="mr-2" /> Cantact Us
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
-                <CallIcon fontSize="small" className="mr-2" /> Call Us
-              </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
+              <Link to="/supportus" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
                 <QuizIcon fontSize="small" className="mr-2" /> Support
               </Link>
             </div>

@@ -30,6 +30,14 @@ const stripePromise = loadStripe(
   "pk_test_51RAt66QrMZYW3Chd7hWi12tUhngYuiEe7M1hBUpvJAHIIZq95xF9yo97ZQBuup7avOuiTojlhqxm3R0GbxAmNexx00e2V1MOzb"
 ); // Replace with your Stripe publishable key
 
+// Add delivery fee calculation function
+const getDeliveryFee = (totalPrice) => {
+  if (totalPrice < 50000) return 300;
+  if (totalPrice < 200000) return 500;
+  if (totalPrice < 500000) return 650;
+  return 1000; // Default for above 500,000
+};
+
 const PaymentGateway = () => {
 
   //Backend URL
@@ -74,6 +82,8 @@ const PaymentGateway = () => {
   const currentUserArray = users.filter((u) => u._id === userId);
   const currentUser = currentUserArray.length > 0 ? currentUserArray[0] : null;
 
+  const deliveryFee = getDeliveryFee(totalPrice);
+  const grandTotal = totalPrice + deliveryFee;
 
   const handleCheckout = async (paymentMethodId, formData, setIsProcessing) => {
     try {
@@ -104,7 +114,8 @@ const PaymentGateway = () => {
 
       const requestBody = {
           items: sanitizedCartItems,
-          total: totalPrice,
+          total: grandTotal, // Use grandTotal here
+          deliveryFee,       // Optionally send deliveryFee as a separate field
           paymentMethodId,
           user: userId,
           customerEmail: formData.email,
@@ -204,8 +215,17 @@ const PaymentGateway = () => {
 
         {cartItems.length > 0 && (
           <div className="mt-6 text-left">
-            <h3 className="text-2xl font-bold mb-14">
-              Total: {totalPrice.toLocaleString()} LKR
+            <div className="mb-2 flex justify-between items-center">
+              <span className="text-lg font-semibold">Subtotal:</span>
+              <span>{totalPrice.toLocaleString()} LKR</span>
+            </div>
+            <div className="mb-2 flex justify-between items-center">
+              <span className="text-lg font-semibold">Delivery Fee:</span>
+              <span> + {deliveryFee.toLocaleString()} LKR</span>
+            </div>
+            <h3 className="text-2xl font-bold mb-14 flex justify-between items-center">
+              <span>Total:</span>
+              <span>{grandTotal.toLocaleString()} LKR</span>
             </h3>
             <Elements stripe={stripePromise}>
               <CheckoutForm onCheckout={handleCheckout} />

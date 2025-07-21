@@ -94,9 +94,9 @@ const CartPage = () => {
 
   return (
 
-    <div>
-      <div><Navbar></Navbar></div>
-      <div className="w-full max-w-7xl  mx-auto mb-40 p-6 bg-white shadow-lg rounded-lg">
+    <div className="flex flex-col min-h-screen">
+      <div><Navbar /></div>
+      <div className="w-full max-w-7xl mx-auto mb-40 p-6 bg-white shadow-lg rounded-lg flex-grow">
         {/* Title */}
         <h2 className="text-center text-xl font-bold bg-purple-700 text-white py-3 rounded-md">
           QUOTATION
@@ -157,8 +157,8 @@ const CartPage = () => {
         )}
 
         {/* Grand Total & Checkout */}
-        <div className="mt-6 text-right">
-          <h3 className="text-2xl font-bold">
+        <div className="mt-9 text-right">
+          <h3 className=" text-2xl font-bold mb-6">
             Grand Total: {totalPrice.toLocaleString()} LKR
           </h3>
           <Button
@@ -171,7 +171,7 @@ const CartPage = () => {
           </Button>
         </div>
       </div>
-      <div><Footer></Footer></div>
+      <div><Footer /></div>
     </div>
   );
 };

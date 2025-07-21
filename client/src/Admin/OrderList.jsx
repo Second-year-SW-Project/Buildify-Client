@@ -14,6 +14,7 @@ import { Box, Tabs, Tab } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import { useNavigation } from '../MoleculesComponents/Admin_components/NavigationContext';
+import dayjs from 'dayjs';
 
 // Add debounce function to limit the number of API calls
 const debounce = (func, wait) => {
@@ -55,15 +56,43 @@ function OrderList() {
 
     const [loading, setLoading] = useState(false);
 
-    const { showOrderView, selectedTab, setSelectedTab } = useNavigation();
+    const { showOrderView, selectedOrderTab, setSelectedOrderTab } = useNavigation();
 
-    // Set initial status from selectedTab when component mounts
+    // Separate useEffect for filter restoration
+    const [filtersRestored, setFiltersRestored] = useState(false);
+
     useEffect(() => {
-        // If selectedTab is not set in context, try to get it from location.state
-        if (!selectedTab && location.state && location.state.selectedTab) {
-            setSelectedTab(location.state.selectedTab);
+        const savedFilters = sessionStorage.getItem('orderFilters');
+        console.log("Restoring order filters from sessionStorage:", savedFilters); // Debugging
+        if (savedFilters) {
+            try {
+                const filterState = JSON.parse(savedFilters);
+                setSearchTerm(filterState.searchTerm || '');
+                setOrderIdSearch(filterState.orderIdSearch || '');
+                setStatus(filterState.status || '');
+                setSelectedDate(filterState.selectedDate ? dayjs(filterState.selectedDate) : null);
+                setSelectedOrderTab(filterState.selectedOrderTab || '');
+                setCurrentPage(filterState.currentPage || 1);
+                setItemsPerPage(filterState.itemsPerPage || 5);
+
+                // Only remove after successful restoration
+                sessionStorage.removeItem('orderFilters');
+                console.log("Order filters restored successfully"); // Debugging
+            } catch (error) {
+                console.error('Error restoring order filters:', error);
+                sessionStorage.removeItem('orderFilters');
+            }
         }
-    }, [selectedTab, location.state, setSelectedTab]);
+        setFiltersRestored(true);
+    }, []); // Only run once on component mount
+
+    // Set initial status from selectedOrderTab when component mounts (after filter restoration)
+    useEffect(() => {
+        // If selectedOrderTab is not set in context, try to get it from location.state
+        if (filtersRestored && !selectedOrderTab && location.state && location.state.selectedTab) {
+            setSelectedOrderTab(location.state.selectedTab);
+        }
+    }, [filtersRestored, selectedOrderTab, location.state, setSelectedOrderTab]);
 
     //Clear filters function
     const clearFilters = () => {
@@ -71,7 +100,7 @@ function OrderList() {
         setSearchTerm('');
         setOrderIdSearch('');
         setStatus('');
-        setSelectedTab(''); // Clear the selected tab
+        setSelectedOrderTab(''); // Clear the selected tab
         setCurrentPage(1);
     };
 
@@ -82,10 +111,10 @@ function OrderList() {
             const params = {
                 page: currentPage,
                 limit: itemsPerPage,
-                date: selectedDate ? selectedDate.toISOString() : null,
+                date: selectedDate && dayjs.isDayjs(selectedDate) ? selectedDate.toISOString() : null,
                 search: searchTerm,
                 orderId: orderIdSearch,
-                status: selectedTab || status
+                status: selectedOrderTab || status
             };
 
             const response = await axios.get(`${backendUrl}/api/checkout/payment`, {
@@ -118,16 +147,31 @@ function OrderList() {
         debounce(() => {
             fetchOrders(); // Call the fetchOrders function with the current parameters
         }, 300),
-        [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status, selectedTab] // Add selectedTab to dependencies
+        [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status, selectedOrderTab] // Add selectedOrderTab to dependencies
     );
 
-    //Call the function to fetch the orders when the component mounts or dependencies change
+    //Call the function to fetch the orders when the component mounts or dependencies change (after filters are restored)
     useEffect(() => {
-        debouncedFetchOrders(); // Call the debounced function
-    }, [currentPage, itemsPerPage, searchTerm, selectedDate, orderIdSearch, status, selectedTab]); // Add selectedTab to dependencies
+        if (filtersRestored) {
+            debouncedFetchOrders(); // Call the debounced function
+        }
+    }, [filtersRestored, debouncedFetchOrders]);
 
-    //Handle edit product function
+    //Handle view order function
     const handleView = (id) => {
+        // Store current filter state in sessionStorage
+        const filterState = {
+            searchTerm,
+            orderIdSearch,
+            status,
+            selectedDate: selectedDate && dayjs.isDayjs(selectedDate) ? selectedDate.toISOString() : null,
+            selectedOrderTab,
+            currentPage,
+            itemsPerPage
+        };
+        sessionStorage.setItem('orderFilters', JSON.stringify(filterState));
+        console.log("Stored order filter state:", filterState); // Debugging
+
         showOrderView(id);
         navigate(`/adminpanel/orders/vieworder/${id}`);
     };
@@ -204,7 +248,8 @@ function OrderList() {
         const value = e.target.value;
         setSearchTerm(value);
         setCurrentPage(1);
-        fetchOrders(value);
+        // Trigger fetch with debounced function
+        debouncedFetchOrders();
     };
 
     // Handle date change
@@ -216,7 +261,7 @@ function OrderList() {
     // Handle tab/status change
     const handleStatusTabChange = (newStatus) => {
         setStatus(newStatus);
-        setSelectedTab(newStatus);
+        setSelectedOrderTab(newStatus);
         setCurrentPage(1);
     };
 
@@ -229,6 +274,7 @@ function OrderList() {
                 ...order,
                 shortOrderId: order._id ? `#${order._id.slice(-4).toUpperCase()}` : '',
                 formattedDate: order.createdAt ? new Date(order.createdAt).toLocaleString() : '',
+                updatedDate: order.updatedAt ? new Date(order.updatedAt).toLocaleString() : '',
                 customerName,
                 customerEmail,
                 formattedTotal: order.total ? `LKR ${order.total.toLocaleString()}` : '',
@@ -254,7 +300,7 @@ function OrderList() {
                 <div className="mt-5 mb-10 mr-4 border-2 border-black-200 rounded-md">
                     {/* Status Tabs */}
                     <OrderStatusTabs
-                        status={selectedTab || status}
+                        status={selectedOrderTab || status}
                         setStatus={handleStatusTabChange}
                         statusCounts={statusCounts}
                     />
