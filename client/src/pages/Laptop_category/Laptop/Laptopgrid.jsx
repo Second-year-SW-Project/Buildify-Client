@@ -20,9 +20,8 @@ export default function Laptopgrid() {
       // Fetch products by category
       const fetchLaps = async () => {
         try {
-          const response = await axios.get(
-            `http://localhost:5000/api/laptops/`
-          );
+          const backendUrl = import.meta.env.VITE_BACKEND_URL;
+          const response = await axios.get(`${backendUrl}/api/laptops/`);
           setLaps(response.data);
           setLoading(false);
         } catch (error) {

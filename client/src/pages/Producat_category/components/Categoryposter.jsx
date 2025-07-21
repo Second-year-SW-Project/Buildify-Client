@@ -19,8 +19,9 @@ const Categoryposter = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
         const response = await axios.get(
-          `https://buildify-server-d5yu.vercel.app/api/product/filter?attribute=type&value=${categoryName}`
+          `${backendUrl}/api/product/filter?attribute=type&value=${categoryName}`
         );
         setProducts(response.data);
         setLoading(false);

@@ -9,10 +9,12 @@ const GoogleCallbackPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     const googleCallback = async () => {
         try {
             // Send a request to the backend's callback route
-            const response = await axios.get("https://buildify-server-d5yu.vercel.app/auth/google/callback", { withCredentials: true });
+            const response = await axios.get(`${backendUrl}/auth/google/callback`, { withCredentials: true });
             const user = response.data.data.user; // Assuming the backend sends the user data
 
             // Store user in Redux

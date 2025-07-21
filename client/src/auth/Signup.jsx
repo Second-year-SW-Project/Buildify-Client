@@ -29,7 +29,8 @@ const Signup = () => {
         setError("");
 
         try {
-            const response = await axios.post("https://buildify-server-d5yu.vercel.app/api/v1/users/signup", formData, { withCredentials: true });
+            const backendUrl = import.meta.env.VITE_BACKEND_URL;
+            const response = await axios.post(`${backendUrl}/api/v1/users/signup`, formData, { withCredentials: true });
             
             const user = response.data.data.user;
             toast.success("SignUp successfully");
@@ -52,8 +53,9 @@ const Signup = () => {
     };
 
     const handleGoogleLogin = async () => {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
         // Redirect to backend Google OAuth
-        window.location.href = "https://buildify-server-d5yu.vercel.app/auth/google";
+        window.location.href = `${backendUrl}/auth/google`;
        
 
         
