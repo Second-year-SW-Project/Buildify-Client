@@ -39,7 +39,7 @@ export default function Navbar() {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/v1/users",
+          "https://buildify-server-d5yu.vercel.app/api/v1/users",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const users = response.data;

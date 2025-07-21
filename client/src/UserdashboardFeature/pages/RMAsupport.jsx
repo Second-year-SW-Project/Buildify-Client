@@ -26,7 +26,7 @@ export default function RMAsupport() {
   const handleSubmit = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/rma",
+        "https://buildify-server-d5yu.vercel.app/api/rma",
         formData
       );
       alert("RMA request submitted successfully!");
@@ -41,7 +41,7 @@ export default function RMAsupport() {
   const fetchRMARequests = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/rma/user/${formData.userId}`
+        `https://buildify-server-d5yu.vercel.app/api/rma/user/${formData.userId}`
       );
       setRmaRequests(response.data);
     } catch (error) {

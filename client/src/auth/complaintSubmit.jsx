@@ -26,7 +26,7 @@ const ComplaintSubmit = () => {
     toast.success("UserId found");
 
     try {
-      await axios.post('http://localhost:8000/api/complaints/submit', { 
+      await axios.post('https://buildify-server-d5yu.vercel.app/api/complaints/submit', { 
         title, description, userId 
       });
       toast.success('Complaint submitted successfully!');

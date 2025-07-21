@@ -13,7 +13,7 @@ const UserComplaints = () => {
       if (!userId) return; // Prevent API call if no userId exists
 
       try {
-        const response = await axios.get(`http://localhost:8000/api/complaints/user/${userId}`, {
+        const response = await axios.get(`https://buildify-server-d5yu.vercel.app/api/complaints/user/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`, // Attach token for authentication
           },

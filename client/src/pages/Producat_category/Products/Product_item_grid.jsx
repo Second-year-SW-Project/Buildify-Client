@@ -233,7 +233,7 @@ export default function Product_item_grid({ categoryName, currentFilters }) {
 
 
 
-                const apiUrl = `http://localhost:8000/api/product/filter?${params.toString()}`;
+                const apiUrl = `https://buildify-server-d5yu.vercel.app/api/product/filter?${params.toString()}`;
                 console.log("Fetching products with URL (Grid):", apiUrl);
 
                 const response = await axios.get(apiUrl);

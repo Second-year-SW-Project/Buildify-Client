@@ -36,7 +36,7 @@ const AdminComplaints = () => {
   // Fetch complaints based on the current search parameters
   const fetchComplaints = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/complaints/admin', {
+      const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/complaints/admin', {
         params: { name: searchName, email: searchEmail, status }
       });
       setComplaints(response.data);
@@ -52,7 +52,7 @@ const AdminComplaints = () => {
   const handleRespond = async () => {
     const status = 'Resolved';
     try {
-      await axios.put(`http://localhost:8000/api/complaints/admin/respond/${selectedComplaint._id}`, {
+      await axios.put(`https://buildify-server-d5yu.vercel.app/api/complaints/admin/respond/${selectedComplaint._id}`, {
         status,
         response: responseText
       });

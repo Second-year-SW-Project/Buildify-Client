@@ -11,7 +11,7 @@ const OAuthCallback = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/auth/google/callback", { withCredentials: true });
+                const response = await axios.get("https://buildify-server-d5yu.vercel.app/auth/google/callback", { withCredentials: true });
                 dispatch(setAuthUser(response.data.user));
                 navigate("/");
             } catch (error) {

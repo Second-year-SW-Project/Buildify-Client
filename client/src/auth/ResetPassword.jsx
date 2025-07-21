@@ -25,7 +25,7 @@ const ResetPassword = () => {
 
     try {
       const data = { email, otp, password, passwordConfirm };
-      const response = await axios.post("http://localhost:8000/api/v1/users/reset-password", data, {
+      const response = await axios.post("https://buildify-server-d5yu.vercel.app/api/v1/users/reset-password", data, {
         withCredentials: true
       });
 

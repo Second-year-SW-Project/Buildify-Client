@@ -12,7 +12,7 @@ export default function Product_item_grid({ filters, allProducts, setAllProducts
     const fetchProducts = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/product/filter?attribute=type&value=${categoryName}`
+          `https://buildify-server-d5yu.vercel.app/api/product/filter?attribute=type&value=${categoryName}`
         );
         setAllProducts(response.data);
       } catch (error) {

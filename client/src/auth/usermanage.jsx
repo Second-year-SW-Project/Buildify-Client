@@ -51,7 +51,7 @@ const Usermanage = () => {
 
   const fetchUsers = () => {
     axios
-      .get("http://localhost:8000/api/v1/users")
+      .get("https://buildify-server-d5yu.vercel.app/api/v1/users")
       .then((res) => {
         setUsers(res.data);
         setFilteredUsers(res.data);
@@ -76,7 +76,7 @@ const Usermanage = () => {
 
   const deleteUser = (id) => {
     axios
-      .delete(`http://localhost:8000/api/v1/users/${id}`)
+      .delete(`https://buildify-server-d5yu.vercel.app/api/v1/users/${id}`)
       .then(() => {
         setUsers(users.filter((user) => user._id !== id));
         setFilteredUsers(filteredUsers.filter((user) => user._id !== id));
@@ -95,7 +95,7 @@ const Usermanage = () => {
   const saveUser = () => {
     if (isEditing) {
       axios
-        .put(`http://localhost:8000/api/v1/users/${editingUser}`, formData)
+        .put(`https://buildify-server-d5yu.vercel.app/api/v1/users/${editingUser}`, formData)
         .then(() => {
           toast.success("User updated successfully");
           setIsEditing(false);
@@ -107,7 +107,7 @@ const Usermanage = () => {
         .catch(() => toast.error("Error updating user"));
     } else {
       axios
-        .post("http://localhost:8000/api/v1/users", formData)
+        .post("https://buildify-server-d5yu.vercel.app/api/v1/users", formData)
         .then(() => {
           fetchUsers();
           setFormData({ name: "", email: "", Role: "user", password: "" });

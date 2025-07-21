@@ -39,7 +39,7 @@ export default function UserProfile() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/v1/users", {
+        const response = await axios.get("https://buildify-server-d5yu.vercel.app/api/v1/users", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
           },
@@ -64,7 +64,7 @@ export default function UserProfile() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/update-profile",
+        "https://buildify-server-d5yu.vercel.app/api/v1/users/update-profile",
         formData,
         {
           headers: {

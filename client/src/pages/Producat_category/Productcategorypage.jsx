@@ -272,7 +272,7 @@ export default function Productcategorypage() {
 
     const fetchCategoryManufacturers = async (category) => {
         try {
-            const response = await axios.get(`http://localhost:8000/api/product/manufacturers?category=${category}`);
+            const response = await axios.get(`https://buildify-server-d5yu.vercel.app/api/product/manufacturers?category=${category}`);
             setAvailableManufacturersForFilter(response.data);
         } catch (error) {
             console.error('Error fetching manufacturers:', error);
@@ -282,7 +282,7 @@ export default function Productcategorypage() {
 
     const fetchPrebuildRamSizes = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/prebuild-ram-sizes');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/prebuild-ram-sizes');
             setAvailablePrebuildRamSizes(response.data);
         } catch (error) {
             console.error('Error fetching prebuild RAM sizes:', error);
@@ -292,7 +292,7 @@ export default function Productcategorypage() {
 
     const fetchLaptopGraphicCards = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/laptop-graphic-cards');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/laptop-graphic-cards');
             setAvailableLaptopGraphicCards(response.data);
         } catch (error) {
             console.error('Error fetching laptop graphic cards:', error);
@@ -302,7 +302,7 @@ export default function Productcategorypage() {
 
     const fetchMotherboardChipsets = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/motherboard-chipsets');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/motherboard-chipsets');
             setAvailableMotherboardChipsets(response.data);
         } catch (error) {
             console.error('Error fetching motherboard chipsets:', error);
@@ -312,7 +312,7 @@ export default function Productcategorypage() {
 
     const fetchPowerWattages = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/power-wattages');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/power-wattages');
             setAvailablePowerWattages(response.data);
         } catch (error) {
             console.error('Error fetching power wattages:', error);
@@ -322,7 +322,7 @@ export default function Productcategorypage() {
 
     const fetchPowerEfficiencyRatings = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/power-efficiency-ratings');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/power-efficiency-ratings');
             setAvailablePowerEfficiencyRatings(response.data);
         } catch (error) {
             console.error('Error fetching power efficiency ratings:', error);
@@ -332,7 +332,7 @@ export default function Productcategorypage() {
 
     const fetchStorageCapacities = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/storage-capacities');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/storage-capacities');
             setAvailableStorageCapacities(response.data);
         } catch (error) {
             console.error('Error fetching storage capacities:', error);
@@ -342,7 +342,7 @@ export default function Productcategorypage() {
 
     const fetchStorageTypes = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/storage-types');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/storage-types');
             setAvailableStorageTypes(response.data);
         } catch (error) {
             console.error('Error fetching storage types:', error);
@@ -352,7 +352,7 @@ export default function Productcategorypage() {
 
     const fetchMaxGpuLengths = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/max-gpu-lengths');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/max-gpu-lengths');
             setAvailableMaxGpuLengths(response.data);
         } catch (error) {
             console.error('Error fetching max GPU lengths:', error);
@@ -362,7 +362,7 @@ export default function Productcategorypage() {
 
     const fetchMonitorDisplaySizes = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/monitor-display-sizes');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/monitor-display-sizes');
             setAvailableMonitorDisplaySizes(response.data);
         } catch (error) {
             console.error('Error fetching monitor display sizes:', error);
@@ -372,7 +372,7 @@ export default function Productcategorypage() {
 
     const fetchMonitorPanelTypes = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/monitor-panel-types');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/monitor-panel-types');
             setAvailableMonitorPanelTypes(response.data);
         } catch (error) {
             console.error('Error fetching monitor panel types:', error);
@@ -382,7 +382,7 @@ export default function Productcategorypage() {
 
     const fetchMonitorRefreshRates = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/monitor-refresh-rates');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/monitor-refresh-rates');
             setAvailableMonitorRefreshRates(response.data);
         } catch (error) {
             console.error('Error fetching monitor refresh rates:', error);
@@ -392,7 +392,7 @@ export default function Productcategorypage() {
 
     const fetchExpansionComponentTypes = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/api/product/expansion-component-types');
+            const response = await axios.get('https://buildify-server-d5yu.vercel.app/api/product/expansion-component-types');
             setAvailableExpansionComponentTypes(response.data);
         } catch (error) {
             console.error('Error fetching expansion component types:', error);

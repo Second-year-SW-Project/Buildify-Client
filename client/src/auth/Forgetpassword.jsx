@@ -19,7 +19,7 @@ const ForgetPassword = () => {
 
         setLoading(true);
         try {
-            await axios.post("http://localhost:8000/api/v1/users/forget-password", { email }, { withCredentials: true });
+            await axios.post("https://buildify-server-d5yu.vercel.app/api/v1/users/forget-password", { email }, { withCredentials: true });
 
             toast.success("Reset OTP sent to email");
             navigate(`/auth/resetpassword?email=${encodeURIComponent(email)}`);

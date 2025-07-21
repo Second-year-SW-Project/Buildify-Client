@@ -12,7 +12,7 @@ const Dashboard = () => {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:8000/api/v1/users/user", {
+        const res = await fetch("https://buildify-server-d5yu.vercel.app/api/v1/users/user", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -61,7 +61,7 @@ const Verify = () => {
         setLoading(true);
         try {
             const otpValue = otp.join('');
-            const response = await axios.post('http://localhost:8000/api/v1/users/verify', { otp: otpValue }, { withCredentials: true });
+            const response = await axios.post('https://buildify-server-d5yu.vercel.app/api/v1/users/verify', { otp: otpValue }, { withCredentials: true });
 
             const verifiedUser = response.data.data.user;
             dispatch(setAuthUser(verifiedUser));
@@ -77,7 +77,7 @@ const Verify = () => {
     const handleResendOtp = async () => {
         setLoading(true);
         try {
-            await axios.post('http://localhost:8000/api/v1/users/resend-otp', null, { withCredentials: true });
+            await axios.post('https://buildify-server-d5yu.vercel.app/api/v1/users/resend-otp', null, { withCredentials: true });
             toast.success('New OTP is sent to your email');
         } catch (error) {
             toast.error(error.response.data.message);

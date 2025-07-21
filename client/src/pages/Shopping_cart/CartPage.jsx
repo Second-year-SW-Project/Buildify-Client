@@ -36,7 +36,7 @@ const CartPage = () => {
   
       const fetchUsers = async () => {
         try {
-          const response = await axios.get("http://localhost:8000/api/v1/users", {
+          const response = await axios.get("https://buildify-server-d5yu.vercel.app/api/v1/users", {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",

@@ -29,7 +29,7 @@ const Login = () => {
 
 
         try {
-            const response = await axios.post("http://localhost:8000/api/v1/users/login", formData, { withCredentials: true });
+            const response = await axios.post("https://buildify-server-d5yu.vercel.app/api/v1/users/login", formData, { withCredentials: true });
             const user = response.data.data.user;
             // Save userId to localStorage for future use
             localStorage.setItem('userId', user._id);  // Assuming the user object has _id
@@ -55,7 +55,7 @@ const Login = () => {
     };
 
     const handleGoogleLogin = () => {
-        window.open("http://localhost:8000/auth/google", "_self");
+        window.open("https://buildify-server-d5yu.vercel.app/auth/google", "_self");
         
             
     };

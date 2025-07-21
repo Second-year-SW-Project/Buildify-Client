@@ -128,7 +128,7 @@ export const serviceCharges = {
 // Calculate service charge based on component count
 export const calculateServiceCharge = async (componentCount) => {
   try {
-    const response = await fetch(`http://localhost:8000/api/build-transactions/calculate-service-charge?componentCount=${componentCount}`);
+    const response = await fetch(`https://buildify-server-d5yu.vercel.app/api/build-transactions/calculate-service-charge?componentCount=${componentCount}`);
     const data = await response.json();
     
     if (response.ok) {
