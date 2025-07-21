@@ -57,11 +57,11 @@ export default function ReviewPopup({
       </IconButton>
 
       <DialogTitle sx={{ display: "flex", justifyContent: "center" }}>
-        Leave a review
+        Choose an item to review
       </DialogTitle>
 
       <DialogContent sx={{ textAlign: "center", p: 3 }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
+        {/* <Typography variant="h6" sx={{ mb: 2 }}>
           Review all items
         </Typography>
 
@@ -81,11 +81,7 @@ export default function ReviewPopup({
           <IconButton>
             <ArrowForwardIosOutlinedIcon />
           </IconButton>
-        </Box>
-
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Choose an item to review
-        </Typography>
+        </Box> */}
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {items.map((item, index) => (
