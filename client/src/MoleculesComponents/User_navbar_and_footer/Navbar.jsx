@@ -276,7 +276,7 @@ export default function Navbar() {
               <Link to="/contact" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
                 <CallIcon fontSize="small" className="mr-2" /> Cantact Us
               </Link>
-              <Link to="#" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
+              <Link to="/supportus" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
                 <QuizIcon fontSize="small" className="mr-2" /> Support
               </Link>
             </div>

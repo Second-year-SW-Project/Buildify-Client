@@ -23,7 +23,7 @@ export default function ReviewPopup({
 
   // Navigate to item review page with order and item-specific details
   const handleItemReviewClick = (item) => {
-    navigate(`review-submit/${orderId}/${item._id}`, {
+    navigate(`/user/orders/review-submit/${orderId}/${item._id}`, {
       state: {
         type: item.type,
         itemName: item.name,

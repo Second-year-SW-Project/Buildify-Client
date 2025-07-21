@@ -5,17 +5,24 @@ import SideNav from "./SideNav";
 import Navbar from "../MoleculesComponents/User_navbar_and_footer/Navbar";
 import OrderStepper from "../MoleculesComponents/Admin_components/Stepper";
 import BuildStepper from "../MoleculesComponents/Admin_components/BuildStepper";
+import ReviewPopup from "./ReviewPopup";
 import { Box, Button, Divider, Typography } from "@mui/material";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/cartSlice";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const location = useLocation();
+  const dispatch = useDispatch();
   const orderType = location.state?.type || "product";
+  const [openReview, setOpenReview] = useState(false);
+  const [selectedOrderId, setSeletcedOrderId] = useState(null);
+  const [selectedOrderItems, setSelectedOrderItems] = useState([]);
 
   const [order, setOrder] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
@@ -28,12 +35,14 @@ export default function OrderDetails() {
     switch (status) {
       case "Pending":
         return 1;
-      case "Successful":
+      case "Completed":
         return 2;
       case "Shipped":
         return 3;
       case "Delivered":
         return 4;
+      case "Successful":
+        return 5;
       case "Refunded":
         return 4;
       case "Canceled":
@@ -42,24 +51,50 @@ export default function OrderDetails() {
         return 1;
     }
   };
-  const getBuildStepFromStatus = (status) => {
-    switch (status) {
-      case "Pending":
-        return 1;
-      case "Confirmed":
-        return 2;
-      case "Building":
-        return 3;
-      case "Completed":
-        return 4;
-      case "Shipped":
-        return 5;
-      case "Delivered":
-        return 6;
-      case "Canceled":
-        return 1;
-      default:
-        return 1;
+
+  const getBuildStepFromStatus = (status, deliveryMethod) => {
+    if (deliveryMethod === "Pick up at store") {
+      // Skip Shipped step for store pickup
+      switch (status) {
+        case "Pending":
+          return 1; // Start from step 1 (Build Confirmed) when order is pending
+        case "Confirmed":
+          return 2;
+        case "Building":
+          return 3;
+        case "Completed":
+          return 4;
+        case "Delivered":
+          return 5;
+        case "Successful":
+          return 6;
+        case "Canceled":
+          return 1;
+        default:
+          return 1;
+      }
+    } else {
+      // Include Shipped step for home delivery
+      switch (status) {
+        case "Pending":
+          return 1; // Start from step 1 (Build Confirmed) when order is pending
+        case "Confirmed":
+          return 2;
+        case "Building":
+          return 3;
+        case "Completed":
+          return 4;
+        case "Shipped":
+          return 5;
+        case "Delivered":
+          return 6;
+        case "Successful":
+          return 7;
+        case "Canceled":
+          return 1;
+        default:
+          return 1;
+      }
     }
   };
 
@@ -67,12 +102,14 @@ export default function OrderDetails() {
     items.map((item) =>
       type === "product"
         ? {
+            _id: item._id || item.id, // Add _id here
             name: item.name || "Product",
             product_image: item.product_image || item.imageUrl || "",
             price: item.price || item.componentPrice || 0,
             quantity: item.quantity,
           }
         : {
+            _id: item._id || item.id, // Add _id here too
             name: item.name || "Component",
             product_image: item.product_image || "",
             price: item.price || 0,
@@ -122,10 +159,17 @@ export default function OrderDetails() {
           paymentMethod: data.paymentMethod,
           _id: data._id,
           createdAt: data.createdAt,
+          deliveryMethod: data.deliveryMethod,
         };
 
         setOrder(normalizedOrder);
-        setBuildActiveStep(getBuildStepFromStatus(normalizedOrder.status));
+        setBuild(normalizedOrder);
+        setBuildActiveStep(
+          getBuildStepFromStatus(
+            normalizedOrder.status,
+            normalizedOrder.deliveryMethod
+          )
+        );
       }
     } catch (err) {
       console.error("Failed to fetch order", err);
@@ -271,8 +315,11 @@ export default function OrderDetails() {
       const currentTime = new Date();
 
       // Determine the step based on status
-      let newStep = getBuildStepFromStatus(newStatus);
-      let currentStep = getBuildStepFromStatus(order.status);
+      let newStep = getBuildStepFromStatus(newStatus, build.deliveryMethod);
+      let currentStep = getBuildStepFromStatus(
+        order.status,
+        build.deliveryMethod
+      );
 
       // Prepare timestamp updates
       const stepTimestamp = {
@@ -317,8 +364,11 @@ export default function OrderDetails() {
       const currentTime = new Date();
 
       // Determine the step based on status
-      let newStep = getBuildStepFromStatus(newStatus);
-      let currentStep = getBuildStepFromStatus(order.status);
+      let newStep = getBuildStepFromStatus(newStatus, build.deliveryMethod);
+      let currentStep = getBuildStepFromStatus(
+        order.status,
+        build.deliveryMethod
+      );
 
       // Prepare timestamp updates
       const stepTimestamp = {
@@ -364,6 +414,50 @@ export default function OrderDetails() {
 
   const handleRefundClick = () => {
     navigate(`/user/rmaSupport?orderId=${orderId}`);
+  };
+
+  const onLeaveReview = () => {
+    if (orderType === "pc_build") {
+      navigate(`/user/orders/review-submit/${orderId}`, {
+        state: {
+          type: orderType,
+          itemName: order.buildName || "Custom Build",
+          imageUrl: order.buildImage,
+        },
+      });
+    } else {
+      setSeletcedOrderId(orderId);
+      setOpenReview(true);
+      setSelectedOrderItems(
+        order.items.map((item) => ({
+          ...item,
+          type: orderType,
+        }))
+      );
+    }
+  };
+
+  const handleAddToCart = (item) => {
+    dispatch(
+      addToCart({
+        _id: item._id || item.id,
+        name: item.name,
+        type: orderType,
+        price: item.price,
+        image: item.product_image,
+        quantity: item.quantity,
+      })
+    );
+
+    toast.success(`${item.quantity}x ${item.name} added to cart`, {
+      duration: 2000,
+      style: {
+        background: "#a036b2",
+        color: "#fff",
+        fontSize: "16px",
+        fontWeight: "bold",
+      },
+    });
   };
 
   if (!order) return <p>Loading...</p>;
@@ -507,6 +601,7 @@ export default function OrderDetails() {
                               textTransform: "none",
                               px: 2,
                             }}
+                            onClick={() => handleAddToCart(item)}
                           >
                             Add to cart
                           </Button>
@@ -566,24 +661,46 @@ export default function OrderDetails() {
                       />
                     )}
 
-                    {order.status === "Shipped" && (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{ mt: 3 }}
-                        disabled={loading}
-                        onClick={() =>
-                          orderType === "product"
-                            ? handleStatusChange("Delivered")
-                            : handleBuildStatusChange("Delivered")
-                        }
-                      >
-                        {loading ? "Updating..." : "Mark as Delivered"}
-                      </Button>
-                    )}
+                    <Box sx={{ mt: 2 }}>
+                      {order.status === "Shipped" && (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          sx={{ mr: 2 }}
+                          disabled={loading}
+                          onClick={() =>
+                            orderType === "product"
+                              ? handleStatusChange("Delivered")
+                              : handleBuildStatusChange("Delivered")
+                          }
+                        >
+                          {loading ? "Updating..." : "Mark as Delivered"}
+                        </Button>
+                      )}
+
+                      {order.status === "Delivered" && (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          sx={{ mr: 2 }}
+                          disabled={loading}
+                          onClick={() => {
+                            onLeaveReview();
+                          }}
+                        >
+                          Leave a Review
+                        </Button>
+                      )}
+                    </Box>
                   </div>
                 </Box>
               </Box>
+              <ReviewPopup
+                open={openReview}
+                onClose={() => setOpenReview(false)}
+                orderId={selectedOrderId}
+                items={selectedOrderItems}
+              />
             </Box>
           </main>
         </div>
