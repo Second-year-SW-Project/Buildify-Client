@@ -102,7 +102,7 @@ function AdminNavbar(props) {
             navigation={NAVIGATION}
             branding={{
                 logo: (<img
-                    src='/logo-white.png'
+                    src="/assets/Logos/logo-white.png" 
                     alt='Logo'
                     style={{
                         marginLeft: '8px',
