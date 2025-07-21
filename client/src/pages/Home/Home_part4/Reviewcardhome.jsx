@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function Reviewcardhome({ review }) {
   const rating = review.rating || 0;
 
@@ -42,3 +44,17 @@ export default function Reviewcardhome({ review }) {
     </div>
   );
 }
+
+Reviewcardhome.propTypes = {
+  review: PropTypes.shape({
+    rating: PropTypes.number,
+    userId: PropTypes.shape({
+      profilePicture: PropTypes.string,
+      name: PropTypes.string,
+    }),
+    name: PropTypes.string,
+    type: PropTypes.string,
+    productName: PropTypes.string,
+    comment: PropTypes.string,
+  }).isRequired,
+};
