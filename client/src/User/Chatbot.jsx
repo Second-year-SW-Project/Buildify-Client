@@ -3,10 +3,11 @@ import ChatForm from "./Chatform";
 import { companyInfo } from "./companyInfo";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
+import { useChatbot } from "./ChatbotContext";
 
 const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen } = useChatbot();
   const chatBodyRef = useRef();
   const chatbotRef = useRef();
   const toggleBtnRef = useRef();
