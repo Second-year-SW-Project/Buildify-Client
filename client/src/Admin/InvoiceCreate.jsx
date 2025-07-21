@@ -14,6 +14,7 @@ import {
   TextField,
   Button,
   Autocomplete,
+  Popper,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import Iconset from "../AtomicComponents/Icons/Iconset.jsx";
@@ -25,6 +26,9 @@ function InvoiceCreate() {
 
   // State for fetched products
   const [products, setProducts] = useState([]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQueries, setSearchQueries] = useState([""]);
 
   // State for form fields
   const [invoiceNumber, setInvoiceNumber] = useState("");
@@ -52,17 +56,21 @@ function InvoiceCreate() {
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${backendUrl}/api/product/all`, {
-          params: { search: "" },
+          params: { search: searchQuery },
         });
         setProducts(res.data.data);
       } catch (err) {
         console.error("Error fetching products:", err);
-        toast.error("Error fetching products:", err);
+        toast.error("Error fetching products");
       }
     };
 
-    fetchProducts();
-  }, []);
+    const delayDebounce = setTimeout(() => {
+      fetchProducts();
+    }, 300);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   // Price calculations
   const calculateSubtotal = () => {
@@ -87,14 +95,9 @@ function InvoiceCreate() {
   const addItem = () => {
     setItems([
       ...items,
-      {
-        itemCode: "",
-        itemName: "",
-        subCategory: "",
-        quantity: 1,
-        price: 0,
-      },
+      { itemCode: "", itemName: "", subCategory: "", quantity: 1, price: 0 },
     ]);
+    setSearchQueries([...searchQueries, ""]);
   };
 
   const removeItem = (index) => {
@@ -285,17 +288,48 @@ function InvoiceCreate() {
                 <div key={index} className="flex gap-4 w-full items-start mb-4">
                   <Autocomplete
                     options={products}
-                    getOptionLabel={(option) => option._id || option.name}
+                    getOptionLabel={(option) =>
+                      `${option.name} (${option._id})`
+                    }
+                    inputValue={searchQueries[index] || ""}
+                    onInputChange={(event, newValue) => {
+                      const updatedQueries = [...searchQueries];
+                      updatedQueries[index] = newValue;
+                      setSearchQueries(updatedQueries);
+                      setSearchQuery(newValue);
+                    }}
+                    PopperComponent={(props) => (
+                      <Popper
+                        {...props}
+                        modifiers={[
+                          {
+                            name: "offset",
+                            options: {
+                              offset: [0, 4],
+                            },
+                          },
+                        ]}
+                        style={{ width: 400, zIndex: 1300 }}
+                      />
+                    )}
                     onChange={(e, value) => {
                       if (value) {
                         handleItemChange(index, "itemCode", value._id);
                         handleItemChange(index, "itemName", value.name);
                         handleItemChange(index, "subCategory", value.type);
                         handleItemChange(index, "price", value.price);
+
+                        const updatedQueries = [...searchQueries];
+                        updatedQueries[index] = `${value.name} (${value._id})`;
+                        setSearchQueries(updatedQueries);
                       }
                     }}
                     renderInput={(params) => (
-                      <TextField {...params} label="Item Code" fullWidth />
+                      <TextField
+                        {...params}
+                        label="Item Code or Name"
+                        fullWidth
+                      />
                     )}
                   />
 
@@ -394,7 +428,7 @@ function InvoiceCreate() {
         </div>
 
         <div className="pb-4 mr-4">
-          <div className="float-right">
+          <div className="float-right pt-4">
             <div className="flex gap-2">
               <AddButton
                 name="Create Invoice"
