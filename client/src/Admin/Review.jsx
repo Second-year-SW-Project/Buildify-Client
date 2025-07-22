@@ -14,6 +14,8 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Box,
+  Typography,
 } from "@mui/material";
 import {
   Star as StarIcon,
@@ -189,67 +191,67 @@ const Review = () => {
 
         {/* Filter Section */}
         <div className="flex flex-wrap gap-4 mt-6 mb-8 items-end">
-  {/* Search Field */}
-  <FormControl sx={{ width: 260 }}>
-    <TextField
-      label="Search by Name or Email"
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          height: 56,
-          borderRadius: '4px',
-        }
-      }}
-      onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-      value={filter.search}
-    />
-  </FormControl>
+          {/* Search Field */}
+          <FormControl sx={{ width: 260 }}>
+            <TextField
+              label="Search by Name or Email"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  height: 56,
+                  borderRadius: '4px',
+                }
+              }}
+              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+              value={filter.search}
+            />
+          </FormControl>
 
-  {/* Date Picker */}
-  <FormControl sx={{ width: 260 }}>
-    <TextField
-      label="Date"
-      type="date"
-      InputLabelProps={{ shrink: true }}
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          height: 56,
-          borderRadius: '4px',
-        }
-      }}
-      onChange={(e) => setFilter({ ...filter, date: e.target.value })}
-      value={filter.date}
-    />
-  </FormControl>
+          {/* Date Picker */}
+          <FormControl sx={{ width: 260 }}>
+            <TextField
+              label="Date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  height: 56,
+                  borderRadius: '4px',
+                }
+              }}
+              onChange={(e) => setFilter({ ...filter, date: e.target.value })}
+              value={filter.date}
+            />
+          </FormControl>
 
-  {/* Rating Filter */}
-  <FormControl sx={{ width: 260 }}>
-    <InputLabel>Rating Filter</InputLabel>
-    <Select
-      label="Rating Filter"
-      size="small"
-      sx={{
-        height: 56,
-        borderRadius: '4px',
-      }}
-      MenuProps={{ PaperProps: { style: { maxHeight: 200 } } }}
-      onChange={(e) => setFilter({ ...filter, rating: e.target.value })}
-      value={filter.rating}
-    >
-      <MenuItem value="">
-        <em>All Ratings</em>
-      </MenuItem>
-      {[5, 4, 3, 2, 1].map((num) => (
-        <MenuItem key={num} value={num}>
-          {Array(num)
-            .fill(null)
-            .map((_, index) => (
-              <StarIcon key={index} className="text-yellow-400 w-4 h-4" />
-            ))}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-</div>
+          {/* Rating Filter */}
+          <FormControl sx={{ width: 260 }}>
+            <InputLabel>Rating Filter</InputLabel>
+            <Select
+              label="Rating Filter"
+              size="small"
+              sx={{
+                height: 56,
+                borderRadius: '4px',
+              }}
+              MenuProps={{ PaperProps: { style: { maxHeight: 200 } } }}
+              onChange={(e) => setFilter({ ...filter, rating: e.target.value })}
+              value={filter.rating}
+            >
+              <MenuItem value="">
+                <em>All Ratings</em>
+              </MenuItem>
+              {[5, 4, 3, 2, 1].map((num) => (
+                <MenuItem key={num} value={num}>
+                  {Array(num)
+                    .fill(null)
+                    .map((_, index) => (
+                      <StarIcon key={index} className="text-yellow-400 w-4 h-4" />
+                    ))}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -334,14 +336,57 @@ const Review = () => {
                       {review.userId?.name || "Anonymous"}
                     </p>
                     <p className="text-sm text-gray-500">{review.userId?.email}</p>
-                    {/* <p className="text-sm text-gray-500">
-                      <span className="font-medium text-gray-700">Product:</span>{" "}
-                      {review.orderId?.name}
-                    </p> */}
                     <p className="text-sm text-gray-500">
                       <span className="font-medium text-gray-700">Category:</span>{" "}
-                      {review.type}
+                      {review.type.charAt(0).toUpperCase() + review.type.slice(1)}
                     </p>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-medium text-gray-700">Order ID:</span>{" "}
+                      {review.orderDetails?.orderId || review.orderId}
+                    </p>
+
+                    {/* Product/Build Information */}
+                    {review.type === "product" && (review.productName || review.productImage) && (
+                      <Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
+                        {review.productImage && (
+                          <img
+                            src={review.productImage}
+                            alt={review.productName || "Product"}
+                            className="w-16 h-16 rounded-lg object-cover"
+                          />
+                        )}
+                        <Box>
+                          {review.productName && (
+                            <Typography fontWeight="bold">{review.productName}</Typography>
+                          )}
+                          {review.productCategory && (
+                            <Typography variant="body2" color="text.secondary">
+                              {review.productCategory.charAt(0).toUpperCase() + review.productCategory.slice(1)}
+                            </Typography>
+                          )}
+                        </Box>
+                      </Box>
+                    )}
+
+                    {review.type === "pc_build" && (review.buildName || review.buildImage) && (
+                      <Box display="flex" alignItems="center" gap={2} sx={{ mt: 2 }}>
+                        {review.buildImage && (
+                          <img
+                            src={review.buildImage}
+                            alt={review.buildName || "PC Build"}
+                            className="w-16 h-16 rounded-lg object-cover"
+                          />
+                        )}
+                        <Box>
+                          {review.buildName && (
+                            <Typography fontWeight="bold">{review.buildName}</Typography>
+                          )}
+                          <Typography variant="body2" color="text.secondary">
+                            Custom PC Build
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
                   </div>
                 </div>
 
@@ -357,12 +402,15 @@ const Review = () => {
 
               {/* Review Comment */}
               <div className="flex justify-between items-center">
-                <p className="text-gray-700 text-[15px] leading-relaxed">
-                  {review.comment}
-                </p>
-                <span className="text-sm text-gray-500 ml-4 whitespace-nowrap">
-                  {new Date(review.createdAt).toLocaleDateString()}
-                </span>
+                <div className="bg-purple-50 border-l-4 border-purple-300 rounded-r-lg p-4 flex-1 mr-4">
+                  <p className="text-gray-800 text-[15px] leading-relaxed font-medium">
+                    "{review.comment}"
+                  </p>
+                </div>
+                <div className="text-sm text-gray-500 whitespace-nowrap text-left">
+                  <p className="font-medium">Reviewed on:</p>
+                  <p>{new Date(review.createdAt).toLocaleDateString()}</p>
+                </div>
               </div>
 
               {/* Admin Response */}

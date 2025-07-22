@@ -287,57 +287,57 @@ const OrderStepper = ({
           }
 
           return (
-            <Step 
-              key={step.label} 
+            <Step
+              key={step.label}
               disabled={orderStatus === "Canceled" || orderStatus === "Refunded"}
               completed={isCompleted}
             >
-            <StepLabel
-              optional={
-                <Typography variant="caption" color="textSecondary">
-                  {stepTimestamps[step.status]
-                    ? formatDateTime(stepTimestamps[step.status])
-                    : ""}
-                </Typography>
-              }
-            >
-              {step.label}
-            </StepLabel>
-            <StepContent>
-              <Typography>{step.description}</Typography>
+              <StepLabel
+                optional={
+                  <Typography variant="caption" color="textSecondary">
+                    {stepTimestamps[step.status]
+                      ? formatDateTime(stepTimestamps[step.status])
+                      : ""}
+                  </Typography>
+                }
+              >
+                {step.label}
+              </StepLabel>
+              <StepContent>
+                <Typography>{step.description}</Typography>
 
-              {editable && (
-                <Box sx={{ mb: 2 }}>
-                  {orderStatus !== "Delivered" && orderStatus !== "Successful" && (
-                    <Button
-                      variant="contained"
-                      onClick={handleNext}
-                      sx={{ mt: 1, mr: 1 }}
-                      disabled={
-                        loading ||
-                        orderStatus === "Canceled" ||
-                        orderStatus === "Refunded"
-                      }
-                    >
-                      {orderStatus == "Shipped" ? "Make as Delivered" : "Continue"}
-                    </Button>
-                  )}
-
-                  {index > 1 &&
-                    orderStatus !== "Delivered" &&
-                    orderStatus !== "Successful" && (
+                {editable && (
+                  <Box sx={{ mb: 2 }}>
+                    {orderStatus !== "Delivered" && orderStatus !== "Successful" && (
                       <Button
-                        onClick={handleBack}
+                        variant="contained"
+                        onClick={handleNext}
                         sx={{ mt: 1, mr: 1 }}
-                        disabled={loading || orderStatus === "Canceled" || orderStatus === "Refunded"}
+                        disabled={
+                          loading ||
+                          orderStatus === "Canceled" ||
+                          orderStatus === "Refunded"
+                        }
                       >
-                        Back
+                        {orderStatus == "Shipped" ? "Make as Delivered" : "Continue"}
                       </Button>
                     )}
-                </Box>
-              )}
-            </StepContent>
-          </Step>
+
+                    {index > 1 &&
+                      orderStatus !== "Delivered" &&
+                      orderStatus !== "Successful" && (
+                        <Button
+                          onClick={handleBack}
+                          sx={{ mt: 1, mr: 1 }}
+                          disabled={loading || orderStatus === "Canceled" || orderStatus === "Refunded"}
+                        >
+                          Back
+                        </Button>
+                      )}
+                  </Box>
+                )}
+              </StepContent>
+            </Step>
           );
         })}
       </Stepper>
