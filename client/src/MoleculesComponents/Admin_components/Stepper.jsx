@@ -311,7 +311,7 @@ const OrderStepper = ({
                       disabled={
                         loading ||
                         orderStatus === "Canceled" ||
-                        orderStatus === "Shipped"
+                        orderStatus === "Refunded"
                       }
                     >
                       {orderStatus == "Shipped" ? "Make as Delivered" : "Continue"}
@@ -324,7 +324,7 @@ const OrderStepper = ({
                       <Button
                         onClick={handleBack}
                         sx={{ mt: 1, mr: 1 }}
-                        disabled={loading || orderStatus === "Canceled"}
+                        disabled={loading || orderStatus === "Canceled" || orderStatus === "Refunded"}
                       >
                         Back
                       </Button>

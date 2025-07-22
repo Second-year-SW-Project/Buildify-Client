@@ -146,6 +146,26 @@ const BuildStepper = ({
 
   // Update activeStep based on buildStatus
   useEffect(() => {
+    // Helper function to determine step for canceled builds based on timestamps
+    const getCanceledBuildStep = () => {
+      if (buildStatus !== "Canceled" || !stepTimestamps) return 1;
+
+      // Check timestamps to determine which step was active when canceled
+      const statusList = deliveryMethod === "Pick up at store"
+        ? ["Pending", "Confirmed", "Building", "Completed", "Delivered", "Successful"]
+        : ["Pending", "Confirmed", "Building", "Completed", "Shipped", "Delivered", "Successful"];
+
+      let lastCompletedStep = 1; // Default to step 1 if no timestamps found
+
+      for (let i = statusList.length - 1; i >= 0; i--) {
+        if (stepTimestamps[statusList[i]]) {
+          lastCompletedStep = i + 1; // +1 because activeStep is 1-indexed
+          break;
+        }
+      }
+      return lastCompletedStep;
+    };
+
     // Map status to correct step index based on delivery method
     let statusToStepMap;
 
@@ -158,7 +178,7 @@ const BuildStepper = ({
         Completed: 4,   // Show Delivered as active (steps 0,1,2,3 completed)
         Delivered: 5,   // Show Successful as active (steps 0,1,2,3,4 completed)
         Successful: 6,  // All steps completed (steps 0,1,2,3,4,5 completed)
-        Canceled: 1     // Default to Build Confirmed step
+        Canceled: getCanceledBuildStep()  // Preserve step based on timestamps
       };
     } else {
       // Include Shipped step for home delivery
@@ -170,7 +190,7 @@ const BuildStepper = ({
         Shipped: 5,     // Show Delivered as active (steps 0,1,2,3,4 completed)
         Delivered: 6,   // Show Successful as active (steps 0,1,2,3,4,5 completed)
         Successful: 7,  // All steps completed (steps 0,1,2,3,4,5,6 completed)
-        Canceled: 1     // Default to Build Confirmed step
+        Canceled: getCanceledBuildStep()  // Preserve step based on timestamps
       };
     }
 
@@ -179,7 +199,7 @@ const BuildStepper = ({
     if (adjustedStepIndex !== activeStep) {
       setActiveStep(adjustedStepIndex);
     }
-  }, [buildStatus, deliveryMethod, setActiveStep, activeStep]);
+  }, [buildStatus, deliveryMethod, setActiveStep, activeStep, stepTimestamps]);
 
   const formatDateTime = (date) => {
     if (!date) return "";
@@ -209,7 +229,7 @@ const BuildStepper = ({
       ];
 
       let nextStatus;
-      
+
       // Special case: For store pickup, skip "Shipped" and go directly from "Completed" to "Delivered"
       if (buildStatus === "Completed" && deliveryMethod === "Pick up at store") {
         nextStatus = "Delivered";

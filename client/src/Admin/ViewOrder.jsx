@@ -44,7 +44,22 @@ function ViewOrder() {
     Successful: "success",
   };
 
-  const getStepFromStatus = (status) => {
+  const getStepFromStatus = (status, stepTimestamps = null) => {
+    // For canceled orders, determine the step based on the last completed step timestamp
+    if (status === "Canceled" && stepTimestamps) {
+      // Check timestamps to determine which step was active when canceled
+      const steps = ["Pending", "Completed", "Shipped", "Delivered", "Successful"];
+      let lastCompletedStep = 0; // Default to step 0 if no timestamps found
+
+      for (let i = steps.length - 1; i >= 0; i--) {
+        if (stepTimestamps[steps[i]]) {
+          lastCompletedStep = i + 1; // +1 because activeStep is 1-indexed
+          break;
+        }
+      }
+      return lastCompletedStep;
+    }
+
     switch (status) {
       case "Pending":
         return 1;
@@ -59,7 +74,7 @@ function ViewOrder() {
       case "Refunded":
         return 4;
       case "Canceled":
-        return 2;
+        return 2; // fallback if no stepTimestamps provided
       default:
         return 1;
     }
@@ -88,8 +103,8 @@ function ViewOrder() {
 
         if (response.data) {
           setOrder(response.data);
-          // Set active step based on order status
-          setActiveStep(getStepFromStatus(response.data.status));
+          // Set active step based on order status, passing stepTimestamps for canceled orders
+          setActiveStep(getStepFromStatus(response.data.status, response.data.stepTimestamps));
         } else {
           toast.error("Failed to load Order");
           navigate("/adminpanel/orders/orderlist");
@@ -141,6 +156,8 @@ function ViewOrder() {
 
       // Determine the step based on status
       let newStep;
+      let currentStep = getStepFromStatus(order.status, order.stepTimestamps);
+
       switch (newStatus) {
         case "Pending":
           newStep = 1;
@@ -158,48 +175,28 @@ function ViewOrder() {
           newStep = 5;
           break;
         case "Canceled":
-          newStep = 2;
+          // Preserve the current step when canceling - don't change the step
+          newStep = currentStep;
           break;
         case "Refunded":
           newStep = 4;
           break;
         default:
           newStep = 1;
-      }
-
-      // Get current step from current status
-      let currentStep;
-      switch (order.status) {
-        case "Pending":
-          currentStep = 1;
-          break;
-        case "Completed":
-          currentStep = 2;
-          break;
-        case "Shipped":
-          currentStep = 3;
-          break;
-        case "Delivered":
-          currentStep = 4;
-          break;
-        case "Successful":
-          currentStep = 5;
-          break;
-        case "Canceled":
-          currentStep = 2;
-          break;
-        default:
-          currentStep = 1;
-      }
-
-      // Prepare timestamp updates
+      }      // Prepare timestamp updates
       const stepTimestamp = {
         [newStatus]: currentTime,
       };
 
-      // If going back to a previous status, set the current status timestamp to null
-      if (newStep < currentStep) {
-        stepTimestamp[order.status] = null;
+      // Special handling for Canceled status - don't modify existing step timestamps
+      if (newStatus === "Canceled") {
+        // Only add the Canceled timestamp, don't modify other timestamps
+        delete stepTimestamp[order.status]; // Don't clear the current status timestamp
+      } else {
+        // If going back to a previous status, set the current status timestamp to null
+        if (newStep < currentStep) {
+          stepTimestamp[order.status] = null;
+        }
       }
 
       // Update both status and timestamp
