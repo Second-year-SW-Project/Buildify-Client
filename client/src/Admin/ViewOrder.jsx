@@ -30,8 +30,8 @@ function ViewOrder() {
     { value: "Completed", label: "Completed" },
     { value: "Shipped", label: "Shipped" },
     { value: "Delivered", label: "Delivered" },
-    { value: "Refunded", label: "Refunded" },
-    { value: "Canceled", label: "Canceled" }
+    { value: "Canceled", label: "Canceled" },
+    { value: "Refunded", label: "Refunded" }
   ];
 
   const statusColorMap = {
@@ -45,9 +45,9 @@ function ViewOrder() {
   };
 
   const getStepFromStatus = (status, stepTimestamps = null) => {
-    // For canceled orders, determine the step based on the last completed step timestamp
-    if (status === "Canceled" && stepTimestamps) {
-      // Check timestamps to determine which step was active when canceled
+    // For canceled/refunded orders, determine the step based on the last completed step timestamp
+    if ((status === "Canceled" || status === "Refunded") && stepTimestamps) {
+      // Check timestamps to determine which step was active when canceled/refunded
       const steps = ["Pending", "Completed", "Shipped", "Delivered", "Successful"];
       let lastCompletedStep = 0; // Default to step 0 if no timestamps found
 
@@ -72,7 +72,7 @@ function ViewOrder() {
       case "Successful":
         return 5;
       case "Refunded":
-        return 4;
+        return 2; // fallback if no stepTimestamps provided (same as canceled)
       case "Canceled":
         return 2; // fallback if no stepTimestamps provided
       default:
