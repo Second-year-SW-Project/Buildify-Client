@@ -260,8 +260,8 @@ function ManageProducts() {
                 productCard: <ProductCard name={product.name} type={getCategoryLabel(product.type)} src={product.imgUrls?.[0]?.url} />,
                 date: <TimeCard date={new Date(product.updatedAt).toLocaleDateString()} time={new Date(product.updatedAt).toLocaleTimeString()} />,
                 availability: <StatusCard Status={product.quantity > 5 ? "In Stock" : product.quantity <= 5 && product.quantity > 0 ? "Low Stock" : "Out of Stock"} />,
-                quantity: < QuantityCard quantity={product.quantity} unitprice={`Unit Price - ${product.price}`} />,
-                stock: `${product.quantity * product.price} LKR`,
+                quantity: < QuantityCard quantity={product.quantity} unitprice={`Unit Price - ${product.price?.toLocaleString() || 0} LKR`} />,
+                stock: `${(product.quantity * product.price)?.toLocaleString() || 0} LKR`,
             }))
             : []
     ), [filteredProducts]);
