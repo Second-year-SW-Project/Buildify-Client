@@ -365,7 +365,7 @@ export function OrderTable({
                                 type === "toggle"
                                   ? toggleRow(order._id)
                                   : iconActions[type] &&
-                                    iconActions[type](order._id)
+                                  iconActions[type](order._id)
                               }
                               translate="3s"
                               sx={{
@@ -665,7 +665,7 @@ export function BuildTable({
                             build.deliveryMethod === "Home Delivery"
                               ? "By Delivery"
                               : build.deliveryMethod === "Pick up at store"
-                                ? "By Store"
+                                ? "By Pick up"
                                 : build.deliveryMethod
                           }
                           color={
@@ -719,7 +719,7 @@ export function BuildTable({
                                 type === "toggle"
                                   ? toggleRow(build._id)
                                   : iconActions[type] &&
-                                    iconActions[type](build._id)
+                                  iconActions[type](build._id)
                               }
                               translate="3s"
                               sx={{
@@ -809,8 +809,8 @@ export function BuildTable({
                                     <Typography fontWeight="bold" flex={1}>
                                       {comp.price && comp.quantity
                                         ? (
-                                            comp.price * comp.quantity
-                                          ).toLocaleString()
+                                          comp.price * comp.quantity
+                                        ).toLocaleString()
                                         : comp.price || "N/A"}{" "}
                                       LKR
                                     </Typography>

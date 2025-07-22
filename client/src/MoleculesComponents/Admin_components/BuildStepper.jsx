@@ -142,7 +142,7 @@ const BuildStepper = ({
     if (buildId) {
       fetchBuildTimestamps();
     }
-  }, [buildId, activeStep, backendUrl]);
+  }, [buildId, activeStep, backendUrl, buildStatus]);
 
   // Update activeStep based on buildStatus
   useEffect(() => {
@@ -338,8 +338,8 @@ const BuildStepper = ({
   };
 
   const handleStepClick = async (stepIndex) => {
-    // Prevent clicking on step 0 (Build Placed) and when canceled
-    if (!editable || buildStatus === "Canceled" || stepIndex === 0) return;
+    // Prevent clicking on step 0 (Build Placed) and when canceled/refunded
+    if (!editable || buildStatus === "Canceled" || buildStatus === "Refunded" || stepIndex === 0) return;
 
     try {
       setLoading(true);
@@ -380,16 +380,23 @@ const BuildStepper = ({
 
   return (
     <Box sx={{ maxWidth: 600 }}>
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper activeStep={buildStatus === "Canceled" || buildStatus === "Refunded" ? -1 : activeStep} orientation="vertical">
         {steps.map((step, index) => {
-          // Determine if step is completed based on activeStep
-          const isCompleted = index < activeStep;
+          // For canceled/refunded builds, determine completion based on timestamps instead of activeStep
+          let isCompleted = false;
+          if (buildStatus === "Canceled" || buildStatus === "Refunded") {
+            // Step is completed only if it has a timestamp and it's before the active canceled/refunded step
+            isCompleted = !!stepTimestamps[step.status] && (index < activeStep);
+          } else {
+            // Normal behavior: steps before activeStep are completed
+            isCompleted = index < activeStep;
+          }
 
           return (
             <Step
               key={step.label}
               completed={isCompleted}
-              disabled={buildStatus === "Canceled"}
+              disabled={buildStatus === "Canceled" || buildStatus === "Refunded"}
             >
               {" "}
               <StepLabel
@@ -426,6 +433,7 @@ const BuildStepper = ({
                         disabled={
                           loading ||
                           buildStatus === "Canceled" ||
+                          buildStatus === "Refunded" ||
                           buildStatus === "Shipped"
                         }
                       >
@@ -439,7 +447,7 @@ const BuildStepper = ({
                         <Button
                           onClick={handleBack}
                           sx={{ mt: 1, mr: 1 }}
-                          disabled={loading || buildStatus === "Canceled"}
+                          disabled={loading || buildStatus === "Canceled" || buildStatus === "Refunded"}
                         >
                           Back
                         </Button>

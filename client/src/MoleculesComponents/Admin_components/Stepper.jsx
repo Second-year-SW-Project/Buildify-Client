@@ -83,28 +83,18 @@ const OrderStepper = ({
             }
           });
 
-          // Ensure all step timestamps are properly set
-          steps.forEach((step) => {
-            if (!initialTimestamps[step.status]) {
-              initialTimestamps[step.status] = null;
-            }
-          });
+          // Don't set missing timestamps to null - leave them undefined
+          // This way, only actual timestamps from the database will be displayed
 
           setStepTimestamps(initialTimestamps);
 
-          // If any step timestamp is missing in database, save it
-          const missingTimestamps = {};
-          steps.forEach((step) => {
-            if (!orderData.stepTimestamps?.[step.status]) {
-              missingTimestamps[step.status] = initialTimestamps[step.status];
-            }
-          });
-
-          if (Object.keys(missingTimestamps).length > 0) {
+          // Only save the Pending timestamp if it's missing (don't save null timestamps for other steps)
+          if (!orderData.stepTimestamps?.Pending) {
+            const pendingTimestamp = { Pending: new Date(orderData.createdAt) };
             await axios.patch(
               `${backendUrl}/api/checkout/product-orders/${orderId}`,
               {
-                stepTimestamp: missingTimestamps,
+                stepTimestamp: pendingTimestamp,
               },
               {
                 headers: {
@@ -119,7 +109,7 @@ const OrderStepper = ({
       }
     };
     fetchOrderTimestamps();
-  }, [orderId, backendUrl, activeStep]);
+  }, [orderId, backendUrl, activeStep, orderStatus]);
 
   const formatDateTime = (date) => {
     if (!date) return "";
@@ -284,9 +274,24 @@ const OrderStepper = ({
 
   return (
     <Box sx={{ maxWidth: 400 }}>
-      <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map((step, index) => (
-          <Step key={step.label} disabled={orderStatus === "Canceled"}>
+      <Stepper activeStep={orderStatus === "Canceled" || orderStatus === "Refunded" ? -1 : activeStep} orientation="vertical">
+        {steps.map((step, index) => {
+          // For canceled/refunded orders, determine completion based on timestamps instead of activeStep
+          let isCompleted = false;
+          if (orderStatus === "Canceled" || orderStatus === "Refunded") {
+            // Step is completed only if it has a timestamp and it's before the active canceled/refunded step
+            isCompleted = !!stepTimestamps[step.status] && (index < activeStep);
+          } else {
+            // Normal behavior: steps before activeStep are completed
+            isCompleted = index < activeStep;
+          }
+
+          return (
+            <Step 
+              key={step.label} 
+              disabled={orderStatus === "Canceled" || orderStatus === "Refunded"}
+              completed={isCompleted}
+            >
             <StepLabel
               optional={
                 <Typography variant="caption" color="textSecondary">
@@ -333,7 +338,8 @@ const OrderStepper = ({
               )}
             </StepContent>
           </Step>
-        ))}
+          );
+        })}
       </Stepper>
       {/* {activeStep === steps.length && orderStatus !== 'Refunded' && (
                 <Paper round elevation={0} sx={{ p: 3 }}>
