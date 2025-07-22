@@ -165,7 +165,10 @@ export default function MyOrders() {
 
   const filteredOrders = orders
     .filter(
-      (order) => order.status !== "Sucessful" && order.status !== "Refunded"
+      (order) =>
+        order.status !== "Successful" &&
+        order.status !== "Refunded" &&
+        order.status !== "Canceled"
     )
     .filter((order) => {
       if (value === "1") return true;
@@ -193,6 +196,7 @@ export default function MyOrders() {
                     p: 3,
                     pl: 7,
                     width: "90%",
+                    minHeight: "100vh",
                     boxShadow: 1,
                     borderRadius: 2,
                   }}

@@ -251,6 +251,7 @@ export default function Settings() {
                     p: 3,
                     pl: 7,
                     width: "90%",
+                    minHeight: "100vh",
                     boxShadow: 1,
                     borderRadius: 2,
                   }}

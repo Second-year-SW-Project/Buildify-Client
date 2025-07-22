@@ -103,7 +103,7 @@ export default function ReviewSubmitPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const stepTimestamp = new Date().toISOString();
+      const stepTimestamp = { Successful: new Date().toISOString() };
 
       if (type === "product") {
         await axios.patch(
@@ -205,6 +205,7 @@ export default function ReviewSubmitPage() {
                     p: 3,
                     pl: 7,
                     width: "90%",
+                    minHeight: "100vh",
                     boxShadow: 1,
                     borderRadius: 2,
                   }}
