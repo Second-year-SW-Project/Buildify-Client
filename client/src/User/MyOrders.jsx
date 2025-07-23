@@ -141,6 +141,7 @@ export default function MyOrders() {
             itemCount: order.components.length,
             status: order.buildStatus,
             items: order.components,
+            deliveryMethod: order.deliveryMethod ?? "Home delivery",
           }));
 
           setOrders([...formattedProductOrders, ...formattedBuildOrders]);
@@ -227,6 +228,7 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             type={order.type}
                             itemCount={order.itemCount}
+                            deliveryMethod={order.deliveryMethod}
                             onDetailsClick={() =>
                               navigate(`/user/orders/${order.orderId}`, {
                                 state: { type: order.type },
@@ -278,6 +280,7 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             type={order.type}
                             itemCount={order.itemCount}
+                            deliveryMethod={order.deliveryMethod}
                             onDetailsClick={() =>
                               navigate(`/user/orders/${order.orderId}`, {
                                 state: { type: order.type },
@@ -329,6 +332,7 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             type={order.type}
                             itemCount={order.itemCount}
+                            deliveryMethod={order.deliveryMethod}
                             onDetailsClick={() =>
                               navigate(`/user/orders/${order.orderId}`, {
                                 state: { type: order.type },
