@@ -114,18 +114,18 @@ export default function CustomBuildsContent() {
       setBuilds((prev) => prev.filter((b) => b._id !== buildToDelete));
       toast.success("Build deleted successfully.", {
         duration: 2000,
-        style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
+        style: { background: "#ffffff", color: "#000", fontWeight: "bold" },
       });
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error("Please login to delete builds", {
           duration: 2000,
-          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
+          style: { background: "#ffffff", color: "#000", fontWeight: "bold" },
         });
       } else {
         toast.error("Failed to delete build.", {
           duration: 2000,
-          style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
+          style: { background: "#ffffff", color: "#000", fontWeight: "bold" },
         });
       }
     } finally {
