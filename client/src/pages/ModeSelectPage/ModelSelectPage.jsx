@@ -37,7 +37,7 @@ const ModeSelectPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
             <BannerLargeContainer2
               heading="EASY MODE"
-              subheading="Find your perfect gaming PC—choose your favorite games, set your budget, and let us do the rest!"
+              subheading="Find your perfect gaming PC choose your favorite games, set your budget, and let us do the rest!"
               buttonText="Start"
               imageUrl={easyModeImage}
               className="w-full transform hover:scale-105 transition-transform duration-300"
@@ -45,7 +45,7 @@ const ModeSelectPage = () => {
             />
             <BannerLargeContainer2
               heading="ADVANCED MODE"
-              subheading="Build your ultimate custom PC—choose your components, and we'll ensure everything fits and works perfectly!"
+              subheading="Build your ultimate custom PC choose your components, and we'll ensure everything fits and works perfectly!"
               buttonText="Start"
               imageUrl={advancedModeImage}
               className="w-full transform hover:scale-105 transition-transform duration-300"

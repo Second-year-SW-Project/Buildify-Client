@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import PCBuildCard from "../AtomicComponents/Cards/PCBuildCard";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-import Swal from "sweetalert2";
 import BuildDetailsPopup from "../AtomicComponents/Cards/BuildDetailsPopup";
+import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 
 export default function CustomBuildsContent() {
   const [builds, setBuilds] = useState([]);
@@ -13,6 +13,9 @@ export default function CustomBuildsContent() {
   const [selectedBuild, setSelectedBuild] = useState(null);
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [buildToDelete, setBuildToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserBuilds = async () => {
@@ -84,19 +87,10 @@ export default function CustomBuildsContent() {
     fetchUserBuilds();
   }, [user]);
 
-  // Delete build handler
-  const handleDelete = async (buildId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you really want to delete this build? This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#e53e3e",
-      cancelButtonColor: "#9D00FF",
-      confirmButtonText: "Yes, delete it!",
-    });
-
-    if (!result.isConfirmed) return;
+  // Delete build handler (actual delete)
+  const handleDeleteConfirmed = async () => {
+    if (!buildToDelete) return;
+    setDeleteLoading(true);
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const token = localStorage.getItem("token");
@@ -106,16 +100,18 @@ export default function CustomBuildsContent() {
           duration: 2000,
           style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
+        setDeleteLoading(false);
+        setDialogOpen(false);
         return;
       }
 
-      await axios.delete(`${backendUrl}/api/build/builds/delete/${buildId}`, {
+      await axios.delete(`${backendUrl}/api/build/builds/delete/${buildToDelete}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      setBuilds((prev) => prev.filter((b) => b._id !== buildId));
+      setBuilds((prev) => prev.filter((b) => b._id !== buildToDelete));
       toast.success("Build deleted successfully.", {
         duration: 2000,
         style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
@@ -132,7 +128,17 @@ export default function CustomBuildsContent() {
           style: { background: "#ff6b6b", color: "#fff", fontWeight: "bold" },
         });
       }
+    } finally {
+      setDeleteLoading(false);
+      setDialogOpen(false);
+      setBuildToDelete(null);
     }
+  };
+
+  // Open dialog when delete is requested
+  const handleDelete = (buildId) => {
+    setBuildToDelete(buildId);
+    setDialogOpen(true);
   };
 
   // Publish/Unpublish handler
@@ -226,6 +232,16 @@ export default function CustomBuildsContent() {
 
   return (
     <>
+      <DialogAlert
+        Title="Delete Build?"
+        message="Do you really want to delete this build? This action cannot be undone."
+        Agree="Delete"
+        Disagree="Cancel"
+        open={dialogOpen}
+        handleClose={() => { setDialogOpen(false); setBuildToDelete(null); }}
+        handleAgree={handleDeleteConfirmed}
+        loading={deleteLoading}
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
         {builds.map((build) => (
           <PCBuildCard

@@ -30,7 +30,7 @@ export default function PCBuilderBanners() {
         >
           <div className="w-full lg:w-1/2">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">ADVANCED MODE</h2>
-            <p className="mb-8 text-sm md:text-base leading-relaxed">Build your ultimate custom PC—choose your components, and we'll ensure everything fits and works perfectly!
+            <p className="mb-8 text-sm md:text-base leading-relaxed">Build your ultimate custom PC choose your components, and we'll ensure everything fits and works perfectly!
             </p>
             <button
               onClick={() => navigate('/chooseparts')}
@@ -56,7 +56,7 @@ export default function PCBuilderBanners() {
           <div className="w-full lg:w-1/2">
             <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-6">EASY MODE</h2>
             <p className="mb-8 text-sm md:text-base leading-relaxed">
-              Find your perfect gaming PC—choose your favorite games, set your budget, and let us do the rest!
+              Find your perfect gaming PC choose your favorite games, set your budget, and let us do the rest!
             </p>
             <button
               onClick={() => navigate('/selectgame')}
