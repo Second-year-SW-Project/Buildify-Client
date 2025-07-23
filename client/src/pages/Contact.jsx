@@ -77,11 +77,7 @@ const Contact = () => {
                 </button>
                 <div className="text-purple-200">
                   <p className="flex items-center gap-3 text-lg">
-                    <AccessTime style={{ fontSize: 28 }} />
-                    <span className="font-semibold">Live Chat Available:</span>
-                  </p>
-                  <p className="text-base mt-1 ml-7">
-                    Mon - Fri: 9:00am - 4:00pm
+                    <span className="font-semibold">Anything need to clarify, feel free to ask!</span>
                   </p>
                 </div>
               </div>
