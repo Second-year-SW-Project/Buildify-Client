@@ -9,6 +9,16 @@ export default function ProductTabs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [activeTab, setActiveTab] = useState("specification");
+  // Comments state
+  const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState("");
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentError, setCommentError] = useState(null);
+  const [posting, setPosting] = useState(false);
+    const [users, setUsers] = useState([]);
+
+
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
@@ -32,11 +42,56 @@ export default function ProductTabs() {
       }
     };
 
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`${backendUrl}/api/comment/${id}`);
+        setComments(response.data);
+      } catch (err) {
+        console.error("Failed to load comments");
+      }
+    };
+
     fetchProduct();
     fetchReviews();
+    fetchComments();
   }, [id]);
 
-  const [activeTab, setActiveTab] = useState("specification");
+
+    useEffect(() => {
+      const token  = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+      if (!token || !userId) {
+        setLoading(false);
+        return;
+      }
+  
+      const fetchUsers = async () => {
+        try {
+          const response = await axios.get("http://localhost:8000/api/v1/users", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          setUsers(response.data);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchUsers();
+    }, []);
+
+    const userId = localStorage.getItem("userId");
+    const currentUserArray = users.filter((u) => u._id === userId);
+    const currentUser = currentUserArray.length > 0 ? currentUserArray[0] : null;
+
+
+
+  // Fetch comments
+
 
   if (loading) return <p></p>;
   if (error) return <p>{error}</p>;
@@ -67,6 +122,17 @@ export default function ProductTabs() {
         >
           Review
         </button>
+
+        <button
+          className={`py-3 px-8 text-lg font-medium ${
+            activeTab === "comments"
+              ? "border-b-2 border-black text-black"
+              : "text-gray-500"
+          }`}
+          onClick={() => setActiveTab("comments")}
+        >
+          Comments
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -84,7 +150,7 @@ export default function ProductTabs() {
               <span className="font-bold">Category:</span> {product.type}
             </p>
           </div>
-        ) : (
+        ) : activeTab === "review" ? (
           <div className='text-gray-800'>
             {reviews.length > 0 ? (
               reviews.map((review) => (
@@ -101,7 +167,7 @@ export default function ProductTabs() {
                   </div>
                   <p className="mb-2">{review.comment}</p>
                   <p className="text-sm text-gray-500">
-                    By {review.user?.name || 'Anonymous'} on {new Date(review.createdAt).toLocaleDateString()}
+                    By {review?.userId?.name || 'Anonymous'} on {new Date(review.createdAt).toLocaleDateString()}
                   </p>
                   {review.adminResponse && (
                     <div className="mt-2 p-2 bg-gray-50 rounded">
@@ -114,6 +180,90 @@ export default function ProductTabs() {
             ) : (
               <p className="text-center text-gray-500">No reviews available for this product.</p>
             )}
+          </div>
+        ) : (
+          // Comments Tab Content
+          <div className="text-gray-800">
+            <h3 className="text-xl font-semibold mb-4">Comments</h3>
+            {commentsLoading ? (
+              <p>Loading comments...</p>
+            ) : commentError ? (
+              <p className="text-red-500">{commentError}</p>
+            ) : comments.length > 0 ? (
+              comments.map((comment) => (
+                <div key={comment._id} className="mb-6 p-4 border-b border-gray-200">
+                  <p className="mb-2">{comment.comment}</p>
+                  <p className="text-sm text-gray-500">
+                    By {comment?.userId?.name || 'User'} on {new Date(comment.createdAt).toLocaleDateString()}
+                  </p>
+                  {comment.adminResponse && (
+                    <div className="mt-2 p-2 bg-gray-50 rounded">
+                      <p className="text-sm font-semibold text-gray-700">Admin Response:</p>
+                      <p className="text-sm text-gray-600">{comment.adminResponse}</p>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500">No comments yet. Be the first to comment!</p>
+            )}
+            {/* Comment Form */}
+            <form
+              className="mt-6 flex flex-col gap-2"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!commentInput.trim()) return;
+                setPosting(true);
+                setCommentError(null);
+                try {
+                  // Send token if available for authenticated comment posting
+                  const token = localStorage.getItem("token");
+                  const config = token
+                    ? { headers: { Authorization: `Bearer ${token}` } }
+                    : {};
+                  const res = await axios.post(
+                    `${backendUrl}/api/comment/${id}/safe`,
+                    { comment: commentInput },
+                    config
+                  );
+
+                  // Patch the returned comment with your name if you are logged in
+                  let newComment = res.data;
+                  if (currentUser) {
+                    newComment = {
+                      ...newComment,
+                      userId: {
+                        _id: currentUser._id,
+                        name: currentUser.name,
+                      },
+                    };
+                  }
+                  setComments([newComment, ...comments]);
+                  setCommentInput("");
+                } catch (err) {
+                  setCommentError(err.response?.data?.message || "Failed to post comment");
+                  console.error('Failed to post comment:', err);
+                } finally {
+                  setPosting(false);
+                }
+              }}
+            >
+              <textarea
+                className="border rounded p-2 w-full"
+                rows={3}
+                placeholder="Write a comment..."
+                value={commentInput}
+                onChange={e => setCommentInput(e.target.value)}
+                disabled={posting}
+              />
+              <button
+                type="submit"
+                className="self-end bg-black text-white px-4 py-2 rounded disabled:opacity-50"
+                disabled={posting || !commentInput.trim()}
+              >
+                {posting ? "Posting..." : "Post Comment"}
+              </button>
+            </form>
           </div>
         )}
       </div>
