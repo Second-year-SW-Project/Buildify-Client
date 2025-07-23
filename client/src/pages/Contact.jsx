@@ -54,7 +54,7 @@ const Contact = () => {
           </h1>
           <p className="text-lg text-gray-300 text-center mb-12 leading-relaxed">
             Looking for a help. We're here to help with all your gaming and PC
-            building needs — reach out anytime!
+            building needs, reach out anytime!
           </p>
 
           {/* Chat Bot Section */}

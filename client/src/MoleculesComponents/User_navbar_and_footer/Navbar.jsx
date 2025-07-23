@@ -274,7 +274,7 @@ export default function Navbar() {
           {openDropdown === "contact" && (
             <div className="absolute left-0 w-40 bg-[#333] text-white rounded-md shadow-lg mt-1 flex flex-col py-2">
               <Link to="/contact" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
-                <CallIcon fontSize="small" className="mr-2" /> Cantact Us
+                <CallIcon fontSize="small" className="mr-2" /> Contact Us
               </Link>
               <Link to="/supportus" className="block px-4 py-2 hover:bg-blue-400" onClick={() => setOpenDropdown(null)}>
                 <QuizIcon fontSize="small" className="mr-2" /> Support
