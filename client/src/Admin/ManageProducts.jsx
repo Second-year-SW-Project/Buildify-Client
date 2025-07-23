@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,19 @@ import StatusCard from "../AtomicComponents/Cards/StatusCard";
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import ProductDetailsDialog from "../AtomicComponents/Dialogs/ProductDetailsDialog";
 import dayjs from 'dayjs';
+
+// Add debounce function to limit the number of API calls
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
 
 function ManageProducts() {
 
@@ -127,12 +140,20 @@ function ManageProducts() {
 
     useEffect(() => {
         if (filtersRestored) {
-            fetchProducts(searchTerm);
+            fetchProducts();
         }
     }, [filtersRestored, currentPage, itemsPerPage, searchTerm, statusFilter, selectedDate, selectedSubCategory]);
 
+    // Create a debounced version of fetchProducts 
+    const debouncedFetchProducts = useCallback(
+        debounce(() => {
+            fetchProducts(); // Call the fetchProducts function with the current parameters
+        }, 300),
+        [currentPage, itemsPerPage, searchTerm, statusFilter, selectedDate, selectedSubCategory]
+    );
+
     //fetch all the products 
-    const fetchProducts = async (searchTerm = "") => {
+    const fetchProducts = async () => {
         try {
             setLoading(true);
             const params = {
@@ -376,7 +397,8 @@ function ManageProducts() {
                                     const newSearchTerm = e.target.value;
                                     setSearchTerm(newSearchTerm);
                                     setCurrentPage(1);
-                                    fetchProducts(newSearchTerm);
+                                    // Trigger fetch with debounced function
+                                    debouncedFetchProducts();
                                 }}
                             />
                         </div>
