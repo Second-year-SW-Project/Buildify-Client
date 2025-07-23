@@ -605,7 +605,7 @@ function ViewOrder() {
             </Box>
 
             <Typography variant="h6" sx={{ mb: 2, mt: 4, fontWeight: "bold" }}>
-              Payment
+
             </Typography>
           </div>
         </div>

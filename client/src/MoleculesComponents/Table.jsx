@@ -440,7 +440,7 @@ export function OrderTable({
                                     flex={1}
                                     color="black500"
                                   >
-                                    Unit Price - {item.price}
+                                    Unit Price - {item.price.toLocaleString()}
                                   </Typography>
                                 </Box>
                                 <Box
@@ -452,7 +452,7 @@ export function OrderTable({
                                   marginRight={2}
                                 >
                                   <Typography fontWeight="bold" flex={1}>
-                                    {item.price * item.quantity} LKR
+                                    {item.price * item.quantity ? (item.price * item.quantity).toLocaleString() : "N/A"} LKR
                                   </Typography>
                                 </Box>
                               </Stack>
@@ -795,7 +795,7 @@ export function BuildTable({
                                       flex={1}
                                       color="black500"
                                     >
-                                      Unit Price - {comp.price || "N/A"}
+                                      Unit Price - {comp.price.toLocaleString() || "N/A"}
                                     </Typography>
                                   </Box>
                                   <Box
