@@ -31,7 +31,7 @@ const PCBuildCard = ({ name, createdAt, image, onClick, onDelete, onEdit }) => {
       </p>
       <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6 w-full min-w-0">
         <button
-          className="w-full sm:w-auto flex-1 border border-[#28a745] text-[#28a745] font-semibold rounded-lg px-2 py-2 bg-white transition-colors duration-200 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-[#28a745] text-sm"
+          className="w-full sm:w-auto flex-1 border border-purple-800 text-purple-800 font-semibold rounded-lg px-2 py-2 bg-white transition-colors duration-200 hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-purple-800 text-sm"
           onClick={(e) => {
             e.stopPropagation();
             onEdit && onEdit();
