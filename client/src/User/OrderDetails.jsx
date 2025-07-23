@@ -163,7 +163,10 @@ export default function OrderDetails() {
           paymentMethod: data.paymentMethod,
           _id: data._id,
           createdAt: data.createdAt,
-          deliveryMethod: data.deliveryMethod,
+          deliveryMethod: data.deliveryMethod ?? "Home delivery",
+          warrantyPeriod: data.warrantyPeriod ?? 24,
+          serviceCharge: data.serviceCharge ?? 500,
+          deliveryCharge: data.deliveryCharge ?? 1200,
         };
 
         setOrder(normalizedOrder);
@@ -485,13 +488,6 @@ export default function OrderDetails() {
     });
   };
 
-  // if (!order)
-  //   return (
-  //     <div className="flex justify-center items-center h-64">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-  //     </div>
-  //   );
-
   return (
     <div>
       <div className="flex flex-col min-h-screen">
@@ -609,8 +605,39 @@ export default function OrderDetails() {
                           </p>
                           <p className="text-sm mt-1">
                             <span className="font-medium">Payment method:</span>{" "}
-                            {order.paymentMethod || "Not provided"}
+                            {order.paymentMethod || "Stripe"}
                           </p>
+                          {order?.deliveryMethod && (
+                            <div>
+                              <p className="text-sm mt-1">
+                                <span className="font-medium">
+                                  Delivery Method:
+                                </span>{" "}
+                                {order.deliveryMethod || "N/A"}
+                              </p>
+                              {order.deliveryMethod == "Home delivery" && (
+                                <p className="text-sm mt-1">
+                                  <span className="font-medium">
+                                    Delivery Charge:
+                                  </span>{" "}
+                                  LKR {order.deliveryCharge || 0}
+                                </p>
+                              )}
+
+                              <p className="text-sm mt-1">
+                                <span className="font-medium">
+                                  Service Charge:
+                                </span>{" "}
+                                LKR {order.serviceCharge || 0}
+                              </p>
+                              <p className="text-sm mt-1">
+                                <span className="font-medium">
+                                  Warranty Period:
+                                </span>{" "}
+                                {order.warrantyPeriod || 0} months
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
 

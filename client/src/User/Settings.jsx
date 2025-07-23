@@ -262,14 +262,10 @@ export default function Settings() {
                   <Divider />
                   <Box sx={{ pt: 3 }}>
                     <Box sx={{ pt: 2, textAlign: "left", pb: 2 }}>
-                      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
-                        <Typography
-                          variant="h5"
-                          className="mb-8 font-bold pb-5"
-                        >
-                          Change Password
-                        </Typography>
-
+                      <Typography variant="h5" className="mb-8 font-bold pb-5">
+                        Change Password
+                      </Typography>
+                      <div className="mb-8">
                         <form onSubmit={handlePasswordSubmit}>
                           <Grid container spacing={3}>
                             <Grid item xs={10}>
@@ -341,7 +337,9 @@ export default function Settings() {
                             </Grid>
                           </Grid>
                         </form>
-                      </Paper>
+                      </div>
+
+                      <Divider />
 
                       {/* 2FA Section */}
                       {/* <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
@@ -494,7 +492,7 @@ export default function Settings() {
                           </Box>
                         )}
                       </Paper> */}
-                      <Paper elevation={3} className="p-8 mb-6 rounded-lg mr-8">
+                      <div className="pt-8 mb-6 rounded-lg mr-8">
                         <Typography
                           variant="h5"
                           className="mb-8 font-bold pb-5 text-black"
@@ -541,6 +539,7 @@ export default function Settings() {
                             <Button
                               onClick={() => setOpenDeleteDialog(false)}
                               color="primary"
+                              variant="outlined"
                             >
                               Cancel
                             </Button>
@@ -554,7 +553,7 @@ export default function Settings() {
                             </Button>
                           </DialogActions>
                         </Dialog>
-                      </Paper>
+                      </div>
                     </Box>
                   </Box>
                 </Box>

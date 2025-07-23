@@ -16,6 +16,7 @@ function OrderCard({
   orderId,
   imageUrl,
   itemCount,
+  deliveryMethod,
   onDetailsClick,
   onDelivered,
   onLeaveReview,
@@ -32,7 +33,10 @@ function OrderCard({
       <CardContent>
         <div className="flex justify-between items-start">
           <h2 className="text-2xl font-bold text-gray-900">
-            {status === "Completed" ? "Processing" : status}
+            {status === "Completed" &&
+            !(type === "pc_build" && deliveryMethod === "Pick up at store")
+              ? "Processing"
+              : status}
           </h2>
           <div className="flex items-center gap-4">
             <div className="border-r-2 pr-4 text-right">
