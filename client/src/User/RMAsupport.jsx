@@ -109,6 +109,7 @@ export default function RMAsupport() {
                   p: 3,
                   pl: 7,
                   width: "90%",
+                  minHeight: "100vh",
                   boxShadow: 1,
                   borderRadius: 2,
                 }}
@@ -201,12 +202,17 @@ export default function RMAsupport() {
                       color="primary"
                       size="large"
                       onClick={handleSubmit}
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: "bold",
+                        borderRadius: "8px",
+                      }}
                     >
                       Submit
                     </Button>
                     <Button
                       variant="outlined"
-                      color="inherit"
+                      color="primary"
                       size="large"
                       onClick={() => {
                         setFormData((prev) => ({
@@ -216,6 +222,11 @@ export default function RMAsupport() {
                           reason: "",
                           message: "",
                         }));
+                      }}
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: "bold",
+                        borderRadius: "8px",
                       }}
                     >
                       Cancel

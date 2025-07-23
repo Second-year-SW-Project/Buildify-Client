@@ -16,6 +16,7 @@ function OrderCard({
   orderId,
   imageUrl,
   itemCount,
+  deliveryMethod,
   onDetailsClick,
   onDelivered,
   onLeaveReview,
@@ -31,7 +32,12 @@ function OrderCard({
     <Card className="p-6 rounded-2xl shadow-2xl bg-white flex flex-col w-full max-w-3xl mb-6">
       <CardContent>
         <div className="flex justify-between items-start">
-          <h2 className="text-2xl font-bold text-gray-900">{status}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {status === "Completed" &&
+            !(type === "pc_build" && deliveryMethod === "Pick up at store")
+              ? "Processing"
+              : status}
+          </h2>
           <div className="flex items-center gap-4">
             <div className="border-r-2 pr-4 text-right">
               <p className="text-sm text-gray-700">Order date: {orderDate}</p>
@@ -102,7 +108,7 @@ function OrderCard({
                   Refund/Refuse
                 </Button>
               </>
-            ) : status === "Completed" ? (
+            ) : status === "Successful" ? (
               <>
                 <Button
                   variant="contained"
@@ -129,7 +135,7 @@ function OrderCard({
                   Refund/Refuse
                 </Button>
               </>
-            ) : (
+            ) : status === "Shipped" ? (
               <>
                 <Button
                   variant="contained"
@@ -156,6 +162,35 @@ function OrderCard({
                   }
                 >
                   Track Order
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                  onClick={() =>
+                    navigate(`/user/orders/${orderId}#order-tracker`)
+                  }
+                >
+                  Track Order
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={handleRefundClick}
+                  sx={{
+                    borderRadius: 900,
+                    textTransform: "none",
+                    px: 2,
+                    mt: 2,
+                  }}
+                >
+                  Refund/Refuse
                 </Button>
               </>
             )}

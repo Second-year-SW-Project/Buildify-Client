@@ -142,10 +142,30 @@ const BuildStepper = ({
     if (buildId) {
       fetchBuildTimestamps();
     }
-  }, [buildId, activeStep, backendUrl]);
+  }, [buildId, activeStep, backendUrl, buildStatus]);
 
   // Update activeStep based on buildStatus
   useEffect(() => {
+    // Helper function to determine step for canceled builds based on timestamps
+    const getCanceledBuildStep = () => {
+      if (buildStatus !== "Canceled" || !stepTimestamps) return 1;
+
+      // Check timestamps to determine which step was active when canceled
+      const statusList = deliveryMethod === "Pick up at store"
+        ? ["Pending", "Confirmed", "Building", "Completed", "Delivered", "Successful"]
+        : ["Pending", "Confirmed", "Building", "Completed", "Shipped", "Delivered", "Successful"];
+
+      let lastCompletedStep = 1; // Default to step 1 if no timestamps found
+
+      for (let i = statusList.length - 1; i >= 0; i--) {
+        if (stepTimestamps[statusList[i]]) {
+          lastCompletedStep = i + 1; // +1 because activeStep is 1-indexed
+          break;
+        }
+      }
+      return lastCompletedStep;
+    };
+
     // Map status to correct step index based on delivery method
     let statusToStepMap;
 
@@ -156,8 +176,9 @@ const BuildStepper = ({
         Confirmed: 2,   // Show Building in Progress as active (steps 0,1 completed)
         Building: 3,    // Show Build Completed as active (steps 0,1,2 completed)
         Completed: 4,   // Show Delivered as active (steps 0,1,2,3 completed)
-        Delivered: 5,   // All steps completed
-        Canceled: 1     // Default to Build Confirmed step
+        Delivered: 5,   // Show Successful as active (steps 0,1,2,3,4 completed)
+        Successful: 6,  // All steps completed (steps 0,1,2,3,4,5 completed)
+        Canceled: getCanceledBuildStep()  // Preserve step based on timestamps
       };
     } else {
       // Include Shipped step for home delivery
@@ -167,8 +188,9 @@ const BuildStepper = ({
         Building: 3,    // Show Build Completed as active (steps 0,1,2 completed)
         Completed: 4,   // Show Shipped as active (steps 0,1,2,3 completed)
         Shipped: 5,     // Show Delivered as active (steps 0,1,2,3,4 completed)
-        Delivered: 6,   // All steps completed
-        Canceled: 1     // Default to Build Confirmed step
+        Delivered: 6,   // Show Successful as active (steps 0,1,2,3,4,5 completed)
+        Successful: 7,  // All steps completed (steps 0,1,2,3,4,5,6 completed)
+        Canceled: getCanceledBuildStep()  // Preserve step based on timestamps
       };
     }
 
@@ -177,7 +199,7 @@ const BuildStepper = ({
     if (adjustedStepIndex !== activeStep) {
       setActiveStep(adjustedStepIndex);
     }
-  }, [buildStatus, deliveryMethod, setActiveStep, activeStep]);
+  }, [buildStatus, deliveryMethod, setActiveStep, activeStep, stepTimestamps]);
 
   const formatDateTime = (date) => {
     if (!date) return "";
@@ -205,10 +227,21 @@ const BuildStepper = ({
         "Shipped",
         "Delivered",
       ];
-      const currentStatusIndex = statusProgression.indexOf(buildStatus);
 
-      if (currentStatusIndex < statusProgression.length - 1) {
-        const nextStatus = statusProgression[currentStatusIndex + 1];
+      let nextStatus;
+
+      // Special case: For store pickup, skip "Shipped" and go directly from "Completed" to "Delivered"
+      if (buildStatus === "Completed" && deliveryMethod === "Pick up at store") {
+        nextStatus = "Delivered";
+      } else {
+        // Normal progression
+        const currentStatusIndex = statusProgression.indexOf(buildStatus);
+        if (currentStatusIndex < statusProgression.length - 1) {
+          nextStatus = statusProgression[currentStatusIndex + 1];
+        }
+      }
+
+      if (nextStatus) {
         const currentTime = new Date();
 
         // Update both status and timestamp - save timestamp for the current status being completed
@@ -305,8 +338,8 @@ const BuildStepper = ({
   };
 
   const handleStepClick = async (stepIndex) => {
-    // Prevent clicking on step 0 (Build Placed) and when canceled
-    if (!editable || buildStatus === "Canceled" || stepIndex === 0) return;
+    // Prevent clicking on step 0 (Build Placed) and when canceled/refunded
+    if (!editable || buildStatus === "Canceled" || buildStatus === "Refunded" || stepIndex === 0) return;
 
     try {
       setLoading(true);
@@ -347,16 +380,23 @@ const BuildStepper = ({
 
   return (
     <Box sx={{ maxWidth: 600 }}>
-      <Stepper activeStep={activeStep} orientation="vertical">
+      <Stepper activeStep={buildStatus === "Canceled" || buildStatus === "Refunded" ? -1 : activeStep} orientation="vertical">
         {steps.map((step, index) => {
-          // Determine if step is completed based on activeStep
-          const isCompleted = index < activeStep;
+          // For canceled/refunded builds, determine completion based on timestamps instead of activeStep
+          let isCompleted = false;
+          if (buildStatus === "Canceled" || buildStatus === "Refunded") {
+            // Step is completed only if it has a timestamp and it's before the active canceled/refunded step
+            isCompleted = !!stepTimestamps[step.status] && (index < activeStep);
+          } else {
+            // Normal behavior: steps before activeStep are completed
+            isCompleted = index < activeStep;
+          }
 
           return (
             <Step
               key={step.label}
               completed={isCompleted}
-              disabled={buildStatus === "Canceled"}
+              disabled={buildStatus === "Canceled" || buildStatus === "Refunded"}
             >
               {" "}
               <StepLabel
@@ -393,6 +433,7 @@ const BuildStepper = ({
                         disabled={
                           loading ||
                           buildStatus === "Canceled" ||
+                          buildStatus === "Refunded" ||
                           buildStatus === "Shipped"
                         }
                       >
@@ -406,7 +447,7 @@ const BuildStepper = ({
                         <Button
                           onClick={handleBack}
                           sx={{ mt: 1, mr: 1 }}
-                          disabled={loading || buildStatus === "Canceled"}
+                          disabled={loading || buildStatus === "Canceled" || buildStatus === "Refunded"}
                         >
                           Back
                         </Button>

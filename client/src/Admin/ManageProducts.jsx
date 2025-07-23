@@ -16,6 +16,7 @@ import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import StatusCard from "../AtomicComponents/Cards/StatusCard";
 import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import ProductDetailsDialog from "../AtomicComponents/Dialogs/ProductDetailsDialog";
+import dayjs from 'dayjs';
 
 function ManageProducts() {
 
@@ -92,7 +93,7 @@ function ManageProducts() {
                 const filterState = JSON.parse(savedFilters);
                 setSearchTerm(filterState.searchTerm || '');
                 setStatusFilter(filterState.statusFilter || '');
-                setSelectedDate(filterState.selectedDate ? new Date(filterState.selectedDate) : null);
+                setSelectedDate(filterState.selectedDate ? dayjs(filterState.selectedDate) : null);
 
                 if (filterState.selectedMainCategory) {
                     setSelectedMainCategory(filterState.selectedMainCategory);
@@ -139,7 +140,7 @@ function ManageProducts() {
                 limit: itemsPerPage,
                 search: searchTerm,
                 statusFilter: statusFilter,
-                date: selectedDate ? selectedDate.toISOString() : null,
+                date: selectedDate ? (selectedDate.toISOString ? selectedDate.toISOString() : dayjs(selectedDate).toISOString()) : null,
                 subCategory: selectedSubCategory
             };
             // console.log("Fetching products with params:", params); // Debugging
@@ -260,8 +261,8 @@ function ManageProducts() {
                 productCard: <ProductCard name={product.name} type={getCategoryLabel(product.type)} src={product.imgUrls?.[0]?.url} />,
                 date: <TimeCard date={new Date(product.updatedAt).toLocaleDateString()} time={new Date(product.updatedAt).toLocaleTimeString()} />,
                 availability: <StatusCard Status={product.quantity > 5 ? "In Stock" : product.quantity <= 5 && product.quantity > 0 ? "Low Stock" : "Out of Stock"} />,
-                quantity: < QuantityCard quantity={product.quantity} unitprice={`Unit Price - ${product.price}`} />,
-                stock: `${product.quantity * product.price} LKR`,
+                quantity: < QuantityCard quantity={product.quantity} unitprice={`Unit Price - ${product.price?.toLocaleString() || 0} LKR`} />,
+                stock: `${(product.quantity * product.price)?.toLocaleString() || 0} LKR`,
             }))
             : []
     ), [filteredProducts]);
@@ -368,7 +369,7 @@ function ManageProducts() {
                         <div className="col-span-2 flex gap-4 items-end">
                             {/* Search Bar */}
                             <SearchBar
-                                placeholder="Search"
+                                placeholder="Search by product name"
                                 width="100%"
                                 value={searchTerm}
                                 onChange={(e) => {

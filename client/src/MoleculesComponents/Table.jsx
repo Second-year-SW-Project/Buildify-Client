@@ -32,7 +32,6 @@ export function UserTable({
   idKey = "id",
   pagination = null,
 }) {
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -70,7 +69,7 @@ export function UserTable({
   const autoSizeCellStyle = {
     padding: "8px 16px", // Ensure consistent padding
     whiteSpace: "nowrap",
-    wordBreak: 'break-word',
+    wordBreak: "break-word",
   };
 
   const getIdValue = (obj, key) => {
@@ -80,7 +79,7 @@ export function UserTable({
   // Use pagination props if provided, otherwise use local state
   const currentPage = pagination ? pagination.currentPage - 1 : page; // Convert to 0-based index for MUI
   const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
-  const totalCount = pagination ? pagination.totalItems : sortedData.data.length;
+  const totalCount = pagination ? pagination.totalItems : sortedData.length;
 
   return (
     <Paper style={{ width: width || "100%" }}>
@@ -90,7 +89,7 @@ export function UserTable({
             <TableRow
               style={{ backgroundColor: theme.palette.primary100.main }}
             >
-              {columns.map((column) => (
+              {(columns || []).map((column) => (
                 <TableCell
                   key={column.id}
                   style={{
@@ -106,54 +105,59 @@ export function UserTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedData && sortedData.length > 0 ? sortedData.map((row, index) => (
-              <TableRow key={index} hover>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    style={{
-                      ...autoSizeCellStyle,
-                      color: color || "black",
-                      fontWeight: "bold",
-                      whiteSpace: 'normal',
-                      minWidth: column.width || 'auto',
-                    }}
-                  >
-                    {row[column.id]}
-                  </TableCell>
-                ))}
-                {iconTypes.length > 0 && (
-                  <TableCell style={autoSizeCellStyle}>
-                    {iconTypes.map((type, idx) => (
-                      <IconButton
-                        key={idx}
-                        disableRipple
-                        onClick={() =>
-                          iconActions[type] &&
-                          iconActions[type](getIdValue(row, idKey))
-                        }
-                        translate="3s"
-                        sx={{
-                          "&:hover": {
-                            color: theme.palette.primary.main,
-                            opacity: 0.9,
-                          },
-                        }}
-                      >
-                        <Iconset
-                          type={type}
-                          isOpen={
-                            type === "toggle" ? isRowOpen(row.id) : undefined
+            {sortedData && sortedData.length > 0 ? (
+              sortedData.map((row, index) => (
+                <TableRow key={index} hover>
+                  {(columns || []).map((column) => (
+                    <TableCell
+                      key={column.id}
+                      style={{
+                        ...autoSizeCellStyle,
+                        color: color || "black",
+                        fontWeight: "bold",
+                        whiteSpace: "normal",
+                        minWidth: column.width || "auto",
+                      }}
+                    >
+                      {row[column.id]}
+                    </TableCell>
+                  ))}
+                  {iconTypes.length > 0 && (
+                    <TableCell style={autoSizeCellStyle}>
+                      {iconTypes.map((type, idx) => (
+                        <IconButton
+                          key={idx}
+                          disableRipple
+                          onClick={() =>
+                            iconActions[type] &&
+                            iconActions[type](getIdValue(row, idKey))
                           }
-                        />
-                      </IconButton>
-                    ))}
-                  </TableCell>
-                )}
-              </TableRow>
-            )) : (
+                          translate="3s"
+                          sx={{
+                            "&:hover": {
+                              color: theme.palette.primary.main,
+                              opacity: 0.9,
+                            },
+                          }}
+                        >
+                          <Iconset
+                            type={type}
+                            isOpen={
+                              type === "toggle" ? isRowOpen(row.id) : undefined
+                            }
+                          />
+                        </IconButton>
+                      ))}
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
-                <TableCell colSpan={columns.length + (iconTypes.length > 0 ? 1 : 0)} align="center">
+                <TableCell
+                  colSpan={columns.length + (iconTypes.length > 0 ? 1 : 0)}
+                  align="center"
+                >
                   <Typography>No data found</Typography>
                 </TableCell>
               </TableRow>
@@ -170,7 +174,9 @@ export function UserTable({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelDisplayedRows={({ from, to, count }) => {
-          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / currentRowsPerPage);
+          const totalPages =
+            pagination?.totalPages ??
+            Math.ceil(totalCount / currentRowsPerPage);
           return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
         }}
       />
@@ -187,7 +193,6 @@ export function OrderTable({
   color,
   pagination = null,
 }) {
-
   const [expandedRowId, setExpandedRowId] = React.useState(null);
 
   const toggleRow = (orderId) => {
@@ -203,7 +208,7 @@ export function OrderTable({
     Canceled: "error",
     Shipped: "info",
     Delivered: "primaryprimary",
-    Successful: "success"
+    Successful: "success",
   };
 
   const [page, setPage] = React.useState(0);
@@ -263,181 +268,208 @@ export function OrderTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders && orders.length > 0 ? orders.map((order, index) => {
-              const isOpen = isRowOpen(order._id);
-              return (
-                <React.Fragment key={order._id}>
-                  <TableRow
-                    sx={{
-                      backgroundColor: isOpen
-                        ? theme.palette.black200.main
-                        : theme.palette.white.main,
-                    }}
-                    hover
-                  >
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {order._id
-                        ? `#${order._id.slice(-4).toUpperCase()}`
-                        : "#----"}
-                    </TableCell>
-                    <TableCell>
-                      {order.user_id ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar
-                            src={order.profilePicture}
-                            alt={order.user_name}
-                            sx={{ width: 40, height: 40 }}
-                          />
-                          <Box>
-                            <Typography variant="subtitle2" fontWeight={"bold"}>{order.user_name}</Typography>
-                            <Typography variant="caption" color="textSecondary">{order.email}</Typography>
-                          </Box>
-                        </Box>
-                      ) : (
-                        <UserCard
-                          name={order.user_name}
-                          email={order.email}
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Typography sx={{ fontWeight: "bold" }}>
-                        {format(new Date(order.createdAt), "dd MMM yyyy")}
-                      </Typography>
-                      <Typography fontSize="small" color="gray">
-                        {format(new Date(order.createdAt), "p")}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>
-                      {order.items.length}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {order.total !== undefined
-                        ? order.total.toLocaleString()
-                        : "0"}{" "}
-                      LKR
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={order.status}
-                        color={statusColorMap[order.status] || "default"}
-                        size="small"
-                        sx={{
-                          padding: "5px",
-                          height: "30px",
-                          width: "100px",
-                          textAlign: "center",
-                          fontWeight: "bold",
-                        }}
-                      />
-                    </TableCell>
-                    {iconTypes.length > 0 && (
-                      <TableCell style={autoSizeCellStyle}>
-                        {iconTypes.map((type, idx) => (
-                          <IconButton
-                            key={idx}
-                            disableRipple
-                            onClick={() =>
-                              type === "toggle"
-                                ? toggleRow(order._id)
-                                : iconActions[type] &&
-                                iconActions[type](order._id)
-                            }
-                            translate="3s"
+            {orders && orders.length > 0 ? (
+              orders.map((order, index) => {
+                const isOpen = isRowOpen(order._id);
+                return (
+                  <React.Fragment key={order._id}>
+                    <TableRow
+                      sx={{
+                        backgroundColor: isOpen
+                          ? theme.palette.black200.main
+                          : theme.palette.white.main,
+                      }}
+                      hover
+                    >
+                      <TableCell sx={{ fontWeight: "bold" }}>
+                        {order._id
+                          ? `#${order._id.slice(-4).toUpperCase()}`
+                          : "#----"}
+                      </TableCell>
+                      <TableCell>
+                        {order.user_id ? (
+                          <Box
                             sx={{
-                              "&:hover": {
-                                color: theme.palette.primary.main,
-                                opacity: 0.9,
-                              },
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
                             }}
                           >
-                            <Iconset
-                              type={type}
-                              isOpen={
-                                type === "toggle"
-                                  ? isRowOpen(order._id)
-                                  : undefined
-                              }
+                            <Avatar
+                              src={order.profilePicture}
+                              alt={order.user_name}
+                              sx={{ width: 40, height: 40 }}
                             />
-                          </IconButton>
-                        ))}
+                            <Box>
+                              <Typography
+                                variant="subtitle2"
+                                fontWeight={"bold"}
+                              >
+                                {order.user_name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="textSecondary"
+                              >
+                                {order.email}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        ) : (
+                          <UserCard
+                            name={order.user_name}
+                            email={order.email}
+                          />
+                        )}
                       </TableCell>
-                    )}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      style={{ paddingBottom: 0, paddingTop: 0 }}
-                      colSpan={8}
-                    >
-                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                        <Box margin={1} p={1}>
-                          {order.items.map((item, i) => (
-                            <Stack
-                              key={item._id}
-                              direction="row"
-                              alignItems="center"
-                              justifyContent="space-between"
-                              bgcolor="#e9f7ff"
-                              borderRadius={2}
-                              width="100%"
-                              mb={1}
-                              p={1}
+                      <TableCell>
+                        <Typography sx={{ fontWeight: "bold" }}>
+                          {format(new Date(order.createdAt), "dd MMM yyyy")}
+                        </Typography>
+                        <Typography fontSize="small" color="gray">
+                          {format(new Date(order.createdAt), "p")}
+                        </Typography>
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: "bold", textAlign: "center" }}
+                      >
+                        {order.items.length}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "bold" }}>
+                        {order.total !== undefined
+                          ? order.total.toLocaleString()
+                          : "0"}{" "}
+                        LKR
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={order.status}
+                          color={statusColorMap[order.status] || "default"}
+                          size="small"
+                          sx={{
+                            padding: "5px",
+                            height: "30px",
+                            width: "100px",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                        />
+                      </TableCell>
+                      {iconTypes.length > 0 && (
+                        <TableCell style={autoSizeCellStyle}>
+                          {iconTypes.map((type, idx) => (
+                            <IconButton
+                              key={idx}
+                              disableRipple
+                              onClick={() =>
+                                type === "toggle"
+                                  ? toggleRow(order._id)
+                                  : iconActions[type] &&
+                                  iconActions[type](order._id)
+                              }
+                              translate="3s"
                               sx={{
-                                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                                transition: "background-color 0.3s ease",
                                 "&:hover": {
-                                  backgroundColor: "#a8def3ff",
+                                  color: theme.palette.primary.main,
+                                  opacity: 0.9,
                                 },
                               }}
                             >
-                              <Box flex={3} display="flex" alignItems="center">
-                                <OrderItemCard
-                                  name={item.name}
-                                  type={item.type}
-                                  src={item.product_image}
-                                />
-                              </Box>
-                              <Box
-                                flex={1}
-                                display="flex"
-                                flexDirection="column"
-                                justifyContent="flex-end"
-                                textAlign="right"
-                              >
-                                <Typography fontWeight="bold" flex={1}>
-                                  x {item.quantity}
-                                </Typography>
-                                <Typography
-                                  fontSize={14}
-                                  flex={1}
-                                  color="black500"
-                                >
-                                  Unit Price - {item.price}
-                                </Typography>
-                              </Box>
-                              <Box
-                                flex={1}
-                                display="flex"
-                                justifyContent="flex-end"
-                                alignItems="center"
-                                textAlign="right"
-                                marginRight={2}
-                              >
-                                <Typography fontWeight="bold" flex={1}>
-                                  {item.price * item.quantity} LKR
-                                </Typography>
-                              </Box>
-                            </Stack>
+                              <Iconset
+                                type={type}
+                                isOpen={
+                                  type === "toggle"
+                                    ? isRowOpen(order._id)
+                                    : undefined
+                                }
+                              />
+                            </IconButton>
                           ))}
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              );
-            }) : (
+                        </TableCell>
+                      )}
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={8}
+                      >
+                        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                          <Box margin={1} p={1}>
+                            {order.items.map((item, i) => (
+                              <Stack
+                                key={item._id}
+                                direction="row"
+                                alignItems="center"
+                                justifyContent="space-between"
+                                bgcolor="#e9f7ff"
+                                borderRadius={2}
+                                width="100%"
+                                mb={1}
+                                p={1}
+                                sx={{
+                                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                                  transition: "background-color 0.3s ease",
+                                  "&:hover": {
+                                    backgroundColor: "#a8def3ff",
+                                  },
+                                }}
+                              >
+                                <Box
+                                  flex={3}
+                                  display="flex"
+                                  alignItems="center"
+                                >
+                                  <OrderItemCard
+                                    name={item.name}
+                                    type={item.type}
+                                    src={item.product_image}
+                                  />
+                                </Box>
+                                <Box
+                                  flex={1}
+                                  display="flex"
+                                  flexDirection="column"
+                                  justifyContent="flex-end"
+                                  textAlign="right"
+                                >
+                                  <Typography fontWeight="bold" flex={1}>
+                                    x {item.quantity}
+                                  </Typography>
+                                  <Typography
+                                    fontSize={14}
+                                    flex={1}
+                                    color="black500"
+                                  >
+                                    Unit Price - {item.price.toLocaleString()}
+                                  </Typography>
+                                </Box>
+                                <Box
+                                  flex={1}
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  textAlign="right"
+                                  marginRight={2}
+                                >
+                                  <Typography fontWeight="bold" flex={1}>
+                                    {item.price * item.quantity ? (item.price * item.quantity).toLocaleString() : "N/A"} LKR
+                                  </Typography>
+                                </Box>
+                              </Stack>
+                            ))}
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                );
+              })
+            ) : (
               <TableRow>
-                <TableCell colSpan={columns.length + (iconTypes.length > 0 ? 1 : 0)} align="center">
+                <TableCell
+                  colSpan={columns.length + (iconTypes.length > 0 ? 1 : 0)}
+                  align="center"
+                >
                   <Typography>No orders found</Typography>
                 </TableCell>
               </TableRow>
@@ -454,7 +486,9 @@ export function OrderTable({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelDisplayedRows={({ from, to, count }) => {
-          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / currentRowsPerPage);
+          const totalPages = pagination
+            ? pagination.totalPages
+            : Math.ceil(count / currentRowsPerPage);
           return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
         }}
       />
@@ -525,7 +559,6 @@ export function BuildTable({
     Maxwidth: "50%",
   };
 
-
   // Use pagination props if provided, otherwise use local state
   const currentPage = pagination ? pagination.currentPage - 1 : page; // Convert to 0-based index for MUI
   const currentRowsPerPage = pagination ? pagination.itemsPerPage : rowsPerPage;
@@ -554,203 +587,247 @@ export function BuildTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {builds && builds.length > 0 ? builds.map((build, index) => {
-              const isOpen = isRowOpen(build._id);
-              return (
-                <React.Fragment key={build._id}>
-                  <TableRow
-                    sx={{
-                      backgroundColor: isOpen
-                        ? theme.palette.black200.main
-                        : theme.palette.white.main,
-                    }}
-                    hover
-                  >
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {build._id
-                        ? `#${build._id.slice(-4).toUpperCase()}`
-                        : "#----"}
-                    </TableCell>
-                    <TableCell sx={{ paddingRight: 0 }}>
-                      {build.userId ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar
-                            src={build.profilePicture}
-                            alt={build.userName}
-                            sx={{ width: 40, height: 40 }}
-                          />
-                          <Box>
-                            <Typography variant="subtitle2" fontWeight={"bold"}>
-                              {build.userName}
-                            </Typography>
-                            <Typography variant="caption" color="textSecondary">
-                              {build.userEmail}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      ) : (
-                        <UserCard
-                          name={build.userName}
-                          email={build.userEmail}
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell sx={{ minWidth: 120 }}>
-                      <Typography sx={{ fontWeight: "bold" }}>
-                        {build.createdAt ? format(new Date(build.createdAt), "dd MMM yyyy") : "-"}
-                      </Typography>
-                      <Typography fontSize="small" color="gray">
-                        {build.createdAt ? format(new Date(build.createdAt), "p") : "-"}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", textAlign: "center", paddingRight: 1 }}>
-                      <Chip
-                        label={
-                          build.deliveryMethod === "Home Delivery"
-                            ? "By Delivery"
-                            : build.deliveryMethod === "Pick up at store"
-                              ? "By Store"
-                              : build.deliveryMethod
-                        }
-                        color={deliveryMethodColorMap[build.deliveryMethod] || "default"}
-                        size="small"
-                        sx={{
-                          padding: "8px 16px",
-                          height: "30px",
-                          minWidth: "120px",
-                          textAlign: "center",
-                          fontWeight: "bold",
-                          letterSpacing: "0.5px",
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: "bold", minWidth: 130, fontSize: "15px" }}>
-                      {build.TotalPrice !== undefined
-                        ? build.TotalPrice.toLocaleString()
-                        : "0"}{" "}
-                      LKR
-                    </TableCell>
-                    <TableCell sx={{ paddingRight: 0 }}>
-                      <Chip
-                        label={build.buildStatus}
-                        color={statusColorMap[build.buildStatus] || "default"}
-                        size="small"
-                        sx={{
-                          padding: "5px",
-                          height: "30px",
-                          width: "100px",
-                          textAlign: "center",
-                          fontWeight: "bold",
-                        }}
-                      />
-                    </TableCell>
-                    {iconTypes.length > 0 && (
-                      <TableCell style={autoSizeCellStyle}>
-                        {iconTypes.map((type, idx) => (
-                          <IconButton
-                            key={idx}
-                            disableRipple
-                            onClick={() =>
-                              type === "toggle"
-                                ? toggleRow(build._id)
-                                : iconActions[type] &&
-                                iconActions[type](build._id)
-                            }
-                            translate="3s"
+            {builds && builds.length > 0 ? (
+              builds.map((build, index) => {
+                const isOpen = isRowOpen(build._id);
+                return (
+                  <React.Fragment key={build._id}>
+                    <TableRow
+                      sx={{
+                        backgroundColor: isOpen
+                          ? theme.palette.black200.main
+                          : theme.palette.white.main,
+                      }}
+                      hover
+                    >
+                      <TableCell sx={{ fontWeight: "bold" }}>
+                        {build._id
+                          ? `#${build._id.slice(-4).toUpperCase()}`
+                          : "#----"}
+                      </TableCell>
+                      <TableCell sx={{ paddingRight: 0 }}>
+                        {build.userId ? (
+                          <Box
                             sx={{
-                              "&:hover": {
-                                color: theme.palette.primary.main,
-                                opacity: 0.9,
-                              },
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
                             }}
                           >
-                            <Iconset
-                              type={type}
-                              isOpen={
-                                type === "toggle"
-                                  ? isRowOpen(build._id)
-                                  : undefined
-                              }
+                            <Avatar
+                              src={build.profilePicture}
+                              alt={build.userName}
+                              sx={{ width: 40, height: 40 }}
                             />
-                          </IconButton>
-                        ))}
+                            <Box>
+                              <Typography
+                                variant="subtitle2"
+                                fontWeight={"bold"}
+                              >
+                                {build.userName}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="textSecondary"
+                              >
+                                {build.userEmail}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        ) : (
+                          <UserCard
+                            name={build.userName}
+                            email={build.userEmail}
+                          />
+                        )}
                       </TableCell>
-                    )}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      style={{ paddingBottom: 0, paddingTop: 0 }}
-                      colSpan={8}
-                    >
-                      <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                        <Box margin={1} p={1}>
-                          {build.components && build.components.length > 0 ? build.components.map((comp, i) => (
-                            <Stack
-                              key={comp.componentId || comp._id || i}
-                              direction="row"
-                              alignItems="center"
-                              justifyContent="space-between"
-                              bgcolor="#e9f7ff"
-                              borderRadius={2}
-                              width="100%"
-                              mb={1}
-                              p={1}
+                      <TableCell sx={{ minWidth: 120 }}>
+                        <Typography sx={{ fontWeight: "bold" }}>
+                          {build.createdAt
+                            ? format(new Date(build.createdAt), "dd MMM yyyy")
+                            : "-"}
+                        </Typography>
+                        <Typography fontSize="small" color="gray">
+                          {build.createdAt
+                            ? format(new Date(build.createdAt), "p")
+                            : "-"}
+                        </Typography>
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                          textAlign: "center",
+                          paddingRight: 1,
+                        }}
+                      >
+                        <Chip
+                          label={
+                            build.deliveryMethod === "Home Delivery"
+                              ? "By Delivery"
+                              : build.deliveryMethod === "Pick up at store"
+                                ? "By Pick up"
+                                : build.deliveryMethod
+                          }
+                          color={
+                            deliveryMethodColorMap[build.deliveryMethod] ||
+                            "default"
+                          }
+                          size="small"
+                          sx={{
+                            padding: "8px 16px",
+                            height: "30px",
+                            minWidth: "120px",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            letterSpacing: "0.5px",
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: "bold",
+                          minWidth: 130,
+                          fontSize: "15px",
+                        }}
+                      >
+                        {build.TotalPrice !== undefined
+                          ? build.TotalPrice.toLocaleString()
+                          : "0"}{" "}
+                        LKR
+                      </TableCell>
+                      <TableCell sx={{ paddingRight: 0 }}>
+                        <Chip
+                          label={build.buildStatus}
+                          color={statusColorMap[build.buildStatus] || "default"}
+                          size="small"
+                          sx={{
+                            padding: "5px",
+                            height: "30px",
+                            width: "100px",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                        />
+                      </TableCell>
+                      {iconTypes.length > 0 && (
+                        <TableCell style={autoSizeCellStyle}>
+                          {iconTypes.map((type, idx) => (
+                            <IconButton
+                              key={idx}
+                              disableRipple
+                              onClick={() =>
+                                type === "toggle"
+                                  ? toggleRow(build._id)
+                                  : iconActions[type] &&
+                                  iconActions[type](build._id)
+                              }
+                              translate="3s"
                               sx={{
-                                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-                                transition: "background-color 0.3s ease",
                                 "&:hover": {
-                                  backgroundColor: "#a8def3ff",
+                                  color: theme.palette.primary.main,
+                                  opacity: 0.9,
                                 },
                               }}
                             >
-                              <Box flex={3} display="flex" alignItems="center">
-                                <OrderItemCard
-                                  name={comp.name}
-                                  type={comp.type}
-                                  src={comp.product_image}
-                                />
-                              </Box>
-                              <Box
-                                flex={1}
-                                display="flex"
-                                flexDirection="column"
-                                justifyContent="flex-end"
-                                textAlign="right"
-                              >
-                                <Typography fontWeight="bold" flex={1}>
-                                  x {comp.quantity}
-                                </Typography>
-                                <Typography
-                                  fontSize={14}
-                                  flex={1}
-                                  color="black500"
+                              <Iconset
+                                type={type}
+                                isOpen={
+                                  type === "toggle"
+                                    ? isRowOpen(build._id)
+                                    : undefined
+                                }
+                              />
+                            </IconButton>
+                          ))}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        style={{ paddingBottom: 0, paddingTop: 0 }}
+                        colSpan={8}
+                      >
+                        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                          <Box margin={1} p={1}>
+                            {build.components && build.components.length > 0 ? (
+                              build.components.map((comp, i) => (
+                                <Stack
+                                  key={comp.componentId || comp._id || i}
+                                  direction="row"
+                                  alignItems="center"
+                                  justifyContent="space-between"
+                                  bgcolor="#e9f7ff"
+                                  borderRadius={2}
+                                  width="100%"
+                                  mb={1}
+                                  p={1}
+                                  sx={{
+                                    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                                    transition: "background-color 0.3s ease",
+                                    "&:hover": {
+                                      backgroundColor: "#a8def3ff",
+                                    },
+                                  }}
                                 >
-                                  Unit Price - {comp.price || "N/A"}
-                                </Typography>
-                              </Box>
-                              <Box
-                                flex={1}
-                                display="flex"
-                                justifyContent="flex-end"
-                                alignItems="center"
-                                textAlign="right"
-                                marginRight={2}
-                              >
-                                <Typography fontWeight="bold" flex={1}>
-                                  {comp.price && comp.quantity
-                                    ? (comp.price * comp.quantity).toLocaleString()
-                                    : comp.price || "N/A"} LKR
-                                </Typography>
-                              </Box>
-                            </Stack>
-                          )) : <Typography>No components</Typography>}
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                </React.Fragment>
-              );
-            }) : (
+                                  <Box
+                                    flex={3}
+                                    display="flex"
+                                    alignItems="center"
+                                  >
+                                    <OrderItemCard
+                                      name={comp.name}
+                                      type={comp.type}
+                                      src={comp.product_image}
+                                    />
+                                  </Box>
+                                  <Box
+                                    flex={1}
+                                    display="flex"
+                                    flexDirection="column"
+                                    justifyContent="flex-end"
+                                    textAlign="right"
+                                  >
+                                    <Typography fontWeight="bold" flex={1}>
+                                      x {comp.quantity}
+                                    </Typography>
+                                    <Typography
+                                      fontSize={14}
+                                      flex={1}
+                                      color="black500"
+                                    >
+                                      Unit Price - {comp.price.toLocaleString() || "N/A"}
+                                    </Typography>
+                                  </Box>
+                                  <Box
+                                    flex={1}
+                                    display="flex"
+                                    justifyContent="flex-end"
+                                    alignItems="center"
+                                    textAlign="right"
+                                    marginRight={2}
+                                  >
+                                    <Typography fontWeight="bold" flex={1}>
+                                      {comp.price && comp.quantity
+                                        ? (
+                                          comp.price * comp.quantity
+                                        ).toLocaleString()
+                                        : comp.price || "N/A"}{" "}
+                                      LKR
+                                    </Typography>
+                                  </Box>
+                                </Stack>
+                              ))
+                            ) : (
+                              <Typography>No components</Typography>
+                            )}
+                          </Box>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                );
+              })
+            ) : (
               <TableRow>
                 <TableCell colSpan={columns.length + 1} align="center">
                   <Typography>No builds found</Typography>
@@ -769,7 +846,9 @@ export function BuildTable({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelDisplayedRows={({ from, to, count }) => {
-          const totalPages = pagination ? pagination.totalPages : Math.ceil(count / currentRowsPerPage);
+          const totalPages = pagination
+            ? pagination.totalPages
+            : Math.ceil(count / currentRowsPerPage);
           return `${from}-${to} of ${count} (Page ${currentPage + 1} of ${totalPages})`;
         }}
       />
@@ -788,7 +867,7 @@ export function OrderSummary({
     Completed: "success",
     Pending: "warning",
     Shipped: "info",
-    Delivered: "primaryprimary"
+    Delivered: "primaryprimary",
   };
 
   const autoSizeCellStyle = {
@@ -806,7 +885,12 @@ export function OrderSummary({
       <TableContainer>
         <Table sx={{ borderRadius: "20px" }}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: theme.palette.primary100.main, borderRadius: "50px" }}>
+            <TableRow
+              sx={{
+                backgroundColor: theme.palette.primary100.main,
+                borderRadius: "50px",
+              }}
+            >
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
@@ -814,7 +898,7 @@ export function OrderSummary({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
-                    width: column.width || 'auto',
+                    width: column.width || "auto",
                     padding: column.padding,
                   }}
                 >
@@ -824,66 +908,84 @@ export function OrderSummary({
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders && orders.length > 0 ? orders.map((order) => (
-              <TableRow key={order._id}>
-                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 85 }}>
-                  {order._id ? `#${order._id.slice(-4).toUpperCase()}` : "#----"}
-                </TableCell>
-                <TableCell sx={{ minWidth: 320 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} style={{ minWidth: 230 }}>
-                    <Avatar
-                      src={order.profilePicture}
-                      alt={order.user_name}
-                      sx={{ width: 40, height: 40 }}
-                    />
-                    <Box sx={{
-                      wordBreak: 'break-word'
-                    }}>
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {order.user_name}
-                      </Typography>
-                      <Typography variant="caption" color="textSecondary">
-                        {order.email}
-                      </Typography>
+            {orders && orders.length > 0 ? (
+              orders.map((order) => (
+                <TableRow key={order._id}>
+                  <TableCell
+                    sx={{ fontWeight: "bold" }}
+                    style={{ minWidth: 85 }}
+                  >
+                    {order._id
+                      ? `#${order._id.slice(-4).toUpperCase()}`
+                      : "#----"}
+                  </TableCell>
+                  <TableCell sx={{ minWidth: 320 }}>
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      style={{ minWidth: 230 }}
+                    >
+                      <Avatar
+                        src={order.profilePicture}
+                        alt={order.user_name}
+                        sx={{ width: 40, height: 40 }}
+                      />
+                      <Box
+                        sx={{
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        <Typography variant="subtitle2" fontWeight="bold">
+                          {order.user_name}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {order.email}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography style={{ minWidth: 130 }}>
-                    {format(new Date(order.createdAt), "dd MMM yyyy")}
-                  </Typography>
-                  <Typography fontSize="small" color="gray">
-                    {format(new Date(order.createdAt), "p")}
-                  </Typography>
-                </TableCell>
-                <TableCell style={{ minWidth: 150 }}>
-                  {order.address || "N/A"}
-                </TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }} style={{ minWidth: 75 }}>
-                  {order.items?.length || 0}
-                </TableCell>
-                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 120 }}>
-                  {order.total !== undefined
-                    ? order.total.toLocaleString()
-                    : "0"}{" "}
-                  LKR
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={order.status}
-                    color={statusColorMap[order.status] || "default"}
-                    size="small"
-                    sx={{
-                      padding: "5px",
-                      height: "30px",
-                      width: "100px",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            )) : (
+                  </TableCell>
+                  <TableCell>
+                    <Typography style={{ minWidth: 130 }}>
+                      {format(new Date(order.createdAt), "dd MMM yyyy")}
+                    </Typography>
+                    <Typography fontSize="small" color="gray">
+                      {format(new Date(order.createdAt), "p")}
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ minWidth: 150 }}>
+                    {order.address || "N/A"}
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: "bold", textAlign: "center" }}
+                    style={{ minWidth: 75 }}
+                  >
+                    {order.items?.length || 0}
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: "bold" }}
+                    style={{ minWidth: 120 }}
+                  >
+                    {order.total !== undefined
+                      ? order.total.toLocaleString()
+                      : "0"}{" "}
+                    LKR
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={order.status}
+                      color={statusColorMap[order.status] || "default"}
+                      size="small"
+                      sx={{
+                        padding: "5px",
+                        height: "30px",
+                        width: "100px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
                   <Typography>Currently Not Available</Typography>
@@ -930,7 +1032,12 @@ export function BuildSummary({
       <TableContainer>
         <Table sx={{ borderRadius: "20px" }}>
           <TableHead>
-            <TableRow sx={{ backgroundColor: theme.palette.primary100.main, borderRadius: "50px" }}>
+            <TableRow
+              sx={{
+                backgroundColor: theme.palette.primary100.main,
+                borderRadius: "50px",
+              }}
+            >
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
@@ -938,7 +1045,7 @@ export function BuildSummary({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
-                    width: column.width || 'auto',
+                    width: column.width || "auto",
                     padding: column.padding,
                   }}
                 >
@@ -948,63 +1055,81 @@ export function BuildSummary({
             </TableRow>
           </TableHead>
           <TableBody>
-            {builds && builds.length > 0 ? builds.map((build) => (
-              <TableRow key={build._id}>
-                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 85 }}>
-                  {build._id ? `#${build._id.slice(-4).toUpperCase()}` : "#----"}
-                </TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }} style={{ minWidth: 230 }}>
-                    <Avatar
-                      src={build.profilePicture || build.userDetails?.profilePicture}
-                      alt={build.userName || build.userDetails?.name}
-                      sx={{ width: 40, height: 40 }}
-                    />
-                    <Box sx={{
-                      wordBreak: 'break-word'
-                    }}>
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {build.userName || build.userDetails?.name}
-                      </Typography>
-                      <Typography variant="caption" color="textSecondary">
-                        {build.userEmail || build.userDetails?.email}
-                      </Typography>
+            {builds && builds.length > 0 ? (
+              builds.map((build) => (
+                <TableRow key={build._id}>
+                  <TableCell
+                    sx={{ fontWeight: "bold" }}
+                    style={{ minWidth: 85 }}
+                  >
+                    {build._id
+                      ? `#${build._id.slice(-4).toUpperCase()}`
+                      : "#----"}
+                  </TableCell>
+                  <TableCell>
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      style={{ minWidth: 230 }}
+                    >
+                      <Avatar
+                        src={
+                          build.profilePicture ||
+                          build.userDetails?.profilePicture
+                        }
+                        alt={build.userName || build.userDetails?.name}
+                        sx={{ width: 40, height: 40 }}
+                      />
+                      <Box
+                        sx={{
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        <Typography variant="subtitle2" fontWeight="bold">
+                          {build.userName || build.userDetails?.name}
+                        </Typography>
+                        <Typography variant="caption" color="textSecondary">
+                          {build.userEmail || build.userDetails?.email}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Typography style={{ minWidth: 130 }}>
-                    {format(new Date(build.createdAt), "dd MMM yyyy")}
-                  </Typography>
-                  <Typography fontSize="small" color="gray">
-                    {format(new Date(build.createdAt), "p")}
-                  </Typography>
-                </TableCell>
-                <TableCell style={{ minWidth: 150 }}>
-                  {build.buildName || "Custom Build"}
-                </TableCell>
-                <TableCell sx={{ fontWeight: "bold" }} style={{ minWidth: 120 }}>
-                  {build.totalCharge !== undefined
-                    ? build.totalCharge.toLocaleString()
-                    : "0"}{" "}
-                  LKR
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={build.buildStatus}
-                    color={statusColorMap[build.buildStatus] || "default"}
-                    size="small"
-                    sx={{
-                      padding: "5px",
-                      height: "30px",
-                      width: "100px",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                    }}
-                  />
-                </TableCell>
-              </TableRow>
-            )) : (
+                  </TableCell>
+                  <TableCell>
+                    <Typography style={{ minWidth: 130 }}>
+                      {format(new Date(build.createdAt), "dd MMM yyyy")}
+                    </Typography>
+                    <Typography fontSize="small" color="gray">
+                      {format(new Date(build.createdAt), "p")}
+                    </Typography>
+                  </TableCell>
+                  <TableCell style={{ minWidth: 150 }}>
+                    {build.buildName || "Custom Build"}
+                  </TableCell>
+                  <TableCell
+                    sx={{ fontWeight: "bold" }}
+                    style={{ minWidth: 120 }}
+                  >
+                    {build.totalCharge !== undefined
+                      ? build.totalCharge.toLocaleString()
+                      : "0"}{" "}
+                    LKR
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={build.buildStatus}
+                      color={statusColorMap[build.buildStatus] || "default"}
+                      size="small"
+                      sx={{
+                        padding: "5px",
+                        height: "30px",
+                        width: "100px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
                   <Typography>Currently Not Available</Typography>
@@ -1025,12 +1150,7 @@ export function BuildSummary({
   );
 }
 
-export function GameTable({
-  columns,
-  data,
-  width,
-  color,
-}) {
+export function GameTable({ columns, data, width, color }) {
   // Only show the first 5 rows, no pagination
   const autoSizeCellStyle = {
     padding: "8px 10px",
@@ -1051,7 +1171,7 @@ export function GameTable({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
-                    width: column.width || 'auto',
+                    width: column.width || "auto",
                     padding: "12px",
                   }}
                 >
@@ -1061,19 +1181,24 @@ export function GameTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data && data.length > 0 ? data.slice(0, 7).map((row, index) => (
-              <TableRow key={index} hover>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    style={{ ...autoSizeCellStyle, color: color || "black", fontWeight: "bold" }}
-                  >
-                    {row[column.id]}
-                  </TableCell>
-                ))}
-
-              </TableRow>
-            )) : (
+            {data && data.length > 0 ? (
+              data.slice(0, 7).map((row, index) => (
+                <TableRow key={index} hover>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      style={{
+                        ...autoSizeCellStyle,
+                        color: color || "black",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {row[column.id]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
                   <Typography>No games found</Typography>
@@ -1115,18 +1240,29 @@ export function TopProductsTable({
       <TableContainer>
         <Table sx={{ borderRadius: "16px" }}>
           <TableBody>
-            {rows && rows.length > 0 ? rows.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage).map((row, index) => (
-              <TableRow key={index} hover>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    style={{ ...autoSizeCellStyle, color: color || "black", fontWeight: "bold" }}
-                  >
-                    {row[column.id]}
-                  </TableCell>
-                ))}
-              </TableRow>
-            )) : (
+            {rows && rows.length > 0 ? (
+              rows
+                .slice(
+                  currentPage * rowsPerPage,
+                  currentPage * rowsPerPage + rowsPerPage
+                )
+                .map((row, index) => (
+                  <TableRow key={index} hover>
+                    {columns.map((column) => (
+                      <TableCell
+                        key={column.id}
+                        style={{
+                          ...autoSizeCellStyle,
+                          color: color || "black",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {row[column.id]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
                   <Typography>No products found</Typography>
@@ -1138,15 +1274,9 @@ export function TopProductsTable({
       </TableContainer>
     </Paper>
   );
-
 }
 
-export function TopBuildsTable({
-  columns,
-  builds,
-  width,
-  color,
-}) {
+export function TopBuildsTable({ columns, builds, width, color }) {
   // Only show the first 5 rows, no pagination (same as TopProductsTable)
   const autoSizeCellStyle = {
     padding: "8px 10px",
@@ -1168,7 +1298,7 @@ export function TopBuildsTable({
                     ...autoSizeCellStyle,
                     color: color || "gray",
                     fontWeight: "bold",
-                    width: column.width || 'auto',
+                    width: column.width || "auto",
                     padding: "12px",
                   }}
                 >
@@ -1178,18 +1308,24 @@ export function TopBuildsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {builds && builds.length > 0 ? builds.slice(0, 5).map((build, index) => (
-              <TableRow key={index} hover>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    style={{ ...autoSizeCellStyle, color: color || "black", fontWeight: "bold" }}
-                  >
-                    {build[column.id]}
-                  </TableCell>
-                ))}
-              </TableRow>
-            )) : (
+            {builds && builds.length > 0 ? (
+              builds.slice(0, 5).map((build, index) => (
+                <TableRow key={index} hover>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      style={{
+                        ...autoSizeCellStyle,
+                        color: color || "black",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {build[column.id]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center">
                   <Typography>No builds found</Typography>

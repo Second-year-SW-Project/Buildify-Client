@@ -55,7 +55,7 @@ export default function OrderHistory() {
           // Filter and format completed product orders
           const completedProductOrders = productRes.data
             .filter((order) =>
-              ["Successful", "Refunded", "Cancelled"].includes(order.status)
+              ["Successful", "Refunded", "Canceled"].includes(order.status)
             )
             .map((order) => {
               const itemCount = order.items.reduce(
@@ -144,6 +144,7 @@ export default function OrderHistory() {
                     p: 3,
                     pl: 7,
                     width: "90%",
+                    minHeight: "100vh",
                     boxShadow: 1,
                     borderRadius: 2,
                   }}

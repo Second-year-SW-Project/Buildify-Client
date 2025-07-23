@@ -141,6 +141,7 @@ export default function MyOrders() {
             itemCount: order.components.length,
             status: order.buildStatus,
             items: order.components,
+            deliveryMethod: order.deliveryMethod ?? "Home delivery",
           }));
 
           setOrders([...formattedProductOrders, ...formattedBuildOrders]);
@@ -165,7 +166,10 @@ export default function MyOrders() {
 
   const filteredOrders = orders
     .filter(
-      (order) => order.status !== "Sucessful" && order.status !== "Refunded"
+      (order) =>
+        order.status !== "Successful" &&
+        order.status !== "Refunded" &&
+        order.status !== "Canceled"
     )
     .filter((order) => {
       if (value === "1") return true;
@@ -193,6 +197,7 @@ export default function MyOrders() {
                     p: 3,
                     pl: 7,
                     width: "90%",
+                    minHeight: "100vh",
                     boxShadow: 1,
                     borderRadius: 2,
                   }}
@@ -223,6 +228,7 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             type={order.type}
                             itemCount={order.itemCount}
+                            deliveryMethod={order.deliveryMethod}
                             onDetailsClick={() =>
                               navigate(`/user/orders/${order.orderId}`, {
                                 state: { type: order.type },
@@ -274,6 +280,7 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             type={order.type}
                             itemCount={order.itemCount}
+                            deliveryMethod={order.deliveryMethod}
                             onDetailsClick={() =>
                               navigate(`/user/orders/${order.orderId}`, {
                                 state: { type: order.type },
@@ -325,6 +332,7 @@ export default function MyOrders() {
                             imageUrl={order.imageUrl}
                             type={order.type}
                             itemCount={order.itemCount}
+                            deliveryMethod={order.deliveryMethod}
                             onDetailsClick={() =>
                               navigate(`/user/orders/${order.orderId}`, {
                                 state: { type: order.type },

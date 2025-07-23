@@ -418,6 +418,7 @@ const gpuAttributes = {
     { value: "RTX_3070", label: "RTX 3070" },
     { value: "RTX_3060_Ti", label: "RTX 3060 Ti" },
     { value: "RTX_3060", label: "RTX 3060" },
+    { value: "RT_9070_XT", label: "RX 9070 XT" },
     { value: "RX_7900_XTX", label: "RX 7900 XTX" },
     { value: "RX_7900_XT", label: "RX 7900 XT" },
     { value: "RX_7800_XT", label: "RX 7800 XT" },

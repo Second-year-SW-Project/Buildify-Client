@@ -222,6 +222,7 @@ export default function UserProfile() {
                 p: 3,
                 pl: 7,
                 width: "90%",
+                minHeight: "100vh",
                 boxShadow: 1,
                 borderRadius: 2,
               }}
@@ -248,59 +249,54 @@ export default function UserProfile() {
               </div>
               <Divider />
               <Box sx={{ pt: 3 }}>
-                <Box sx={{ pt: 2, textAlign: "left", pb: 2 }}>
+                <div className="pt-6 ">
+                  {" "}
                   {formData.profilePicture ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "left",
-                        alignItems: "left",
-                        marginBottom: "5px",
-                      }}
-                    >
+                    <div className="flex ml-0 sm:ml-[80px] md:ml-[200px] lg:ml-[390px]">
                       <img
                         src={formData.profilePicture}
                         alt="Profile"
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                          border: "1px solid rgb(152, 56, 212)",
-                        }}
+                        className="w-[100px] h-[100px] rounded-full object-cover border border-purple-600"
                       />
                     </div>
                   ) : (
                     <AccountCircleIcon
-                      sx={{ fontSize: 80, color: "#9333ea" }}
+                      className="text-purple-600"
+                      style={{ fontSize: 80 }}
                     />
                   )}
-
                   {editable && (
-                    <Button
-                      variant="outlined"
-                      component="label"
-                      disabled={uploading}
-                      className="bg-purple-600 hover:bg-purple-600 hover:text-white font-bold mt-2"
-                      sx={{
-                        textTransform: "none",
-                        padding: "12px 14px",
-                        width: "180px",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        borderRadius: "12px",
-                      }}
-                    >
-                      {uploading ? "Uploading..." : "Change Photo"}
-                      <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                      />
-                    </Button>
+                    <div className="mt-1 flex ml-0 sm:ml-[80px] md:ml-[200px] lg:ml-[370px]">
+                      <Button
+                        component="label" // turns the <Button> into a <label>
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        sx={{ textTransform: "none", fontWeight: "bold" }}
+                        disabled={uploading}
+                      >
+                        {uploading ? "Uploading…" : "Change Photo"}
+
+                        {/* keeps the file picker functionality while inheriting Button styles */}
+                        <input
+                          type="file"
+                          hidden
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                        />
+                      </Button>
+                      {/* <label className="bg-purple-600 hover:bg-purple-700 hover:text-white font-bold text-white px-4 py-3 rounded-lg text-base cursor-pointer inline-block">
+                        {uploading ? "Uploading..." : "Change Photo"}
+                        <input
+                          type="file"
+                          hidden
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                        />
+                      </label> */}
+                    </div>
                   )}
-                </Box>
+                </div>
                 <form onSubmit={handleSubmit}>
                   <div className="flex flex-col md:flex-row mt-5">
                     <div className="flex-1 mb-5 mr-1">
@@ -431,7 +427,13 @@ export default function UserProfile() {
                     type="submit"
                     variant="contained"
                     color="primary"
+                    size="large"
                     disabled={!editable || loading}
+                    sx={{
+                      textTransform: "none",
+                      fontWeight: "bold",
+                      borderRadius: "8px",
+                    }}
                   >
                     {loading ? "Saving..." : "Save Changes"}
                   </Button>

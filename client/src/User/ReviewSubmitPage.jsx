@@ -103,7 +103,7 @@ export default function ReviewSubmitPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const stepTimestamp = new Date().toISOString();
+      const stepTimestamp = { Successful: new Date().toISOString() };
 
       if (type === "product") {
         await axios.patch(
@@ -111,19 +111,19 @@ export default function ReviewSubmitPage() {
           { status: "Successful", stepTimestamp },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`Product order ${orderId} marked as Sucessful!`);
+        console.log(`Product order ${orderId} marked as Successful!`);
       }
 
       if (type === "pc_build") {
         await axios.patch(
           `${backendUrl}/api/build-transactions/${orderId}/status`,
           {
-            buildStatus: "Sucessful",
+            buildStatus: "Successful",
             stepTimestamp,
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        console.log(`PC Build order ${orderId} marked as Sucessful!`);
+        console.log(`PC Build order ${orderId} marked as Successful!`);
       }
     } catch (error) {
       console.error("Failed to update order status", error);
@@ -205,6 +205,7 @@ export default function ReviewSubmitPage() {
                     p: 3,
                     pl: 7,
                     width: "90%",
+                    minHeight: "100vh",
                     boxShadow: 1,
                     borderRadius: 2,
                   }}

@@ -45,13 +45,19 @@ export default function Reviewcard({ review, onLeaveReviewClick }) {
             src={product_image}
             alt={name}
             className="w-24 h-24 rounded-lg object-cover cursor-pointer"
-            onClick={() => navigate(`/itempage/${productId}`)}
+            onClick={() =>
+              type === "product"
+                ? navigate(`/itempage/${productId}`)
+                : navigate(`/user/orders/${orderId}`, {
+                    state: { type: type },
+                  })
+            }
           />
 
           <div className="flex-1 text-left space-y-1">
             <h3 className="text-base font-bold text-gray-900">
               {typeof price === "number"
-                ? `Price: LKR ${price.toFixed(2)}`
+                ? `Price: LKR ${price.toLocaleString("en-LK", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                 : "Price: N/A"}
             </h3>
             {status === "Reviewed" && (
