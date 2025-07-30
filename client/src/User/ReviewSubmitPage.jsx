@@ -167,6 +167,7 @@ export default function ReviewSubmitPage() {
           config
         );
         toast.success("Review updated successfully!");
+        navigate(`/user/reviews`);
       } else {
         response = await axios.post(
           `${backendUrl}/api/review/`,
