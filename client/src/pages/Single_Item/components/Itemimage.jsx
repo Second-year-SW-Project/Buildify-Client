@@ -40,7 +40,7 @@ export default function Itemimage() {
   if (!product) return <p>Product not found</p>;
 
   // Fallback image in case `product.image1` is missing
-  const defaultImage = "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421085/graph1_zqumzj.png";
+  const defaultImage = [product?.imgUrls?.[1]?.url || "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421085/graph1_zqumzj.png"] ;
   const imageArray = [product?.imgUrls?.[0]?.url || defaultImage, defaultImage];
 
   return (

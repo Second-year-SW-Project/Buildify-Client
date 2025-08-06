@@ -65,7 +65,25 @@ function ViewBuild() {
     "Pick up at store": "info",
   };
 
-  const getStepFromStatus = (status, deliveryMethod) => {
+  const getStepFromStatus = (status, deliveryMethod, stepTimestamps = null) => {
+    // For canceled builds, determine the step based on the last completed step timestamp
+    if (status === "Canceled" && stepTimestamps) {
+      // Check timestamps to determine which step was active when canceled
+      const steps = deliveryMethod === "Pick up at store"
+        ? ["Pending", "Confirmed", "Building", "Completed", "Delivered", "Successful"]
+        : ["Pending", "Confirmed", "Building", "Completed", "Shipped", "Delivered", "Successful"];
+
+      let lastCompletedStep = 0; // Default to step 0 if no timestamps found
+
+      for (let i = steps.length - 1; i >= 0; i--) {
+        if (stepTimestamps[steps[i]]) {
+          lastCompletedStep = i + 1; // +1 because activeStep is 1-indexed
+          break;
+        }
+      }
+      return lastCompletedStep;
+    }
+
     if (deliveryMethod === "Pick up at store") {
       // Skip Shipped step for store pickup
       switch (status) {
@@ -82,7 +100,7 @@ function ViewBuild() {
         case "Successful":
           return 6;
         case "Canceled":
-          return 1;
+          return 1; // fallback if no stepTimestamps provided
         default:
           return 1;
       }
@@ -104,7 +122,7 @@ function ViewBuild() {
         case "Successful":
           return 7;
         case "Canceled":
-          return 1;
+          return 1; // fallback if no stepTimestamps provided
         default:
           return 1;
       }
@@ -134,8 +152,8 @@ function ViewBuild() {
 
         if (response.data && response.data.success) {
           setBuild(response.data.data);
-          // Set active step based on build status
-          setActiveStep(getStepFromStatus(response.data.data.buildStatus, response.data.data.deliveryMethod));
+          // Set active step based on build status, passing stepTimestamps for canceled builds
+          setActiveStep(getStepFromStatus(response.data.data.buildStatus, response.data.data.deliveryMethod, response.data.data.stepTimestamps));
         } else {
           toast.error("Failed to load Build");
           navigate("/adminpanel/orders/buildorderlist");
@@ -158,8 +176,8 @@ function ViewBuild() {
       const currentTime = new Date();
 
       // Determine the step based on status
-      let newStep = getStepFromStatus(newStatus, build.deliveryMethod);
-      let currentStep = getStepFromStatus(build.buildStatus, build.deliveryMethod);
+      let newStep = getStepFromStatus(newStatus, build.deliveryMethod, build.stepTimestamps);
+      let currentStep = getStepFromStatus(build.buildStatus, build.deliveryMethod, build.stepTimestamps);
 
       // Prepare timestamp updates
       const stepTimestamp = {
@@ -204,17 +222,25 @@ function ViewBuild() {
       const currentTime = new Date();
 
       // Determine the step based on status
-      let newStep = getStepFromStatus(newStatus, build.deliveryMethod);
-      let currentStep = getStepFromStatus(build.buildStatus, build.deliveryMethod);
+      let newStep = getStepFromStatus(newStatus, build.deliveryMethod, build.stepTimestamps);
+      let currentStep = getStepFromStatus(build.buildStatus, build.deliveryMethod, build.stepTimestamps);
 
       // Prepare timestamp updates
       const stepTimestamp = {
         [newStatus]: currentTime,
       };
 
-      // If going back to a previous status, set the current status timestamp to null
-      if (newStep < currentStep) {
-        stepTimestamp[build.buildStatus] = null;
+      // Special handling for Canceled status - don't modify existing step timestamps
+      if (newStatus === "Canceled") {
+        // Only add the Canceled timestamp, don't clear the current status timestamp
+        delete stepTimestamp[build.buildStatus]; // Don't clear the current status timestamp
+        // Preserve the current step position
+        newStep = currentStep;
+      } else {
+        // If going back to a previous status, set the current status timestamp to null
+        if (newStep < currentStep) {
+          stepTimestamp[build.buildStatus] = null;
+        }
       }
 
       // Update both status and timestamp

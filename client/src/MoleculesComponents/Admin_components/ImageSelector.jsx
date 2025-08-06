@@ -24,9 +24,9 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
-        // Check if adding new files would exceed the limit of 4
-        if (images.length + files.length > 4) {
-            toast.error('You can only select up to 4 images.', {
+        // Check if adding new files would exceed the limit of 2
+        if (images.length + files.length > 2) {
+            toast.error('You can only select up to 2 images.', {
                 style: {
                     background: '#fe0132',
                     color: '#fff',
@@ -131,8 +131,8 @@ const ImageSelector = forwardRef(({ onImagesSelect }, ref) => {
                     return true;
                 });
 
-            //Set Image Limit to 4
-            const updatedImages = [...images, ...filtered].slice(0, 4);
+            //Set Image Limit to 2
+            const updatedImages = [...images, ...filtered].slice(0, 2);
             //Update State
             setImages(updatedImages);
             onImagesSelect(updatedImages.map((img) => img.file));

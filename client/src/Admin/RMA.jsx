@@ -370,7 +370,7 @@ const RMA = () => {
     color: '#4b0082', py: 2.5, px: 4, letterSpacing: '0.5px', borderRadius: '16px', marginBottom: '10px'
   }}>
 
-    RMA Request - {selectedRequest?.orderId}
+    RMA - {selectedRequest?.orderId}
 
   </DialogTitle>
 

@@ -365,7 +365,7 @@ export function OrderTable({
                                 type === "toggle"
                                   ? toggleRow(order._id)
                                   : iconActions[type] &&
-                                    iconActions[type](order._id)
+                                  iconActions[type](order._id)
                               }
                               translate="3s"
                               sx={{
@@ -440,7 +440,7 @@ export function OrderTable({
                                     flex={1}
                                     color="black500"
                                   >
-                                    Unit Price - {item.price}
+                                    Unit Price - {item.price.toLocaleString()}
                                   </Typography>
                                 </Box>
                                 <Box
@@ -452,7 +452,7 @@ export function OrderTable({
                                   marginRight={2}
                                 >
                                   <Typography fontWeight="bold" flex={1}>
-                                    {item.price * item.quantity} LKR
+                                    {item.price * item.quantity ? (item.price * item.quantity).toLocaleString() : "N/A"} LKR
                                   </Typography>
                                 </Box>
                               </Stack>
@@ -665,7 +665,7 @@ export function BuildTable({
                             build.deliveryMethod === "Home Delivery"
                               ? "By Delivery"
                               : build.deliveryMethod === "Pick up at store"
-                                ? "By Store"
+                                ? "By Pick up"
                                 : build.deliveryMethod
                           }
                           color={
@@ -719,7 +719,7 @@ export function BuildTable({
                                 type === "toggle"
                                   ? toggleRow(build._id)
                                   : iconActions[type] &&
-                                    iconActions[type](build._id)
+                                  iconActions[type](build._id)
                               }
                               translate="3s"
                               sx={{
@@ -795,7 +795,7 @@ export function BuildTable({
                                       flex={1}
                                       color="black500"
                                     >
-                                      Unit Price - {comp.price || "N/A"}
+                                      Unit Price - {comp.price.toLocaleString() || "N/A"}
                                     </Typography>
                                   </Box>
                                   <Box
@@ -809,8 +809,8 @@ export function BuildTable({
                                     <Typography fontWeight="bold" flex={1}>
                                       {comp.price && comp.quantity
                                         ? (
-                                            comp.price * comp.quantity
-                                          ).toLocaleString()
+                                          comp.price * comp.quantity
+                                        ).toLocaleString()
                                         : comp.price || "N/A"}{" "}
                                       LKR
                                     </Typography>
