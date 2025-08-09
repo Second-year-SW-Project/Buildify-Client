@@ -12,21 +12,21 @@ export default function SearchBar() {
     }
   };
   return (
-    <div className="ml-[-150px] flex items-center justify-center w-full p-4">
-      <form onSubmit={handleSearch} className="relative flex w-full max-w-2xl">
+    <div className="flex items-center justify-center w-full">
+      <form onSubmit={handleSearch} className="relative flex w-full">
         {/* Search Input */}
         <input
           type="text"
           placeholder="Search Products..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full p-[10px] pl-4 text-black rounded-full bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:pr-20"
+          className="w-full p-3 pl-4 text-black rounded-full bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 pr-20 text-sm sm:text-base"
         />
 
         {/* Search Button */}
         <button
           type="submit"
-          className="absolute -mr-1 right-1 top-1/2 transform -translate-y-1/2 bg-purple-600 px-6 py-2 rounded-full text-white hover:bg-blue-500 transition duration-200 sm:right-2"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-purple-600 px-4 py-1.5 sm:px-6 sm:py-2 rounded-full text-white hover:bg-blue-500 transition duration-200 text-sm sm:text-base"
         >
           Search
         </button>
