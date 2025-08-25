@@ -110,7 +110,135 @@ const Chatbot = () => {
       }
     }
 
-    // 4. Then company info shortcuts
+    // 4. Product-aware replies: detect product intent and query backend
+    const tryProductAnswer = async () => {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      if (!backendUrl) return false;
+
+      const text = lastUserMessage;
+
+      // Heuristics: detect product type, manufacturer and budget
+      const typeAliases = {
+        processor: ["cpu", "processor"],
+        gpu: ["gpu", "graphics", "graphic card", "graphics card"],
+        ram: ["ram", "memory"],
+        motherboard: ["motherboard", "mobo"],
+        storage: ["ssd", "hdd", "nvme", "storage", "hard drive"],
+        casing: ["case", "casing"],
+        power: ["psu", "power", "power supply"],
+        cooling: ["cooler", "cooling", "cpu cooler"],
+        monitor: ["monitor", "display"],
+        laptop: ["laptop"],
+        prebuild: ["prebuilt", "pre-build", "prebuild", "desktop"],
+      };
+
+      const manufacturers = [
+        "intel",
+        "amd",
+        "nvidia",
+        "msi",
+        "asus",
+        "gigabyte",
+        "kingston",
+        "corsair",
+        "samsung",
+        "wd",
+        "seagate",
+        "cooler master",
+        "thermaltake",
+        "seasonic",
+      ];
+
+      const findType = () => {
+        for (const [type, aliases] of Object.entries(typeAliases)) {
+          if (aliases.some((a) => text.includes(a))) return type;
+        }
+        return null;
+      };
+
+      const findManufacturer = () => {
+        const found = manufacturers.find((m) => text.includes(m));
+        return found ? found : null;
+      };
+
+      const findMaxPrice = () => {
+        // Match phrases like: under 150000, below 200k, < 100000, under LKR 250,000
+        const priceRegex = /(under|below|less than|<)\s*(lkr|rs\.?|\$)?\s*([\d,.]+)/i;
+        const m = text.match(priceRegex);
+        if (!m) return null;
+        const raw = m[3].replace(/[,]/g, "");
+        const val = Number(raw);
+        return isNaN(val) ? null : val;
+      };
+
+      const qType = findType();
+      const qBrand = findManufacturer();
+      const qMax = findMaxPrice();
+
+      const looksLikeProductSearch =
+        /find|show|recommend|looking for|suggest|best|budget|cheap|upgrade|buy|price/i.test(text) ||
+        qType !== null;
+
+      if (!looksLikeProductSearch) return false;
+
+      try {
+        let products = [];
+
+        if (qType) {
+          const params = new URLSearchParams();
+          params.set("attribute", "type");
+          params.set("value", qType);
+          if (qBrand) params.set("manufacturer", qBrand);
+          if (qMax) params.set("maxPrice", String(qMax));
+
+          const res = await fetch(`${backendUrl}/api/product/filter?${params.toString()}`);
+          if (!res.ok) throw new Error("Failed to fetch products");
+          products = await res.json(); // array
+        } else {
+          const params = new URLSearchParams();
+          params.set("search", text);
+          params.set("limit", "5");
+          const res = await fetch(`${backendUrl}/api/product/all?${params.toString()}`);
+          if (!res.ok) throw new Error("Failed to fetch products");
+          const data = await res.json();
+          products = Array.isArray(data?.data) ? data.data : [];
+        }
+
+        if (!products || products.length === 0) {
+          updateHistory(
+            qType
+              ? `I couldn't find ${qBrand ? qBrand + " " : ""}${qType} ${qMax ? "under LKR " + qMax : ""}. Try adjusting your filters or search terms.`
+              : "I couldn't find matching products. Try a shorter or different query."
+          );
+          return true;
+        }
+
+        const top = products.slice(0, 5);
+        const lines = top.map((p, i) => {
+          const price = typeof p.price === "number" ? `LKR ${p.price.toLocaleString()}` : `${p.price}`;
+          const name = p.name || "Unnamed";
+          const id = p._id || p.id || "";
+          const path = id ? `/itempage/${id}` : "";
+          return `${i + 1}. ${name} — ${price}${path ? ` — ${path}` : ""}`;
+        });
+
+        const header = qType
+          ? `Here are some ${qBrand ? qBrand + " " : ""}${qType}${qMax ? ` under LKR ${qMax}` : ""}:\n`
+          : `Top matches for "${history.filter((m) => m.role === "user").slice(-1)[0]?.text}":\n`;
+
+        updateHistory(header + lines.join("\n"));
+        return true;
+      } catch (err) {
+        updateHistory(`Product lookup failed: ${err.message}`, true);
+        return true; // handled
+      }
+    };
+
+    // Try product-aware path before general company info
+    const productHandled = await tryProductAnswer();
+    if (productHandled) return;
+
+    // 5. Then company info shortcuts
     if (lastUserMessage.includes("email"))
       return updateHistory(`Our email is: ${companyInfo.email}`);
     if (lastUserMessage.includes("phone") || lastUserMessage.includes("call"))
@@ -138,7 +266,7 @@ const Chatbot = () => {
       );
     }
 
-    // Fallback: send to backend
+    // Fallback: send to backend (LLM or external service)
     const formattedHistory = [
       {
         role: "user",
