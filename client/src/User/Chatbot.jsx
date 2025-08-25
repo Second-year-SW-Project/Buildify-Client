@@ -174,14 +174,79 @@ const Chatbot = () => {
       };
 
       try {
-        const [p1, p2] = await Promise.all([fetchOne(names[0]), fetchOne(names[1])]);
+        let [p1, p2] = await Promise.all([fetchOne(names[0]), fetchOne(names[1])]);
         if (!p1 || !p2) {
           updateHistory("I couldn't find both items to compare. Try more specific names.");
           return true;
         }
 
+        // If categories differ, try resolving the second within first's category for a fair comparison
+        if (p1.type && p2.type && p1.type !== p2.type) {
+          const tryWithinType = async (name, type) => {
+            const params = new URLSearchParams();
+            params.set("search", name);
+            params.set("limit", "10");
+            const res = await fetch(`${effectiveBackendUrl}/api/product/all?${params.toString()}`);
+            if (res.ok) {
+              const data = await res.json();
+              const arr = Array.isArray(data?.data) ? data.data : [];
+              const sameType = arr.filter((x) => (x.type || '').toLowerCase() === (type || '').toLowerCase());
+              if (sameType.length) {
+                const q = name.toLowerCase();
+                const scored = sameType
+                  .map((p) => ({ p, s: (p.name || '').toLowerCase().includes(q) ? 2 : 1 }))
+                  .sort((a, b) => b.s - a.s);
+                return scored[0]?.p || sameType[0];
+              }
+            }
+            return undefined;
+          };
+          const replacement = await tryWithinType(names[1], p1.type);
+          if (replacement) p2 = replacement;
+        }
+
         const price = (v) => typeof v === 'number' ? `LKR ${v.toLocaleString()}` : `${v ?? 'N/A'}`;
-        // const link = (id) => id ? `/itempage/${id}` : '';
+        const typeAttributes = {
+          gpu: ['gpu_chipset','vram','gpu_cores','boost_clock','interface_type','length','power_connectors','tdp'],
+          processor: ['socket_type','core_count','thread_count','base_clock','boost_clock','tdp','integrated_graphics','includes_cooler'],
+          ram: ['memory_type','memory_capacity','memory_speed','tdp'],
+          motherboard: ['motherboard_chipset','socket_type','form_factor','ram_slots','max_ram','supported_memory_types','pcie_slots','storage_interfaces'],
+          storage: ['storage_type','storage_capacity','tdp'],
+          casing: ['form_factor','supported_motherboard_sizes','max_gpu_length','max_cooler_height'],
+          power: ['wattage','efficiency_rating','modular_type'],
+          cooling: ['cooler_type','supported_socket','max_tdp','height','tdp'],
+          monitor: ['display_size','resolution','refresh_rate','panel_type'],
+          laptop: ['cpu','ram','storage','graphic_card','display_size','resolution','refresh_rate'],
+          prebuild: ['cpu','cpu_cores','cpu_threads','cpu_base_clock','cpu_boost_clock','graphic_card','gpu_series','gpu_vram','ram_size','ram_speed','ram_type','storage','desktop_type']
+        };
+        const numericHigherBetter = new Set([
+          'core_count','thread_count','base_clock','boost_clock','memory_speed','memory_capacity','gpu_cores','vram','ram_slots','max_ram','refresh_rate','wattage'
+        ]);
+        const lowerBetterByType = {
+          gpu: new Set(['tdp','length']),
+          processor: new Set(['tdp']),
+          cooling: new Set(['tdp','height']),
+          casing: new Set([]),
+          motherboard: new Set([]),
+          ram: new Set([]),
+          storage: new Set([]),
+          power: new Set([]),
+          monitor: new Set([]),
+          laptop: new Set(['tdp'])
+        };
+        const parseNum = (val) => {
+          if (val === undefined || val === null) return NaN;
+          if (typeof val === 'number') return val;
+          const m = String(val).match(/[\d.]+/);
+          return m ? Number(m[0]) : NaN;
+        };
+        const efficiencyOrder = ['80_plus','80_plus_bronze','80_plus_silver','80_plus_gold','80_plus_platinum','80_plus_titanium'];
+        const normalizeEff = (v) => {
+          if (!v) return -1;
+          const s = String(v).toLowerCase().replace(/\s+/g,'_');
+          const i = efficiencyOrder.indexOf(s);
+          return i >= 0 ? i : -1;
+        };
 
         // Pick key attributes by type; fallback to generic fields
         // helper omitted; we build rows directly to keep bundle small
@@ -193,21 +258,39 @@ const Chatbot = () => {
           'storage_type','storage_capacity','max_gpu_length','max_cooler_height','wattage','efficiency_rating',
           'display_size','resolution','refresh_rate','panel_type'
         ];
+        const type = (p1.type || p2.type || '').toLowerCase();
+        const prioritized = typeAttributes[type] || [];
         const rows = [['Name', p1.name || 'N/A', p2.name || 'N/A'], ['Price', price(p1.price), price(p2.price)]];
         const added = new Set(['name','price']);
-        for (const key of commonKeys) {
+        const keysOrder = [...prioritized, ...commonKeys];
+        for (const key of keysOrder) {
           if (added.has(key)) continue;
           const v1 = p1[key];
           const v2 = p2[key];
           if ((v1 !== undefined && v1 !== '') || (v2 !== undefined && v2 !== '')) {
-            rows.push([key.replace(/_/g,' '), `${v1 ?? '—'}`, `${v2 ?? '—'}`]);
+            let left = `${v1 ?? '—'}`;
+            let right = `${v2 ?? '—'}`;
+            const dir = (lowerBetterByType[type] && lowerBetterByType[type].has(key)) ? 'lower' : (numericHigherBetter.has(key) ? 'higher' : null);
+            const n1 = parseNum(v1), n2 = parseNum(v2);
+            if (dir && !isNaN(n1) && !isNaN(n2) && n1 !== n2) {
+              if (dir === 'higher') { if (n1 > n2) left += ' ▲'; else right += ' ▲'; }
+              else { if (n1 < n2) left += ' ▲'; else right += ' ▲'; }
+            }
+            if (key === 'efficiency_rating') {
+              const e1 = normalizeEff(v1), e2 = normalizeEff(v2);
+              if (e1 >= 0 && e2 >= 0 && e1 !== e2) {
+                // Higher index => better (e.g., titanium highest)
+                if (e1 > e2) left += ' ▲'; else right += ' ▲';
+              }
+            }
+            rows.push([key.replace(/_/g,' '), left, right]);
             added.add(key);
           }
           if (rows.length >= 10) break; // keep it concise
         }
 
         const lines = [
-          `Comparing:`,
+          `Comparing${type ? ` (${type})` : ''}:`,
           `- ${p1.name} — ${price(p1.price)}${p1._id ? `\n   View: /itempage/${p1._id}` : ''}`,
           `- ${p2.name} — ${price(p2.price)}${p2._id ? `\n   View: /itempage/${p2._id}` : ''}`,
           '',
