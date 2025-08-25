@@ -181,7 +181,7 @@ const Chatbot = () => {
         }
 
         const price = (v) => typeof v === 'number' ? `LKR ${v.toLocaleString()}` : `${v ?? 'N/A'}`;
-        const link = (id) => id ? `/itempage/${id}` : '';
+        // const link = (id) => id ? `/itempage/${id}` : '';
 
         // Pick key attributes by type; fallback to generic fields
         // helper omitted; we build rows directly to keep bundle small
@@ -208,8 +208,8 @@ const Chatbot = () => {
 
         const lines = [
           `Comparing:`,
-          `1) ${p1.name} — ${price(p1.price)} ${link(p1._id)}`,
-          `2) ${p2.name} — ${price(p2.price)} ${link(p2._id)}`,
+          `- ${p1.name} — ${price(p1.price)}${p1._id ? `\n   View: /itempage/${p1._id}` : ''}`,
+          `- ${p2.name} — ${price(p2.price)}${p2._id ? `\n   View: /itempage/${p2._id}` : ''}`,
           '',
           ...rows.map(([k,a,b]) => `${k}: ${a} | ${b}`)
         ];
@@ -333,12 +333,13 @@ const Chatbot = () => {
         }
 
         const top = products.slice(0, 5);
-        const lines = top.map((p, i) => {
+        const lines = top.map((p) => {
           const price = typeof p.price === "number" ? `LKR ${p.price.toLocaleString()}` : `${p.price}`;
           const name = p.name || "Unnamed";
           const id = p._id || p.id || "";
           const path = id ? `/itempage/${id}` : "";
-          return `${i + 1}. ${name} — ${price}${path ? ` — ${path}` : ""}`;
+          const view = path ? `\n   View: ${path}` : "";
+          return `- ${name} — ${price}${view}`;
         });
 
         const header = qType
@@ -430,6 +431,22 @@ const Chatbot = () => {
     }
   };
 
+  // Render helper: hyperlink URLs and /itempage/<id> paths to keep lists tidy and clickable
+  const renderLinkedText = (text) => {
+    const content = String(text ?? "");
+    const parts = content.split(/(https?:\/\/[^\s]+|\/itempage\/[A-Za-z0-9]+)/g);
+    return parts.map((part, idx) => {
+      if (/^https?:\/\//.test(part) || /^\/itempage\//.test(part)) {
+        return (
+          <a key={idx} href={part} target="_blank" rel="noreferrer" className="text-purple-700 underline">
+            {part}
+          </a>
+        );
+      }
+      return <span key={idx}>{part}</span>;
+    });
+  };
+
   useEffect(() => {
     chatBodyRef.current?.scrollTo({
       top: chatBodyRef.current.scrollHeight,
@@ -503,7 +520,7 @@ const Chatbot = () => {
                 }`}
               >
                 <span
-                  className={`inline-block px-3 py-2 rounded max-w-[80%] break-words ${
+                  className={`inline-block px-3 py-2 rounded max-w-[80%] whitespace-pre-wrap break-words ${
                     chat.role === "user"
                       ? "bg-purple-100"
                       : chat.isError
@@ -511,7 +528,7 @@ const Chatbot = () => {
                         : "bg-gray-200 text-gray-900"
                   }`}
                 >
-                  {chat.text}
+                  {renderLinkedText(chat.text)}
                 </span>
               </div>
             ))}
