@@ -113,7 +113,12 @@ const Chatbot = () => {
     // 4. Product-aware replies: detect product intent and query backend
     const tryProductAnswer = async () => {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
-      if (!backendUrl) return false;
+      const effectiveBackendUrl = backendUrl || (typeof window !== 'undefined'
+        ? (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : 'https://buildify-server-d5yu.vercel.app')
+        : '');
+      if (!effectiveBackendUrl) return false;
 
       const text = lastUserMessage;
 
@@ -191,14 +196,14 @@ const Chatbot = () => {
           if (qBrand) params.set("manufacturer", qBrand);
           if (qMax) params.set("maxPrice", String(qMax));
 
-          const res = await fetch(`${backendUrl}/api/product/filter?${params.toString()}`);
+          const res = await fetch(`${effectiveBackendUrl}/api/product/filter?${params.toString()}`);
           if (!res.ok) throw new Error("Failed to fetch products");
           products = await res.json(); // array
         } else {
           const params = new URLSearchParams();
           params.set("search", text);
           params.set("limit", "5");
-          const res = await fetch(`${backendUrl}/api/product/all?${params.toString()}`);
+          const res = await fetch(`${effectiveBackendUrl}/api/product/all?${params.toString()}`);
           if (!res.ok) throw new Error("Failed to fetch products");
           const data = await res.json();
           products = Array.isArray(data?.data) ? data.data : [];
