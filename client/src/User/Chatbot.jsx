@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import ChatForm from "./Chatform";
 import { companyInfo } from "./companyInfo";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import { useChatbot } from "./ChatbotContext";
-import ProductCompareDrawer from "./ProductCompareDrawer";
 
 const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState([]);
@@ -12,7 +11,6 @@ const Chatbot = () => {
   const chatBodyRef = useRef();
   const chatbotRef = useRef();
   const toggleBtnRef = useRef();
-  const [compare, setCompare] = useState({ open: false, products: [] });
 
   const generateBotResponse = async (history) => {
     const updateHistory = (text, isError = false) => {
@@ -186,7 +184,7 @@ const Chatbot = () => {
         const link = (id) => id ? `/itempage/${id}` : '';
 
         // Pick key attributes by type; fallback to generic fields
-        const pick = (obj, keys) => keys.filter((k) => obj?.[k] !== undefined && obj?.[k] !== '').map((k) => [k, obj[k]]);
+        // helper omitted; we build rows directly to keep bundle small
         const commonKeys = [
           'type','manufacturer','price','tdp','socket_type','core_count','thread_count','base_clock','boost_clock',
           'memory_type','memory_speed','memory_capacity',
@@ -215,8 +213,12 @@ const Chatbot = () => {
           '',
           ...rows.map(([k,a,b]) => `${k}: ${a} | ${b}`)
         ];
-        setCompare({ open: true, products: [p1, p2] });
-        updateHistory(lines.join('\n') + "\n\nOpened a comparison view for more details.");
+        // Open items in normal browser windows/tabs
+        if (typeof window !== 'undefined') {
+          if (p1?._id) window.open(`/itempage/${p1._id}`, '_blank');
+          if (p2?._id) window.open(`/itempage/${p2._id}`, '_blank');
+        }
+        updateHistory(lines.join('\n') + "\n\nOpened product pages in new tabs for details.");
         return true;
       } catch (e) {
         updateHistory(`Comparison failed: ${e.message}`, true);
@@ -452,7 +454,7 @@ const Chatbot = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -526,11 +528,6 @@ const Chatbot = () => {
         </div>
       )}
 
-      <ProductCompareDrawer
-        open={compare.open}
-        products={compare.products}
-        onClose={() => setCompare({ open: false, products: [] })}
-      />
     </div>
   );
 };
