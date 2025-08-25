@@ -4,6 +4,7 @@ import { companyInfo } from "./companyInfo";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import SmartToyOutlinedIcon from "@mui/icons-material/SmartToyOutlined";
 import { useChatbot } from "./ChatbotContext";
+import ProductCompareDrawer from "./ProductCompareDrawer";
 
 const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState([]);
@@ -11,6 +12,7 @@ const Chatbot = () => {
   const chatBodyRef = useRef();
   const chatbotRef = useRef();
   const toggleBtnRef = useRef();
+  const [compare, setCompare] = useState({ open: false, products: [] });
 
   const generateBotResponse = async (history) => {
     const updateHistory = (text, isError = false) => {
@@ -111,6 +113,90 @@ const Chatbot = () => {
     }
 
     // 4. Product-aware replies: detect product intent and query backend
+    const tryCompareAnswer = async () => {
+      const text = lastUserMessage;
+      // Detect patterns: "A vs B" or "compare A and B"
+      const vsMatch = text.match(/(.+?)\s+vs\s+(.+)/i);
+      const compareMatch = text.match(/compare\s+(.+?)\s+(and|&)\s+(.+)/i);
+      const names = vsMatch
+        ? [vsMatch[1], vsMatch[2]]
+        : compareMatch
+          ? [compareMatch[1], compareMatch[3]]
+          : null;
+      if (!names) return false;
+
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+      const effectiveBackendUrl = backendUrl || (typeof window !== 'undefined'
+        ? (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : 'https://buildify-server-d5yu.vercel.app')
+        : '');
+      if (!effectiveBackendUrl) return false;
+
+      const fetchOne = async (query) => {
+        const params = new URLSearchParams();
+        params.set("search", query);
+        params.set("limit", "5");
+        const res = await fetch(`${effectiveBackendUrl}/api/product/all?${params.toString()}`);
+        if (!res.ok) throw new Error("Failed to fetch products");
+        const data = await res.json();
+        const arr = Array.isArray(data?.data) ? data.data : [];
+        // pick best name match
+        const q = query.toLowerCase();
+        const scored = arr
+          .map((p) => ({ p, s: (p.name || '').toLowerCase().includes(q) ? 2 : 1 }))
+          .sort((a, b) => b.s - a.s);
+        return scored[0]?.p || arr[0];
+      };
+
+      try {
+        const [p1, p2] = await Promise.all([fetchOne(names[0]), fetchOne(names[1])]);
+        if (!p1 || !p2) {
+          updateHistory("I couldn't find both items to compare. Try more specific names.");
+          return true;
+        }
+
+        const price = (v) => typeof v === 'number' ? `LKR ${v.toLocaleString()}` : `${v ?? 'N/A'}`;
+        const link = (id) => id ? `/itempage/${id}` : '';
+
+        // Pick key attributes by type; fallback to generic fields
+        const pick = (obj, keys) => keys.filter((k) => obj?.[k] !== undefined && obj?.[k] !== '').map((k) => [k, obj[k]]);
+        const commonKeys = [
+          'type','manufacturer','price','tdp','socket_type','core_count','thread_count','base_clock','boost_clock',
+          'memory_type','memory_speed','memory_capacity',
+          'interface_type','length','power_connectors','vram','gpu_chipset','gpu_cores',
+          'motherboard_chipset','form_factor','ram_slots','max_ram','supported_memory_types',
+          'storage_type','storage_capacity','max_gpu_length','max_cooler_height','wattage','efficiency_rating',
+          'display_size','resolution','refresh_rate','panel_type'
+        ];
+        const rows = [['Name', p1.name || 'N/A', p2.name || 'N/A'], ['Price', price(p1.price), price(p2.price)]];
+        const added = new Set(['name','price']);
+        for (const key of commonKeys) {
+          if (added.has(key)) continue;
+          const v1 = p1[key];
+          const v2 = p2[key];
+          if ((v1 !== undefined && v1 !== '') || (v2 !== undefined && v2 !== '')) {
+            rows.push([key.replace(/_/g,' '), `${v1 ?? '—'}`, `${v2 ?? '—'}`]);
+            added.add(key);
+          }
+          if (rows.length >= 10) break; // keep it concise
+        }
+
+        const lines = [
+          `Comparing:`,
+          `1) ${p1.name} — ${price(p1.price)} ${link(p1._id)}`,
+          `2) ${p2.name} — ${price(p2.price)} ${link(p2._id)}`,
+          '',
+          ...rows.map(([k,a,b]) => `${k}: ${a} | ${b}`)
+        ];
+        setCompare({ open: true, products: [p1, p2] });
+        updateHistory(lines.join('\n') + "\n\nOpened a comparison view for more details.");
+        return true;
+      } catch (e) {
+        updateHistory(`Comparison failed: ${e.message}`, true);
+        return true;
+      }
+    };
     const tryProductAnswer = async () => {
       const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const effectiveBackendUrl = backendUrl || (typeof window !== 'undefined'
@@ -240,6 +326,10 @@ const Chatbot = () => {
     };
 
     // Try product-aware path before general company info
+    // Try comparison first
+    const compared = await tryCompareAnswer();
+    if (compared) return;
+
     const productHandled = await tryProductAnswer();
     if (productHandled) return;
 
@@ -409,6 +499,12 @@ const Chatbot = () => {
           </div>
         </div>
       )}
+
+      <ProductCompareDrawer
+        open={compare.open}
+        products={compare.products}
+        onClose={() => setCompare({ open: false, products: [] })}
+      />
     </div>
   );
 };
