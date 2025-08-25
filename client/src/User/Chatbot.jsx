@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import PropTypes from "prop-types";
 import ChatForm from "./Chatform";
 import { companyInfo } from "./companyInfo";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
@@ -430,6 +431,58 @@ const Chatbot = () => {
     }
   };
 
+  const renderLinkedText = (text) => {
+    const parts = String(text).split(/(https?:\/\/[^\s]+|\/[a-zA-Z0-9/_-]+\/[a-zA-Z0-9/_-]+)/g);
+    return parts.map((part, idx) => {
+      if (/^https?:\/\//.test(part) || /^\//.test(part)) {
+        return (
+          <a key={idx} href={part} target="_blank" rel="noreferrer" className="text-purple-700 underline break-all">
+            {part}
+          </a>
+        );
+      }
+      return <span key={idx}>{part}</span>;
+    });
+  };
+
+  const MessageBubble = ({ chat }) => {
+    const isUser = chat.role === "user";
+    const isError = chat.isError;
+    const isThinking = chat.text === "Thinking...";
+    return (
+      <div className={`text-sm ${isUser ? "text-right" : "text-left"}`}>
+        <div
+          className={
+            `inline-flex max-w-[85%] text-left rounded-2xl px-3 py-2 shadow-sm border ` +
+            (isUser
+              ? "bg-gradient-to-r from-purple-600 to-purple-500 text-white border-purple-500"
+              : isError
+                ? "bg-red-50 text-red-700 border-red-200"
+                : "bg-white text-gray-900 border-gray-200")
+          }
+          style={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', lineHeight: 1.35 }}
+        >
+          {isThinking ? (
+            <div className="flex items-center gap-2">
+              <span className="inline-block h-3 w-3 rounded-full border-2 border-purple-400 border-t-transparent animate-spin" />
+              <span>Thinking…</span>
+            </div>
+          ) : (
+            renderLinkedText(chat.text)
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  MessageBubble.propTypes = {
+    chat: PropTypes.shape({
+      role: PropTypes.string,
+      text: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+      isError: PropTypes.bool,
+    })
+  };
+
   useEffect(() => {
     chatBodyRef.current?.scrollTo({
       top: chatBodyRef.current.scrollHeight,
@@ -471,10 +524,10 @@ const Chatbot = () => {
       {isOpen && (
         <div
           ref={chatbotRef}
-          className="mt-2 w-[350px] h-[500px] bg-white border rounded-xl shadow-lg flex flex-col"
+          className="mt-2 w-[380px] h-[560px] bg-white border rounded-2xl shadow-xl flex flex-col overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-purple-600 text-white px-4 py-2 rounded-t-xl flex justify-between items-center">
+          <div className="bg-purple-600 text-white px-4 py-3 rounded-t-2xl flex justify-between items-center shadow">
             <div className="flex items-center gap-2">
               <SmartToyOutlinedIcon />
               <span className="font-semibold">Buildify Assistant</span>
@@ -487,33 +540,16 @@ const Chatbot = () => {
           {/* Messages */}
           <div
             ref={chatBodyRef}
-            className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50"
+            className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
           >
             <div className="text-left text-sm">
-              <span className="inline-block bg-purple-100 px-3 py-2 rounded text-gray-800">
+              <span className="inline-block bg-white border border-gray-200 px-3 py-2 rounded-2xl text-gray-800 shadow-sm">
                 Hey there! How can I help you today?
               </span>
             </div>
 
             {chatHistory.map((chat, index) => (
-              <div
-                key={index}
-                className={`text-sm ${
-                  chat.role === "user" ? "text-right" : "text-left"
-                }`}
-              >
-                <span
-                  className={`inline-block px-3 py-2 rounded max-w-[80%] break-words ${
-                    chat.role === "user"
-                      ? "bg-purple-100"
-                      : chat.isError
-                        ? "bg-red-100 text-red-700"
-                        : "bg-gray-200 text-gray-900"
-                  }`}
-                >
-                  {chat.text}
-                </span>
-              </div>
+              <MessageBubble key={index} chat={chat} />
             ))}
           </div>
 
