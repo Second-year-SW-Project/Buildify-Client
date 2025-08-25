@@ -281,7 +281,7 @@ export const companyInfo = {
       question: "I have a problem with my order. Who can help?",
       keywords: ["order problem", "order issue", "help with order"],
       answer:
-        "Our support team is here to help! Please provide your order number and details of the issue.",
+        "Our support team is here to help! Please provide your order number and details of the issue in RMA support section of your dashboard.",
     },
 
     // 8. User Dashboard & Features
@@ -289,7 +289,7 @@ export const companyInfo = {
       question: "How do I access my dashboard?",
       keywords: ["access dashboard", "open dashboard", "dashboard"],
       answer:
-        "Click your profile icon or username at the top right, then select “Dashboard.”",
+        "Click your profile icon or username at the top right, then select “profile.”",
     },
     {
       question: "What can I do in my user dashboard?",
@@ -312,7 +312,7 @@ export const companyInfo = {
     {
       question: "How do I leave a review for a product or build?",
       keywords: ["leave review", "write review", "review product"],
-      answer: "Go to the product or build page and click “Write a Review.”",
+      answer: "Go to your reviews in dashboard and select “Leave a Review.”",
     },
 
     // 9. Technical Issues
@@ -346,7 +346,7 @@ export const companyInfo = {
       question: "How do I contact you?",
       keywords: ["contact", "contact us", "reach you"],
       answer:
-        "You can reach us via the chat widget, email at support@example.com, or through our Contact Us page.",
+        "You can reach us via the chat widget, email at support@buildify.com, or through our Contact Us page.",
     },
     {
       question: "Where can I find your terms and conditions or privacy policy?",

@@ -8,6 +8,7 @@ import DateCard from "../AtomicComponents/Cards/Datecard";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
+import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import { InputField } from "../AtomicComponents/Inputs/Input";
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
@@ -21,6 +22,9 @@ function InvoiceList() {
 
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [invoiceToDelete, setInvoiceToDelete] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [searchId, setSearchId] = useState("");
   const [startDate, setStartDate] = useState(null);
@@ -61,6 +65,26 @@ function InvoiceList() {
       }
     },
   };
+  const handleConfirmDelete = async () => {
+    if (!invoiceToDelete) return;
+
+    setLoading(true);
+    try {
+      await axios.delete(
+        `${backendUrl}/api/invoices/delete/${invoiceToDelete.raw._id}`
+      );
+      toast.success("Invoice deleted successfully!");
+      setInvoices((prev) =>
+        prev.filter((inv) => inv.raw._id !== invoiceToDelete.raw._id)
+      );
+      setOpenDialog(false);
+      setInvoiceToDelete(null);
+    } catch (error) {
+      toast.error("Failed to delete invoice");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // const iconActions = {
   //   view: (invoiceId) => {
@@ -91,33 +115,8 @@ function InvoiceList() {
 
   // Delete invoice toast
   const handleDeleteInvoice = (invoice) => {
-    toast(
-      (t) => (
-        <div>
-          <p>Are you sure you want to delete this invoice?</p>
-          <div className="flex gap-2 mt-2">
-            <button
-              onClick={() => {
-                deleteInvoice(invoice.raw._id);
-                toast.dismiss(t);
-              }}
-              className="px-3 py-1 bg-red-500 text-white rounded"
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => toast.dismiss(t)}
-              className="px-3 py-1 bg-gray-300 rounded"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ),
-      {
-        duration: 5000,
-      }
-    );
+    setInvoiceToDelete(invoice);
+    setOpenDialog(true);
   };
 
   // Fetch invoices
@@ -313,6 +312,18 @@ function InvoiceList() {
           invoice={selectedInvoice.raw}
         />
       )}
+      <DialogAlert
+        name="Delete Order"
+        Title="Confirm Deletion"
+        message="Are you sure you want to delete this Order? This action cannot be undone."
+        Disagree="Cancel"
+        Agree="Delete"
+        open={openDialog}
+        handleClose={() => setOpenDialog(false)}
+        handleAgree={handleConfirmDelete}
+        loading={loading}
+      />
+      ;
     </div>
   );
 }

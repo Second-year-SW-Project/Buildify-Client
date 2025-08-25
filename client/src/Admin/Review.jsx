@@ -14,6 +14,8 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Box,
+  Typography,
 } from "@mui/material";
 import {
   Star as StarIcon,
@@ -23,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import { toast } from "sonner";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
+import DialogAlert from "../AtomicComponents/Dialogs/Dialogs";
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -36,6 +39,8 @@ const Review = () => {
     date: "", // Date filter is already here
   });
   const [response, setResponse] = useState({});
+  const [loading, setLoading] = useState(false); // Add this at the top
+
   const [stats, setStats] = useState({
     totalReviews: 0,
     ratingCounts: [0, 0, 0, 0, 0],
@@ -90,9 +95,19 @@ const Review = () => {
       ratingCounts[review.rating - 1]++;
     });
 
+    const handleConfirmDelete = async () => {
+      setLoading(true);
+      await handleDeleteReview(currentReviewId);
+      setLoading(false);
+      setOpenDialogDelete(false);
+    };
+
     const avgRating =
       totalReviews > 0
-        ? (reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1)
+        ? (
+            reviews.reduce((sum, review) => sum + review.rating, 0) /
+            totalReviews
+          ).toFixed(1)
         : "0.0";
     setStats({ totalReviews, ratingCounts, avgRating });
   };
@@ -189,67 +204,70 @@ const Review = () => {
 
         {/* Filter Section */}
         <div className="flex flex-wrap gap-4 mt-6 mb-8 items-end">
-  {/* Search Field */}
-  <FormControl sx={{ width: 260 }}>
-    <TextField
-      label="Search by Name or Email"
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          height: 56,
-          borderRadius: '4px',
-        }
-      }}
-      onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-      value={filter.search}
-    />
-  </FormControl>
+          {/* Search Field */}
+          <FormControl sx={{ width: 260 }}>
+            <TextField
+              label="Search by Name or Email"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  height: 56,
+                  borderRadius: "4px",
+                },
+              }}
+              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+              value={filter.search}
+            />
+          </FormControl>
 
-  {/* Date Picker */}
-  <FormControl sx={{ width: 260 }}>
-    <TextField
-      label="Date"
-      type="date"
-      InputLabelProps={{ shrink: true }}
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          height: 56,
-          borderRadius: '4px',
-        }
-      }}
-      onChange={(e) => setFilter({ ...filter, date: e.target.value })}
-      value={filter.date}
-    />
-  </FormControl>
+          {/* Date Picker */}
+          <FormControl sx={{ width: 260 }}>
+            <TextField
+              label="Date"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  height: 56,
+                  borderRadius: "4px",
+                },
+              }}
+              onChange={(e) => setFilter({ ...filter, date: e.target.value })}
+              value={filter.date}
+            />
+          </FormControl>
 
-  {/* Rating Filter */}
-  <FormControl sx={{ width: 260 }}>
-    <InputLabel>Rating Filter</InputLabel>
-    <Select
-      label="Rating Filter"
-      size="small"
-      sx={{
-        height: 56,
-        borderRadius: '4px',
-      }}
-      MenuProps={{ PaperProps: { style: { maxHeight: 200 } } }}
-      onChange={(e) => setFilter({ ...filter, rating: e.target.value })}
-      value={filter.rating}
-    >
-      <MenuItem value="">
-        <em>All Ratings</em>
-      </MenuItem>
-      {[5, 4, 3, 2, 1].map((num) => (
-        <MenuItem key={num} value={num}>
-          {Array(num)
-            .fill(null)
-            .map((_, index) => (
-              <StarIcon key={index} className="text-yellow-400 w-4 h-4" />
-            ))}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-</div>
+          {/* Rating Filter */}
+          <FormControl sx={{ width: 260 }}>
+            <InputLabel>Rating Filter</InputLabel>
+            <Select
+              label="Rating Filter"
+              size="small"
+              sx={{
+                height: 56,
+                borderRadius: "4px",
+              }}
+              MenuProps={{ PaperProps: { style: { maxHeight: 200 } } }}
+              onChange={(e) => setFilter({ ...filter, rating: e.target.value })}
+              value={filter.rating}
+            >
+              <MenuItem value="">
+                <em>All Ratings</em>
+              </MenuItem>
+              {[5, 4, 3, 2, 1].map((num) => (
+                <MenuItem key={num} value={num}>
+                  {Array(num)
+                    .fill(null)
+                    .map((_, index) => (
+                      <StarIcon
+                        key={index}
+                        className="text-yellow-400 w-4 h-4"
+                      />
+                    ))}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -260,7 +278,9 @@ const Review = () => {
               </div>
               <div>
                 <p className="text-gray-500 text-sm">Total Reviews</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalReviews}</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {stats.totalReviews}
+                </p>
               </div>
             </div>
           </div>
@@ -285,7 +305,9 @@ const Review = () => {
               <div className="p-3 bg-green-100 rounded-full">
                 <BarChartIcon className="text-green-600 text-3xl" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-700">Rating Distribution</h3>
+              <h3 className="text-lg font-semibold text-gray-700">
+                Rating Distribution
+              </h3>
             </div>
 
             <Bar
@@ -333,15 +355,87 @@ const Review = () => {
                     <p className="text-lg font-semibold text-gray-900">
                       {review.userId?.name || "Anonymous"}
                     </p>
-                    <p className="text-sm text-gray-500">{review.userId?.email}</p>
-                    {/* <p className="text-sm text-gray-500">
-                      <span className="font-medium text-gray-700">Product:</span>{" "}
-                      {review.orderId?.name}
-                    </p> */}
                     <p className="text-sm text-gray-500">
-                      <span className="font-medium text-gray-700">Category:</span>{" "}
-                      {review.type}
+                      {review.userId?.email}
                     </p>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-medium text-gray-700">
+                        Category:
+                      </span>{" "}
+                      {review.type.charAt(0).toUpperCase() +
+                        review.type.slice(1)}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <span className="font-medium text-gray-700">
+                        Order ID:
+                      </span>{" "}
+                      {review.orderDetails?.orderId || review.orderId}
+                    </p>
+
+                    {/* Product/Build Information */}
+                    {review.type === "product" &&
+                      (review.productName || review.productImage) && (
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={2}
+                          sx={{ mt: 2 }}
+                        >
+                          {review.productImage && (
+                            <img
+                              src={review.productImage}
+                              alt={review.productName || "Product"}
+                              className="w-16 h-16 rounded-lg object-cover"
+                            />
+                          )}
+                          <Box>
+                            {review.productName && (
+                              <Typography fontWeight="bold">
+                                {review.productName}
+                              </Typography>
+                            )}
+                            {review.productCategory && (
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {review.productCategory
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                  review.productCategory.slice(1)}
+                              </Typography>
+                            )}
+                          </Box>
+                        </Box>
+                      )}
+
+                    {review.type === "pc_build" &&
+                      (review.buildName || review.buildImage) && (
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={2}
+                          sx={{ mt: 2 }}
+                        >
+                          {review.buildImage && (
+                            <img
+                              src={review.buildImage}
+                              alt={review.buildName || "PC Build"}
+                              className="w-16 h-16 rounded-lg object-cover"
+                            />
+                          )}
+                          <Box>
+                            {review.buildName && (
+                              <Typography fontWeight="bold">
+                                {review.buildName}
+                              </Typography>
+                            )}
+                            <Typography variant="body2" color="text.secondary">
+                              Custom PC Build
+                            </Typography>
+                          </Box>
+                        </Box>
+                      )}
                   </div>
                 </div>
 
@@ -357,18 +451,23 @@ const Review = () => {
 
               {/* Review Comment */}
               <div className="flex justify-between items-center">
-                <p className="text-gray-700 text-[15px] leading-relaxed">
-                  {review.comment}
-                </p>
-                <span className="text-sm text-gray-500 ml-4 whitespace-nowrap">
-                  {new Date(review.createdAt).toLocaleDateString()}
-                </span>
+                <div className="bg-purple-50 border-l-4 border-purple-300 rounded-r-lg p-4 flex-1 mr-4">
+                  <p className="text-gray-800 text-[15px] leading-relaxed font-medium">
+                    "{review.comment}"
+                  </p>
+                </div>
+                <div className="text-sm text-gray-500 whitespace-nowrap text-left">
+                  <p className="font-medium">Reviewed on:</p>
+                  <p>{new Date(review.createdAt).toLocaleDateString()}</p>
+                </div>
               </div>
 
               {/* Admin Response */}
               {review.adminResponse ? (
                 <div className="bg-gray-100 rounded-lg p-4">
-                  <p className="text-purple-700 font-semibold mb-1">Admin Response:</p>
+                  <p className="text-purple-700 font-semibold mb-1">
+                    Admin Response:
+                  </p>
                   <p className="text-gray-800">{review.adminResponse}</p>
                 </div>
               ) : (
@@ -416,7 +515,12 @@ const Review = () => {
           fullWidth
           maxWidth="sm"
           sx={{
-            "& .MuiDialog-paper": { padding: 3, borderRadius: "16px", boxShadow: 24, width: "500px" },
+            "& .MuiDialog-paper": {
+              padding: 3,
+              borderRadius: "16px",
+              boxShadow: 24,
+              width: "500px",
+            },
           }}
         >
           <DialogTitle>Respond to Review</DialogTitle>
@@ -427,7 +531,9 @@ const Review = () => {
               rows={5}
               label="Your Response"
               value={response[currentReviewId] || ""}
-              onChange={(e) => handleResponseChange(currentReviewId, e.target.value)}
+              onChange={(e) =>
+                handleResponseChange(currentReviewId, e.target.value)
+              }
               variant="outlined"
               margin="dense"
             />
@@ -466,7 +572,7 @@ const Review = () => {
           </DialogActions>
         </Dialog>
 
-        <Dialog open={openDialogDelete} onClose={handleCloseDialog}>
+        {/* <Dialog open={openDialogDelete} onClose={handleCloseDialog}>
           <DialogTitle>Delete Review</DialogTitle>
           <DialogContent>
             <p>Are you sure you want to delete this review?</p>
@@ -479,7 +585,18 @@ const Review = () => {
               Confirm
             </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog> */}
+        <DialogAlert
+          name="Delete Review"
+          Title="Confirm Deletion"
+          message="Are you sure you want to delete this review? This action cannot be undone."
+          Disagree="Cancel"
+          Agree="Delete"
+          open={openDialogDelete} // Use correct dialog flag
+          handleClose={handleCloseDialog}
+          handleAgree={handleConfirmDelete}
+          loading={loading}
+        />
       </div>
     </div>
   );

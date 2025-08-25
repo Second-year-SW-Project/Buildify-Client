@@ -601,13 +601,13 @@ const CreateProducts = () => {
                                     fontWeight="bold"
                                     style={{ color: theme.palette.black700.main }}
                                 >
-                                    Basic Propoties and Attributes
+                                    Basic Properties and Attributes
                                 </Typography>
                             </div>
                             <hr />
                             <div className="PropertiesBody ml-3 mr-3">
                                 <Typography variant="h6" fontWeight="bold" style={{ marginBottom: '6px', marginTop: "6px", display: "flex" }}>
-                                    <Required></Required>Product Propoties
+                                    <Required></Required>Product Properties
                                 </Typography>
                                 <div className="formProperty1 grid gap-4 grid-cols-4 flex flex-row mt-4 mb-4">
                                     <div>
