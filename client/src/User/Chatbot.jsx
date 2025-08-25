@@ -140,13 +140,39 @@ const Chatbot = () => {
         const res = await fetch(`${effectiveBackendUrl}/api/product/all?${params.toString()}`);
         if (!res.ok) throw new Error("Failed to fetch products");
         const data = await res.json();
-        const arr = Array.isArray(data?.data) ? data.data : [];
+        let arr = Array.isArray(data?.data) ? data.data : [];
         // pick best name match
         const q = query.toLowerCase();
-        const scored = arr
+        let scored = arr
           .map((p) => ({ p, s: (p.name || '').toLowerCase().includes(q) ? 2 : 1 }))
           .sort((a, b) => b.s - a.s);
-        return scored[0]?.p || arr[0];
+        let candidate = scored[0]?.p || arr[0];
+        if (candidate) return candidate;
+
+        // Fallback: if nothing found, try GPU type filter and match tokens (helps for "rtx 3060", "rx 6600")
+        const tokenDigits = (q.match(/\d{3,4}/g) || []);
+        const tokenWords = (q.match(/[a-zA-Z]+/g) || []).filter((w) => w.length >= 2);
+        const fparams = new URLSearchParams();
+        fparams.set("attribute", "type");
+        fparams.set("value", "gpu");
+        const fres = await fetch(`${effectiveBackendUrl}/api/product/filter?${fparams.toString()}`);
+        if (fres.ok) {
+          const fall = await fres.json();
+          if (Array.isArray(fall) && fall.length) {
+            const scoreGpu = (p) => {
+              const name = (p.name || '').toLowerCase();
+              let s = 0;
+              tokenDigits.forEach((d) => { if (name.includes(d)) s += 2; });
+              tokenWords.forEach((w) => { if (name.includes(w)) s += 1; });
+              return s;
+            };
+            const ranked = fall
+              .map((p) => ({ p, s: scoreGpu(p) }))
+              .sort((a, b) => b.s - a.s);
+            return ranked[0]?.p;
+          }
+        }
+        return undefined;
       };
 
       try {
