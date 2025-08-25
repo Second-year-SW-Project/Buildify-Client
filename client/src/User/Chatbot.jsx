@@ -209,8 +209,8 @@ const Chatbot = () => {
 
         const lines = [
           `Comparing:`,
-          `1) ${p1.name} — ${price(p1.price)} ${link(p1._id)}`,
-          `2) ${p2.name} — ${price(p2.price)} ${link(p2._id)}`,
+          `1) ${p1.name} — ${price(p1.price)}${p1._id ? ` (See: /itempage/${p1._id})` : ''}`,
+          `2) ${p2.name} — ${price(p2.price)}${p2._id ? ` (See: /itempage/${p2._id})` : ''}`,
           '',
           ...rows.map(([k,a,b]) => `${k}: ${a} | ${b}`)
         ];
@@ -432,11 +432,12 @@ const Chatbot = () => {
   };
 
   const renderLinkedText = (text) => {
-    const parts = String(text).split(/(https?:\/\/[^\s]+|\/[a-zA-Z0-9/_-]+\/[a-zA-Z0-9/_-]+)/g);
+    // Only link http(s) URLs and our known item links to avoid false positives
+    const parts = String(text).split(/(https?:\/\/[^\s]+|\/itempage\/[A-Za-z0-9]+)/g);
     return parts.map((part, idx) => {
-      if (/^https?:\/\//.test(part) || /^\//.test(part)) {
+      if (/^https?:\/\//.test(part) || /^\/itempage\//.test(part)) {
         return (
-          <a key={idx} href={part} target="_blank" rel="noreferrer" className="text-purple-700 underline break-all">
+          <a key={idx} href={part} target="_blank" rel="noreferrer" className="text-purple-700 underline">
             {part}
           </a>
         );
