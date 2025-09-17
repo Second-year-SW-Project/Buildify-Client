@@ -13,6 +13,8 @@ import { InputField } from "../AtomicComponents/Inputs/Input";
 import SetDate from "../AtomicComponents/Inputs/date";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
 import { toast } from "sonner";
+import FullScreenLoader from "../AtomicComponents/FullScreenLoader";
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function InvoiceList() {
@@ -122,6 +124,7 @@ function InvoiceList() {
   // Fetch invoices
   useEffect(() => {
     async function fetchInvoices() {
+      setLoading(true);
       try {
         const params = {
           page,
@@ -152,6 +155,8 @@ function InvoiceList() {
       } catch (err) {
         console.error("Failed to fetch invoices", err);
         toast.error("Failed to fetch invoices, please try again.");
+      } finally {
+        setLoading(false);
       }
     }
     fetchInvoices();
@@ -167,8 +172,8 @@ function InvoiceList() {
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
-          error.message ||
-          "Failed to delete invoice"
+        error.message ||
+        "Failed to delete invoice"
       );
     }
   };
@@ -230,101 +235,104 @@ function InvoiceList() {
   };
 
   return (
-    <div>
-      <div className="pl-6 grid grid-rows">
-        <div className="mt-3">
-          <PageTitle value="Invoice List"></PageTitle>
-          <CustomBreadcrumbs
-            paths={[
-              { label: "Invoice", href: "/invoice/invoicelist" },
-              { label: "Invoice List" },
-            ]}
-          />
-        </div>
-
-        <div className="pb-4 mr-4">
-          <div className="float-right">
-            <AddButton
-              name="Create Invoice"
-              isBold={1}
-              buttonSize="medium"
-              fontSize="16px"
-              onClick={() => navigate("/adminpanel/invoice/invoicecreate")}
+    <>
+      <FullScreenLoader open={loading} message={"Loading Data..."} />
+      <div>
+        <div className="pl-6 grid grid-rows">
+          <div className="mt-3">
+            <PageTitle value="Invoice List"></PageTitle>
+            <CustomBreadcrumbs
+              paths={[
+                { label: "Invoice", href: "/invoice/invoicelist" },
+                { label: "Invoice List" },
+              ]}
             />
           </div>
-        </div>
 
-        <div className="mr-4 border-2 border-black-200 rounded-md">
-          <div className="filterForm grid gap-4 grid-cols-1 p-4">
-            <div className="filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-3 ">
-              <div>
-                <InputField
-                  type="text"
-                  label="Search Invoice ID"
-                  value={searchId}
-                  onChange={(val) => setSearchId(val)}
-                  width="100%"
-                />
-              </div>
-              <div>
-                <SetDate
-                  width="100%"
-                  label="Start Date"
-                  onChange={(val) => setStartDate(val)}
-                ></SetDate>
-              </div>
-              <div>
-                <SetDate
-                  width="100%"
-                  label="End Date"
-                  onChange={(val) => setEndDate(val)}
-                ></SetDate>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div style={{ width: "100%", borderRadius: "20px" }}>
-              <UserTable
-                columns={invoiceColumns}
-                data={invoices}
-                iconTypes={["view", "edit", "delete"]}
-                iconActions={iconActions}
-                idKey="raw.invoiceNumber"
-                pagination={{
-                  currentPage: page,
-                  itemsPerPage: rowsPerPage,
-                  totalItems,
-                  onPageChange: (newPage) => setPage(newPage),
-                  onItemsPerPageChange: (newSize) => {
-                    setRowsPerPage(newSize);
-                    setPage(1);
-                  },
-                }}
+          <div className="pb-4 mr-4">
+            <div className="float-right">
+              <AddButton
+                name="Create Invoice"
+                isBold={1}
+                buttonSize="medium"
+                fontSize="16px"
+                onClick={() => navigate("/adminpanel/invoice/invoicecreate")}
               />
             </div>
           </div>
+
+          <div className="mr-4 border-2 border-black-200 rounded-md">
+            <div className="filterForm grid gap-4 grid-cols-1 p-4">
+              <div className="filterFormProperty1 grid gap-y-4 gap-x-4 grid-cols-3 ">
+                <div>
+                  <InputField
+                    type="text"
+                    label="Search Invoice ID"
+                    value={searchId}
+                    onChange={(val) => setSearchId(val)}
+                    width="100%"
+                  />
+                </div>
+                <div>
+                  <SetDate
+                    width="100%"
+                    label="Start Date"
+                    onChange={(val) => setStartDate(val)}
+                  ></SetDate>
+                </div>
+                <div>
+                  <SetDate
+                    width="100%"
+                    label="End Date"
+                    onChange={(val) => setEndDate(val)}
+                  ></SetDate>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style={{ width: "100%", borderRadius: "20px" }}>
+                <UserTable
+                  columns={invoiceColumns}
+                  data={invoices}
+                  iconTypes={["view", "edit", "delete"]}
+                  iconActions={iconActions}
+                  idKey="raw.invoiceNumber"
+                  pagination={{
+                    currentPage: page,
+                    itemsPerPage: rowsPerPage,
+                    totalItems,
+                    onPageChange: (newPage) => setPage(newPage),
+                    onItemsPerPageChange: (newSize) => {
+                      setRowsPerPage(newSize);
+                      setPage(1);
+                    },
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      {selectedInvoice && selectedInvoice.raw && (
-        <InvoiceDetailsModal
-          open={openInvoiceModal}
-          onClose={handleCloseInvoiceModal}
-          invoice={selectedInvoice.raw}
+        {selectedInvoice && selectedInvoice.raw && (
+          <InvoiceDetailsModal
+            open={openInvoiceModal}
+            onClose={handleCloseInvoiceModal}
+            invoice={selectedInvoice.raw}
+          />
+        )}
+        <DialogAlert
+          name="Delete Order"
+          Title="Confirm Deletion"
+          message="Are you sure you want to delete this Order? This action cannot be undone."
+          Disagree="Cancel"
+          Agree="Delete"
+          open={openDialog}
+          handleClose={() => setOpenDialog(false)}
+          handleAgree={handleConfirmDelete}
+          loading={loading}
         />
-      )}
-      <DialogAlert
-        name="Delete Order"
-        Title="Confirm Deletion"
-        message="Are you sure you want to delete this Order? This action cannot be undone."
-        Disagree="Cancel"
-        Agree="Delete"
-        open={openDialog}
-        handleClose={() => setOpenDialog(false)}
-        handleAgree={handleConfirmDelete}
-        loading={loading}
-      />
-      ;
-    </div>
+        ;
+      </div>
+    </>
   );
 }
 

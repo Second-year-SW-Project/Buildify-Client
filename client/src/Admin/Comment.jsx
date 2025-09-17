@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import axios from "axios";
 import { Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Box, Typography, IconButton } from "@mui/material";
 import { Reply as ReplyIcon, Delete as DeleteIcon } from "@mui/icons-material";
@@ -13,6 +14,7 @@ const Comment = () => {
 
   //states
   const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [currentCommentId, setCurrentCommentId] = useState(null);
@@ -29,24 +31,20 @@ const Comment = () => {
 
   //fetch the comments
   const fetchComments = async () => {
-
+    setLoading(true);
     try {
-
       const token = localStorage.getItem("token");
-
       const { data } = await axios.get(`${backendUrl}/api/comment/admin`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
       setComments(data);
-
     } catch (error) {
-
       toast.error("Failed to fetch comments.");
       console.error(error);
-
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,11 +74,9 @@ const Comment = () => {
 
   //submit the admin response
   const handleResponseSubmit = async (commentId) => {
-
+    setLoading(true);
     try {
-
       const token = localStorage.getItem("token");
-
       await axios.put(
         `${backendUrl}/api/comment/admin/${commentId}/response`,
         { adminResponse: response[commentId] },
@@ -90,27 +86,23 @@ const Comment = () => {
           },
         }
       );
-
       toast.success("Response submitted successfully!");
       fetchComments();
       handleDialogClose();
-
     } catch (error) {
-
       toast.error("Failed to submit response.");
       console.error(error);
-
+    } finally {
+      setLoading(false);
     }
   };
 
 
   //delete comment from admin side
   const handleDeleteComment = async (commentId) => {
-
+    setLoading(true);
     try {
-
       const token = localStorage.getItem("token");
-
       await axios.delete(
         `${backendUrl}/api/comment/admin/admin/${commentId}`,
         {
@@ -119,36 +111,33 @@ const Comment = () => {
           },
         }
       );
-
       toast.success("Comment deleted successfully!");
       fetchComments();
-
     } catch (error) {
-
       toast.error("Failed to delete comment.");
       console.error(error);
-
+    } finally {
+      setLoading(false);
     }
   };
 
   // Filter function for comments based on name and category of products
   const filteredComments = comments.filter((comment) => {
 
-    const productName = comment.productId?.name || ''; 
-    const productCategory = comment.productId?.type || ''; 
-  
+    const productName = comment.productId?.name || '';
+    const productCategory = comment.productId?.type || '';
+
     const productNameMatch = productName.toLowerCase().includes(productNameFilter.toLowerCase());
     const categoryMatch = productCategory.toLowerCase().includes(categoryFilter.toLowerCase());
-  
+
     return productNameMatch && categoryMatch;
 
   });
-  
+
 
   return (
-
     <div className="p-8 bg-gradient-to-br from-gray-50 to-purple-50 min-h-screen">
-
+      <FullScreenLoader open={loading} message={'Loading Data...'} />
       <div className="max-w-7xl mx-auto">
 
         <div className="mt-3 mb-5">
@@ -196,8 +185,8 @@ const Comment = () => {
 
             return (
 
-              <div key={comment._id} 
-              className="bg-white p-6 rounded-2xl shadow-xl hover:shadow-2xl 
+              <div key={comment._id}
+                className="bg-white p-6 rounded-2xl shadow-xl hover:shadow-2xl 
               transition duration-300 space-y-5 border border-gray-100">
 
                 <div className="flex justify-between items-start">
@@ -284,8 +273,8 @@ const Comment = () => {
 
         {/* Dialog for Admin Response */}
 
-        <Dialog open={openDialog} onClose={handleDialogClose} fullWidth maxWidth="sm" 
-        sx={{ '& .MuiDialog-paper': { padding: 2, borderRadius: '16px', boxShadow: 24, width: '500px' } }}>
+        <Dialog open={openDialog} onClose={handleDialogClose} fullWidth maxWidth="sm"
+          sx={{ '& .MuiDialog-paper': { padding: 2, borderRadius: '16px', boxShadow: 24, width: '500px' } }}>
 
           <DialogTitle>Respond to Comment</DialogTitle>
 
@@ -306,13 +295,13 @@ const Comment = () => {
           <DialogActions>
 
             <Button onClick={handleDialogClose} className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
-            sx={{ textTransform: "none", padding: "14px 18px", width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px" }}>
+              sx={{ textTransform: "none", padding: "14px 18px", width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px" }}>
               Cancel
-              </Button>
+            </Button>
 
-            <Button onClick={() => handleResponseSubmit(currentCommentId)} variant="contained" 
-            className="bg-purple-700 hover:bg-purple-800 text-white font-bold" 
-            sx={{ textTransform: "none", padding: "14px 18px", width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px" }} color="primary">
+            <Button onClick={() => handleResponseSubmit(currentCommentId)} variant="contained"
+              className="bg-purple-700 hover:bg-purple-800 text-white font-bold"
+              sx={{ textTransform: "none", padding: "14px 18px", width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px" }} color="primary">
               Submit
             </Button>
 
@@ -354,7 +343,7 @@ const Comment = () => {
       </div>
 
     </div>
-    
+
   );
 };
 
