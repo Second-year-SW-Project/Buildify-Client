@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import { toast } from "sonner";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import { PageTitle } from "../AtomicComponents/Typographics/TextStyles";
 import { setAuthUser } from "../Store/authSlice.js";
 
@@ -211,6 +212,7 @@ export default function AdminSettings() {
 
   return (
     <Box className="ml-7 mt-8">
+      <FullScreenLoader open={loading.password || loading.twoFAEnable || loading.twoFADisable} message={'Loading Data...'} />
       <div className="mt-3 mb-5">
         <PageTitle value="Admin Setting"></PageTitle>
         <CustomBreadcrumbs

@@ -3,10 +3,13 @@ import Iconset from "../Icons/Iconset";
 import theme from "../theme";
 
 export function ProductCard({ name, type, src, id }) {
+    const getThumbnailUrl = (url) => {
+        return url.replace('/upload/', '/upload/w_100,h_100,c_fill,q_auto,f_auto/');
+    };
     return (
         <div className="flex items-center space-x-3">
             <div>
-                <img className="max-w-20 max-h-20" src={src} alt="image" />
+                <img className="max-w-20 max-h-20" src={getThumbnailUrl(src)} alt="image" />
             </div>
             <div>
                 <Typography variant="body2" fontWeight="bold" style={{

@@ -281,7 +281,7 @@ function ViewBuild() {
 
   return (
     <div className="pl-6 grid grid-rows">
-      <FullScreenLoader open={loading} message={"Loading Data..."} />
+      <FullScreenLoader open={!!loading} message={"Loading Data..."} />
       <div className="mt-3">
         <div className="flex items-center gap-2 ">
           <PageTitle

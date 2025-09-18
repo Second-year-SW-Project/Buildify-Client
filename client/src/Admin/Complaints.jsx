@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import axios from 'axios';
-import {TextField,Button,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,Dialog,DialogActions,DialogContent,
-        DialogTitle,Select,MenuItem,InputLabel,FormControl,IconButton,Avatar,Typography,Box,TablePagination
-      } from '@mui/material';
+import {
+  TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogActions, DialogContent,
+  DialogTitle, Select, MenuItem, InputLabel, FormControl, IconButton, Avatar, Typography, Box, TablePagination
+} from '@mui/material';
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import { PrimaryButton } from "../AtomicComponents/Buttons/Buttons";
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import debounce from 'lodash.debounce';
 
@@ -15,6 +18,7 @@ const Complaints = () => {
 
   //states
   const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [responseText, setResponseText] = useState('');
@@ -24,7 +28,7 @@ const Complaints = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [nameSearch, setNameSearch] = useState('');
-const [emailSearch, setEmailSearch] = useState('');
+  const [emailSearch, setEmailSearch] = useState('');
 
 
 
@@ -36,19 +40,19 @@ const [emailSearch, setEmailSearch] = useState('');
 
   //fetching the complaints
   const fetchComplaints = async () => {
-
+    setLoading(true);
     try {
-
       const response = await axios.get(`${backendUrl}/api/complaints/admin`, {
-        params: {  name: nameSearch,
-        email: emailSearch, status: statusFilter }
+        params: {
+          name: nameSearch,
+          email: emailSearch, status: statusFilter
+        }
       });
       setComplaints(response.data);
-
     } catch (err) {
-
       alert('Failed to fetch complaints');
-
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,251 +61,260 @@ const [emailSearch, setEmailSearch] = useState('');
     const debouncedFetch = debounce(() => {
       fetchComplaints();
     }, 400);
-  
+
     debouncedFetch();
-  
+
     return () => {
 
       debouncedFetch.cancel();
     };
   }, [nameSearch, emailSearch, statusFilter]);
-  
+
 
   const handleRespond = async () => {
-
+    setLoading(true);
     try {
-
       //send admin respond
       await axios.put(`${backendUrl}/api/complaints/admin/respond/${selectedComplaint._id}`, {
         status,
         response: responseText
       });
-
       toast.success('Response submitted!');
       setOpenDialog(false);
       setResponseText('');
       setStatus('Pending');
-
-      fetchComplaints();
-
+      await fetchComplaints();
     } catch (err) {
-
       toast.error('Failed to submit response');
-
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
 
     <div className="p-6 h-screen bg-white">
-
+      <FullScreenLoader open={loading} message={'Loading Data...'} />
       {/* Header Section */}
       <div className="mt-3 mb-5">
 
         <div>
-      
-            <PageTitle value="Complaint Management"></PageTitle>
-            <CustomBreadcrumbs
-              paths={[
-                { label: 'Feedback Manage', href: "/feedbackmanage/complaints" },
-                { label: 'Complaint Management' },
-              ]}
-            />
 
-          </div>
+          <PageTitle value="Complaint Management"></PageTitle>
+          <CustomBreadcrumbs
+            paths={[
+              { label: 'Feedback Manage', href: "/feedbackmanage/complaints" },
+              { label: 'Complaint Management' },
+            ]}
+          />
 
         </div>
 
-<Box className="mb-10 pb-10 border-2 border-black-200 rounded-md mt-6">
+      </div>
+
+      <Box className="mb-10 pb-10 border-2 border-black-200 rounded-md mt-6">
         {/* Search and Filter Section */}
-     <div className="flex gap-4 mb-2 items-center p-5 flex-wrap">
+        <div className="flex gap-4 mb-2 items-center p-5 flex-wrap">
 
-  <TextField
-    label="Search by Name"
-    className="w-72"
-    value={nameSearch}
-    onChange={(e) => setNameSearch(e.target.value)}
-    sx={{
-      '& .MuiOutlinedInput-root': {
-        height: 56,
-        borderRadius: '4px',
-      }
-    }}
-  />
+          <TextField
+            label="Search by Name"
+            className="w-72"
+            value={nameSearch}
+            onChange={(e) => setNameSearch(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                height: 56,
+                borderRadius: '4px',
+              }
+            }}
+          />
 
-  <TextField
-    label="Search by Email"
-    className="w-72"
-    value={emailSearch}
-    onChange={(e) => setEmailSearch(e.target.value)}
-    sx={{
-      '& .MuiOutlinedInput-root': {
-        height: 56,
-        borderRadius: '4px',
-      }
-    }}
-  />
+          <TextField
+            label="Search by Email"
+            className="w-72"
+            value={emailSearch}
+            onChange={(e) => setEmailSearch(e.target.value)}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                height: 56,
+                borderRadius: '4px',
+              }
+            }}
+          />
 
-  <FormControl sx={{ width: 300 }}>
-    <InputLabel>Status</InputLabel>
-    <Select
-      value={statusFilter}
-      onChange={(e) => setStatusFilter(e.target.value)}
-      label="Status"
-      sx={{
-        height: 58,
-        borderRadius: '4px',
-        '& .MuiSelect-select': {
-          paddingTop: '16px',
-          paddingBottom: '16px'
-        }
-      }}
-    >
-      <MenuItem value="">All Status</MenuItem>
-      <MenuItem value="Pending">Pending</MenuItem>
-      <MenuItem value="Resolved">Resolved</MenuItem>
-      <MenuItem value="In Progress">In Progress</MenuItem>
-    </Select>
-  </FormControl>
+          <FormControl sx={{ width: 300 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              label="Status"
+              sx={{
+                height: 58,
+                borderRadius: '4px',
+                '& .MuiSelect-select': {
+                  paddingTop: '16px',
+                  paddingBottom: '16px'
+                }
+              }}
+            >
+              <MenuItem value="">All Status</MenuItem>
+              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="Resolved">Resolved</MenuItem>
+              <MenuItem value="In Progress">In Progress</MenuItem>
+            </Select>
+          </FormControl>
+          <PrimaryButton
+            name="Clear"
+            buttonSize="medium"
+            fontSize={"16px"}
+            color="primary"
+            onClick={() => {
+              setNameSearch('');
+              setEmailSearch('');
+              setStatusFilter('');
+            }}
+            sx={{ height: 56, borderRadius: '4px', minWidth: 100 }}
+          >
+            Clear
+          </PrimaryButton>
 
-</div>
+        </div>
 
 
-    
-      <Paper className="rounded-lg shadow">
 
-        <TableContainer>
+        <Paper className="rounded-lg shadow">
 
-          <Table>
+          <TableContainer>
 
-            <TableHead>
+            <Table>
 
-              <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
+              <TableHead>
 
-                {['User Details', 'Date', 'Complaint Type', 'Status', 'Action'].map(header => (
-                  <TableCell key={header} style={{
-                    padding: "8px 16px",
-                    textAlign: "left",
-                    verticalAlign: "middle",
-                    color: "grey",
-                    fontWeight: "bold",
-                    borderBottom: "1px solid #e0e0e0"
-                  }}>
-                    {header}
+                <TableRow sx={{ backgroundColor: '#F4E6FF' }}>
+
+                  {['User Details', 'Date', 'Complaint Type', 'Status', 'Action'].map(header => (
+                    <TableCell key={header} style={{
+                      padding: "8px 16px",
+                      textAlign: "left",
+                      verticalAlign: "middle",
+                      color: "grey",
+                      fontWeight: "bold",
+                      borderBottom: "1px solid #e0e0e0"
+                    }}>
+                      {header}
                     </TableCell>
-                ))}
+                  ))}
 
-              </TableRow>
+                </TableRow>
 
-            </TableHead>
+              </TableHead>
 
-            <TableBody>
+              <TableBody>
 
-              {complaints
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((complaint) => (
+                {complaints
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((complaint) => (
 
-                  <TableRow key={complaint._id} className="hover:bg-gray-50">
+                    <TableRow key={complaint._id} className="hover:bg-gray-50">
 
-                    <TableCell>
+                      <TableCell>
 
-                      <Box className="flex items-center space-x-3">
+                        <Box className="flex items-center space-x-3">
 
-                        <Avatar
-                          src={complaint.user?.profilePicture || ''}
-                          sx={{ width: 40, height: 40, marginRight: 2 }}
-                        >
+                          <Avatar
+                            src={complaint.user?.profilePicture || ''}
+                            sx={{ width: 40, height: 40, marginRight: 2 }}
+                          >
 
-                          {!complaint.user?.profilePicture && complaint.user?.name?.charAt(0).toUpperCase()}
-                        </Avatar>
+                            {!complaint.user?.profilePicture && complaint.user?.name?.charAt(0).toUpperCase()}
+                          </Avatar>
 
-                        <Box>
-                          <Typography sx={{ fontWeight: 700, color: 'black' }}>{complaint.user?.name}</Typography>
-                          <Typography className="text-sm text-black font-bold">{complaint.user?.email}</Typography>
+                          <Box>
+                            <Typography sx={{ fontWeight: 700, color: 'black' }}>{complaint.user?.name}</Typography>
+                            <Typography className="text-sm text-black font-bold">{complaint.user?.email}</Typography>
+                          </Box>
+
                         </Box>
 
-                      </Box>
+                      </TableCell>
 
-                    </TableCell>
+                      <TableCell>
 
-                    <TableCell>
+                        <div className="flex flex-col">
 
-                      <div className="flex flex-col">
+                          <span className="text-sm text-black font-bold">
+                            {new Date(complaint.createdAt).toLocaleDateString()}
+                          </span>
 
-                        <span className="text-sm text-black font-bold">
-                          {new Date(complaint.createdAt).toLocaleDateString()}
+                          <span className="text-xs text-black">
+                            {new Date(complaint.createdAt).toLocaleTimeString()}
+                          </span>
+
+                        </div>
+
+                      </TableCell>
+
+                      {/* <TableCell className="text-black font-bold">{complaint.description}</TableCell> */}
+
+                      <TableCell className="text-black font-bold">{complaint.complaintType}</TableCell>
+
+                      <TableCell>
+                        <span
+                          className={`px-4 py-2 rounded-full text-sm whitespace-nowrap text-center w-[100px] inline-block ${complaint.status === 'Resolved'
+                            ? 'bg-green-100 text-green-800'
+                            : complaint.status === 'Pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-blue-100 text-blue-800'
+                            }`}
+                        >
+                          {complaint.status}
                         </span>
 
-                        <span className="text-xs text-black">
-                          {new Date(complaint.createdAt).toLocaleTimeString()}
-                        </span>
+                      </TableCell>
 
-                      </div>
+                      <TableCell>
 
-                    </TableCell>
+                        <IconButton
+                          className="text-purple-600 hover:bg-purple-50"
+                          onClick={() => {
+                            setSelectedComplaint(complaint);
+                            setOpenDialog(true);
+                            setResponseText('');
+                            setStatus(complaint.status || 'Pending');
+                          }}
+                        >
+                          <ReplyIcon fontSize="30px" />
+                        </IconButton>
 
-                    {/* <TableCell className="text-black font-bold">{complaint.description}</TableCell> */}
+                      </TableCell>
 
-                    <TableCell className="text-black font-bold">{complaint.complaintType}</TableCell>
+                    </TableRow>
+                  ))}
 
-                    <TableCell>
-                    <span
-  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap text-center w-[100px] inline-block ${
-    complaint.status === 'Resolved'
-      ? 'bg-green-100 text-green-800'
-      : complaint.status === 'Pending'
-      ? 'bg-yellow-100 text-yellow-800'
-      : 'bg-blue-100 text-blue-800'
-  }`}
->
-  {complaint.status}
-</span>
+              </TableBody>
 
-                    </TableCell>
+            </Table>
 
-                    <TableCell>
+          </TableContainer>
 
-                      <IconButton
-                        className="text-purple-600 hover:bg-purple-50"
-                        onClick={() => {
-                          setSelectedComplaint(complaint);
-                          setOpenDialog(true);
-                          setResponseText('');
-                          setStatus(complaint.status || 'Pending');
-                        }}
-                      >
-                        <ReplyIcon fontSize="30px" />
-                      </IconButton>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={complaints.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
 
-                    </TableCell>
-
-                  </TableRow>
-                ))}
-
-            </TableBody>
-
-          </Table>
-
-        </TableContainer>
-
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={complaints.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-
-      </Paper>
+        </Paper>
 
       </Box>
 
-      
-       {/* Response Dialog */}
 
-       <Dialog
+      {/* Response Dialog */}
+
+      <Dialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         maxWidth="md"
@@ -353,8 +366,8 @@ const [emailSearch, setEmailSearch] = useState('');
 
                 <div className="flex items-start space-x-5">
 
-                  <Avatar 
-                    src={selectedComplaint.user?.profilePicture || ''} 
+                  <Avatar
+                    src={selectedComplaint.user?.profilePicture || ''}
                     sx={{ width: 56, height: 56, bgcolor: '#c084fc' }}
                     className="ring-2 ring-purple-500"
                   >
@@ -450,8 +463,8 @@ const [emailSearch, setEmailSearch] = useState('');
 
         <DialogActions sx={{ px: 5, py: 3, backgroundColor: '#F9F7FF' }}>
 
-          <Button onClick={() => setOpenDialog(false)} variant="text"  
-          className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
+          <Button onClick={() => setOpenDialog(false)} variant="text"
+            className="bg-gray-500 hover:bg-gray-200 text-white font-bold"
             sx={{
               textTransform: "none", padding: "14px 18px",
               width: "180px", fontSize: "16px", fontWeight: "bold", borderRadius: "10px"
@@ -477,7 +490,7 @@ const [emailSearch, setEmailSearch] = useState('');
           </Button>
 
         </DialogActions>
-        
+
       </Dialog>
 
     </div>

@@ -20,6 +20,7 @@ const ProductDetailsDialog = ({ open, onClose, productId }) => {
     const [mainImage, setMainImage] = useState(null);
 
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const getThumbnailUrl = (url) => url.replace('/upload/', '/upload/c_fill,q_auto,f_auto/');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     // Fetch product data when dialog opens
@@ -376,7 +377,7 @@ const ProductDetailsDialog = ({ open, onClose, productId }) => {
                             }}
                         >
                             <img
-                                src={mainImage || product?.imgUrls?.[0]?.url || "https://res.cloudinary.com/ddstqdrhm/image/upload/v1745421085/graph1_zqumzj.png"}
+                                src={getThumbnailUrl(mainImage)}
                                 alt={product.name}
                                 style={{
                                     maxWidth: '100%',

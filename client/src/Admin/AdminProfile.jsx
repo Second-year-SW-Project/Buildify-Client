@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setAuthUser } from "../Store/authSlice.js";
 import axios from "axios";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import { getProvinces, getDistrictsByProvince } from "../utils/locationData";
@@ -39,7 +39,7 @@ export default function AdminProfile() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // Location data
   const provinces = getProvinces();
   const [availableDistricts, setAvailableDistricts] = useState([]);
@@ -197,6 +197,7 @@ export default function AdminProfile() {
   };
   return (
     <Box>
+      <FullScreenLoader open={loading.password || loading.twoFAEnable || loading.twoFADisable} message={'Loading Data...'} />
       <Paper elevation={3} sx={{ padding: 4, width: "100%", boxShadow: 3, borderRadius: 3, backgroundColor: "white" }}>
         <div className='mt-3 mb-5'>
           <PageTitle value="Admin Profile"></PageTitle>

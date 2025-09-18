@@ -1,4 +1,5 @@
 import { Typography } from '@mui/material';
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import { React, useState, useEffect, useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -25,6 +26,7 @@ import { InputField } from '../AtomicComponents/Inputs/Input';
 import { PrimaryButton } from '../AtomicComponents/Buttons/Buttons';
 
 export default function Dashboard() {
+    const [loading, setLoading] = useState(false);
 
     //Define the columns for the order table
     const orderColumns = [
@@ -95,40 +97,37 @@ export default function Dashboard() {
 
     const fetchGames = async () => {
         try {
-            const response = await axios.get(`${backendUrl}/api/game/games`);//Fetches the games from the backend.
-
+            setLoading(true);
+            const response = await axios.get(`${backendUrl}/api/game/games`);
             if (response.data && Array.isArray(response.data.games)) {
-                const allGames = response.data.games;
-                console.log("Fetched games:", allGames);
-                setGames(allGames);//if the response is successful, the games are set to the allGames array
+                setGames(response.data.games);
             } else {
-                console.error("Expected an array but got:", response.data);//if the response is not successful, the games are set to an empty array and the filtered games are set to an empty array
                 setGames([]);
             }
         } catch (error) {
-            console.error("Error fetching games:", error);//if the response is not successful, the games are set to an empty array and the filtered games are set to an empty array
             setGames([]);
-            toast.error("Failed to fetch games");
+        } finally {
+            setLoading(false);
         }
     };
 
     const fetchTopBuilds = async () => {
         try {
+            setLoading(true);
             const response = await axios.get(`${backendUrl}/api/build-transactions/top-builds?limit=5`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
-
             if (response.data && Array.isArray(response.data.data)) {
                 setTopBuilds(response.data.data);
             } else {
-                console.error("Expected an array but got:", response.data);
                 setTopBuilds([]);
             }
         } catch (error) {
-            console.error("Error fetching top builds:", error);
             setTopBuilds([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -164,9 +163,8 @@ export default function Dashboard() {
 
     const fetchTopProducts = async () => {
         try {
-            // Convert growthFilter to date range
+            setLoading(true);
             const dateRange = getDateRange(growthFilter);
-
             const response = await axios.get(`${backendUrl}/api/product/top-products`, {
                 params: {
                     startDate: dateRange.startDate,
@@ -177,18 +175,15 @@ export default function Dashboard() {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
-
-            console.log("Top Products API Response:", response.data);
-
             if (response.data && Array.isArray(response.data.data)) {
                 setTopProducts(response.data.data);
             } else {
-                console.error("Expected an array but got:", response.data);
                 setTopProducts([]);
             }
         } catch (error) {
-            console.error("Error fetching top products:", error);
             setTopProducts([]);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -249,6 +244,7 @@ export default function Dashboard() {
     // Fetch order summary total based on filter
     const fetchOrderSummary = async (filter, type) => {
         try {
+            setLoading(true);
             const res = await axios.get(`${backendUrl}/api/checkout/order-summary-total?filter=${filter}`,
                 {
                     headers: {
@@ -262,12 +258,15 @@ export default function Dashboard() {
             }));
         } catch (err) {
             // handle error
+        } finally {
+            setLoading(false);
         }
     };
 
     // Fetch build summary total based on filter
     const fetchBuildSummary = async (filter, type) => {
         try {
+            setLoading(true);
             const res = await axios.get(`${backendUrl}/api/build-transactions/build-summary-total?filter=${filter}`,
                 {
                     headers: {
@@ -281,6 +280,8 @@ export default function Dashboard() {
             }));
         } catch (err) {
             console.error('Error fetching build summary:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -312,6 +313,7 @@ export default function Dashboard() {
     // Fetch pending orders
     const fetchPendingOrders = async () => {
         try {
+            setLoading(true);
             const params = {
                 page: currentPage,
                 limit: itemsPerPage,
@@ -334,12 +336,15 @@ export default function Dashboard() {
             }
         } catch (error) {
             console.error("Error fetching pending orders:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     // Fetch pending builds
     const fetchPendingBuilds = async () => {
         try {
+            setLoading(true);
             const params = {
                 page: buildCurrentPage,
                 limit: buildItemsPerPage,
@@ -361,6 +366,8 @@ export default function Dashboard() {
             }
         } catch (error) {
             console.error("Error fetching pending builds:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -403,6 +410,7 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchPieChartData = async () => {
             try {
+                setLoading(true);
                 const response = await fetch(`${backendUrl}/api/product/counts/by-main-category?mainCategory=${selectedMainCategory}`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -422,6 +430,8 @@ export default function Dashboard() {
                 }
             } catch (err) {
                 setPieChartData([]);
+            } finally {
+                setLoading(false);
             }
         };
         fetchPieChartData();
@@ -436,6 +446,7 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchBarChartData = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get(`${backendUrl}/api/checkout/bar-chart-summary`, {
                     params: { filter: barChartRange },
                     headers: {
@@ -525,6 +536,8 @@ export default function Dashboard() {
             } catch (err) {
                 setBarChartData({ sales: [], refund: [], cancle: [], other: [], xLabels: [] });
                 setTotalGrowth(0);
+            } finally {
+                setLoading(false);
             }
         };
         fetchBarChartData();
@@ -550,6 +563,7 @@ export default function Dashboard() {
 
     return (
         <div className="mt-2 m-2 max-w-full">
+            <FullScreenLoader open={!!loading} message={'Loading Data...'} />
             <div className='Swipper relative rounded-lg h-72 grid gap-4 flex flex-row m-2'>
                 <Swiper
                     modules={[Autoplay, EffectFade]}

@@ -6,6 +6,7 @@ import { UserTable } from "../MoleculesComponents/Table";
 import { ProductCard } from "../AtomicComponents/Cards/Productcard";
 import TimeCard from "../AtomicComponents/Cards/TimeCard";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles';
 import { AddButton } from "../AtomicComponents/Buttons/Buttons";
 import { SearchBar } from "../AtomicComponents/Inputs/Searchbar";
@@ -28,6 +29,8 @@ function ManageGames() {
     const [totalProducts, setTotalProducts] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();//Navigates to the next page
 
     useEffect(() => {
@@ -39,6 +42,7 @@ function ManageGames() {
     }, [searchTerm, games]);//Applies the filters when the search term or games change. games is the dependency
 
     const fetchGames = async (searchTerm = "") => {
+        setLoading(true);
         try {
             const response = await axios.get(`${backendUrl}/api/game/games`, {
                 params: {
@@ -66,6 +70,8 @@ function ManageGames() {
             setGames([]);
             setFilteredGames([]);
             toast.error("Failed to fetch games");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -87,18 +93,21 @@ function ManageGames() {
     };//Takes the game ID and navigates to the create game page for editing
 
     const handleDelete = async () => {
+        setLoading(true);
         try {
             const response = await axios.delete(`${backendUrl}/api/game/games/${selectedGameId}`);//Sends a delete request to the backend to delete the game
             if (response.data.success) {
                 toast.success("Game deleted successfully");
-                fetchGames();//Fetches the games after deleting the game
+                await fetchGames();
             } else {
                 toast.error(response.data.message);
             }
         } catch (error) {
             toast.error("Failed to delete game");
+        } finally {
+            setLoading(false);
+            setOpenDialog(false);
         }
-        setOpenDialog(false);
     };
 
     const openDeleteDialog = (_id) => {
@@ -148,6 +157,7 @@ function ManageGames() {
         <div>
             <div>
                 <div className='pl-6'>
+                    <FullScreenLoader open={loading} message={'Loading Data...'} />
                     {/* Header Section */}
                     <div className='mt-3'>
                         <PageTitle value="Manage Games" />

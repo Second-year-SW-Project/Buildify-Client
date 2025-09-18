@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import axios from "axios";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
@@ -55,20 +56,17 @@ const Review = () => {
   }, [filter]); // Fetch reviews whenever the filter changes
 
   const fetchReviews = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
-
       if (!token) {
         throw new Error("No authentication token found");
       }
-
       // Filter out empty values from the filter state
       const filteredParams = Object.fromEntries(
         Object.entries(filter).filter(([_, v]) => v)
       );
-
       const queryParams = new URLSearchParams(filteredParams).toString();
-
       const { data } = await axios.get(
         `${backendUrl}/api/review/admin/all?${queryParams}`,
         {
@@ -77,13 +75,14 @@ const Review = () => {
           },
         }
       );
-
       setReviews(data);
       console.log(data);
       calculateStats(data);
     } catch (error) {
       console.error("Error fetching reviews", error);
       toast.error("Failed to fetch reviews. Please check your authentication.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,9 +104,9 @@ const Review = () => {
     const avgRating =
       totalReviews > 0
         ? (
-            reviews.reduce((sum, review) => sum + review.rating, 0) /
-            totalReviews
-          ).toFixed(1)
+          reviews.reduce((sum, review) => sum + review.rating, 0) /
+          totalReviews
+        ).toFixed(1)
         : "0.0";
     setStats({ totalReviews, ratingCounts, avgRating });
   };
@@ -120,9 +119,9 @@ const Review = () => {
   };
 
   const handleResponseSubmit = async (reviewId) => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
-
       // send the admin respond
       await axios.put(
         `${backendUrl}/api/review/admin/respond/${reviewId}`,
@@ -133,14 +132,14 @@ const Review = () => {
           },
         }
       );
-
       fetchReviews();
       toast.success("Response submitted successfully!");
-
       handleDialogClose();
     } catch (error) {
       console.error("Error responding to review", error);
       toast.error("Failed to submit the response.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -170,9 +169,9 @@ const Review = () => {
   };
 
   const handleDeleteReview = async (reviewId) => {
+    setLoading(true);
     try {
       const token = localStorage.getItem("token");
-
       // delete the review
       await axios.delete(`${backendUrl}/api/review/admin/${reviewId}`, {
         headers: {
@@ -180,17 +179,18 @@ const Review = () => {
         },
       });
       fetchReviews();
-      // Refresh the review list after deletion
-
       toast.success("Review deleted successfully!");
     } catch (error) {
       console.error("Error deleting review", error);
       toast.error("Failed to delete review.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-8 bg-gradient-to-br from-gray-50 to-purple-50 min-h-screen">
+      <FullScreenLoader open={loading} message={'Loading Data...'} />
       <div className="max-w-7xl mx-auto">
         <div className="mt-3 mb-5">
           <PageTitle value="Review Management" />
