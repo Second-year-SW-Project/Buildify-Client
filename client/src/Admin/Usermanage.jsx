@@ -5,6 +5,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Select, MenuItem, Button, IconButton,
   Dialog, DialogActions, DialogContent, DialogTitle, Box, Typography, Avatar, TablePagination
 } from "@mui/material";
+import { PrimaryButton } from "../AtomicComponents/Buttons/Buttons";
 import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import { Edit, Delete } from "@mui/icons-material";
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb';
@@ -223,8 +224,8 @@ const Usermanage = () => {
 
               {/* Search/Filters Section */}
 
-              <Box sx={{ display: 'flex', gap: 2, mb: 1, alignItems: 'center', padding: '15px' }}>
 
+              <Box sx={{ display: 'flex', gap: 2, mb: 1, alignItems: 'center', padding: '15px' }}>
                 <TextField
                   label="Search by Name"
                   name="name"
@@ -233,7 +234,6 @@ const Usermanage = () => {
                   fullWidth
                   sx={{ height: 56, borderRadius: '8px' }}
                 />
-
                 <TextField
                   label="Search by Email"
                   name="email"
@@ -242,7 +242,6 @@ const Usermanage = () => {
                   fullWidth
                   sx={{ height: 56, borderRadius: '8px' }}
                 />
-
                 <Select
                   name="Role"
                   value={filters.Role}
@@ -255,8 +254,6 @@ const Usermanage = () => {
                   <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="user">User</MenuItem>
                 </Select>
-
-
                 <Select
                   name="status"
                   value={filters.status}
@@ -272,8 +269,15 @@ const Usermanage = () => {
                   <MenuItem value="suspended">Suspended</MenuItem>
                   <MenuItem value="pending">Pending</MenuItem>
                 </Select>
-
-
+                <PrimaryButton
+                  name="Clear"
+                  color="primary"
+                  buttonSize="medium"
+                  fontSize={"16px"}
+                  onClick={() => setFilters({ name: '', email: '', Role: '', status: '' })}
+                >
+                  Clear
+                </PrimaryButton>
               </Box>
 
 

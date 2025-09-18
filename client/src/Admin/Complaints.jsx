@@ -8,6 +8,7 @@ import {
 import ReplyIcon from '@mui/icons-material/Reply';
 import { toast } from 'sonner';
 import CustomBreadcrumbs from '../AtomicComponents/Breadcrumb'
+import { PrimaryButton } from "../AtomicComponents/Buttons/Buttons";
 import { PageTitle } from '../AtomicComponents/Typographics/TextStyles'
 import debounce from 'lodash.debounce';
 
@@ -162,6 +163,20 @@ const Complaints = () => {
               <MenuItem value="In Progress">In Progress</MenuItem>
             </Select>
           </FormControl>
+          <PrimaryButton
+            name="Clear"
+            buttonSize="medium"
+            fontSize={"16px"}
+            color="primary"
+            onClick={() => {
+              setNameSearch('');
+              setEmailSearch('');
+              setStatusFilter('');
+            }}
+            sx={{ height: 56, borderRadius: '4px', minWidth: 100 }}
+          >
+            Clear
+          </PrimaryButton>
 
         </div>
 
