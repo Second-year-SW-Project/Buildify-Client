@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import FullScreenLoader from '../AtomicComponents/FullScreenLoader';
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import CustomBreadcrumbs from "../AtomicComponents/Breadcrumb";
@@ -20,6 +21,7 @@ import { toast } from "sonner";
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 function InvoiceEdit() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { invoiceId } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,11 +43,11 @@ function InvoiceEdit() {
   // Fetch invoice data for editing
   useEffect(() => {
     const fetchInvoice = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(
           `${backendUrl}/api/invoices/get/${invoiceId}`
         );
-
         if (res.data) {
           setInvoiceData(res.data);
           setItems(res.data.items || []);
@@ -56,9 +58,10 @@ function InvoiceEdit() {
       } catch (err) {
         console.error("Error fetching invoice data:", err);
         toast.error("Error fetching invoice data.");
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchInvoice();
   }, [invoiceId]);
 
@@ -151,7 +154,7 @@ function InvoiceEdit() {
       dateCreated,
       dueDate,
     };
-
+    setLoading(true);
     try {
       const response = await axios.put(
         `${backendUrl}/api/invoices/edit/${invoiceId}`,
@@ -163,11 +166,14 @@ function InvoiceEdit() {
       console.error("Invoice update failed:", error);
       console.log("Error details:", error.response?.data);
       toast.error(`Error: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
+      <FullScreenLoader open={!!loading} message={'Loading Data...'} />
       <div className="pl-6 grid grid-rows">
         <div className="mt-3 mb-6">
           <PageTitle value="Edit Invoice" />

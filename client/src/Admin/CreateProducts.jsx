@@ -512,7 +512,7 @@ const CreateProducts = () => {
     return (
         <div>
             {/*Set Screen Loader*/}
-            <FullScreenLoader open={loading} message={isEditMode ? 'Updating...' : 'Creating...'} />
+            <FullScreenLoader open={!!loading} message={isEditMode ? 'Updating...' : 'Creating...'} />
 
             {/*Set the title and breadcrumbs*/}
             <div className="mt-3 mb-5 ml-6 mr-6">

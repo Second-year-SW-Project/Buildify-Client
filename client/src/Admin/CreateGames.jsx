@@ -67,7 +67,7 @@ const CreateGames = () => {
                         const fetchedGame = res.data.game;
                         console.log("Fetched Game Successfully", fetchedGame);
                         setGame(fetchedGame);
-                        
+
                         // Handle existing image
                         if (fetchedGame.image) {
                             // Create a file object from the image URL
@@ -76,7 +76,7 @@ const CreateGames = () => {
                                 const blob = await response.blob();
                                 const file = new File([blob], 'game-image.jpg', { type: 'image/jpeg' });
                                 setSelectedImage(file);
-                                
+
                                 // Update the image selector
                                 if (imageSelectorRef.current) {
                                     imageSelectorRef.current.setImages([{
@@ -231,7 +231,7 @@ const CreateGames = () => {
     //Render the component for the create games page
     return (
         <div>
-            <FullScreenLoader open={loading} message={isEditMode ? "Updating game..." : "Creating game..."} />
+            <FullScreenLoader open={!!loading} message={isEditMode ? "Updating game..." : "Creating game..."} />
             <div>
                 <div className='mt-3 mb-5 ml-6 mr-6'>
                     <div><PageTitle value={isEditMode ? 'Edit Game' : 'Add New Game'}></PageTitle></div>
